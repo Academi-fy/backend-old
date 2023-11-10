@@ -5,22 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="60afacd6-3d8d-48f1-a898-e2261f4c13fc" name="Changes" comment="README &#10;&#10;README.md: removed user doc. -&gt; now installation etc.">
-      <change afterPath="$PROJECT_DIR$/MongoDB/schemas/BlackboardSchema.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MongoDB/schemas/EventSchema.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/models/Blackboard.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/models/Club.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/models/Course.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/models/Event.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/models/Grade.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/models/Message.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/models/School.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/models/Subject.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/models/UserAccount.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/Chat.js" beforeDir="false" afterPath="$PROJECT_DIR$/models/Chat.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/Class.js" beforeDir="false" afterPath="$PROJECT_DIR$/models/Class.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/User.js" beforeDir="false" afterPath="$PROJECT_DIR$/models/User.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/propertyValidation.js" beforeDir="false" afterPath="$PROJECT_DIR$/models/propertyValidation.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -65,27 +51,27 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "main",
-    "ignore.virus.scanning.warn.message": "true",
-    "javascript.nodejs.core.library.configured.version": "18.17.1",
-    "javascript.nodejs.core.library.typings.version": "18.17.1",
-    "last_opened_file_path": "E:/Daniel/Programmieren/Eigene Projekte/Academi.fy/backend",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_interpreter_path": "node",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;javascript.nodejs.core.library.configured.version&quot;: &quot;18.17.1&quot;,
+    &quot;javascript.nodejs.core.library.typings.version&quot;: &quot;18.17.1&quot;,
+    &quot;last_opened_file_path&quot;: &quot;E:/Daniel/Programmieren/Eigene Projekte/Academi.fy/backend&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_interpreter_path&quot;: &quot;node&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;project.propVCSSupport.DirectoryMappings&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="E:\Daniel\Programmieren\Eigene Projekte\Academi.fy\backend\documentation" />
@@ -110,7 +96,8 @@
       <workItem from="1698179205417" duration="809000" />
       <workItem from="1699634388613" duration="105000" />
       <workItem from="1699643524820" duration="34000" />
-      <workItem from="1699643569035" duration="6159000" />
+      <workItem from="1699643569035" duration="6247000" />
+      <workItem from="1699655427408" duration="174000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <option name="closed" value="true" />
