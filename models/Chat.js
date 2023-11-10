@@ -2,6 +2,7 @@ import cache from "../cache.js";
 import * as collectionAccess from "../MongoDB/collectionAccess.js";
 import ChatSchema from "../MongoDB/schemas/ChatSchema.js";
 import mongoose from "mongoose";
+import { validateArray, validateNotEmpty } from "./propertyValidation.js";
 
 const expirationTime = 2 * 60 * 1000;
 
@@ -52,13 +53,13 @@ class Chat {
     static async createChat(chat) {
 
         chat.id = new mongoose.Types.ObjectId();
-        const chats = [ ...await this.getChats() ];
-        const insertedChat = await collectionAccess.createDocument(ChatSchema, chat);
+        const chats = await this.getChats();
 
+        const insertedChat = await collectionAccess.createDocument(ChatSchema, chat);
         chats.push(insertedChat);
         cache.put('chats', chats, expirationTime);
 
-        if (!await this.verifyChatInCache(insertedChat)) throw new Error(`Failed to put chat in cache: ${ insertedChat }`);
+        if (!await this.verifyChatInCache(insertedChat)) throw new Error(`Failed to put chat in cache:\n${ insertedChat }`);
 
         return insertedChat;
     }
@@ -69,8 +70,9 @@ class Chat {
         chats.splice(chats.findIndex(chat => chat.id === chatId), 1, updatedChat);
 
         await collectionAccess.updateDocument(ChatSchema, chatId, updatedChat);
-
         cache.put('chats', chats, expirationTime);
+
+        if (!await this.verifyChatInCache(updatedChat)) throw new Error(`Failed to put chat in cache:\n${ updatedChat }`);
 
         return updatedChat;
     }
@@ -125,6 +127,7 @@ class Chat {
     }
 
     set _type(value) {
+        validateNotEmpty('Chat type', value);
         this.type = value;
     }
 
@@ -133,6 +136,7 @@ class Chat {
     }
 
     set _targets(value) {
+        validateArray('Chat targets', value);
         this.targets = value;
     }
 
@@ -141,6 +145,7 @@ class Chat {
     }
 
     set _courses(value) {
+        validateArray('Chat courses', value);
         this.courses = value;
     }
 
@@ -149,6 +154,7 @@ class Chat {
     }
 
     set _clubs(value) {
+        validateArray('Chat clubs', value);
         this.clubs = value;
     }
 
@@ -157,6 +163,7 @@ class Chat {
     }
 
     set _name(value) {
+        validateNotEmpty('Chat name', value);
         this.name = value;
     }
 
@@ -165,6 +172,7 @@ class Chat {
     }
 
     set _avatar(value) {
+        validateNotEmpty('Chat avatar', value);
         this.avatar = value;
     }
 
@@ -173,7 +181,10 @@ class Chat {
     }
 
     set _messages(value) {
+        validateArray('Chat messages', value);
         this.messages = value;
     }
 
 }
+
+export default Chat;

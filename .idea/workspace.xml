@@ -4,7 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="60afacd6-3d8d-48f1-a898-e2261f4c13fc" name="Changes" comment="README &#10;&#10;README.md: removed user doc. -&gt; now installation etc." />
+    <list default="true" id="60afacd6-3d8d-48f1-a898-e2261f4c13fc" name="Changes" comment="README &#10;&#10;README.md: removed user doc. -&gt; now installation etc.">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MongoDB/dasdas.md" beforeDir="false" afterPath="$PROJECT_DIR$/documentation/dasdas.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/Chat.js" beforeDir="false" afterPath="$PROJECT_DIR$/models/Chat.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/User.js" beforeDir="false" afterPath="$PROJECT_DIR$/models/User.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/propertyValidation.js" beforeDir="false" afterPath="$PROJECT_DIR$/models/propertyValidation.js" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -51,12 +58,12 @@
     "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "main",
     "ignore.virus.scanning.warn.message": "true",
     "javascript.nodejs.core.library.configured.version": "18.17.1",
     "javascript.nodejs.core.library.typings.version": "18.17.1",
-    "last_opened_file_path": "E:/Daniel/Programmieren/Eigene Projekte/Rotteck Messenger/messenger/backend",
+    "last_opened_file_path": "E:/Daniel/Programmieren/Eigene Projekte/Academi.fy/backend",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -69,6 +76,7 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="E:\Daniel\Programmieren\Eigene Projekte\Academi.fy\backend\documentation" />
       <recent name="E:\Daniel\Programmieren\Eigene Projekte\Rotteck Messenger\messenger-backend" />
     </key>
   </component>
@@ -89,6 +97,8 @@
       <workItem from="1698174911005" duration="74000" />
       <workItem from="1698179205417" duration="809000" />
       <workItem from="1699634388613" duration="105000" />
+      <workItem from="1699643524820" duration="34000" />
+      <workItem from="1699643569035" duration="2077000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <option name="closed" value="true" />

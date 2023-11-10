@@ -7,7 +7,7 @@ Chats sind unabhängig von der [WebUntis API](https://help.untis.at/hc/de/articl
 Das Chat-Objekt ist ein eigenes JSON-Objekt.
 Die Chats werden in MongoDB gespeichert und sind über den HTTP-Server abzurufen, wo sie gecacht werden. Die Chat-Cache
 wird alle 2 Minuten aktualisiert sowie bei jeder Registrierung eines Benutzers als auch beim Hinzufügen oder Entfernen
-eines Benutzers aus einem Chats.
+eines Benutzers aus einem Chat.
 
 ## Berechtigungen
 

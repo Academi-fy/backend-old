@@ -2,6 +2,7 @@ import * as collectionAccess from "../MongoDB/collectionAccess.js";
 import UserSchema from "../MongoDB/schemas/UserSchema.js";
 import cache from "../cache.js";
 import mongoose, { mongo } from "mongoose";
+import { validateArray, validateNotEmpty } from "./propertyValidation.js";
 
 const expirationTime = 3 * 60 * 1000;
 
@@ -52,12 +53,12 @@ class User {
 
         user.id = new mongoose.Types.ObjectId();
         const users = await this.getUsers();
-        const insertedUser = await collectionAccess.createDocument(UserSchema, user);
 
+        const insertedUser = await collectionAccess.createDocument(UserSchema, user);
         users.push(insertedUser);
         cache.put(`users`, users, expirationTime)
 
-        if (!await this.verifyUserInCache(insertedUser)) throw new Error(`Failed to put user in cache: ${ insertedUser }`);
+        if (!await this.verifyUserInCache(insertedUser)) throw new Error(`Failed to put user in cache:\n${ insertedUser }`);
 
         return insertedUser;
     }
@@ -68,8 +69,9 @@ class User {
         users.splice(users.findIndex(user => user.id === userId), 1, updatedUser);
 
         await collectionAccess.updateDocument(UserSchema, userId, updatedUser);
-
         cache.put('users', users, expirationTime);
+
+        if (!await this.verifyUserInCache(updatedUser)) throw new Error(`Failed to put user in cache:\n${ updatedUser }`);
 
         return updatedUser;
     }
@@ -80,6 +82,7 @@ class User {
         if (!deletedUser) {
             throw new Error(`Failed to delete user with id ${ userId }`);
         }
+
         const users = await this.getUsers();
         users.splice(users.findIndex(user => user.id === userId), 1);
         cache.put('users', users, expirationTime);
@@ -123,6 +126,7 @@ class User {
     }
 
     set _first_name(value) {
+        validateNotEmpty('User first name', value);
         this.first_name = value;
     }
 
@@ -131,6 +135,7 @@ class User {
     }
 
     set _last_name(value) {
+        validateNotEmpty('User last name', value);
         this.last_name = value;
     }
 
@@ -139,6 +144,7 @@ class User {
     }
 
     set _avatar(value) {
+        validateNotEmpty('User avatar', value);
         this.avatar = value;
     }
 
@@ -147,6 +153,7 @@ class User {
     }
 
     set _type(value) {
+        validateNotEmpty('User type', value);
         this.type = value;
     }
 
@@ -155,6 +162,7 @@ class User {
     }
 
     set _classes(value) {
+        validateArray('User classes', value);
         this.classes = value;
     }
 
@@ -163,6 +171,7 @@ class User {
     }
 
     set _extra_courses(value) {
+        validateArray('User extra courses', value);
         this.extra_courses = value;
     }
 
