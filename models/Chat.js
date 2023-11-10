@@ -1,8 +1,8 @@
 import cache from "../cache.js";
-import * as collectionAccess from "../MongoDB/collectionAccess.js";
 import ChatSchema from "../MongoDB/schemas/ChatSchema.js";
 import mongoose from "mongoose";
-import { validateArray, validateNotEmpty } from "./propertyValidation.js";
+import { validateArray, validateNotEmpty, verifyInCache } from "./propertyValidation.js";
+import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../MongoDB/collectionAccess.js";
 
 const expirationTime = 2 * 60 * 1000;
 
@@ -29,8 +29,8 @@ class Chat {
 
     static async updateChatCache() {
 
-        cache.clear();
-        const chats = await collectionAccess.getAllDocuments(ChatSchema);
+        cache.get("chats").clear();
+        const chats = await getAllDocuments(ChatSchema);
         cache.put('chats', chats, expirationTime);
         return chats;
 
@@ -55,7 +55,7 @@ class Chat {
         chat.id = new mongoose.Types.ObjectId();
         const chats = await this.getChats();
 
-        const insertedChat = await collectionAccess.createDocument(ChatSchema, chat);
+        const insertedChat = await createDocument(ChatSchema, chat);
         chats.push(insertedChat);
         cache.put('chats', chats, expirationTime);
 
@@ -69,7 +69,7 @@ class Chat {
         const chats = await this.getChats();
         chats.splice(chats.findIndex(chat => chat.id === chatId), 1, updatedChat);
 
-        await collectionAccess.updateDocument(ChatSchema, chatId, updatedChat);
+        await updateDocument(ChatSchema, chatId, updatedChat);
         cache.put('chats', chats, expirationTime);
 
         if (!await this.verifyChatInCache(updatedChat)) throw new Error(`Failed to put chat in cache:\n${ updatedChat }`);
@@ -79,10 +79,9 @@ class Chat {
 
     static async deleteChat(chatId) {
 
-        const deletedChat = await collectionAccess.deleteDocument(ChatSchema, chatId);
-        if (!deletedChat) {
-            throw new Error(`Failed to delete chat with id ${ chatId }`);
-        }
+        const deletedChat = await deleteDocument(ChatSchema, chatId);
+        if (!deletedChat) throw new Error(`Failed to delete chat with id ${ chatId }`);
+
 
         const chats = await this.getChats();
         chats.splice(chats.findIndex(chat => chat.id === chatId), 1);
@@ -92,23 +91,7 @@ class Chat {
     }
 
     static async verifyChatInCache(chat) {
-
-        const chats = await this.getChats()
-
-        let retries = 3;
-        while (retries > 0) {
-
-            if (chats.includes(chat)) {
-                return true;
-            } else {
-                chats.push(chat);
-                cache.put(`chats`, chats, expirationTime);
-                retries--;
-                await new Promise(resolve => setTimeout(resolve, 500)); // wait before retrying
-            }
-        }
-
-        return false;
+        return await verifyInCache(await this.getChats(), chat, this.updateChatCache);
     }
 
     get _id() {

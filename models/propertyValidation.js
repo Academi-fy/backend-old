@@ -29,3 +29,21 @@ export function validateDate(propertyName, value) {
 export function validateFunction(propertyName, value) {
     if (typeof value !== "function") throw new Error(`${ propertyName } must be a function`);
 }
+
+export async function verifyInCache(list, testObject, updateFunction) {
+
+    let retries = 3;
+    while (retries > 0) {
+
+        if (list.includes(testObject)) {
+            return true;
+        } else {
+            updateFunction();
+            retries--;
+            await new Promise(resolve => setTimeout(resolve, 500)); // wait before retrying
+        }
+    }
+
+    return false;
+
+}

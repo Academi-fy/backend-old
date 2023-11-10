@@ -5,10 +5,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="60afacd6-3d8d-48f1-a898-e2261f4c13fc" name="Changes" comment="README &#10;&#10;README.md: removed user doc. -&gt; now installation etc.">
+      <change afterPath="$PROJECT_DIR$/MongoDB/schemas/BlackboardSchema.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/MongoDB/schemas/EventSchema.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/models/Blackboard.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/models/Club.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/models/Course.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/models/Event.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/models/Grade.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/models/Message.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/models/School.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/models/Subject.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/models/UserAccount.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MongoDB/dasdas.md" beforeDir="false" afterPath="$PROJECT_DIR$/documentation/dasdas.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/models/Chat.js" beforeDir="false" afterPath="$PROJECT_DIR$/models/Chat.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/Class.js" beforeDir="false" afterPath="$PROJECT_DIR$/models/Class.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/models/User.js" beforeDir="false" afterPath="$PROJECT_DIR$/models/User.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/models/propertyValidation.js" beforeDir="false" afterPath="$PROJECT_DIR$/models/propertyValidation.js" afterDir="false" />
     </list>
@@ -48,7 +58,9 @@
   &quot;associatedIndex&quot;: 1
 }</component>
   <component name="ProjectId" id="2XAq0hjMcbIVYLbofKucesoWOaU" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -98,7 +110,7 @@
       <workItem from="1698179205417" duration="809000" />
       <workItem from="1699634388613" duration="105000" />
       <workItem from="1699643524820" duration="34000" />
-      <workItem from="1699643569035" duration="2077000" />
+      <workItem from="1699643569035" duration="6159000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <option name="closed" value="true" />
