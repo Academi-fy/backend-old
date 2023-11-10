@@ -115,9 +115,7 @@ class User {
     }
 
     set _id(value) {
-        if (value === '' || !value) {
-            throw new Error('User id cannot be empty');
-        }
+        validateNotEmpty('Chat id', value);
         this.id = value;
     }
 
