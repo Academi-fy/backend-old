@@ -1,6 +1,7 @@
 Ein Chat ist ein Kommunikations-Kanal zwischen Usern. Ein Chat kann mit einem Kurs verknüpft werden, aber auch zwischen
 zwei [Benutzern](https://github.com/Daanieeel/rotteck-messenger/wiki/User) erstellt werden.\
-Chats sind unabhängig von der [WebUntis API](https://help.untis.at/hc/de/articles/4886785534354-API-documentation-for-integration-partners).
+Chats sind unabhängig von
+der [WebUntis API](https://help.untis.at/hc/de/articles/4886785534354-API-documentation-for-integration-partners).
 
 ## Chat-Objekt
 
@@ -38,12 +39,12 @@ Attribute des Chat-Objekts:
 const chat = {
     id: "507f191e810c19729de860ea",
     type: "COURSE",
-    targets: [{$ref: 'User', $id: "132f191e810c19729de860ea"}],
-    courses: [{ $ref: 'Course', $id: "507f191e810c19729de860ea" }],
-    clubs: [{ $ref: 'Club', $id: "507f191e810c19729de860ea" }],
+    targets: [ { $ref: 'User', $id: "132f191e810c19729de860ea" } ],
+    courses: [ { $ref: 'Course', $id: "507f191e810c19729de860ea" } ],
+    clubs: [ { $ref: 'Club', $id: "507f191e810c19729de860ea" } ],
     name: "K2A24: Mathe LK, JEH",
     avatar: "link.to/avatar.png",
-    messages: [{$ref: 'Message', $id: "507f191e810c19729de860ea"}] // nicht in DB
+    messages: [ { $ref: 'Message', $id: "507f191e810c19729de860ea" } ] // nicht in DB
 };
 ```
 
@@ -59,15 +60,16 @@ const chat = {
 | messages | Array: [Referenzen zu [Message](https://github.com/Daanieeel/rotteck-messenger/wiki/Message), ...]                                                                            | MongoDB Referenzen zu Nachrichten, die in dem Chat versendet wurden. Dieses Attribut wird nicht in der Datenbank gespeichert, sondern bei der Initialisierung des Backend-Servers für jeden Chat anhand der `messages` Collection der Datenbank gesetzt und aktuell gehalten. | *`messages: [{$ref: 'Message', $id: "507f191e810c19729de860ea"}]`* |
 
 > Default-Values, wenn nichts gesetzt wird
+
 ```javascript
 id //wird automatisch gesetzt
 type = 'GROUP',
-targets = [],
-courses = [],
-clubs = [],
-name = "Gruppen Chat",
-avatar = "https://media.istockphoto.com/id/1147544807/de/vektor/miniaturbild-vektorgrafik.jpg?s=612x612&w=0&k=20&c=IIK_u_RTeRFyL6kB1EMzBufT4H7MYT3g04sz903fXAk=",
-messages = []
+    targets = [],
+    courses = [],
+    clubs = [],
+    name = "Gruppen Chat",
+    avatar = "https://media.istockphoto.com/id/1147544807/de/vektor/miniaturbild-vektorgrafik.jpg?s=612x612&w=0&k=20&c=IIK_u_RTeRFyL6kB1EMzBufT4H7MYT3g04sz903fXAk=",
+    messages = []
 ```
 
 ## Zugriff auf Chats über HTTP-Server
@@ -115,41 +117,62 @@ delete (`http://messenger.rotteck.de/api/chats/delete/${courseId}`);
 ```javascript
 {
     id: {
-      type: ObjectId,
-      required: true,
-      unique: true
-    },
+        type: ObjectId,
+            required
+    :
+        true,
+            unique
+    :
+        true
+    }
+,
     type: {
-      type: String,
-      required: true
-    },
+        type: String,
+            required
+    :
+        true
+    }
+,
     targets: [
-      {
-        type: ObjectId,
-        ref: 'User'
-      }
+        {
+            type: ObjectId,
+            ref: 'User'
+        }
     ],
-    courses: [
-      {
-        type: ObjectId,
-        ref: 'Course'
-      }
+        courses
+:
+    [
+        {
+            type: ObjectId,
+            ref: 'Course'
+        }
     ],
-    clubs: [
-      {
-        type: ObjectId,
-        ref: 'Club'
-      }
+        clubs
+:
+    [
+        {
+            type: ObjectId,
+            ref: 'Club'
+        }
     ],
-    name: {
-      type: String,
-      required: true,
-      default: 'Neuer Chat'
-    },
+        name
+:
+    {
+        type: String,
+            required
+    :
+        true,
+    default:
+        'Neuer Chat'
+    }
+,
     avatar: {
-      type: String,
-      required: true,
-      default: 'https://media.istockphoto.com/id/1147544807/de/vektor/miniaturbild-vektorgrafik.jpg?s=612x612&w=0&k=20&c=IIK_u_RTeRFyL6kB1EMzBufT4H7MYT3g04sz903fXAk='
+        type: String,
+            required
+    :
+        true,
+    default:
+        'https://media.istockphoto.com/id/1147544807/de/vektor/miniaturbild-vektorgrafik.jpg?s=612x612&w=0&k=20&c=IIK_u_RTeRFyL6kB1EMzBufT4H7MYT3g04sz903fXAk='
     }
 }
 

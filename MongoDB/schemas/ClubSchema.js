@@ -30,7 +30,7 @@ const ClubSchema = new Schema({
             type: String,
             required: true
         },
-        rules: [
+        requirements: [
             {
                 emoji: {
                     type: String,

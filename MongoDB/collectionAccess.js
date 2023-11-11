@@ -1,5 +1,3 @@
-import mongoose from "mongoose";
-
 export async function createDocument(model, document) {
     return await model.create(document);
 }

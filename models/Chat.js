@@ -27,73 +27,6 @@ class Chat {
 
     }
 
-    static async updateChatCache() {
-
-        cache.get("chats").clear();
-        const chats = await getAllDocuments(ChatSchema);
-        cache.put('chats', chats, expirationTime);
-        return chats;
-
-    }
-
-    static async getChats() {
-
-        const cacheResults = cache.get('chats');
-
-        if (cacheResults) {
-            return cacheResults;
-        } else return await this.updateChatCache();
-
-    }
-
-    static async getChat(chatId) {
-        return (await this.getChats()).find(chat => chat.id === chatId);
-    }
-
-    static async createChat(chat) {
-
-        chat.id = new mongoose.Types.ObjectId();
-        const chats = await this.getChats();
-
-        const insertedChat = await createDocument(ChatSchema, chat);
-        chats.push(insertedChat);
-        cache.put('chats', chats, expirationTime);
-
-        if (!await this.verifyChatInCache(insertedChat)) throw new Error(`Failed to put chat in cache:\n${ insertedChat }`);
-
-        return insertedChat;
-    }
-
-    static async updateChat(chatId, updatedChat) {
-
-        const chats = await this.getChats();
-        chats.splice(chats.findIndex(chat => chat.id === chatId), 1, updatedChat);
-
-        await updateDocument(ChatSchema, chatId, updatedChat);
-        cache.put('chats', chats, expirationTime);
-
-        if (!await this.verifyChatInCache(updatedChat)) throw new Error(`Failed to put chat in cache:\n${ updatedChat }`);
-
-        return updatedChat;
-    }
-
-    static async deleteChat(chatId) {
-
-        const deletedChat = await deleteDocument(ChatSchema, chatId);
-        if (!deletedChat) throw new Error(`Failed to delete chat with id ${ chatId }`);
-
-
-        const chats = await this.getChats();
-        chats.splice(chats.findIndex(chat => chat.id === chatId), 1);
-        cache.put('chats', chats, expirationTime);
-
-        return true;
-    }
-
-    static async verifyChatInCache(chat) {
-        return await verifyInCache(await this.getChats(), chat, this.updateChatCache);
-    }
-
     get _id() {
         return this.id;
     }
@@ -164,6 +97,73 @@ class Chat {
     set _messages(value) {
         validateArray('Chat messages', value);
         this.messages = value;
+    }
+
+    static async updateChatCache() {
+
+        cache.get("chats").clear();
+        const chats = await getAllDocuments(ChatSchema);
+        cache.put('chats', chats, expirationTime);
+        return chats;
+
+    }
+
+    static async getChats() {
+
+        const cacheResults = cache.get('chats');
+
+        if (cacheResults) {
+            return cacheResults;
+        } else return await this.updateChatCache();
+
+    }
+
+    static async getChat(chatId) {
+        return (await this.getChats()).find(chat => chat.id === chatId);
+    }
+
+    static async createChat(chat) {
+
+        chat.id = new mongoose.Types.ObjectId();
+        const chats = await this.getChats();
+
+        const insertedChat = await createDocument(ChatSchema, chat);
+        chats.push(insertedChat);
+        cache.put('chats', chats, expirationTime);
+
+        if (!await this.verifyChatInCache(insertedChat)) throw new Error(`Failed to put chat in cache:\n${ insertedChat }`);
+
+        return insertedChat;
+    }
+
+    static async updateChat(chatId, updatedChat) {
+
+        const chats = await this.getChats();
+        chats.splice(chats.findIndex(chat => chat.id === chatId), 1, updatedChat);
+
+        await updateDocument(ChatSchema, chatId, updatedChat);
+        cache.put('chats', chats, expirationTime);
+
+        if (!await this.verifyChatInCache(updatedChat)) throw new Error(`Failed to put chat in cache:\n${ updatedChat }`);
+
+        return updatedChat;
+    }
+
+    static async deleteChat(chatId) {
+
+        const deletedChat = await deleteDocument(ChatSchema, chatId);
+        if (!deletedChat) throw new Error(`Failed to delete chat with id ${ chatId }`);
+
+
+        const chats = await this.getChats();
+        chats.splice(chats.findIndex(chat => chat.id === chatId), 1);
+        cache.put('chats', chats, expirationTime);
+
+        return true;
+    }
+
+    static async verifyChatInCache(chat) {
+        return await verifyInCache(await this.getChats(), chat, this.updateChatCache);
     }
 
 }

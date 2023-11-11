@@ -1,9 +1,8 @@
-import * as collectionAccess from "../MongoDB/js";
-import UserSchema from "../MongoDB/schemas/UserSchema.js";
-import cache from "../cache.js";
+import UserSchema from "../../MongoDB/schemas/UserSchema.js";
+import cache from "../../cache.js";
 import mongoose from "mongoose";
-import { validateArray, validateNotEmpty, verifyInCache } from "./propertyValidation.js";
-import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../MongoDB/js";
+import { validateArray, validateNotEmpty, verifyInCache } from "../propertyValidation.js";
+import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../MongoDB/collectionAccess.js";
 
 const expirationTime = 3 * 60 * 1000;
 
@@ -26,71 +25,6 @@ class User {
         this.classes = classes;
         this.extra_courses = extra_courses;
 
-    }
-
-    static async updateUserCache() {
-
-        cache.get("users").clear();
-        const users = await getAllDocuments(UserSchema);
-        cache.put('users', users, expirationTime);
-        return users;
-
-    }
-
-    static async getUser(userId) {
-        return (await this.getUsers()).find(user => user.id === userId);
-    }
-
-    static async getUsers() {
-
-        const cacheResults = cache.get('users');
-
-        if (cacheResults) {
-            return cacheResults;
-        } else  return await this.updateUserCache();
-    }
-
-    static async createUser(user) {
-
-        user.id = new mongoose.Types.ObjectId();
-        const users = await this.getUsers();
-
-        const insertedUser = await createDocument(UserSchema, user);
-        users.push(insertedUser);
-        cache.put(`users`, users, expirationTime)
-
-        if (!await this.verifyUserInCache(insertedUser)) throw new Error(`Failed to put user in cache:\n${ insertedUser }`);
-
-        return insertedUser;
-    }
-
-    static async updateUser(userId, updatedUser) {
-
-        const users = await this.getUsers();
-        users.splice(users.findIndex(user => user.id === userId), 1, updatedUser);
-
-        await updateDocument(UserSchema, userId, updatedUser);
-        cache.put('users', users, expirationTime);
-
-        if (!await this.verifyUserInCache(updatedUser)) throw new Error(`Failed to put user in cache:\n${ updatedUser }`);
-
-        return updatedUser;
-    }
-
-    static async deleteUser(userId) {
-
-        const deletedUser = await deleteDocument(UserSchema, userId);
-        if (!deletedUser) throw new Error(`Failed to delete user with id ${ userId }`);
-
-        const users = await this.getUsers();
-        users.splice(users.findIndex(user => user.id === userId), 1);
-        cache.put('users', users, expirationTime);
-
-        return true;
-    }
-
-    static async verifyUserInCache(user) {
-        return await verifyInCache(await this.getUsers(), user, this.updateUserCache);
     }
 
     get _id() {
@@ -154,6 +88,71 @@ class User {
     set _extra_courses(value) {
         validateArray('User extra courses', value);
         this.extra_courses = value;
+    }
+
+    static async updateUserCache() {
+
+        cache.get("users").clear();
+        const users = await getAllDocuments(UserSchema);
+        cache.put('users', users, expirationTime);
+        return users;
+
+    }
+
+    static async getUser(userId) {
+        return (await this.getUsers()).find(user => user.id === userId);
+    }
+
+    static async getUsers() {
+
+        const cacheResults = cache.get('users');
+
+        if (cacheResults) {
+            return cacheResults;
+        } else return await this.updateUserCache();
+    }
+
+    static async createUser(user) {
+
+        user.id = new mongoose.Types.ObjectId();
+        const users = await this.getUsers();
+
+        const insertedUser = await createDocument(UserSchema, user);
+        users.push(insertedUser);
+        cache.put(`users`, users, expirationTime)
+
+        if (!await this.verifyUserInCache(insertedUser)) throw new Error(`Failed to put user in cache:\n${ insertedUser }`);
+
+        return insertedUser;
+    }
+
+    static async updateUser(userId, updatedUser) {
+
+        const users = await this.getUsers();
+        users.splice(users.findIndex(user => user.id === userId), 1, updatedUser);
+
+        await updateDocument(UserSchema, userId, updatedUser);
+        cache.put('users', users, expirationTime);
+
+        if (!await this.verifyUserInCache(updatedUser)) throw new Error(`Failed to put user in cache:\n${ updatedUser }`);
+
+        return updatedUser;
+    }
+
+    static async deleteUser(userId) {
+
+        const deletedUser = await deleteDocument(UserSchema, userId);
+        if (!deletedUser) throw new Error(`Failed to delete user with id ${ userId }`);
+
+        const users = await this.getUsers();
+        users.splice(users.findIndex(user => user.id === userId), 1);
+        cache.put('users', users, expirationTime);
+
+        return true;
+    }
+
+    static async verifyUserInCache(user) {
+        return await verifyInCache(await this.getUsers(), user, this.updateUserCache);
     }
 
 }
