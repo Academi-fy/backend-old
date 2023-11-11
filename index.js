@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
 import dotenv from "dotenv";
+import { validateArray } from "./models/propertyValidation.js";
 
 dotenv.config();
 

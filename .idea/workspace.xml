@@ -5,8 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="60afacd6-3d8d-48f1-a898-e2261f4c13fc" name="Changes" comment="README &#10;&#10;README.md: removed user doc. -&gt; now installation etc.">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MongoDB/schemas/ClubSchema.js" beforeDir="false" afterPath="$PROJECT_DIR$/MongoDB/schemas/ClubSchema.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MongoDB/schemas/SchoolSchema.js" beforeDir="false" afterPath="$PROJECT_DIR$/MongoDB/schemas/SchoolSchema.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/Club.js" beforeDir="false" afterPath="$PROJECT_DIR$/models/Club.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -97,7 +100,7 @@
       <workItem from="1699634388613" duration="105000" />
       <workItem from="1699643524820" duration="34000" />
       <workItem from="1699643569035" duration="6247000" />
-      <workItem from="1699655427408" duration="174000" />
+      <workItem from="1699655427408" duration="5082000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <option name="closed" value="true" />

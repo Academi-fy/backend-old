@@ -44,7 +44,25 @@ const SchoolSchema = new Schema({
             type: ObjectId,
             ref: 'Subject'
         }
-    ]
+    ],
+    clubs: [
+        {
+            type: ObjectId,
+            ref: 'Club'
+        }
+    ],
+    events: [
+        {
+            type: ObjectId,
+            ref: 'Event'
+        }
+    ],
+    blackboards: [
+        {
+            type: ObjectId,
+            ref: 'Blackboard'
+        }
+    ],
 });
 
 export default mongoose.model("School", SchoolSchema);
