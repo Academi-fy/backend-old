@@ -2,23 +2,29 @@ import mongoose from 'mongoose';
 
 const { Schema, Types: { ObjectId } } = mongoose;
 
-const SubjectSchema = new Schema({
+const SubjectSchema = new Schema(
 
-    id: {
-        type: ObjectId,
-        required: true,
-        unique: true
-    },
-    type: {
-        type: String,
-        required: true
-    },
-    courses: [
-        {
+    {
+        id: {
             type: ObjectId,
-            ref: 'Course'
-        }
-    ]
-});
+            required: true,
+            unique: true
+        },
+        type: {
+            type: String,
+            required: true
+        },
+        courses: [
+            {
+                type: ObjectId,
+                ref: 'Course'
+            }
+        ]
+    },
+    {
+        timestamps: true
+    }
+
+);
 
 export default mongoose.model("Subject", SubjectSchema);

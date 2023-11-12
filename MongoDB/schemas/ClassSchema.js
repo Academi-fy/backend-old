@@ -2,34 +2,40 @@ import mongoose from 'mongoose';
 
 const { Schema, Types: { ObjectId } } = mongoose;
 
-const ClassSchema = new Schema({
+const ClassSchema = new Schema(
 
-    id: {
-        type: ObjectId,
-        required: true,
-        unique: true
-    },
-    grade: {
-        type: ObjectId,
-        ref: 'Grade'
-    },
-    courses: [
-        {
+    {
+        id: {
             type: ObjectId,
-            ref: 'Course'
-        }
-    ],
-    members: [
-        {
+            required: true,
+            unique: true
+        },
+        grade: {
             type: ObjectId,
-            ref: 'User'
+            ref: 'Grade'
+        },
+        courses: [
+            {
+                type: ObjectId,
+                ref: 'Course'
+            }
+        ],
+        members: [
+            {
+                type: ObjectId,
+                ref: 'User'
+            }
+        ],
+        specified_grade: {
+            type: String,
+            required: true
         }
-    ],
-    specified_grade: {
-        type: String,
-        required: true
+
+    },
+    {
+        timestamps: true
     }
 
-});
+);
 
 export default mongoose.model("Class", ClassSchema);

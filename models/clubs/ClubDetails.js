@@ -3,11 +3,12 @@ import { validateArray, validateNotEmpty } from "../propertyValidation.js";
 class ClubDetails {
 
     constructor(
+        coverImage = "", //TODO getters and setters
         description = "",
         location = "",
         meetingTime = "",
         meetingDay = "",
-        requirements = [],
+        requirements = [], // wie information bei event
         events = []
     ) {
         this.description = description;

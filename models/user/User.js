@@ -1,4 +1,4 @@
-import UserSchema from "../../MongoDB/schemas/UserSchema.js";
+import UserSchema from "../../MongoDB/schemas/user/UserSchema.js";
 import cache from "../../cache.js";
 import mongoose from "mongoose";
 import { validateArray, validateNotEmpty, verifyInCache } from "../propertyValidation.js";
@@ -41,7 +41,7 @@ class User {
     }
 
     set _first_name(value) {
-        validateNotEmpty('User first name', value);
+        validateNotEmpty('user first name', value);
         this.first_name = value;
     }
 
@@ -50,7 +50,7 @@ class User {
     }
 
     set _last_name(value) {
-        validateNotEmpty('User last name', value);
+        validateNotEmpty('user last name', value);
         this.last_name = value;
     }
 
@@ -59,7 +59,7 @@ class User {
     }
 
     set _avatar(value) {
-        validateNotEmpty('User avatar', value);
+        validateNotEmpty('user avatar', value);
         this.avatar = value;
     }
 
@@ -68,7 +68,7 @@ class User {
     }
 
     set _type(value) {
-        validateNotEmpty('User type', value);
+        validateNotEmpty('user type', value);
         this.type = value;
     }
 
@@ -77,7 +77,7 @@ class User {
     }
 
     set _classes(value) {
-        validateArray('User classes', value);
+        validateArray('user classes', value);
         this.classes = value;
     }
 
@@ -86,7 +86,7 @@ class User {
     }
 
     set _extra_courses(value) {
-        validateArray('User extra courses', value);
+        validateArray('user extra courses', value);
         this.extra_courses = value;
     }
 

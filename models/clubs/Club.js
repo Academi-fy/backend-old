@@ -4,6 +4,7 @@ import ClubSchema from "../../MongoDB/schemas/ClubSchema.js";
 import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../MongoDB/collectionAccess.js";
 import mongoose from "mongoose";
 import ClubDetails from "./ClubDetails.js";
+import Chat from "../Chat.js";
 
 const expirationTime = 5 * 60 * 1000;
 
@@ -14,7 +15,7 @@ class Club {
         details = new ClubDetails(),
         leaders = [],
         members = [],
-        chat = {}
+        chat = new Chat()
     ) {
         this.name = name;
         this.details = details;

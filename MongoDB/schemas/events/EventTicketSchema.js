@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const { Schema, Types: { ObjectId } } = mongoose;
 
-const BlackboardSchema = new Schema(
+const EventTicketSchema = new Schema(
 
     {
         id: {
@@ -10,20 +10,20 @@ const BlackboardSchema = new Schema(
             required: true,
             unique: true
         },
-        title: {
-            type: String,
-            required: true
+        event: {
+            type: ObjectId,
+            ref: 'Event'
         },
-        author: {
+        buyer: {
             type: ObjectId,
             ref: 'User'
         },
-        coverImage: {
-            type: String,
+        price: {
+            type: Number,
             required: true
         },
-        text: {
-            type: String,
+        saleDate: {
+            type: Number,
             required: true
         }
 
@@ -34,4 +34,4 @@ const BlackboardSchema = new Schema(
 
 );
 
-export default mongoose.model("Blackboard", BlackboardSchema);
+export default mongoose.model("EventTicket", EventTicketSchema);
