@@ -1,8 +1,8 @@
-import UserSchema from "../../MongoDB/schemas/user/UserSchema.js";
+import UserSchema from "../../mongoDb/schemas/user/UserSchema.js";
 import cache from "../../cache.js";
 import mongoose from "mongoose";
 import { validateArray, validateNotEmpty, verifyInCache } from "../propertyValidation.js";
-import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../MongoDB/collectionAccess.js";
+import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../../mongoDb/collectionAccess.js";
 
 const expirationTime = 3 * 60 * 1000;
 

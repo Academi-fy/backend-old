@@ -1,8 +1,8 @@
 import cache from "../cache.js";
-import ChatSchema from "../MongoDB/schemas/ChatSchema.js";
+import ChatSchema from "../../mongoDb/schemas/ChatSchema.js";
 import mongoose from "mongoose";
 import { validateArray, validateNotEmpty, verifyInCache } from "./propertyValidation.js";
-import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../MongoDB/collectionAccess.js";
+import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../mongoDb/collectionAccess.js";
 
 const expirationTime = 2 * 60 * 1000;
 

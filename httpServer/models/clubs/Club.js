@@ -1,7 +1,7 @@
 import { validateArray, validateNotEmpty, validateObject, verifyInCache } from "../propertyValidation.js";
 import cache from "../../cache.js";
-import ClubSchema from "../../MongoDB/schemas/ClubSchema.js";
-import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../MongoDB/collectionAccess.js";
+import ClubSchema from "../../../mongoDb/schemas/ClubSchema.js";
+import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../../mongoDb/collectionAccess.js";
 import mongoose from "mongoose";
 import ClubDetails from "./ClubDetails.js";
 import Chat from "../Chat.js";

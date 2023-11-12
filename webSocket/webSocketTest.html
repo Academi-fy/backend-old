@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WebSocket Test</title>
+</head>
+<body>
+    <h1>
+        Nur ein Test
+    </h1>
+</body>
+</html>
+
+<script>
+
+    const ws = new WebSocket("ws://localhost:8080");
+
+    ws.addEventListener("open", () => {
+        console.log("Verbindung hergestellt");
+    });
+
+    ws.addEventListener("message", ({ data }) => {
+        console.log(data);
+    });
+
+</script>
+
+<style>
+    html {
+        background-color: #0c0c0c;
+        color: #eaeaea;
+    }
+</style>

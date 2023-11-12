@@ -1,7 +1,7 @@
 import { validateArray, validateNotEmpty, validateObject, verifyInCache } from "./propertyValidation.js";
 import cache from "../cache.js";
-import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../MongoDB/collectionAccess.js";
-import CourseSchema from "../MongoDB/schemas/CourseSchema.js";
+import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../mongoDb/collectionAccess.js";
+import CourseSchema from "../../mongoDb/schemas/CourseSchema.js";
 import mongoose from "mongoose";
 
 const expirationTime = 5 * 60 * 1000;

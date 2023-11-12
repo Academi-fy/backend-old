@@ -14,7 +14,7 @@ const MessageSchema = new Schema(
             type: ObjectId,
             ref: 'Chat'
         },
-        sender: {
+        author: {
             type: ObjectId,
             ref: 'User'
         },
@@ -23,19 +23,23 @@ const MessageSchema = new Schema(
             required: true,
             default: ""
         },
-        reactions: {
-            type: Object,
-            default: []
-        },
-        edited: {
-            isEdited: {
-                type: Boolean,
-                default: false
-            },
-            history: {
-                type: Array,
-                default: []
+        reactions: [
+            {
+                emoji: {
+                    type: Object,
+                    required: true
+                },
+                count: {
+                    type: Number,
+                    required: true,
+                    default: 0
+                },
             }
+        ],
+        edits: {
+            type: Array,
+            required: true,
+            default: []
         }
     },
     {
