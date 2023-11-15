@@ -1,5 +1,14 @@
+/**
+ * UserAccountSetting class
+ * This class represents the settings of a user account.
+ */
 class UserAccountSetting {
 
+    /**
+     * Constructs a new UserAccountSetting instance.
+     * @param {string} name - The name of the setting.
+     * @param {string} value - The value of the setting.
+     */
     constructor(
         name = "",
         value = ""

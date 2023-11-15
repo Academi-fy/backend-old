@@ -1,4 +1,5 @@
-Connect zum Server: 
+Connect zum Server:
+
 ```
 
 final channel = WebSocketChannel.connect(
@@ -8,6 +9,7 @@ final channel = WebSocketChannel.connect(
 ```
 
 Message Listen:
+
 ```
 
 StreamBuilder(
@@ -20,11 +22,13 @@ StreamBuilder(
 ```
 
 Senden von Nachrichten:
+
 ```
 channel.sink.add({});
 ```
 
 Wie eine Request aussieht:
+
 ```javascript
 
 const request = {

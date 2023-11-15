@@ -3,7 +3,6 @@ import mongoose from 'mongoose';
 const { Schema, Types: { ObjectId } } = mongoose;
 
 const SchoolSchema = new Schema(
-
     {
         id: {
             type: ObjectId,
@@ -68,7 +67,11 @@ const SchoolSchema = new Schema(
     {
         timestamps: true
     }
-
 );
 
+/**
+ * Exporting the School model
+ * @name School
+ * @type {mongoose.Model}
+ */
 export default mongoose.model("School", SchoolSchema);

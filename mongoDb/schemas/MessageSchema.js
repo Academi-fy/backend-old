@@ -3,7 +3,6 @@ import mongoose from 'mongoose';
 const { Schema, Types: { ObjectId } } = mongoose;
 
 const MessageSchema = new Schema(
-
     {
         id: {
             type: String,
@@ -45,7 +44,11 @@ const MessageSchema = new Schema(
     {
         timestamps: true
     }
-
 );
 
+/**
+ * Exporting the Message model
+ * @name Message
+ * @type {mongoose.Model}
+ */
 export default mongoose.model("Message", MessageSchema);

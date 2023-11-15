@@ -99,7 +99,7 @@ class User {
 
     }
 
-    static async getUser(userId) {
+    static async getUserById(userId) {
         return (await this.getUsers()).find(user => user.id === userId);
     }
 
@@ -109,7 +109,8 @@ class User {
 
         if (cacheResults) {
             return cacheResults;
-        } else return await this.updateUserCache();
+        }
+        else return await this.updateUserCache();
     }
 
     static async createUser(user) {
@@ -134,7 +135,7 @@ class User {
         await updateDocument(UserSchema, userId, updatedUser);
         cache.put('users', users, expirationTime);
 
-        if (!await this.verifyUserInCache(updatedUser)) throw new Error(`Failed to put user in cache:\n${ updatedUser }`);
+        if (!await this.verifyUserInCache(updatedUser)) throw new Error(`Failed to update user in cache:\n${ updatedUser }`);
 
         return updatedUser;
     }
@@ -147,6 +148,8 @@ class User {
         const users = await this.getUsers();
         users.splice(users.findIndex(user => user.id === userId), 1);
         cache.put('users', users, expirationTime);
+
+        if (await this.verifyUserInCache(deletedUser)) throw new Error(`Failed to delete user from cache:\n${ deletedUser }`);
 
         return true;
     }

@@ -3,7 +3,6 @@ import mongoose from 'mongoose';
 const { Schema, Types: { ObjectId } } = mongoose;
 
 const SubjectSchema = new Schema(
-
     {
         id: {
             type: ObjectId,
@@ -24,7 +23,11 @@ const SubjectSchema = new Schema(
     {
         timestamps: true
     }
-
 );
 
+/**
+ * Exporting the Subject model
+ * @name Subject
+ * @type {mongoose.Model}
+ */
 export default mongoose.model("Subject", SubjectSchema);

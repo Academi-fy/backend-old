@@ -3,7 +3,6 @@ import mongoose from 'mongoose';
 const { Schema, Types: { ObjectId } } = mongoose;
 
 const ClubSchema = new Schema(
-
     {
         id: {
             type: ObjectId,
@@ -71,7 +70,11 @@ const ClubSchema = new Schema(
     {
         timestamps: true
     }
-
 );
 
+/**
+ * Exporting the Club model
+ * @name Club
+ * @type {mongoose.Model}
+ */
 export default mongoose.model("Club", ClubSchema);

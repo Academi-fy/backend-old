@@ -5,20 +5,33 @@
     <title>WebSocket Test</title>
 </head>
 <body>
-    <h1>
-        Nur ein Test
-    </h1>
+<h1>
+    Nur ein Test
+</h1>
 </body>
 </html>
 
 <script>
 
+    /**
+     * Create a new WebSocket connection to the specified URL
+     * @type {WebSocket}
+     */
     const ws = new WebSocket("ws://localhost:8080");
 
+    /**
+     * Add an event listener for the 'open' event
+     * This event is emitted when the WebSocket connection is established
+     */
     ws.addEventListener("open", () => {
         console.log("Verbindung hergestellt");
     });
 
+    /**
+     * Add an event listener for the 'message' event
+     * This event is emitted when a message is received from the server
+     * The message data is logged to the console
+     */
     ws.addEventListener("message", ({ data }) => {
         console.log(data);
     });
@@ -26,8 +39,10 @@
 </script>
 
 <style>
+
     html {
         background-color: #0c0c0c;
         color: #eaeaea;
     }
+
 </style>

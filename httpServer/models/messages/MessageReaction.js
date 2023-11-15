@@ -2,20 +2,17 @@ import { validateNotEmpty, validateNumber } from "../propertyValidation.js";
 
 class MessageReaction {
 
+    /**
+     * Constructs a new MessageReaction instance.
+     * @param {string} emoji - The emoji used for the reaction.
+     * @param {number} count - The count of the reaction (default is 0).
+     */
     constructor(
         emoji,
         count = 0
     ) {
         this.emoji = emoji;
         this.count = count;
-    }
-
-    increment() {
-        this.count++;
-    }
-
-    decrement() {
-        this.count--;
     }
 
     get _emoji() {
@@ -34,6 +31,20 @@ class MessageReaction {
     set _count(value) {
         validateNumber("MessageReaction count", value);
         this.count = value;
+    }
+
+    /**
+     * Increments the count of the reaction by 1.
+     */
+    increment() {
+        this.count++;
+    }
+
+    /**
+     * Decrements the count of the reaction by 1.
+     */
+    decrement() {
+        this.count--;
     }
 
 }

@@ -1,5 +1,5 @@
 export async function createDocument(model, document) {
-    return await model.create(document);
+    return model.create(document);
 }
 
 export async function updateDocument(model, oldDocumentId, newDocument) {

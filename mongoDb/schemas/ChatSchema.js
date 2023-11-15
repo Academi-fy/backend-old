@@ -3,7 +3,6 @@ import mongoose from 'mongoose';
 const { Schema, Types: { ObjectId } } = mongoose;
 
 const ChatSchema = new Schema(
-
     {
         id: {
             type: ObjectId,
@@ -47,7 +46,11 @@ const ChatSchema = new Schema(
     {
         timestamps: true
     }
-
 );
 
+/**
+ * Exporting the Chat model
+ * @name Chat
+ * @type {mongoose.Model}
+ */
 export default mongoose.model("Chat", ChatSchema);

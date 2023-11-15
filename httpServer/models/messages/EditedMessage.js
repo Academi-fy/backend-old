@@ -1,7 +1,17 @@
-import { validateDate, validateNotEmpty } from "../propertyValidation.js";
+import { validateNotEmpty, validateNumber } from "../propertyValidation.js";
 
+/**
+ * EditedMessage class
+ * This class represents an edited message with its updated date, old content, and new content.
+ */
 class EditedMessage {
 
+    /**
+     * Constructs a new EditedMessage instance.
+     * @param {number} updatedDate - The date when the message was updated. Defaults to current date and time.
+     * @param {string} oldContent - The old content of the message. Defaults to an empty string.
+     * @param {string} newContent - The new content of the message. Defaults to an empty string.
+     */
     constructor(
         updatedDate = Date.now(),
         oldContent = "",
@@ -17,7 +27,7 @@ class EditedMessage {
     }
 
     set _updatedDate(value) {
-        validateDate("EditedMessage updated date", value);
+        validateNumber('EditedMessage updated date', value);
         this.updatedDate = value;
     }
 

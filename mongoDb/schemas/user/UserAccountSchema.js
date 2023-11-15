@@ -32,4 +32,9 @@ const UserAccountSchema = new Schema({
 
 });
 
+/**
+ * Exporting the UserAccount model
+ * @name UserAccount
+ * @type {mongoose.Model}
+ */
 export default mongoose.model("UserAccount", UserAccountSchema);

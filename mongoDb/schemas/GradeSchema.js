@@ -3,7 +3,6 @@ import mongoose from 'mongoose';
 const { Schema, Types: { ObjectId } } = mongoose;
 
 const GradeSchema = new Schema(
-
     {
         id: {
             type: ObjectId,
@@ -24,7 +23,11 @@ const GradeSchema = new Schema(
     {
         timestamps: true
     }
-
 );
 
+/**
+ * Exporting the Grade model
+ * @name Grade
+ * @type {mongoose.Model}
+ */
 export default mongoose.model("Grade", GradeSchema);

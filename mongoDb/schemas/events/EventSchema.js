@@ -3,7 +3,6 @@ import mongoose from 'mongoose';
 const { Schema, Types: { ObjectId } } = mongoose;
 
 const EventSchema = new Schema(
-
     {
         id: {
             type: ObjectId,
@@ -80,7 +79,11 @@ const EventSchema = new Schema(
     {
         timestamps: true,
     }
-
 );
 
-export default mongoose.model("EventTicket", EventSchema);
+/**
+ * Exporting the Event model
+ * @name Event
+ * @type {mongoose.Model}
+ */
+export default mongoose.model("Event", EventSchema);

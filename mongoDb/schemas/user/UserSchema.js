@@ -3,7 +3,6 @@ import mongoose from 'mongoose';
 const { Schema, Types: { ObjectId } } = mongoose;
 
 const UserSchema = new Schema(
-
     {
         id: {
             type: ObjectId,
@@ -43,7 +42,11 @@ const UserSchema = new Schema(
     {
         timestamps: true
     }
-
 );
 
+/**
+ * Exporting the User model
+ * @name User
+ * @type {mongoose.Model}
+ */
 export default mongoose.model("User", UserSchema);

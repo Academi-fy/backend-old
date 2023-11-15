@@ -4,10 +4,22 @@ import { createDocument, deleteDocument, getAllDocuments, updateDocument } from 
 import CourseSchema from "../../mongoDb/schemas/CourseSchema.js";
 import mongoose from "mongoose";
 
+// Define the cache expiration time in milliseconds
 const expirationTime = 5 * 60 * 1000;
 
+/**
+ * Class representing a Course.
+ */
 class Course {
 
+    /**
+     * Create a course.
+     * @param {Array} members - The members of the course.
+     * @param {Array} classes - The classes in the course.
+     * @param {Object} teacher - The teacher of the course.
+     * @param {Object} chat - The chat of the course.
+     * @param {Object} subject - The subject of the course.
+     */
     constructor(
         members = [],
         classes = [],
@@ -68,43 +80,64 @@ class Course {
         this.subject = value;
     }
 
+    /**
+     * Get all courses from cache or database.
+     * @return {Array} The courses.
+     */
     static async getCourses() {
 
         const cacheResults = cache.get('courses');
 
         if (cacheResults) {
             return cacheResults;
-        } else return await this.updateCourseCache();
+        }
+        else return this.updateCourseCache();
 
     }
 
-    static async getCourse(courseId) {
-        return (await this.getCourses()).find(course => course.id === courseId);
+    /**
+     * Get a course by its ID.
+     * @param {string} courseId - The ID of the course.
+     * @return {Object} The course.
+     */
+    static async getCourseById(courseId) {
+        return (this.getCourses()).find(course => course.id === courseId);
     }
 
+    /**
+     * Create a new course and add it to the database and cache.
+     * @param {Object} course - The course to create.
+     * @return {Object} The created course.
+     */
     static async createCourse(course) {
 
         course.id = new mongoose.Types.ObjectId();
-        const courses = await this.getCourses();
+        const courses = this.getCourses();
 
         const insertedCourse = await createDocument(CourseSchema, course);
         courses.push(insertedCourse);
         cache.put('courses', courses, expirationTime);
 
-        if (!await this.verifyCourseInCache(insertedCourse)) throw new Error(`Course could not be created:\n${ insertedCourse }`);
+        if (!this.verifyCourseInCache(insertedCourse)) throw new Error(`Course could not be created:\n${ insertedCourse }`);
 
         return insertedCourse;
     }
 
+    /**
+     * Update a course in the database and cache.
+     * @param {string} courseId - The ID of the course to update.
+     * @param {Object} updatedCourse - The updated course.
+     * @return {Object} The updated course.
+     */
     static async updateCourse(courseId, updatedCourse) {
 
-        const courses = await this.getCourses();
+        const courses = this.getCourses();
         courses.splice(courses.findIndex(course => course.id === courseId), 1, updatedCourse);
 
         await updateDocument(CourseSchema, courseId, updatedCourse);
         cache.put('courses', courses, expirationTime);
 
-        if (!await this.verifyCourseInCache(updatedCourse)) throw new Error(`Course could not be updated:\n${ updatedCourse }`);
+        if (!this.verifyCourseInCache(updatedCourse)) throw new Error(`Course could not be updated:\n${ updatedCourse }`);
 
         return updatedCourse;
     }
@@ -114,19 +147,28 @@ class Course {
         const deletedCourse = await deleteDocument(CourseSchema, courseId);
         if (!deletedCourse) throw new Error(`Course could not be deleted:\n${ courseId }`);
 
-        const courses = await this.getCourses();
+        const courses = this.getCourses();
         courses.splice(courses.findIndex(course => course.id === courseId), 1);
         cache.put('courses', courses, expirationTime);
 
-        if (await this.verifyCourseInCache(deletedCourse)) throw new Error(`Course could not be deleted from cache:\n${ deletedCourse }`);
+        if (this.verifyCourseInCache(deletedCourse)) throw new Error(`Course could not be deleted from cache:\n${ deletedCourse }`);
 
         return deletedCourse;
     }
 
+    /**
+     * Verify if a course is in the cache.
+     * @param {Object} course - The course to verify.
+     * @return {boolean} True if the course is in the cache, false otherwise.
+     */
     static async verifyCourseInCache(course) {
-        return await verifyInCache(await this.getCourses(), course, this.updateCourseCache);
+        return await verifyInCache(this.getCourses(), course, this.updateCourseCache);
     }
 
+    /**
+     * Update the course cache from the database.
+     * @return {Array} The updated courses.
+     */
     static async updateCourseCache() {
 
         cache.get("courses").clear();
