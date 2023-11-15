@@ -1,5 +1,5 @@
 /**
- * This function handles different types of events that can occur in a WebSocket connection.
+ * @description This function handles different types of events that can occur in a WebSocket connection.
  * @param {Object} ws - The WebSocket connection object.
  * @param {Object} data - The data received from the WebSocket connection.
  */
