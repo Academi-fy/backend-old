@@ -3,7 +3,7 @@ import { validateArray, validateNotEmpty } from "../propertyValidation.js";
 class ClubDetails {
 
     /**
-     * Create a club details.
+     * @description Create a club details.
      * @param {string} coverImage - The cover image of the club.
      * @param {string} description - The description of the club.
      * @param {string} location - The location of the club.

@@ -115,7 +115,7 @@ class Chat {
     }
 
     /**
-     * Update the chat cache.
+     * @description Update the chat cache.
      * @return {Array} The updated chats.
      */
     static async updateChatCache() {
@@ -128,7 +128,7 @@ class Chat {
     }
 
     /**
-     * Get all chats.
+     * @description Get all chats.
      * @return {Array} The chats.
      */
     static async getChats() {
@@ -138,28 +138,28 @@ class Chat {
         if (cacheResults) {
             return cacheResults;
         }
-        else return await this.updateChatCache();
+        else return this.updateChatCache();
 
     }
 
     /**
-     * Get a chat by id.
+     * @description Get a chat by id.
      * @param {string} chatId - The id of the chat.
      * @return {Object} The chat.
      */
     static async getChatById(chatId) {
-        return (await this.getChats()).find(chat => chat.id === chatId);
+        return (this.getChats()).find(chat => chat.id === chatId);
     }
 
     /**
-     * Create a chat.
+     * @description Create a chat.
      * @param {Object} chat - The chat to create.
      * @return {Object} The created chat.
      */
     static async createChat(chat) {
 
         chat.id = new mongoose.Types.ObjectId();
-        const chats = await this.getChats();
+        const chats = this.getChats();
 
         const insertedChat = await createDocument(ChatSchema, chat);
         chats.push(insertedChat);
@@ -171,14 +171,14 @@ class Chat {
     }
 
     /**
-     * Update a chat.
+     * @description Update a chat.
      * @param {string} chatId - The id of the chat to update.
      * @param {Object} updatedChat - The updated chat.
      * @return {Object} The updated chat.
      */
     static async updateChat(chatId, updatedChat) {
 
-        const chats = await this.getChats();
+        const chats = this.getChats();
         chats.splice(chats.findIndex(chat => chat.id === chatId), 1, updatedChat);
 
         await updateDocument(ChatSchema, chatId, updatedChat);
@@ -190,7 +190,7 @@ class Chat {
     }
 
     /**
-     * Delete a chat.
+     * @description Delete a chat.
      * @param {string} chatId - The id of the chat to delete.
      * @return {boolean} The status of the deletion.
      */
@@ -199,7 +199,7 @@ class Chat {
         const deletedChat = await deleteDocument(ChatSchema, chatId);
         if (!deletedChat) throw new Error(`Failed to delete chat with id ${ chatId }`);
 
-        const chats = await this.getChats();
+        const chats = this.getChats();
         chats.splice(chats.findIndex(chat => chat.id === chatId), 1);
         cache.put('chats', chats, expirationTime);
 
@@ -209,12 +209,12 @@ class Chat {
     }
 
     /**
-     * Verify a chat in cache.
+     * @description Verify a chat in cache.
      * @param {Object} chat - The chat to verify.
      * @return {boolean} The status of the verification.
      */
     static async verifyChatInCache(chat) {
-        return await verifyInCache(await this.getChats(), chat, this.updateChatCache);
+        return verifyInCache(this.getChats(), chat, this.updateChatCache);
     }
 
 }

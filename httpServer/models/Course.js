@@ -13,7 +13,7 @@ const expirationTime = 5 * 60 * 1000;
 class Course {
 
     /**
-     * Create a course.
+     * @description Create a course.
      * @param {Array} members - The members of the course.
      * @param {Array} classes - The classes in the course.
      * @param {Object} teacher - The teacher of the course.
@@ -81,7 +81,7 @@ class Course {
     }
 
     /**
-     * Get all courses from cache or database.
+     * @description Get all courses from cache or database.
      * @return {Array} The courses.
      */
     static async getCourses() {
@@ -96,7 +96,7 @@ class Course {
     }
 
     /**
-     * Get a course by its ID.
+     * @description Get a course by its ID.
      * @param {string} courseId - The ID of the course.
      * @return {Object} The course.
      */
@@ -105,7 +105,7 @@ class Course {
     }
 
     /**
-     * Create a new course and add it to the database and cache.
+     * @description Create a new course and add it to the database and cache.
      * @param {Object} course - The course to create.
      * @return {Object} The created course.
      */
@@ -124,7 +124,7 @@ class Course {
     }
 
     /**
-     * Update a course in the database and cache.
+     * @description Update a course in the database and cache.
      * @param {string} courseId - The ID of the course to update.
      * @param {Object} updatedCourse - The updated course.
      * @return {Object} The updated course.
@@ -142,6 +142,11 @@ class Course {
         return updatedCourse;
     }
 
+    /**
+     * @description Delete a course in the database and cache.
+     * @param {string} courseId - The ID of the course to update.
+     * @return {boolean} State of the deletion.
+     */
     static async deleteCourse(courseId) {
 
         const deletedCourse = await deleteDocument(CourseSchema, courseId);
@@ -153,11 +158,11 @@ class Course {
 
         if (this.verifyCourseInCache(deletedCourse)) throw new Error(`Course could not be deleted from cache:\n${ deletedCourse }`);
 
-        return deletedCourse;
+        return true;
     }
 
     /**
-     * Verify if a course is in the cache.
+     * @description Verify if a course is in the cache.
      * @param {Object} course - The course to verify.
      * @return {boolean} True if the course is in the cache, false otherwise.
      */

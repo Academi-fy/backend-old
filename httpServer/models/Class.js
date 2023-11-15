@@ -33,97 +33,53 @@ class Class {
         this.specified_grade = specified_grade;
     }
 
-    // Getters and setters for class properties with validation
-
-    /**
-     * Get the class id.
-     * @return {string} The class id.
-     */
     get _id() {
         return this.id;
     }
 
-    /**
-     * Set the class id.
-     * @param {string} value - The class id.
-     */
     set _id(value) {
         validateNotEmpty('Class id', value);
         this.id = value;
     }
 
-    /**
-     * Get the class grade.
-     * @return {Object} The class grade.
-     */
     get _grade() {
         return this.grade;
     }
 
-    /**
-     * Set the class grade.
-     * @param {Object} value - The class grade.
-     */
     set _grade(value) {
         validateObject('Class grade', value);
         this.grade = value;
     }
 
-    /**
-     * Get the class courses.
-     * @return {Array} The class courses.
-     */
     get _courses() {
         return this.courses;
     }
 
-    /**
-     * Set the class courses.
-     * @param {Array} value - The class courses.
-     */
     set _courses(value) {
         validateArray('Class courses', value);
         this.courses = value;
     }
 
-    /**
-     * Get the class members.
-     * @return {Array} The class members.
-     */
     get _members() {
         return this.members;
     }
 
-    /**
-     * Set the class members.
-     * @param {Array} value - The class members.
-     */
     set _members(value) {
         validateArray('Class members', value);
         this.members = value;
     }
 
-    /**
-     * Get the class specified grade.
-     * @return {string} The class specified grade.
-     */
     get _specified_grade() {
         return this.specified_grade;
     }
 
-    /**
-     * Set the class specified grade.
-     * @param {string} value - The class specified grade.
-     */
     set _specified_grade(value) {
         validateNotEmpty('Class specified grade', value);
         this.specified_grade = value;
     }
 
-    // Static methods for class operations
-
     /**
-     * Update the class cache.
+     * @description Update the class cache.
      * @return {Array} The updated classes.
      */
     static async updateClassCache() {
@@ -136,7 +92,7 @@ class Class {
     }
 
     /**
-     * Get all classes.
+     * @description Get all classes.
      * @return {Array} The classes.
      */
     static async getClasses() {
@@ -151,7 +107,7 @@ class Class {
     }
 
     /**
-     * Get a class by id.
+     * @description Get a class by id.
      * @param {string} classId - The id of the class.
      * @return {Object} The class.
      */
@@ -160,7 +116,7 @@ class Class {
     }
 
     /**
-     * Create a class.
+     * @description Create a class.
      * @param {Object} class_ - The class to create.
      * @return {Object} The created class.
      */
@@ -179,7 +135,7 @@ class Class {
     }
 
     /**
-     * Update a class.
+     * @description Update a class.
      * @param {string} classId - The id of the class to update.
      * @param {Object} updatedClass - The updated class.
      * @return {Object} The updated class.
@@ -198,7 +154,7 @@ class Class {
     }
 
     /**
-     * Delete a class.
+     * @description Delete a class.
      * @param {string} classId - The id of the class to delete.
      * @return {boolean} The status of the deletion.
      */
@@ -216,7 +172,7 @@ class Class {
     }
 
     /**
-     * Verify a class in cache.
+     * @description Verify a class in cache.
      * @param {Object} class_ - The class to verify.
      * @return {boolean} The status of the verification.
      */

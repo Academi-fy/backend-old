@@ -15,7 +15,7 @@ const expirationTime = 5 * 60 * 1000;
 class Club {
 
     /**
-     * Create a club.
+     * @description Create a club.
      * @param {string} name - The name of the club.
      * @param {ClubDetails} details - The details of the club.
      * @param {Array} leaders - The leaders of the club.
@@ -89,7 +89,7 @@ class Club {
     }
 
     /**
-     * Update the club cache.
+     * @description Update the club cache.
      * @return {Array} The updated clubs.
      */
     static async updateClubCache() {
@@ -102,7 +102,7 @@ class Club {
     }
 
     /**
-     * Get all clubs.
+     * @description Get all clubs.
      * @return {Array} The clubs.
      */
     static async getClubs() {
@@ -117,7 +117,7 @@ class Club {
     }
 
     /**
-     * Get a club by ID.
+     * @description Get a club by ID.
      * @param {string} clubId - The ID of the club.
      * @return {Object} The club.
      */
@@ -126,7 +126,7 @@ class Club {
     }
 
     /**
-     * Create a club.
+     * @description Create a club.
      * @param {Object} club - The club to create.
      * @return {Object} The created club.
      */
@@ -145,7 +145,7 @@ class Club {
     }
 
     /**
-     * Update a club.
+     * @description Update a club.
      * @param {string} clubId - The ID of the club to update.
      * @param {Object} updatedClub - The updated club.
      * @return {Object} The updated club.
@@ -164,7 +164,7 @@ class Club {
     }
 
     /**
-     * Delete a club.
+     * @description Delete a club.
      * @param {string} clubId - The ID of the club to delete.
      * @return {Object} The deleted club.
      */
@@ -183,7 +183,7 @@ class Club {
     }
 
     /**
-     * Verify a club in cache.
+     * @description Verify a club in cache.
      * @param {Object} testClub - The club to verify.
      * @return {boolean} The result of the verification.
      */

@@ -1,5 +1,5 @@
 /**
- * Validates that the provided value is not empty.
+ * @description Validates that the provided value is not empty.
  * @param {string} propertyName - The name of the property.
  * @param {any} value - The value of the property.
  * @throws {Error} If the value is empty.
@@ -9,7 +9,7 @@ export function validateNotEmpty(propertyName, value) {
 }
 
 /**
- * Validates that the provided value is a number.
+ * @description Validates that the provided value is a number.
  * @param {string} propertyName - The name of the property.
  * @param {any} value - The value of the property.
  * @throws {Error} If the value is not a number.
@@ -19,7 +19,7 @@ export function validateNumber(propertyName, value) {
 }
 
 /**
- * Validates that the provided value is a string.
+ * @description Validates that the provided value is a string.
  * @param {string} propertyName - The name of the property.
  * @param {any} value - The value of the property.
  * @throws {Error} If the value is not a string.
@@ -29,7 +29,7 @@ export function validateString(propertyName, value) {
 }
 
 /**
- * Validates that the provided value is an array.
+ * @description Validates that the provided value is an array.
  * @param {string} propertyName - The name of the property.
  * @param {any} value - The value of the property.
  * @throws {Error} If the value is not an array.
@@ -39,7 +39,7 @@ export function validateArray(propertyName, value) {
 }
 
 /**
- * Validates that the provided value is an object.
+ * @description Validates that the provided value is an object.
  * @param {string} propertyName - The name of the property.
  * @param {any} value - The value of the property.
  * @throws {Error} If the value is not an object.

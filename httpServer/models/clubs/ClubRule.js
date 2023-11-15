@@ -3,7 +3,7 @@ import { validateNotEmpty } from "../propertyValidation.js";
 class ClubRule {
 
     /**
-     * Create a club rule.
+     * @description Create a club rule.
      * @param {string} emoji - The emoji representing the club rule.
      * @param {string} description - The description of the club rule.
      */
