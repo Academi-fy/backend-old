@@ -97,19 +97,32 @@ export default {
     }),
 
     /**
-     * @description The event that is fired when a user votes in a poll.
+     * @description The event that is fired when a user adds a vote in a poll.
      * @param {string} sender - The sender of the message.
      * @param {Object} data - The data of the message.
      * @param {string} data.messageId - The unique identifier of the message.
      * @param {string} data.answerId - The unique identifier of the answer.
-     * @param {boolean} data.addVote - Whether the user is adding or removing a vote.
      */
-    "POLL_VOTE": yup.object().shape({
+    "POLL_VOTE_ADD": yup.object().shape({
         sender: yup.string().required(),
         data: yup.object().shape({
             messageId: yup.string().required(),
-            answerId: yup.string().required(),
-            addVote: yup.boolean().required()
+            answerId: yup.string().required()
+        }).required()
+    }),
+
+    /**
+     * @description The event that is fired when a user removes a vote in a poll.
+     * @param {string} sender - The sender of the message.
+     * @param {Object} data - The data of the message.
+     * @param {string} data.messageId - The unique identifier of the message.
+     * @param {string} data.answerId - The unique identifier of the answer.
+     */
+    "POLL_VOTE_REMOVE": yup.object().shape({
+        sender: yup.string().required(),
+        data: yup.object().shape({
+            messageId: yup.string().required(),
+            answerId: yup.string().required()
         }).required()
     }),
 
