@@ -14,12 +14,12 @@ class Chat {
 
     /**
      * Create a chat.
-     * @param {string} type - The type of the chat.
+     * @param {String} type - The type of the chat.
      * @param {Array} targets - The targets of the chat.
      * @param {Array} courses - The courses related to the chat.
      * @param {Array} clubs - The clubs related to the chat.
-     * @param {string} name - The name of the chat.
-     * @param {string} avatar - The avatar of the chat.
+     * @param {String} name - The name of the chat.
+     * @param {String} avatar - The avatar of the chat.
      * @param {Array} messages - The messages in the chat.
      */
     constructor(
@@ -144,7 +144,7 @@ class Chat {
 
     /**
      * @description Get a chat by id.
-     * @param {string} chatId - The id of the chat.
+     * @param {String} chatId - The id of the chat.
      * @return {Object} The chat.
      */
     static async getChatById(chatId) {
@@ -172,7 +172,7 @@ class Chat {
 
     /**
      * @description Update a chat.
-     * @param {string} chatId - The id of the chat to update.
+     * @param {String} chatId - The id of the chat to update.
      * @param {Object} updatedChat - The updated chat.
      * @return {Object} The updated chat.
      */
@@ -191,8 +191,8 @@ class Chat {
 
     /**
      * @description Delete a chat.
-     * @param {string} chatId - The id of the chat to delete.
-     * @return {boolean} The status of the deletion.
+     * @param {String} chatId - The id of the chat to delete.
+     * @return {Boolean} The status of the deletion.
      */
     static async deleteChat(chatId) {
 
@@ -211,7 +211,7 @@ class Chat {
     /**
      * @description Verify a chat in cache.
      * @param {Object} chat - The chat to verify.
-     * @return {boolean} The status of the verification.
+     * @return {Boolean} The status of the verification.
      */
     static async verifyChatInCache(chat) {
         return verifyInCache(this.getChats(), chat, this.updateChatCache);

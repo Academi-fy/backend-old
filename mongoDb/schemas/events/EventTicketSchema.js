@@ -4,11 +4,7 @@ const { Schema, Types: { ObjectId } } = mongoose;
 
 const EventTicketSchema = new Schema(
     {
-        id: {
-            type: ObjectId,
-            required: true,
-            unique: true
-        },
+
         event: {
             type: ObjectId,
             ref: 'Event'

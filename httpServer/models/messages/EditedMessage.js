@@ -8,14 +8,14 @@ class EditedMessage {
 
     /**
      * Constructs a new EditedMessage instance.
-     * @param {number} updatedDate - The date when the message was updated. Defaults to current date and time.
-     * @param {string} oldContent - The old content of the message. Defaults to an empty string.
-     * @param {string} newContent - The new content of the message. Defaults to an empty string.
+     * @param {Number} updatedDate - The date when the message was updated. Defaults to current date and time.
+     * @param {Object<FileContent | ImageContent | PollContent | TextContent | VideoContent>} oldContent - The old content of the message.
+     * @param {Object<FileContent | ImageContent | PollContent | TextContent | VideoContent>} newContent - The new content of the message.
      */
     constructor(
         updatedDate = Date.now(),
-        oldContent = "",
-        newContent = ""
+        oldContent = {},
+        newContent = {}
     ) {
         this.updatedDate = updatedDate;
         this.oldContent = oldContent;

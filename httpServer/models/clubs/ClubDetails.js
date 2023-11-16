@@ -4,13 +4,13 @@ class ClubDetails {
 
     /**
      * @description Create a club details.
-     * @param {string} coverImage - The cover image of the club.
-     * @param {string} description - The description of the club.
-     * @param {string} location - The location of the club.
-     * @param {string} meetingTime - The meeting time of the club.
-     * @param {string} meetingDay - The meeting day of the club.
-     * @param {Array} requirements - The requirements of the club.
-     * @param {Array} events - The events of the club.
+     * @param {String} coverImage - The cover image of the club.
+     * @param {String} description - The description of the club.
+     * @param {String} location - The location of the club.
+     * @param {String} meetingTime - The meeting time of the club.
+     * @param {String} meetingDay - The meeting day of the club.
+     * @param {Array<Requirement>} requirements - The requirements of the club.
+     * @param {Array<Event>} events - The events of the club.
      */
     constructor(
         coverImage = "", //TODO getters and setters

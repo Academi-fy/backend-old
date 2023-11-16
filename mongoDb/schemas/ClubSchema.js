@@ -4,11 +4,6 @@ const { Schema, Types: { ObjectId } } = mongoose;
 
 const ClubSchema = new Schema(
     {
-        id: {
-            type: ObjectId,
-            required: true,
-            unique: true
-        },
         name: {
             type: String,
             required: true

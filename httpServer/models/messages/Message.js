@@ -14,12 +14,12 @@ class Message {
 
     /**
      * Create a message.
-     * @param {string} chat - The chat that the message belongs to.
-     * @param {string} author - The author of the message.
-     * @param {Array} content - The content of the message.
-     * @param {Array} reactions - The reactions to the message.
-     * @param {Array} edits - The edits made to the message.
-     * @param {number} date - The date the message was created.
+     * @param {String} chat - The id of the chat that the message belongs to.
+     * @param {String} author - The id of the author of the message.
+     * @param {Array<Object<FileContent | ImageContent | PollContent | TextContent | VideoContent>>} content - The content of the message.
+     * @param {Array<Reaction>} reactions - The reactions to the message.
+     * @param {Array<EditedMessage>} edits - The edits made to the message.
+     * @param {Number} date - The date the message was created.
      */
     constructor(
         chat = "",
@@ -36,8 +36,6 @@ class Message {
         this.edits = edits;
         this.date = date;
     }
-
-    // Getters and setters for the properties of the Message class
 
     get _chat() {
         return this.chat;
@@ -95,7 +93,7 @@ class Message {
 
     /**
      * Update the cache of messages.
-     * @return {Array} The updated list of messages.
+     * @return {Array<Message>} The updated list of messages.
      */
     static async updateMessageCache() {
 
@@ -108,7 +106,7 @@ class Message {
 
     /**
      * Get all messages.
-     * @return {Array} The list of messages.
+     * @return {Array<Message>} The list of messages.
      */
     static async getMessages() {
 
@@ -123,8 +121,8 @@ class Message {
 
     /**
      * Get a message by its ID.
-     * @param {string} id - The ID of the message.
-     * @return {Object} The message object.
+     * @param {String} id - The ID of the message.
+     * @return {Message} The message object.
      */
     static async getMessageById(id) {
         return (this.getMessages()).find(message => message.id === id);
@@ -132,12 +130,12 @@ class Message {
 
     /**
      * Create a new message.
-     * @param {Object} message - The message object.
-     * @return {Object} The created message object.
+     * @param {Message} message - The message object.
+     * @return {Message} The created message object.
      */
     static async createMessage(message) {
 
-        message.id = new mongoose.Types.ObjectId();
+        message.id = new mongoose.Types.ObjectId().toString();
         const messages = this.getMessages();
 
         const insertedMessage = await createDocument(MessageSchema, message);
@@ -152,9 +150,9 @@ class Message {
 
     /**
      * Update a message.
-     * @param {string} messageId - The ID of the message to update.
-     * @param {Object} updatedMessage - The updated message object.
-     * @return {Object} The updated message object.
+     * @param {String} messageId - The ID of the message to update.
+     * @param {Message} updatedMessage - The updated message object.
+     * @return {Message} The updated message object.
      */
     static async updateMessages(messageId, updatedMessage) {
 
@@ -171,8 +169,8 @@ class Message {
 
     /**
      * Delete a message.
-     * @param {string} messageId - The ID of the message to delete.
-     * @return {boolean} The status of the deletion.
+     * @param {String} messageId - The ID of the message to delete.
+     * @return {Boolean} The status of the deletion.
      */
     static async deleteMessage(messageId) {
 
@@ -190,11 +188,11 @@ class Message {
 
     /**
      * Verify if a message is in the cache.
-     * @param {string} testChat - The chat to which the message belongs.
-     * @return {boolean} True if the message is in the cache, false otherwise.
+     * @param {Chat} testChat - The chat to which the message belongs.
+     * @return {Boolean} True if the message is in the cache, false otherwise.
      */
     static async verifyMessageInCache(testChat) {
-        return await verifyInCache(this.getMessages(), testChat, this.updateMessageCache());
+        return verifyInCache(this.getMessages(), testChat, this.updateMessageCache());
     }
 
 }

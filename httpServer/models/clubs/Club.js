@@ -16,10 +16,10 @@ class Club {
 
     /**
      * @description Create a club.
-     * @param {string} name - The name of the club.
+     * @param {String} name - The name of the club.
      * @param {ClubDetails} details - The details of the club.
-     * @param {Array} leaders - The leaders of the club.
-     * @param {Array} members - The members of the club.
+     * @param {Array<User>} leaders - The leaders of the club.
+     * @param {Array<User>} members - The members of the club.
      * @param {Chat} chat - The chat of the club.
      */
     constructor(
@@ -90,7 +90,7 @@ class Club {
 
     /**
      * @description Update the club cache.
-     * @return {Array} The updated clubs.
+     * @return {Array<Club>} The updated clubs.
      */
     static async updateClubCache() {
 
@@ -103,7 +103,7 @@ class Club {
 
     /**
      * @description Get all clubs.
-     * @return {Array} The clubs.
+     * @return {Array<Club>} The clubs.
      */
     static async getClubs() {
 
@@ -112,28 +112,28 @@ class Club {
         if (cacheResults) {
             return cacheResults;
         }
-        else return await this.updateClubCache();
+        else return this.updateClubCache();
 
     }
 
     /**
      * @description Get a club by ID.
-     * @param {string} clubId - The ID of the club.
-     * @return {Object} The club.
+     * @param {String} clubId - The ID of the club.
+     * @return {Club} The club.
      */
     static async getClubById(clubId) {
-        return (await this.getClubs()).find(club => club.id === clubId);
+        return (this.getClubs()).find(club => club.id === clubId);
     }
 
     /**
      * @description Create a club.
-     * @param {Object} club - The club to create.
-     * @return {Object} The created club.
+     * @param {Club} club - The club to create.
+     * @return {Club} The created club.
      */
     static async createClub(club) {
 
         club.id = new mongoose.Types.ObjectId();
-        const clubs = await this.getClubs();
+        const clubs = this.getClubs();
 
         const insertedClub = await createDocument(ClubSchema, club);
         clubs.push(insertedClub);
@@ -146,13 +146,13 @@ class Club {
 
     /**
      * @description Update a club.
-     * @param {string} clubId - The ID of the club to update.
-     * @param {Object} updatedClub - The updated club.
-     * @return {Object} The updated club.
+     * @param {String} clubId - The ID of the club to update.
+     * @param {Club} updatedClub - The updated club.
+     * @return {Club} The updated club.
      */
     static async updateClub(clubId, updatedClub) {
 
-        const clubs = await this.getClubs();
+        const clubs = this.getClubs();
         clubs.splice(clubs.findIndex(club => club.id === clubId), 1, updatedClub);
 
         await updateDocument(ClubSchema, clubId, updatedClub);
@@ -165,30 +165,30 @@ class Club {
 
     /**
      * @description Delete a club.
-     * @param {string} clubId - The ID of the club to delete.
-     * @return {Object} The deleted club.
+     * @param {String} clubId - The ID of the club to delete.
+     * @return {Boolean} The state of the deletion.
      */
     static async deleteClub(clubId) {
 
         const deletedCourse = await deleteDocument(ClubSchema, clubId);
         if (!deletedCourse) throw new Error(`Failed to delete club: ${ clubId }`);
 
-        const clubs = await this.getClubs();
+        const clubs = this.getClubs();
         clubs.splice(clubs.findIndex(club => club.id === clubId), 1);
         cache.put('clubs', clubs, expirationTime);
 
         if (this.verifyClubInCache(deletedCourse)) throw new Error(`Failed to delete club from cache:\n${ clubId }`);
 
-        return deletedCourse;
+        return true;
     }
 
     /**
      * @description Verify a club in cache.
      * @param {Object} testClub - The club to verify.
-     * @return {boolean} The result of the verification.
+     * @return {Boolean} The result of the verification.
      */
     static async verifyClubInCache(testClub) {
-        return verifyInCache(await this.getClubs(), testClub, this.updateClubCache);
+        return verifyInCache(this.getClubs(), testClub, this.updateClubCache);
     }
 
 }

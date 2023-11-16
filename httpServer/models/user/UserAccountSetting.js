@@ -6,8 +6,8 @@ class UserAccountSetting {
 
     /**
      * @description Constructs a new UserAccountSetting instance.
-     * @param {string} name - The name of the setting.
-     * @param {string} value - The value of the setting.
+     * @param {String} name - The name of the setting.
+     * @param {String} value - The value of the setting.
      */
     constructor(
         name = "",

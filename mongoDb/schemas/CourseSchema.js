@@ -4,11 +4,7 @@ const { Schema, Types: { ObjectId } } = mongoose;
 
 const CourseSchema = new Schema(
     {
-        id: {
-            type: ObjectId,
-            required: true,
-            unique: true
-        },
+
         members: [
             {
                 type: ObjectId,

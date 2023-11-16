@@ -4,8 +4,8 @@ class ClubRule {
 
     /**
      * @description Create a club rule.
-     * @param {string} emoji - The emoji representing the club rule.
-     * @param {string} description - The description of the club rule.
+     * @param {String} emoji - The emoji representing the club rule.
+     * @param {String} description - The description of the club rule.
      */
     constructor(
         emoji = "",

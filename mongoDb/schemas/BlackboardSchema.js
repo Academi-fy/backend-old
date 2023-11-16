@@ -4,11 +4,7 @@ const { Schema, Types: { ObjectId } } = mongoose;
 
 const BlackboardSchema = new Schema(
     {
-        id: {
-            type: ObjectId,
-            required: true,
-            unique: true
-        },
+
         title: {
             type: String,
             required: true

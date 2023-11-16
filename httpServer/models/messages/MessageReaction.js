@@ -4,8 +4,8 @@ class MessageReaction {
 
     /**
      * Constructs a new MessageReaction instance.
-     * @param {string} emoji - The emoji used for the reaction.
-     * @param {number} count - The count of the reaction (default is 0).
+     * @param {String} emoji - The emoji used for the reaction.
+     * @param {Number} count - The count of the reaction (default is 0).
      */
     constructor(
         emoji,

@@ -16,7 +16,7 @@ export default {
 
     /**
      * @description The event that is fired when a new message is sent.
-     * @param {string} sender - The sender of the message.
+     * @param {String} sender - The sender of the message.
      * @param {Object} data - The data of the message.
      */
     "MESSAGE_SEND": yup.object().shape({
@@ -26,10 +26,10 @@ export default {
 
     /**
      * @description The event that is fired when a message is edited.
-     * @param {string} sender - The sender of the message.
+     * @param {String} sender - The sender of the message.
      * @param {Object} data - The data of the message.
-     * @param {string} data.oldMessageId - The unique identifier of the message.
-     * @param {string} data.newMessage - The new message.
+     * @param {String} data.oldMessageId - The unique identifier of the message.
+     * @param {String} data.newMessage - The new message.
      */
     "MESSAGE_EDIT": yup.object().shape({
         sender: yup.string().required(),
@@ -41,10 +41,10 @@ export default {
 
     /**
      * @description The event that is fired when a message is deleted.
-     * @param {string} sender - The sender of the message.
+     * @param {String} sender - The sender of the message.
      * @param {Object} data - The data of the message.
-     * @param {string} data.messageId - The unique identifier of the message.
-     * @param {string} data.emoji - The emoji of the reaction.
+     * @param {String} data.messageId - The unique identifier of the message.
+     * @param {String} data.emoji - The emoji of the reaction.
      */
     "MESSAGE_DELETE": yup.object().shape({
         sender: yup.string().required(),
@@ -55,10 +55,10 @@ export default {
 
     /**
      * @description The event that is fired when a reaction is added to a message.
-     * @param {string} sender - The sender of the message.
+     * @param {String} sender - The sender of the message.
      * @param {Object} data - The data of the message.
-     * @param {string} data.messageId - The unique identifier of the message.
-     * @param {string} data.emoji - The emoji of the reaction.
+     * @param {String} data.messageId - The unique identifier of the message.
+     * @param {String} data.emoji - The emoji of the reaction.
      */
     "MESSAGE_REACTION_ADD": yup.object().shape({
         sender: yup.string().required(),
@@ -70,10 +70,10 @@ export default {
 
     /**
      * @description The event that is fired when a reaction is removed from a message.
-     * @param {string} sender - The sender of the message.
+     * @param {String} sender - The sender of the message.
      * @param {Object} data - The data of the message.
-     * @param {string} data.messageId - The unique identifier of the message.
-     * @param {string} data.emoji - The emoji of the reaction.
+     * @param {String} data.messageId - The unique identifier of the message.
+     * @param {String} data.emoji - The emoji of the reaction.
      */
     "MESSAGE_REACTION_REMOVE": yup.object().shape({
         sender: yup.string().required(),
@@ -85,7 +85,7 @@ export default {
 
     /**
      * @description The event that is fired when a user starts or stops typing.
-     * @param {string} sender - The sender of the message.
+     * @param {String} sender - The sender of the message.
      * @param {Object} data - The data of the message.
      * @param {boolean} data.isTyping - Whether the sender is typing or not.
      */
@@ -98,10 +98,10 @@ export default {
 
     /**
      * @description The event that is fired when a user adds a vote in a poll.
-     * @param {string} sender - The sender of the message.
+     * @param {String} sender - The sender of the message.
      * @param {Object} data - The data of the message.
-     * @param {string} data.messageId - The unique identifier of the message.
-     * @param {string} data.answerId - The unique identifier of the answer.
+     * @param {String} data.messageId - The unique identifier of the message.
+     * @param {String} data.answerId - The unique identifier of the answer.
      */
     "POLL_VOTE_ADD": yup.object().shape({
         sender: yup.string().required(),
@@ -113,10 +113,10 @@ export default {
 
     /**
      * @description The event that is fired when a user removes a vote in a poll.
-     * @param {string} sender - The sender of the message.
+     * @param {String} sender - The sender of the message.
      * @param {Object} data - The data of the message.
-     * @param {string} data.messageId - The unique identifier of the message.
-     * @param {string} data.answerId - The unique identifier of the answer.
+     * @param {String} data.messageId - The unique identifier of the message.
+     * @param {String} data.answerId - The unique identifier of the answer.
      */
     "POLL_VOTE_REMOVE": yup.object().shape({
         sender: yup.string().required(),
@@ -130,8 +130,8 @@ export default {
      * @description The event that is fired when an error occurs.
      * @param {Object} sender - The sender of the message.
      * @param {Object} error - The error of the message.
-     * @param {number} error.errorCode - The error code of the error.
-     * @param {string} error.errorMessage - The error message of the error.
+     * @param {Number} error.errorCode - The error code of the error.
+     * @param {String} error.errorMessage - The error message of the error.
      */
     "ERROR": yup.object().shape({
         sender: yup.string().required(),

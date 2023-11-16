@@ -1,4 +1,4 @@
-import UserSchema from "../../mongoDb/schemas/user/UserSchema.js";
+import UserSchema from "../../../mongoDb/schemas/user/UserSchema.js";
 import cache from "../../cache.js";
 import mongoose from "mongoose";
 import { validateArray, validateNotEmpty, verifyInCache } from "../propertyValidation.js";
@@ -8,6 +8,15 @@ const expirationTime = 3 * 60 * 1000;
 
 class User {
 
+    /**
+     * User constructor
+     * @param {String} first_name - The first name of the user
+     * @param {String} last_name - The last name of the user
+     * @param {String} avatar - The avatar URL of the user
+     * @param {String} type - The type of the user
+     * @param {Array} classes - The classes of the user
+     * @param {Array} extra_courses - The extra courses of the user
+     */
     constructor(
         first_name = 'Vorname',
         last_name = 'Nachname',
@@ -90,6 +99,10 @@ class User {
         this.extra_courses = value;
     }
 
+    /**
+     * Update the user cache
+     * @returns {Array} The updated users
+     */
     static async updateUserCache() {
 
         cache.get("users").clear();
@@ -99,10 +112,19 @@ class User {
 
     }
 
+    /**
+     * Get a user by their ID
+     * @param {String} userId - The ID of the user
+     * @returns {Object} The user
+     */
     static async getUserById(userId) {
-        return (await this.getUsers()).find(user => user.id === userId);
+        return (this.getUsers()).find(user => user.id === userId);
     }
 
+    /**
+     * Get all users
+     * @returns {Array} The users
+     */
     static async getUsers() {
 
         const cacheResults = cache.get('users');
@@ -110,52 +132,73 @@ class User {
         if (cacheResults) {
             return cacheResults;
         }
-        else return await this.updateUserCache();
+        else return this.updateUserCache();
     }
 
+    /**
+     * Create a new user
+     * @param {Object} user - The user to create
+     * @returns {Object} The created user
+     */
     static async createUser(user) {
 
         user.id = new mongoose.Types.ObjectId();
-        const users = await this.getUsers();
+        const users = this.getUsers();
 
         const insertedUser = await createDocument(UserSchema, user);
         users.push(insertedUser);
         cache.put(`users`, users, expirationTime)
 
-        if (!await this.verifyUserInCache(insertedUser)) throw new Error(`Failed to put user in cache:\n${ insertedUser }`);
+        if (!this.verifyUserInCache(insertedUser)) throw new Error(`Failed to put user in cache:\n${ insertedUser }`);
 
         return insertedUser;
     }
 
+    /**
+     * Update a user
+     * @param {String} userId - The ID of the user to update
+     * @param {Object} updatedUser - The updated user data
+     * @returns {Object} The updated user
+     */
     static async updateUser(userId, updatedUser) {
 
-        const users = await this.getUsers();
+        const users = this.getUsers();
         users.splice(users.findIndex(user => user.id === userId), 1, updatedUser);
 
         await updateDocument(UserSchema, userId, updatedUser);
         cache.put('users', users, expirationTime);
 
-        if (!await this.verifyUserInCache(updatedUser)) throw new Error(`Failed to update user in cache:\n${ updatedUser }`);
+        if (!this.verifyUserInCache(updatedUser)) throw new Error(`Failed to update user in cache:\n${ updatedUser }`);
 
         return updatedUser;
     }
 
+    /**
+     * Delete a user
+     * @param {String} userId - The ID of the user to delete
+     * @returns {Boolean} True if the user was deleted successfully
+     */
     static async deleteUser(userId) {
 
         const deletedUser = await deleteDocument(UserSchema, userId);
         if (!deletedUser) throw new Error(`Failed to delete user with id ${ userId }`);
 
-        const users = await this.getUsers();
+        const users = this.getUsers();
         users.splice(users.findIndex(user => user.id === userId), 1);
         cache.put('users', users, expirationTime);
 
-        if (await this.verifyUserInCache(deletedUser)) throw new Error(`Failed to delete user from cache:\n${ deletedUser }`);
+        if (this.verifyUserInCache(deletedUser)) throw new Error(`Failed to delete user from cache:\n${ deletedUser }`);
 
         return true;
     }
 
+    /**
+     * Verify if a user is in the cache
+     * @param {Object} user - The user to verify
+     * @returns {Boolean} True if the user is in the cache
+     */
     static async verifyUserInCache(user) {
-        return await verifyInCache(await this.getUsers(), user, this.updateUserCache);
+        return verifyInCache(this.getUsers(), user, this.updateUserCache);
     }
 
 }

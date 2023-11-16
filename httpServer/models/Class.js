@@ -17,7 +17,7 @@ class Class {
      * @param {Object} grade - The grade of the class.
      * @param {Array} courses - The courses of the class.
      * @param {Array} members - The members of the class.
-     * @param {string} specified_grade - The specified grade of the class.
+     * @param {String} specified_grade - The specified grade of the class.
      */
     constructor(
         grade = {},
@@ -108,7 +108,7 @@ class Class {
 
     /**
      * @description Get a class by id.
-     * @param {string} classId - The id of the class.
+     * @param {String} classId - The id of the class.
      * @return {Object} The class.
      */
     static async getClassById(classId) {
@@ -136,7 +136,7 @@ class Class {
 
     /**
      * @description Update a class.
-     * @param {string} classId - The id of the class to update.
+     * @param {String} classId - The id of the class to update.
      * @param {Object} updatedClass - The updated class.
      * @return {Object} The updated class.
      */
@@ -155,8 +155,8 @@ class Class {
 
     /**
      * @description Delete a class.
-     * @param {string} classId - The id of the class to delete.
-     * @return {boolean} The status of the deletion.
+     * @param {String} classId - The id of the class to delete.
+     * @return {Boolean} The status of the deletion.
      */
     static async deleteClass(classId) {
 
@@ -174,10 +174,10 @@ class Class {
     /**
      * @description Verify a class in cache.
      * @param {Object} class_ - The class to verify.
-     * @return {boolean} The status of the verification.
+     * @return {Boolean} The status of the verification.
      */
     static async verifyClassInCache(class_) {
-        return await verifyInCache(this.getClasses(), class_, this.updateClassCache);
+        return verifyInCache(this.getClasses(), class_, this.updateClassCache);
     }
 
 }

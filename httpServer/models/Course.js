@@ -97,7 +97,7 @@ class Course {
 
     /**
      * @description Get a course by its ID.
-     * @param {string} courseId - The ID of the course.
+     * @param {String} courseId - The ID of the course.
      * @return {Object} The course.
      */
     static async getCourseById(courseId) {
@@ -125,7 +125,7 @@ class Course {
 
     /**
      * @description Update a course in the database and cache.
-     * @param {string} courseId - The ID of the course to update.
+     * @param {String} courseId - The ID of the course to update.
      * @param {Object} updatedCourse - The updated course.
      * @return {Object} The updated course.
      */
@@ -144,8 +144,8 @@ class Course {
 
     /**
      * @description Delete a course in the database and cache.
-     * @param {string} courseId - The ID of the course to update.
-     * @return {boolean} State of the deletion.
+     * @param {String} courseId - The ID of the course to update.
+     * @return {Boolean} State of the deletion.
      */
     static async deleteCourse(courseId) {
 
@@ -164,10 +164,10 @@ class Course {
     /**
      * @description Verify if a course is in the cache.
      * @param {Object} course - The course to verify.
-     * @return {boolean} True if the course is in the cache, false otherwise.
+     * @return {Boolean} True if the course is in the cache, false otherwise.
      */
     static async verifyCourseInCache(course) {
-        return await verifyInCache(this.getCourses(), course, this.updateCourseCache);
+        return verifyInCache(this.getCourses(), course, this.updateCourseCache);
     }
 
     /**
