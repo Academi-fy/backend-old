@@ -7,8 +7,6 @@
 - [MongoDB](https://www.mongodb.com/)
 - [Express](https://expressjs.com/)
 - [Mongoose](https://mongoosejs.com/)
-- [Flutter](https://flutter.dev/)
-- [Dart](https://dart.dev/)
 - ... to be finished
 
 ## Entwickler
