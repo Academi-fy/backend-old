@@ -1,3 +1,5 @@
-export default class FileContent {
+import MessageContent from "../MessageContent.js";
+
+export default class FileContent extends MessageContent {
 
 }

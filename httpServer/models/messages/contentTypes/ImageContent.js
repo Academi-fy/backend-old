@@ -1,3 +1,5 @@
-export default class ImageContent {
+import MessageContent from "../MessageContent.js";
+
+export default class ImageContent extends MessageContent {
 
 }
