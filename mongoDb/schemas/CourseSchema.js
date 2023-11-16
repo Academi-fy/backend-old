@@ -2,7 +2,16 @@ import mongoose from 'mongoose';
 
 const { Schema, Types: { ObjectId } } = mongoose;
 
+/**
+ * @description The schema for a course.
+ * @param {Array<ObjectId>} members - The members of the course.
+ * @param {Array<ObjectId>} classes - The classes of the course.
+ * @param {ObjectId} teacher - The teacher of the course.
+ * @param {ObjectId} chat - The chat of the course.
+ * @param {ObjectId} subject - The subject of the course.
+ */
 const CourseSchema = new Schema(
+
     {
 
         members: [
@@ -34,6 +43,7 @@ const CourseSchema = new Schema(
     {
         timestamps: true
     }
+
 );
 
 /**

@@ -2,7 +2,20 @@ import mongoose from 'mongoose';
 
 const { Schema, Types: { ObjectId } } = mongoose;
 
+/**
+ * @description The schema for a chat.
+ * @param {String} type - The type of the chat.
+ * @param {Array<ObjectId>} targets - The targets of the chat.
+ * @param {Array<ObjectId>} courses - The courses of the chat.
+ * @param {Array<ObjectId>} clubs - The clubs of the chat.
+ * @param {String} name - The name of the chat.
+ * @param {String} avatar - The avatar of the chat.
+ * @param {Date} createdAt - The date the ticket was created.
+ * @param {Date} updatedAt - The date the ticket was last updated.
+ * @return {Schema} The schema for a chat.
+ */
 const ChatSchema = new Schema(
+
     {
 
         type: {
@@ -42,6 +55,7 @@ const ChatSchema = new Schema(
     {
         timestamps: true
     }
+
 );
 
 /**
