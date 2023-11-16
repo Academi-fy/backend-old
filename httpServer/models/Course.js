@@ -9,13 +9,13 @@ const expirationTime = 5 * 60 * 1000;
 
 /**
  * @description Class representing a Course.
- * @property {Array<Object>} members - The members of the course.
- * @property {Array<Object>} classes - The classes in the course.
- * @property {Object} teacher - The teacher of the course.
- * @property {Object} chat - The chat of the course.
+ * @property {Array<User>} members - The members of the course.
+ * @property {Array<Class>} classes - The classes in the course.
+ * @property {User} teacher - The teacher of the course.
+ * @property {Chat} chat - The chat of the course.
  * @property {Subject} subject - The subject of the course.
  */
-class Course {
+export default class Course {
 
     /**
      * @description Create a course.
@@ -215,5 +215,3 @@ class Course {
     }
 
 }
-
-export default Course;

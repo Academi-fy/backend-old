@@ -18,7 +18,7 @@ const expirationTime = 5 * 60 * 1000;
  * @property {Array<User>} members - The members of the club.
  * @property {Chat} chat - The chat of the club.
  */
-class Club {
+export default class Club {
 
     /**
      * @description Create a club.
@@ -219,5 +219,3 @@ class Club {
     }
 
 }
-
-export default Club;

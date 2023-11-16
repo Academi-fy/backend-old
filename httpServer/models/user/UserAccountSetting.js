@@ -1,8 +1,9 @@
 /**
- * UserAccountSetting class
- * This class represents the settings of a user account.
+ * @description Represents a user account setting.
+ * @property {String} name - The name of the setting.
+ * @property {String} value - The value of the setting.
  */
-class UserAccountSetting {
+export default class UserAccountSetting {
 
     /**
      * @description Constructs a new UserAccountSetting instance.

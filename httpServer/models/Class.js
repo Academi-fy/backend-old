@@ -15,7 +15,7 @@ const expirationTime = 5 * 60 * 1000;
  * @property {Array<User>} members - The members of the class.
  * @property {String} specified_grade - The specified grade of the class.
  */
-class Class {
+export default class Class {
 
     /**
      * @description Create a class.
@@ -196,5 +196,3 @@ class Class {
     }
 
 }
-
-export default Class;

@@ -16,7 +16,7 @@ const expirationTime = 3 * 60 * 1000;
  * @property {Array<Class>} classes - The classes of the user.
  * @property {Array<Course>} extra_courses - The extra courses of the user.
  */
-class User {
+export default class User {
 
     /**
      * User constructor
@@ -221,5 +221,3 @@ class User {
     }
 
 }
-
-export default User;

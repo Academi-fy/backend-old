@@ -1,6 +1,6 @@
 import { validateArray, validateNotEmpty } from "../propertyValidation.js";
 
-class ClubDetails {
+export default class ClubDetails {
 
     /**
      * @description Create a club details.
@@ -9,17 +9,17 @@ class ClubDetails {
      * @param {String} location - The location of the club.
      * @param {String} meetingTime - The meeting time of the club.
      * @param {String} meetingDay - The meeting day of the club.
-     * @param {Array<Requirement>} requirements - The requirements of the club.
+     * @param {Array<ClubRequirement>} requirements - The requirements of the club.
      * @param {Array<Event>} events - The events of the club.
      */
     constructor(
-        coverImage = "", //TODO getters and setters
-        description = "",
-        location = "",
-        meetingTime = "",
-        meetingDay = "",
-        requirements = [], // wie information bei event
-        events = []
+        coverImage,
+        description,
+        location,
+        meetingTime,
+        meetingDay,
+        requirements,
+        events
     ) {
         this.description = description;
         this.location = location;
@@ -84,5 +84,3 @@ class ClubDetails {
     }
 
 }
-
-export default ClubDetails;

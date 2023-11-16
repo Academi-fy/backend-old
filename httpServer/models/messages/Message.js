@@ -12,19 +12,19 @@ const expirationTime = 2 * 60 * 1000;
  * @property {String} _id - The id of the message.
  * @property {Chat} chat - The chat that the message belongs to.
  * @property {User} author - The author of the message.
- * @property {Array<Object<FileContent | ImageContent | PollContent | TextContent | VideoContent>>} content - The content of the message.
- * @property {Array<Reaction>} reactions - The reactions to the message.
+ * @property {Array<FileContent | ImageContent | PollContent | TextContent | VideoContent>} content - The content of the message.
+ * @property {Array<MessageReaction>} reactions - The reactions to the message.
  * @property {Array<EditedMessage>} edits - The edits made to the message.
  * @property {Number} date - The date the message was created.
  */
-class Message {
+export default class Message {
 
     /**
      * Create a message.
      * @param {String} chat - The id of the chat that the message belongs to.
      * @param {String} author - The id of the author of the message.
-     * @param {Array<Object<FileContent | ImageContent | PollContent | TextContent | VideoContent>>} content - The content of the message.
-     * @param {Array<Reaction>} reactions - The reactions to the message.
+     * @param {Array<FileContent | ImageContent | PollContent | TextContent | VideoContent>} content - The content of the message.
+     * @param {Array<MessageReaction>} reactions - The reactions to the message.
      * @param {Array<EditedMessage>} edits - The edits made to the message.
      * @param {Number} date - The date the message was created.
      */
@@ -194,7 +194,7 @@ class Message {
     /**
      * Delete a message.
      * @param {String} messageId - The ID of the message to delete.
-     * @return {Boolean} The status of the deletion.
+     * @return {Boolean} The status of the deletion. Reaction
      */
     static async deleteMessage(messageId) {
 

@@ -1,6 +1,6 @@
 import { validateNotEmpty, validateNumber } from "../propertyValidation.js";
 
-class MessageReaction {
+export default class MessageReaction {
 
     /**
      * Constructs a new MessageReaction instance.

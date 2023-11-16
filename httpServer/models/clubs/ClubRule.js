@@ -1,6 +1,6 @@
 import { validateNotEmpty } from "../propertyValidation.js";
 
-class ClubRule {
+export default class ClubRule {
 
     /**
      * @description Create a club rule.
@@ -34,5 +34,3 @@ class ClubRule {
     }
 
 }
-
-export default ClubRule;

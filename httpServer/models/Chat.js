@@ -18,7 +18,7 @@ const expirationTime = 2 * 60 * 1000;
  * @property {String} avatar - The avatar of the chat.
  * @property {Array<Message>} messages - The messages in the chat.
  */
-class Chat {
+export default class Chat {
 
     /**
      * Create a chat.
@@ -240,5 +240,3 @@ class Chat {
     }
 
 }
-
-export default Chat;
