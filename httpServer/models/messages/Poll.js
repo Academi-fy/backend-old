@@ -6,6 +6,10 @@ answers
 
 */
 
+export default class Poll {
+
+}
+
 const answers = [
 
     {
