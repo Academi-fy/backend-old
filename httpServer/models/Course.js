@@ -8,7 +8,12 @@ import mongoose from "mongoose";
 const expirationTime = 5 * 60 * 1000;
 
 /**
- * Class representing a Course.
+ * @description Class representing a Course.
+ * @property {Array<Object>} members - The members of the course.
+ * @property {Array<Object>} classes - The classes in the course.
+ * @property {Object} teacher - The teacher of the course.
+ * @property {Object} chat - The chat of the course.
+ * @property {Subject} subject - The subject of the course.
  */
 class Course {
 
@@ -16,16 +21,16 @@ class Course {
      * @description Create a course.
      * @param {Array} members - The members of the course.
      * @param {Array} classes - The classes in the course.
-     * @param {Object} teacher - The teacher of the course.
-     * @param {Object} chat - The chat of the course.
-     * @param {Object} subject - The subject of the course.
+     * @param {String} teacher - The id of the teacher of the course.
+     * @param {String} chat - The id of the chat of the course.
+     * @param {String} subject - The id of the subject of the course.
      */
     constructor(
-        members = [],
-        classes = [],
-        teacher = {},
-        chat = {},
-        subject = {}
+        members,
+        classes,
+        teacher,
+        chat,
+        subject
     ) {
 
         this.members = members;
@@ -98,24 +103,30 @@ class Course {
     /**
      * @description Get a course by its ID.
      * @param {String} courseId - The ID of the course.
-     * @return {Object} The course.
+     * @return {Course} The course.
      */
     static async getCourseById(courseId) {
-        return (this.getCourses()).find(course => course.id === courseId);
+        return (this.getCourses()).find(course => course._id === courseId);
     }
 
     /**
      * @description Create a new course and add it to the database and cache.
-     * @param {Object} course - The course to create.
-     * @return {Object} The created course.
+     * @param {Course} course - The course to create.
+     * @return {Course} The created course.
      */
     static async createCourse(course) {
 
-        course.id = new mongoose.Types.ObjectId();
         const courses = this.getCourses();
 
         const insertedCourse = await createDocument(CourseSchema, course);
-        courses.push(insertedCourse);
+        courses.push(
+            insertedCourse
+                .populate('members')
+                .populate('classes')
+                .populate('teacher')
+                .populate('chat')
+                .populate('subject')
+        );
         cache.put('courses', courses, expirationTime);
 
         if (!this.verifyCourseInCache(insertedCourse)) throw new Error(`Course could not be created:\n${ insertedCourse }`);
@@ -126,15 +137,22 @@ class Course {
     /**
      * @description Update a course in the database and cache.
      * @param {String} courseId - The ID of the course to update.
-     * @param {Object} updatedCourse - The updated course.
-     * @return {Object} The updated course.
+     * @param {Course} updateCourse - The course to update.
+     * @return {Course} The updated course.
      */
-    static async updateCourse(courseId, updatedCourse) {
+    static async updateCourse(courseId, updateCourse) {
 
         const courses = this.getCourses();
-        courses.splice(courses.findIndex(course => course.id === courseId), 1, updatedCourse);
 
-        await updateDocument(CourseSchema, courseId, updatedCourse);
+        let updatedCourse = await updateDocument(CourseSchema, courseId, updateCourse);
+        updatedCourse = updatedCourse
+                            .populate('members')
+                            .populate('classes')
+                            .populate('teacher')
+                            .populate('chat')
+                            .populate('subject');
+
+        courses.splice(courses.findIndex(course => course._id === courseId), 1, updatedCourse);
         cache.put('courses', courses, expirationTime);
 
         if (!this.verifyCourseInCache(updatedCourse)) throw new Error(`Course could not be updated:\n${ updatedCourse }`);
@@ -153,7 +171,7 @@ class Course {
         if (!deletedCourse) throw new Error(`Course could not be deleted:\n${ courseId }`);
 
         const courses = this.getCourses();
-        courses.splice(courses.findIndex(course => course.id === courseId), 1);
+        courses.splice(courses.findIndex(course => course._id === courseId), 1);
         cache.put('courses', courses, expirationTime);
 
         if (this.verifyCourseInCache(deletedCourse)) throw new Error(`Course could not be deleted from cache:\n${ deletedCourse }`);
@@ -163,7 +181,7 @@ class Course {
 
     /**
      * @description Verify if a course is in the cache.
-     * @param {Object} course - The course to verify.
+     * @param {Course} course - The course to verify.
      * @return {Boolean} True if the course is in the cache, false otherwise.
      */
     static async verifyCourseInCache(course) {
@@ -172,12 +190,25 @@ class Course {
 
     /**
      * Update the course cache from the database.
-     * @return {Array} The updated courses.
+     * @return {Array<Course>} The updated courses.
      */
     static async updateCourseCache() {
 
         cache.get("courses").clear();
-        const courses = await getAllDocuments(CourseSchema);
+        const coursesFromDb = getAllDocuments(CourseSchema);
+
+        const courses = [];
+        for(const course of coursesFromDb) {
+            courses.push(
+                course
+                    .populate('members')
+                    .populate('classes')
+                    .populate('teacher')
+                    .populate('chat')
+                    .populate('subject')
+            );
+        }
+
         cache.put('courses', courses, expirationTime);
         return courses;
 

@@ -8,7 +8,14 @@ import mongoose from "mongoose";
 const expirationTime = 2 * 60 * 1000;
 
 /**
- * Class representing a Message.
+ * @description Class representing a Message.
+ * @property {String} _id - The id of the message.
+ * @property {Chat} chat - The chat that the message belongs to.
+ * @property {User} author - The author of the message.
+ * @property {Array<Object<FileContent | ImageContent | PollContent | TextContent | VideoContent>>} content - The content of the message.
+ * @property {Array<Reaction>} reactions - The reactions to the message.
+ * @property {Array<EditedMessage>} edits - The edits made to the message.
+ * @property {Number} date - The date the message was created.
  */
 class Message {
 
@@ -98,7 +105,17 @@ class Message {
     static async updateMessageCache() {
 
         cache.get("messages").clear();
-        const messages = await getAllDocuments(MessageSchema);
+        const messagesFromDb = getAllDocuments(MessageSchema);
+
+        const messages = [];
+        for await (const message of messagesFromDb) {
+            messages.push(
+                message
+                    .populate('chat')
+                    .populate('author')
+            );
+        }
+
         cache.put('messages', messages, expirationTime);
         return messages;
 
@@ -125,7 +142,7 @@ class Message {
      * @return {Message} The message object.
      */
     static async getMessageById(id) {
-        return (this.getMessages()).find(message => message.id === id);
+        return (this.getMessages()).find(message => message._id === id);
     }
 
     /**
@@ -135,11 +152,14 @@ class Message {
      */
     static async createMessage(message) {
 
-        message.id = new mongoose.Types.ObjectId().toString();
         const messages = this.getMessages();
 
         const insertedMessage = await createDocument(MessageSchema, message);
-        messages.push(insertedMessage);
+        messages.push(
+            insertedMessage
+                .populate('chat')
+                .populate('author')
+        );
         cache.put('messages', messages, expirationTime);
 
         if (!this.verifyMessageInCache(message.chat)) throw new Error(`Failed to put message in cache:\n${ insertedMessage }`);
@@ -151,15 +171,19 @@ class Message {
     /**
      * Update a message.
      * @param {String} messageId - The ID of the message to update.
-     * @param {Message} updatedMessage - The updated message object.
+     * @param {Message} updateMessage - The updated message object.
      * @return {Message} The updated message object.
      */
-    static async updateMessages(messageId, updatedMessage) {
+    static async updateMessages(messageId, updateMessage) {
 
         const messages = this.getMessages();
-        messages.splice(messages.findIndex(message => message.id === messageId), 1, updatedMessage);
 
-        await updateDocument(MessageSchema, messageId, updatedMessage);
+        let updatedMessage = await updateDocument(MessageSchema, messageId, updateMessage);
+        updatedMessage = updatedMessage
+                            .populate('chat')
+                            .populate('author');
+
+        messages.splice(messages.findIndex(message => message._id === messageId), 1, updatedMessage);
         cache.put('messages', messages, expirationTime);
 
         if (!this.verifyMessageInCache(updatedMessage.chat)) throw new Error(`Failed to update message in cache:\n${ updatedMessage }`);
@@ -178,7 +202,7 @@ class Message {
         if (!deleteMessage) throw new Error(`Failed to delete message with id ${ messageId }`);
 
         const messages = this.getMessages();
-        messages.splice(messages.findIndex(message => message.id === messageId), 1);
+        messages.splice(messages.findIndex(message => message._id === messageId), 1);
         cache.put('messages', messages, expirationTime);
 
         if (this.verifyMessageInCache(deleteMessage.chat)) throw new Error(`Failed to delete message from cache:\n${ deleteMessage }`);
@@ -188,11 +212,11 @@ class Message {
 
     /**
      * Verify if a message is in the cache.
-     * @param {Chat} testChat - The chat to which the message belongs.
+     * @param {Message} testMessage - The chat to which the message belongs.
      * @return {Boolean} True if the message is in the cache, false otherwise.
      */
-    static async verifyMessageInCache(testChat) {
-        return verifyInCache(this.getMessages(), testChat, this.updateMessageCache());
+    static async verifyMessageInCache(testMessage) {
+        return verifyInCache(this.getMessages(), testMessage, this.updateMessageCache());
     }
 
 }

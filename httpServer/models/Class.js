@@ -8,38 +8,32 @@ import mongoose from "mongoose";
 const expirationTime = 5 * 60 * 1000;
 
 /**
- * Class representing a school class.
+ * @description Class representing a school class.
+ * @property {String} _id - The id of the class.
+ * @property {Grade} grade - The grade of the class.
+ * @property {Array<Course>} courses - The courses of the class.
+ * @property {Array<User>} members - The members of the class.
+ * @property {String} specified_grade - The specified grade of the class.
  */
 class Class {
 
     /**
-     * Create a class.
-     * @param {Object} grade - The grade of the class.
-     * @param {Array} courses - The courses of the class.
-     * @param {Array} members - The members of the class.
+     * @description Create a class.
+     * @param {String} grade - The id of the grade of the class.
+     * @param {Array<String>} courses - The ids of the courses of the class.
+     * @param {Array<String>} members - The ids of the members of the class.
      * @param {String} specified_grade - The specified grade of the class.
      */
     constructor(
-        grade = {},
-        courses = [],
-        members = [],
-        specified_grade = ""
+        grade,
+        courses,
+        members,
+        specified_grade
     ) {
-
-        this.id = null;
         this.grade = grade;
         this.courses = courses;
         this.members = members;
         this.specified_grade = specified_grade;
-    }
-
-    get _id() {
-        return this.id;
-    }
-
-    set _id(value) {
-        validateNotEmpty('Class id', value);
-        this.id = value;
     }
 
     get _grade() {
@@ -47,7 +41,7 @@ class Class {
     }
 
     set _grade(value) {
-        validateObject('Class grade', value);
+        validateNotEmpty('Class grade', value);
         this.grade = value;
     }
 
@@ -80,12 +74,23 @@ class Class {
 
     /**
      * @description Update the class cache.
-     * @return {Array} The updated classes.
+     * @return {Array<Class>} The updated classes.
      */
     static async updateClassCache() {
 
         cache.get("classes").clear();
-        const classes = await getAllDocuments(ClassSchema);
+        const classesFromDb = getAllDocuments(ClassSchema);
+
+        const classes = [];
+        for(const class_ of classesFromDb) {
+            classes.push(
+                class_
+                    .populate('grade')
+                    .populate('courses')
+                    .populate('members')
+            )
+        }
+
         cache.put('classes', classes, expirationTime);
         return classes;
 
@@ -93,7 +98,7 @@ class Class {
 
     /**
      * @description Get all classes.
-     * @return {Array} The classes.
+     * @return {Array<Class>} The classes.
      */
     static async getClasses() {
 
@@ -109,24 +114,28 @@ class Class {
     /**
      * @description Get a class by id.
      * @param {String} classId - The id of the class.
-     * @return {Object} The class.
+     * @return {Class} The class.
      */
     static async getClassById(classId) {
-        return (this.getClasses()).find(class_ => class_.id === classId);
+        return (this.getClasses()).find(class_ => class_._id === classId);
     }
 
     /**
      * @description Create a class.
-     * @param {Object} class_ - The class to create.
-     * @return {Object} The created class.
+     * @param {Class} class_ - The class to create.
+     * @return {Class} The created class.
      */
     static async createClass(class_) {
 
-        class_.id = new mongoose.Types.ObjectId();
         const classes = this.getClasses();
 
         const insertedClass = await createDocument(ClassSchema, class_);
-        classes.push(insertedClass);
+        classes.push(
+            insertedClass
+                .populate('grade')
+                .populate('courses')
+                .populate('members')
+        );
         cache.put('classes', classes, expirationTime);
 
         if (!this.verifyClassInCache(insertedClass)) throw new Error(`Failed to put class in cache:\n${ insertedClass }`);
@@ -137,15 +146,20 @@ class Class {
     /**
      * @description Update a class.
      * @param {String} classId - The id of the class to update.
-     * @param {Object} updatedClass - The updated class.
-     * @return {Object} The updated class.
+     * @param {Class} updateClass - The updated class.
+     * @return {Class} The updated class.
      */
-    static async updateClass(classId, updatedClass) {
+    static async updateClass(classId, updateClass) {
 
         const classes = this.getClasses();
-        classes.splice(classes.findIndex(class_ => class_.id === classId), 1, updatedClass);
 
-        await updateDocument(ClassSchema, classId, updatedClass);
+        let updatedClass = await updateDocument(ClassSchema, classId, updateClass);
+        updatedClass = updatedClass
+                            .populate('grade')
+                            .populate('courses')
+                            .populate('members');
+
+        classes.splice(classes.findIndex(class_ => class_._id === classId), 1, updatedClass);
         cache.put('classes', classes, expirationTime);
 
         if (!this.verifyClassInCache(updatedClass)) throw new Error(`Failed to update class in cache:\n${ updatedClass }`);
@@ -162,8 +176,9 @@ class Class {
 
         const deletedClass = await deleteDocument(ClassSchema, classId);
         if (!deletedClass) throw new Error(`Failed to delete class with id ${ classId }`);
+
         const classes = this.getClasses();
-        classes.splice(classes.findIndex(class_ => class_.id === classId), 1);
+        classes.splice(classes.findIndex(class_ => class_._id === classId), 1);
         cache.put('classes', classes, expirationTime);
 
         if (this.verifyClassInCache(deletedClass)) throw new Error(`Failed to delete class from cache:\n${ deletedClass }`);
@@ -173,7 +188,7 @@ class Class {
 
     /**
      * @description Verify a class in cache.
-     * @param {Object} class_ - The class to verify.
+     * @param {Class} class_ - The class to verify.
      * @return {Boolean} The status of the verification.
      */
     static async verifyClassInCache(class_) {
@@ -181,3 +196,5 @@ class Class {
     }
 
 }
+
+export default Class;

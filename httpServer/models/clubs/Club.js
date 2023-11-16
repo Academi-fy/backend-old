@@ -10,7 +10,13 @@ import Chat from "../Chat.js";
 const expirationTime = 5 * 60 * 1000;
 
 /**
- * Class representing a Club.
+ * @description Class representing a Club.
+ * @property {String} _id - The id of the club.
+ * @property {String} name - The name of the club.
+ * @property {ClubDetails} details - The details of the club.
+ * @property {Array<User>} leaders - The leaders of the club.
+ * @property {Array<User>} members - The members of the club.
+ * @property {Chat} chat - The chat of the club.
  */
 class Club {
 
@@ -18,16 +24,16 @@ class Club {
      * @description Create a club.
      * @param {String} name - The name of the club.
      * @param {ClubDetails} details - The details of the club.
-     * @param {Array<User>} leaders - The leaders of the club.
-     * @param {Array<User>} members - The members of the club.
-     * @param {Chat} chat - The chat of the club.
+     * @param {Array<String>} leaders - The ids of the leaders of the club.
+     * @param {Array<String>} members - The ids of the members of the club.
+     * @param {String} chat - The id of the chat of the club.
      */
     constructor(
         name = "Neue AG",
         details = new ClubDetails(),
         leaders = [],
         members = [],
-        chat = new Chat()
+        chat = ""
     ) {
         this.name = name;
         this.details = details;
@@ -95,7 +101,19 @@ class Club {
     static async updateClubCache() {
 
         cache.get("clubs").clear();
-        const clubs = await getAllDocuments(ClubSchema);
+        const clubsFromDb = getAllDocuments(ClubSchema);
+
+        let clubs = [];
+        for(const club in clubsFromDb) {
+            clubs.push(
+                club
+                .populate('chat')
+                .populate('leaders')
+                .populate('members')
+                .populate('details.events')
+            );
+        }
+
         cache.put('clubs', clubs, expirationTime);
         return clubs;
 
@@ -122,7 +140,7 @@ class Club {
      * @return {Club} The club.
      */
     static async getClubById(clubId) {
-        return (this.getClubs()).find(club => club.id === clubId);
+        return (this.getClubs()).find(club => club._id === clubId);
     }
 
     /**
@@ -132,11 +150,15 @@ class Club {
      */
     static async createClub(club) {
 
-        club.id = new mongoose.Types.ObjectId();
         const clubs = this.getClubs();
 
         const insertedClub = await createDocument(ClubSchema, club);
-        clubs.push(insertedClub);
+        clubs.push(insertedClub
+            .populate('chat')
+            .populate('leaders')
+            .populate('members')
+            .populate('details.events')
+        );
         cache.put('clubs', clubs, expirationTime);
 
         if (!this.verifyClubInCache(insertedClub)) throw new Error(`Failed to put club in cache:\n${ insertedClub }`);
@@ -147,15 +169,20 @@ class Club {
     /**
      * @description Update a club.
      * @param {String} clubId - The ID of the club to update.
-     * @param {Club} updatedClub - The updated club.
+     * @param {Club} updateClub - The club to update.
      * @return {Club} The updated club.
      */
-    static async updateClub(clubId, updatedClub) {
+    static async updateClub(clubId, updateClub) {
 
         const clubs = this.getClubs();
-        clubs.splice(clubs.findIndex(club => club.id === clubId), 1, updatedClub);
 
-        await updateDocument(ClubSchema, clubId, updatedClub);
+        let updatedClub = await updateDocument(ClubSchema, clubId, updatedClub);
+        updatedClub = updatedClub
+            .populate('chat')
+            .populate('leaders')
+            .populate('members')
+
+        clubs.splice(clubs.findIndex(club => club._id === clubId), 1, updateClub);
         cache.put('clubs', clubs, expirationTime);
 
         if (!this.verifyClubInCache(updatedClub)) throw new Error(`Failed to update club in cache:\n${ updatedClub }`);
@@ -174,7 +201,7 @@ class Club {
         if (!deletedCourse) throw new Error(`Failed to delete club: ${ clubId }`);
 
         const clubs = this.getClubs();
-        clubs.splice(clubs.findIndex(club => club.id === clubId), 1);
+        clubs.splice(clubs.findIndex(club => club._id === clubId), 1);
         cache.put('clubs', clubs, expirationTime);
 
         if (this.verifyClubInCache(deletedCourse)) throw new Error(`Failed to delete club from cache:\n${ clubId }`);

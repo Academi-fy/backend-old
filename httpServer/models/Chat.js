@@ -8,30 +8,37 @@ import { createDocument, deleteDocument, getAllDocuments, updateDocument } from 
 const expirationTime = 2 * 60 * 1000;
 
 /**
- * Class representing a Chat.
+ * @description Class representing a Chat.
+ * @property {String} _id - The id of the chat.
+ * @property {String} type - The type of the chat. Valid types are: 'PRIVATE', 'GROUP', 'COURSE', 'CLUB'.
+ * @property {Array<User>} targets - The targets of the chat.
+ * @property {Array<Course>} courses - The courses related to the chat.
+ * @property {Array<Club>} clubs - The clubs related to the chat.
+ * @property {String} name - The name of the chat.
+ * @property {String} avatar - The avatar of the chat.
+ * @property {Array<Message>} messages - The messages in the chat.
  */
 class Chat {
 
     /**
      * Create a chat.
-     * @param {String} type - The type of the chat.
-     * @param {Array} targets - The targets of the chat.
-     * @param {Array} courses - The courses related to the chat.
-     * @param {Array} clubs - The clubs related to the chat.
+     * @param {String} type - The type of the chat. Valid types are: 'PRIVATE', 'GROUP', 'COURSE', 'CLUB'.
+     * @param {Array<String>} targets - The ids of the targets of the chat.
+     * @param {Array<String>} courses - The ids of the courses related to the chat.
+     * @param {Array<String>} clubs - The ids of the clubs related to the chat.
      * @param {String} name - The name of the chat.
      * @param {String} avatar - The avatar of the chat.
      * @param {Array} messages - The messages in the chat.
      */
     constructor(
-        type = 'GROUP',
-        targets = [],
-        courses = [],
-        clubs = [],
-        name = "Gruppen Chat",
-        avatar = "https://media.istockphoto.com/id/1147544807/de/vektor/miniaturbild-vektorgrafik.jpg?s=612x612&w=0&k=20&c=IIK_u_RTeRFyL6kB1EMzBufT4H7MYT3g04sz903fXAk=",
-        messages = []
+        type,
+        targets,
+        courses,
+        clubs,
+        name,
+        avatar,
+        messages
     ) {
-        this.id = null;
         this.type = type;
         this.targets = targets;
         this.courses = courses;
@@ -42,21 +49,13 @@ class Chat {
 
     }
 
-    get _id() {
-        return this.id;
-    }
-
-    set _id(value) {
-        validateNotEmpty('Chat id', value);
-        this.id = value;
-    }
-
     get _type() {
         return this.type;
     }
 
     set _type(value) {
         validateNotEmpty('Chat type', value);
+        if(!['PRIVATE', 'GROUP', 'COURSE', 'CLUB'].includes(value)) throw new Error(`Invalid chat type: ${ value }`);
         this.type = value;
     }
 
@@ -116,12 +115,24 @@ class Chat {
 
     /**
      * @description Update the chat cache.
-     * @return {Array} The updated chats.
+     * @return {Array<Chat>} The updated chats.
      */
     static async updateChatCache() {
 
         cache.get("chats").clear();
-        const chats = await getAllDocuments(ChatSchema);
+        const chatsFromDb = getAllDocuments(ChatSchema);
+
+        const chats = [];
+        for (const chat of chatsFromDb) {
+            chats.push(
+                chat
+                    .populate('messages')
+                    .populate('targets')
+                    .populate('courses')
+                    .populate('clubs')
+            );
+        }
+
         cache.put('chats', chats, expirationTime);
         return chats;
 
@@ -129,7 +140,7 @@ class Chat {
 
     /**
      * @description Get all chats.
-     * @return {Array} The chats.
+     * @return {Array<Chat>} The chats.
      */
     static async getChats() {
 
@@ -145,24 +156,29 @@ class Chat {
     /**
      * @description Get a chat by id.
      * @param {String} chatId - The id of the chat.
-     * @return {Object} The chat.
+     * @return {Chat} The chat.
      */
     static async getChatById(chatId) {
-        return (this.getChats()).find(chat => chat.id === chatId);
+        return (this.getChats()).find(chat => chat._id === chatId);
     }
 
     /**
      * @description Create a chat.
-     * @param {Object} chat - The chat to create.
-     * @return {Object} The created chat.
+     * @param {Chat} chat - The chat to create.
+     * @return {Chat} The created chat.
      */
     static async createChat(chat) {
 
-        chat.id = new mongoose.Types.ObjectId();
         const chats = this.getChats();
 
         const insertedChat = await createDocument(ChatSchema, chat);
-        chats.push(insertedChat);
+        chats.push(
+            insertedChat
+                .populate('messages')
+                .populate('targets')
+                .populate('courses')
+                .populate('clubs')
+        );
         cache.put('chats', chats, expirationTime);
 
         if (!this.verifyChatInCache(insertedChat)) throw new Error(`Failed to put chat in cache:\n${ insertedChat }`);
@@ -173,15 +189,21 @@ class Chat {
     /**
      * @description Update a chat.
      * @param {String} chatId - The id of the chat to update.
-     * @param {Object} updatedChat - The updated chat.
-     * @return {Object} The updated chat.
+     * @param {Chat} updateChat - The chat to update.
+     * @return {Chat} The updated chat.
      */
-    static async updateChat(chatId, updatedChat) {
+    static async updateChat(chatId, updateChat) {
 
         const chats = this.getChats();
-        chats.splice(chats.findIndex(chat => chat.id === chatId), 1, updatedChat);
 
-        await updateDocument(ChatSchema, chatId, updatedChat);
+        let updatedChat = await updateDocument(ChatSchema, chatId, updateChat);
+        updatedChat = updatedChat
+                        .populate('messages')
+                        .populate('targets')
+                        .populate('courses')
+                        .populate('clubs');
+
+        chats.splice(chats.findIndex(chat => chat._id === chatId), 1, updatedChat);
         cache.put('chats', chats, expirationTime);
 
         if (!this.verifyChatInCache(updatedChat)) throw new Error(`Failed to update chat in cache:\n${ updatedChat }`);
@@ -200,7 +222,7 @@ class Chat {
         if (!deletedChat) throw new Error(`Failed to delete chat with id ${ chatId }`);
 
         const chats = this.getChats();
-        chats.splice(chats.findIndex(chat => chat.id === chatId), 1);
+        chats.splice(chats.findIndex(chat => chat._id === chatId), 1);
         cache.put('chats', chats, expirationTime);
 
         if (this.verifyChatInCache(deletedChat)) throw new Error(`Failed to delete chat from cache:\n${ deletedChat }`);
@@ -210,7 +232,7 @@ class Chat {
 
     /**
      * @description Verify a chat in cache.
-     * @param {Object} chat - The chat to verify.
+     * @param {Chat} chat - The chat to verify.
      * @return {Boolean} The status of the verification.
      */
     static async verifyChatInCache(chat) {

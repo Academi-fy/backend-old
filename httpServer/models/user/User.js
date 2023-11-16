@@ -6,27 +6,36 @@ import { createDocument, deleteDocument, getAllDocuments, updateDocument } from 
 
 const expirationTime = 3 * 60 * 1000;
 
+/**
+ * @description Class representing a User.
+ * @property {String} _id - The id of the user.
+ * @property {String} first_name - The first name of the user.
+ * @property {String} last_name - The last name of the user.
+ * @property {String} avatar - The avatar URL of the user.
+ * @property {String} type - The type of the user. Valid types are: 'STUDENT', 'TEACHER', 'ADMIN'.
+ * @property {Array<Class>} classes - The classes of the user.
+ * @property {Array<Course>} extra_courses - The extra courses of the user.
+ */
 class User {
 
     /**
      * User constructor
-     * @param {String} first_name - The first name of the user
-     * @param {String} last_name - The last name of the user
-     * @param {String} avatar - The avatar URL of the user
-     * @param {String} type - The type of the user
-     * @param {Array} classes - The classes of the user
-     * @param {Array} extra_courses - The extra courses of the user
+     * @param {String} first_name - The first name of the user.
+     * @param {String} last_name - The last name of the user.
+     * @param {String} avatar - The avatar URL of the user.
+     * @param {String} type - The type of the user. Valid types are: 'STUDENT', 'TEACHER', 'ADMIN'.
+     * @param {Array<String>} classes - The ids of the classes of the user.
+     * @param {Array<String>} extra_courses - The ids of the extra courses of the user.
      */
     constructor(
-        first_name = 'Vorname',
-        last_name = 'Nachname',
-        avatar = 'https://media.istockphoto.com/id/1147544807/de/vektor/miniaturbild-vektorgrafik.jpg?s=612x612&w=0&k=20&c=IIK_u_RTeRFyL6kB1EMzBufT4H7MYT3g04sz903fXAk=',
-        type = 'STUDENT',
-        classes = [],
-        extra_courses = []
+        first_name,
+        last_name,
+        avatar,
+        type,
+        classes,
+        extra_courses
     ) {
 
-        this.id = null;
         this.first_name = first_name;
         this.last_name = last_name;
         this.avatar = avatar;
@@ -34,15 +43,6 @@ class User {
         this.classes = classes;
         this.extra_courses = extra_courses;
 
-    }
-
-    get _id() {
-        return this.id;
-    }
-
-    set _id(value) {
-        validateNotEmpty('Chat id', value);
-        this.id = value;
     }
 
     get _first_name() {
@@ -78,6 +78,7 @@ class User {
 
     set _type(value) {
         validateNotEmpty('user type', value);
+        if(!['STUDENT', 'TEACHER', 'ADMIN'].includes(value)) throw new Error(`Invalid user type: ${ value }`);
         this.type = value;
     }
 
@@ -101,12 +102,22 @@ class User {
 
     /**
      * Update the user cache
-     * @returns {Array} The updated users
+     * @returns {Array<User>} The updated users
      */
     static async updateUserCache() {
 
         cache.get("users").clear();
-        const users = await getAllDocuments(UserSchema);
+        const usersFromDb = getAllDocuments(UserSchema);
+
+        const users = [];
+        for (const user of usersFromDb) {
+            users.push(
+                user
+                    .populate('classes')
+                    .populate('extra_courses')
+            );
+        }
+
         cache.put('users', users, expirationTime);
         return users;
 
@@ -115,15 +126,15 @@ class User {
     /**
      * Get a user by their ID
      * @param {String} userId - The ID of the user
-     * @returns {Object} The user
+     * @returns {User} The user
      */
     static async getUserById(userId) {
-        return (this.getUsers()).find(user => user.id === userId);
+        return (this.getUsers()).find(user => user._id === userId);
     }
 
     /**
      * Get all users
-     * @returns {Array} The users
+     * @returns {Array<User>} The users
      */
     static async getUsers() {
 
@@ -133,20 +144,24 @@ class User {
             return cacheResults;
         }
         else return this.updateUserCache();
+
     }
 
     /**
      * Create a new user
-     * @param {Object} user - The user to create
-     * @returns {Object} The created user
+     * @param {User} user - The user to create
+     * @returns {User} The created user
      */
     static async createUser(user) {
 
-        user.id = new mongoose.Types.ObjectId();
         const users = this.getUsers();
 
         const insertedUser = await createDocument(UserSchema, user);
-        users.push(insertedUser);
+        users.push(
+            insertedUser
+                .populate('classes')
+                .populate('extra_courses')
+        );
         cache.put(`users`, users, expirationTime)
 
         if (!this.verifyUserInCache(insertedUser)) throw new Error(`Failed to put user in cache:\n${ insertedUser }`);
@@ -156,16 +171,20 @@ class User {
 
     /**
      * Update a user
-     * @param {String} userId - The ID of the user to update
-     * @param {Object} updatedUser - The updated user data
-     * @returns {Object} The updated user
+     * @param {String} userId - The ID of the user to update.
+     * @param {User} updateUser - The user to update.
+     * @returns {User} The updated user.
      */
-    static async updateUser(userId, updatedUser) {
+    static async updateUser(userId, updateUser) {
 
         const users = this.getUsers();
-        users.splice(users.findIndex(user => user.id === userId), 1, updatedUser);
 
-        await updateDocument(UserSchema, userId, updatedUser);
+        let updatedUser = await updateDocument(UserSchema, userId, updateUser);
+        updatedUser = updatedUser
+                        .populate('classes')
+                        .populate('extra_courses');
+
+        users.splice(users.findIndex(user => user._id === userId), 1, updatedUser);
         cache.put('users', users, expirationTime);
 
         if (!this.verifyUserInCache(updatedUser)) throw new Error(`Failed to update user in cache:\n${ updatedUser }`);
@@ -184,7 +203,7 @@ class User {
         if (!deletedUser) throw new Error(`Failed to delete user with id ${ userId }`);
 
         const users = this.getUsers();
-        users.splice(users.findIndex(user => user.id === userId), 1);
+        users.splice(users.findIndex(user => user._id === userId), 1);
         cache.put('users', users, expirationTime);
 
         if (this.verifyUserInCache(deletedUser)) throw new Error(`Failed to delete user from cache:\n${ deletedUser }`);
@@ -194,7 +213,7 @@ class User {
 
     /**
      * Verify if a user is in the cache
-     * @param {Object} user - The user to verify
+     * @param {User} user - The user to verify
      * @returns {Boolean} True if the user is in the cache
      */
     static async verifyUserInCache(user) {
