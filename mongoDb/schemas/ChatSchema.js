@@ -15,7 +15,6 @@ const { Schema, Types: { ObjectId } } = mongoose;
  * @return {Schema} The schema for a chat.
  */
 const ChatSchema = new Schema(
-
     {
 
         type: {
@@ -55,7 +54,6 @@ const ChatSchema = new Schema(
     {
         timestamps: true
     }
-
 );
 
 /**

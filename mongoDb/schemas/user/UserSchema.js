@@ -14,7 +14,6 @@ const { Schema, Types: { ObjectId } } = mongoose;
  * @return {Schema} The schema for a user.
  */
 const UserSchema = new Schema(
-
     {
 
         first_name: {
@@ -32,7 +31,7 @@ const UserSchema = new Schema(
         type: {
             type: String,
             required: true,
-            enum: ['STUDENT', 'TEACHER', 'ADMIN']
+            enum: [ 'STUDENT', 'TEACHER', 'ADMIN' ]
         },
         classes: [
             {
@@ -51,7 +50,6 @@ const UserSchema = new Schema(
     {
         timestamps: true
     }
-
 );
 
 /**

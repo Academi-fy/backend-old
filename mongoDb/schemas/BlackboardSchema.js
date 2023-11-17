@@ -13,7 +13,6 @@ const { Schema, Types: { ObjectId } } = mongoose;
  * @return {Schema} The schema for a blackboard.
  */
 const BlackboardSchema = new Schema(
-
     {
 
         title: {
@@ -37,7 +36,6 @@ const BlackboardSchema = new Schema(
     {
         timestamps: true
     }
-
 );
 
 /**

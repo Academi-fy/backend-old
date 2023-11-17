@@ -1,26 +1,23 @@
 import MessageContent from "../MessageContent.js";
+import { validateNotEmpty } from "../../propertyValidation.js";
 
 export default class TextContent extends MessageContent {
 
-
     constructor(
-        type,
-        text
+        value
     ) {
-        super(type);
-        this._text = text;
+        const type = "TEXT";
+        super(type, value);
+        validateNotEmpty("TextContent value", value);
     }
 
-    getContent() {
-        return this._text;
+    get _value() {
+        return this.value;
     }
 
-    get text() {
-        return this._text;
-    }
-
-    set text(value) {
-        this._text = value;
+    set _value(value) {
+        validateNotEmpty("TextContent value", value);
+        this.value = value;
     }
 
 }

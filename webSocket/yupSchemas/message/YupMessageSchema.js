@@ -17,13 +17,13 @@ export default {
     id: yup.string().required(),
     chat: yup.string().required(),
     author: yup.string().required(),
-    content: yup.array().of({
-        YupContentTypeSchema
-    }).required(),
-    reactions: yup.array().of({
-        YupMessageReaction
-    }).required(),
-    edits: yup.array().of({
-        YupEditedMessage
-    }).required()
+    content: yup.array().of(
+        yup.object().shape(YupContentTypeSchema)
+    ).required(),
+    reactions: yup.array().of(
+        yup.object().shape(YupMessageReaction)
+    ).required(),
+    edits: yup.array().of(
+        yup.object().shape(YupEditedMessage)
+    ).required()
 }

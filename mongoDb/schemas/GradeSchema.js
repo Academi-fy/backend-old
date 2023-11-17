@@ -8,7 +8,6 @@ const { Schema, Types: { ObjectId } } = mongoose;
  * @param {Array<ObjectId>} classes - The classes of the grade.
  */
 const GradeSchema = new Schema(
-
     {
 
         level: {
@@ -25,7 +24,6 @@ const GradeSchema = new Schema(
     {
         timestamps: true
     }
-
 );
 
 /**

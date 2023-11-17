@@ -1,8 +1,7 @@
-import { validateArray, validateNotEmpty, validateObject, verifyInCache } from "./propertyValidation.js";
+import { validateArray, validateNotEmpty, verifyInCache } from "./propertyValidation.js";
 import cache from "../cache.js";
 import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../mongoDb/collectionAccess.js";
 import ClassSchema from "../../mongoDb/schemas/ClassSchema.js";
-import mongoose from "mongoose";
 
 // Cache expiration time in milliseconds
 const expirationTime = 5 * 60 * 1000;
@@ -82,7 +81,7 @@ export default class Class {
         const classesFromDb = getAllDocuments(ClassSchema);
 
         const classes = [];
-        for(const class_ of classesFromDb) {
+        for (const class_ of classesFromDb) {
             classes.push(
                 class_
                     .populate('grade')
@@ -130,6 +129,8 @@ export default class Class {
         const classes = this.getClasses();
 
         const insertedClass = await createDocument(ClassSchema, class_);
+        if(!insertedClass) throw new Error(`Failed to create class:\n${ class_ }`);
+
         classes.push(
             insertedClass
                 .populate('grade')
@@ -138,7 +139,10 @@ export default class Class {
         );
         cache.put('classes', classes, expirationTime);
 
-        if (!this.verifyClassInCache(insertedClass)) throw new Error(`Failed to put class in cache:\n${ insertedClass }`);
+        if (!this.verifyClassInCache(insertedClass))
+
+            if(!verifyInCache(cache.get('classes'), insertedClass, this.updateClassCache))
+                throw new Error(`Failed to put class in cache:\n${ insertedClass }`);
 
         return insertedClass;
     }
@@ -154,15 +158,20 @@ export default class Class {
         const classes = this.getClasses();
 
         let updatedClass = await updateDocument(ClassSchema, classId, updateClass);
+        if(!updatedClass) throw new Error(`Failed to update class:\n${ updateClass }`);
+
         updatedClass = updatedClass
-                            .populate('grade')
-                            .populate('courses')
-                            .populate('members');
+            .populate('grade')
+            .populate('courses')
+            .populate('members');
 
         classes.splice(classes.findIndex(class_ => class_._id === classId), 1, updatedClass);
         cache.put('classes', classes, expirationTime);
 
-        if (!this.verifyClassInCache(updatedClass)) throw new Error(`Failed to update class in cache:\n${ updatedClass }`);
+        if (!this.verifyClassInCache(updatedClass))
+
+            if(!verifyInCache(cache.get('classes'), updatedClass, this.updateClassCache))
+                throw new Error(`Failed to update class in cache:\n${ updatedClass }`);
 
         return updatedClass;
     }
@@ -181,7 +190,8 @@ export default class Class {
         classes.splice(classes.findIndex(class_ => class_._id === classId), 1);
         cache.put('classes', classes, expirationTime);
 
-        if (this.verifyClassInCache(deletedClass)) throw new Error(`Failed to delete class from cache:\n${ deletedClass }`);
+        if (this.verifyClassInCache(deletedClass))
+            throw new Error(`Failed to delete class from cache:\n${ deletedClass }`);
 
         return true;
     }
@@ -192,7 +202,9 @@ export default class Class {
      * @return {Boolean} The status of the verification.
      */
     static async verifyClassInCache(class_) {
-        return verifyInCache(this.getClasses(), class_, this.updateClassCache);
+        const cacheResult = cache.get('classes').find(class__ => class__._id === class_._id);
+
+        return Boolean(cacheResult);
     }
 
 }

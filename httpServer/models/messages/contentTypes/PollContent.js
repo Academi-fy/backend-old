@@ -1,25 +1,24 @@
 import MessageContent from "../MessageContent.js";
+import { validateNotEmpty, validatePoll } from "../../propertyValidation.js";
 
 export default class PollContent extends MessageContent {
 
     constructor(
-        type,
-        poll
+        value
     ) {
-        super(type);
-        this._poll = poll;
+        const type = "POLL";
+        validatePoll("PollContent value", value);
+
+        super(type, value);
     }
 
-    getContent() {
-        return this._poll;
+    get _value() {
+        return this.value;
     }
 
-    get poll() {
-        return this._poll;
-    }
-
-    set poll(value) {
-        this._poll = value;
+    set _value(value) {
+        validateNotEmpty("PollContent value", value);
+        this.value = value;
     }
 
 }

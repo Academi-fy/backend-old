@@ -14,7 +14,6 @@ const { Schema, Types: { ObjectId } } = mongoose;
  * @return {Schema} The schema for a message.
  */
 const MessageSchema = new Schema(
-
     {
 
         chat: {
@@ -52,7 +51,6 @@ const MessageSchema = new Schema(
     {
         timestamps: true
     }
-
 );
 
 /**

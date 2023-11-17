@@ -1,6 +1,5 @@
 import cache from "../cache.js";
 import ChatSchema from "../../mongoDb/schemas/ChatSchema.js";
-import mongoose from "mongoose";
 import { validateArray, validateNotEmpty, verifyInCache } from "./propertyValidation.js";
 import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../mongoDb/collectionAccess.js";
 
@@ -55,7 +54,7 @@ export default class Chat {
 
     set _type(value) {
         validateNotEmpty('Chat type', value);
-        if(!['PRIVATE', 'GROUP', 'COURSE', 'CLUB'].includes(value)) throw new Error(`Invalid chat type: ${ value }`);
+        if (![ 'PRIVATE', 'GROUP', 'COURSE', 'CLUB' ].includes(value)) throw new Error(`Invalid chat type: ${ value }`);
         this.type = value;
     }
 
@@ -172,6 +171,8 @@ export default class Chat {
         const chats = this.getChats();
 
         const insertedChat = await createDocument(ChatSchema, chat);
+        if(!insertedChat) throw new Error(`Failed to create chat:\n${ chat }`);
+
         chats.push(
             insertedChat
                 .populate('messages')
@@ -181,7 +182,10 @@ export default class Chat {
         );
         cache.put('chats', chats, expirationTime);
 
-        if (!this.verifyChatInCache(insertedChat)) throw new Error(`Failed to put chat in cache:\n${ insertedChat }`);
+        if (!this.verifyChatInCache(insertedChat))
+
+            if(!verifyInCache(cache.get('chats'), insertedChat, this.updateChatCache))
+                throw new Error(`Failed to put chat in cache:\n${ insertedChat }`);
 
         return insertedChat;
     }
@@ -197,16 +201,21 @@ export default class Chat {
         const chats = this.getChats();
 
         let updatedChat = await updateDocument(ChatSchema, chatId, updateChat);
+        if(!updatedChat) throw new Error(`Failed to update chat:\n${ updateChat }`);
+
         updatedChat = updatedChat
-                        .populate('messages')
-                        .populate('targets')
-                        .populate('courses')
-                        .populate('clubs');
+            .populate('messages')
+            .populate('targets')
+            .populate('courses')
+            .populate('clubs');
 
         chats.splice(chats.findIndex(chat => chat._id === chatId), 1, updatedChat);
         cache.put('chats', chats, expirationTime);
 
-        if (!this.verifyChatInCache(updatedChat)) throw new Error(`Failed to update chat in cache:\n${ updatedChat }`);
+        if (!this.verifyChatInCache(updatedChat))
+
+            if(!verifyInCache(cache.get('chats'), updatedChat, this.updateChatCache))
+                throw new Error(`Failed to update chat in cache:\n${ updatedChat }`);
 
         return updatedChat;
     }
@@ -225,7 +234,8 @@ export default class Chat {
         chats.splice(chats.findIndex(chat => chat._id === chatId), 1);
         cache.put('chats', chats, expirationTime);
 
-        if (this.verifyChatInCache(deletedChat)) throw new Error(`Failed to delete chat from cache:\n${ deletedChat }`);
+        if (this.verifyChatInCache(deletedChat))
+            throw new Error(`Failed to delete chat from cache:\n${ deletedChat }`);
 
         return true;
     }
@@ -236,7 +246,11 @@ export default class Chat {
      * @return {Boolean} The status of the verification.
      */
     static async verifyChatInCache(chat) {
-        return verifyInCache(this.getChats(), chat, this.updateChatCache);
+
+        const cacheResult = cache.get('chats').find(chat_ => chat_._id === chat._id);
+
+        return Boolean(cacheResult);
+
     }
 
 }

@@ -2,9 +2,7 @@ import { validateArray, validateNotEmpty, validateObject, verifyInCache } from "
 import cache from "../../cache.js";
 import ClubSchema from "../../../mongoDb/schemas/ClubSchema.js";
 import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../../mongoDb/collectionAccess.js";
-import mongoose from "mongoose";
 import ClubDetails from "./ClubDetails.js";
-import Chat from "../Chat.js";
 
 // Cache expiration time in milliseconds
 const expirationTime = 5 * 60 * 1000;
@@ -29,11 +27,11 @@ export default class Club {
      * @param {String} chat - The id of the chat of the club.
      */
     constructor(
-        name = "Neue AG",
-        details = new ClubDetails(),
-        leaders = [],
-        members = [],
-        chat = ""
+        name,
+        details,
+        leaders,
+        members,
+        chat
     ) {
         this.name = name;
         this.details = details;
@@ -104,13 +102,13 @@ export default class Club {
         const clubsFromDb = getAllDocuments(ClubSchema);
 
         let clubs = [];
-        for(const club in clubsFromDb) {
+        for (const club in clubsFromDb) {
             clubs.push(
                 club
-                .populate('chat')
-                .populate('leaders')
-                .populate('members')
-                .populate('details.events')
+                    .populate('chat')
+                    .populate('leaders')
+                    .populate('members')
+                    .populate('details.events')
             );
         }
 
@@ -153,6 +151,8 @@ export default class Club {
         const clubs = this.getClubs();
 
         const insertedClub = await createDocument(ClubSchema, club);
+        if (!insertedClub) throw new Error(`Failed to create club:\n${ insertedClub }`);
+
         clubs.push(insertedClub
             .populate('chat')
             .populate('leaders')
@@ -161,7 +161,10 @@ export default class Club {
         );
         cache.put('clubs', clubs, expirationTime);
 
-        if (!this.verifyClubInCache(insertedClub)) throw new Error(`Failed to put club in cache:\n${ insertedClub }`);
+        if (!this.verifyClubInCache(insertedClub))
+
+            if(!verifyInCache(cache.get('clubs'), insertedClub, this.updateClubCache))
+                throw new Error(`Failed to put club in cache:\n${ insertedClub }`);
 
         return insertedClub;
     }
@@ -177,6 +180,8 @@ export default class Club {
         const clubs = this.getClubs();
 
         let updatedClub = await updateDocument(ClubSchema, clubId, updatedClub);
+        if(!updatedClub) throw new Error(`Failed to update club:\n${ updatedClub }`);
+
         updatedClub = updatedClub
             .populate('chat')
             .populate('leaders')
@@ -185,7 +190,10 @@ export default class Club {
         clubs.splice(clubs.findIndex(club => club._id === clubId), 1, updateClub);
         cache.put('clubs', clubs, expirationTime);
 
-        if (!this.verifyClubInCache(updatedClub)) throw new Error(`Failed to update club in cache:\n${ updatedClub }`);
+        if (!this.verifyClubInCache(updatedClub))
+
+            if(!verifyInCache(cache.get('clubs'), updatedClub, this.updateClubCache))
+                throw new Error(`Failed to update club in cache:\n${ updatedClub }`);
 
         return updatedClub;
     }
@@ -204,7 +212,8 @@ export default class Club {
         clubs.splice(clubs.findIndex(club => club._id === clubId), 1);
         cache.put('clubs', clubs, expirationTime);
 
-        if (this.verifyClubInCache(deletedCourse)) throw new Error(`Failed to delete club from cache:\n${ clubId }`);
+        if (this.verifyClubInCache(deletedCourse))
+            throw new Error(`Failed to delete club from cache:\n${ clubId }`);
 
         return true;
     }
@@ -215,7 +224,10 @@ export default class Club {
      * @return {Boolean} The result of the verification.
      */
     static async verifyClubInCache(testClub) {
-        return verifyInCache(this.getClubs(), testClub, this.updateClubCache);
+
+        const cacheResults = cache.get('clubs').find(club => club._id === testClub._id);
+
+        return Boolean(cacheResults);
     }
 
 }

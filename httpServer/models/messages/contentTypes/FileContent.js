@@ -1,25 +1,22 @@
 import MessageContent from "../MessageContent.js";
+import { validateNotEmpty } from "../../propertyValidation.js";
 
 export default class FileContent extends MessageContent {
 
     constructor(
-        type,
-        file
+        value
     ) {
-        super(type);
-        this._file = file;
+        const type = "FILE";
+        super(type, value);
     }
 
-    getContent() {
-        return this._file;
+    get _value() {
+        return this.value;
     }
 
-    get file() {
-        return this._file;
-    }
-
-    set file(value) {
-        this._file = value;
+    set _value(value) {
+        validateNotEmpty("FileContent value", value);
+        this.value = value;
     }
 
 }

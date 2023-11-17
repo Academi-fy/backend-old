@@ -11,7 +11,6 @@ const { Schema, Types: { ObjectId } } = mongoose;
  * @param {ObjectId} subject - The subject of the course.
  */
 const CourseSchema = new Schema(
-
     {
 
         members: [
@@ -43,7 +42,6 @@ const CourseSchema = new Schema(
     {
         timestamps: true
     }
-
 );
 
 /**

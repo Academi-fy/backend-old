@@ -13,7 +13,6 @@ const { Schema, Types: { ObjectId } } = mongoose;
  * @return {Schema} The schema for an event ticket.
  */
 const EventTicketSchema = new Schema(
-
     {
 
         event: {
@@ -37,7 +36,6 @@ const EventTicketSchema = new Schema(
     {
         timestamps: true
     }
-
 );
 
 /**

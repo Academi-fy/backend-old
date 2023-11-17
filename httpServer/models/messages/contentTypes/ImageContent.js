@@ -1,25 +1,22 @@
 import MessageContent from "../MessageContent.js";
+import { validateNotEmpty } from "../../propertyValidation.js";
 
 export default class ImageContent extends MessageContent {
 
     constructor(
-        type,
-        image
+        value
     ) {
-        super(type);
-        this._image = image;
+        const type = "IMAGE";
+        super(type, value);
     }
 
-    getContent() {
-        return this._image;
+    get _value() {
+        return this.value;
     }
 
-    get image() {
-        return this._image;
-    }
-
-    set image(value) {
-        this._image = value;
+    set _value(value) {
+        validateNotEmpty("ImageContent value", value);
+        this.value = value;
     }
 
 }

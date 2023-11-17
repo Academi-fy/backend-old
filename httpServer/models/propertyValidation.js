@@ -1,6 +1,8 @@
+import Poll from "./messages/Poll.js";
+
 /**
  * @description Validates that the provided value is not empty.
- * @param {string} propertyName - The name of the property.
+ * @param {String} propertyName - The name of the property.
  * @param {any} value - The value of the property.
  * @throws {Error} If the value is empty.
  */
@@ -10,7 +12,7 @@ export function validateNotEmpty(propertyName, value) {
 
 /**
  * @description Validates that the provided value is a number.
- * @param {string} propertyName - The name of the property.
+ * @param {String} propertyName - The name of the property.
  * @param {any} value - The value of the property.
  * @throws {Error} If the value is not a number.
  */
@@ -20,7 +22,7 @@ export function validateNumber(propertyName, value) {
 
 /**
  * @description Validates that the provided value is a string.
- * @param {string} propertyName - The name of the property.
+ * @param {String} propertyName - The name of the property.
  * @param {any} value - The value of the property.
  * @throws {Error} If the value is not a string.
  */
@@ -30,7 +32,7 @@ export function validateString(propertyName, value) {
 
 /**
  * @description Validates that the provided value is an array.
- * @param {string} propertyName - The name of the property.
+ * @param {String} propertyName - The name of the property.
  * @param {any} value - The value of the property.
  * @throws {Error} If the value is not an array.
  */
@@ -40,7 +42,7 @@ export function validateArray(propertyName, value) {
 
 /**
  * @description Validates that the provided value is an object.
- * @param {string} propertyName - The name of the property.
+ * @param {String} propertyName - The name of the property.
  * @param {any} value - The value of the property.
  * @throws {Error} If the value is not an object.
  */
@@ -50,7 +52,7 @@ export function validateObject(propertyName, value) {
 
 /**
  * Validates that the provided value is a boolean.
- * @param {string} propertyName - The name of the property.
+ * @param {String} propertyName - The name of the property.
  * @param {any} value - The value of the property.
  * @throws {Error} If the value is not a boolean.
  */
@@ -60,7 +62,7 @@ export function validateBoolean(propertyName, value) {
 
 /**
  * Validates that the provided value is a date.
- * @param {string} propertyName - The name of the property.
+ * @param {String} propertyName - The name of the property.
  * @param {any} value - The value of the property.
  * @throws {Error} If the value is not a date.
  */
@@ -70,12 +72,22 @@ export function validateDate(propertyName, value) {
 
 /**
  * Validates that the provided value is a function.
- * @param {string} propertyName - The name of the property.
+ * @param {String} propertyName - The name of the property.
  * @param {any} value - The value of the property.
  * @throws {Error} If the value is not a function.
  */
 export function validateFunction(propertyName, value) {
     if (typeof value !== "function") throw new Error(`${ propertyName } must be a function`);
+}
+
+/**
+ * Validates that the provided value is a poll.
+ * @param {String} propertyName - The name of the property.
+ * @param {any} value - The value of the property.
+ * @throws {Error} If the value is not a poll.
+ */
+export function validatePoll(propertyName, value) {
+    if (!(value instanceof Poll)) throw new Error(`${ propertyName } must be instance of Poll`);
 }
 
 /**

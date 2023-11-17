@@ -23,7 +23,6 @@ const { Schema, Types: { ObjectId } } = mongoose;
  */
 
 const ClubSchema = new Schema(
-
     {
 
         name: {
@@ -89,7 +88,6 @@ const ClubSchema = new Schema(
     {
         timestamps: true
     }
-
 );
 
 /**

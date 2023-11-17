@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import Blackboard from "./httpServer/models/Blackboard.js";
 
 dotenv.config();
 
@@ -11,3 +12,7 @@ await mongoose.connect(mongoURI, {
 })
               .then(() => console.log('MongoDB connected.'))
               .catch(err => console.log(err));
+
+
+const test = new Blackboard("")
+console.log(test);

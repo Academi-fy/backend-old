@@ -13,7 +13,6 @@ const { Schema, Types: { ObjectId } } = mongoose;
  * @return {Schema} The schema for a class.
  */
 const ClassSchema = new Schema(
-
     {
 
         grade: {
@@ -41,7 +40,6 @@ const ClassSchema = new Schema(
     {
         timestamps: true
     }
-
 );
 
 /**

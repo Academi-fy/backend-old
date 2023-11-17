@@ -14,7 +14,6 @@ const { Schema, Types: { ObjectId } } = mongoose;
  * @return {Schema} The schema for a user account.
  */
 const UserAccountSchema = new Schema(
-
     {
 
         username: {

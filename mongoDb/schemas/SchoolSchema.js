@@ -18,7 +18,6 @@ const { Schema, Types: { ObjectId } } = mongoose;
  * @return {Schema} The schema for a school.
  */
 const SchoolSchema = new Schema(
-
     {
 
         grades: [
@@ -79,7 +78,6 @@ const SchoolSchema = new Schema(
     {
         timestamps: true
     }
-
 );
 
 /**

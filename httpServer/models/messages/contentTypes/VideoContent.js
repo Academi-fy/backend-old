@@ -1,26 +1,22 @@
 import MessageContent from "../MessageContent.js";
+import { validateNotEmpty } from "../../propertyValidation.js";
 
 export default class VideoContent extends MessageContent {
 
     constructor(
-        type,
-        video
+        value
     ) {
-        super(type);
-        this._type = type;
-        this._video = video;
+        const type = "VIDEO";
+        super(type, value);
     }
 
-    getContent() {
-        return this._video;
+    get _value() {
+        return this.value;
     }
 
-    get video() {
-        return this._video;
-    }
-
-    set video(value) {
-        this._video = value;
+    set _value(value) {
+        validateNotEmpty("VideoContent value", value);
+        this.value = value;
     }
 
 }

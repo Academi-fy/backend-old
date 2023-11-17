@@ -11,7 +11,6 @@ const { Schema, Types: { ObjectId } } = mongoose;
  * @return {Schema} The schema for a subject.
  */
 const SubjectSchema = new Schema(
-
     {
 
         type: {
@@ -28,7 +27,6 @@ const SubjectSchema = new Schema(
     {
         timestamps: true
     }
-
 );
 
 /**

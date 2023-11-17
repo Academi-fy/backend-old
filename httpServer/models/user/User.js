@@ -1,6 +1,5 @@
 import UserSchema from "../../../mongoDb/schemas/user/UserSchema.js";
 import cache from "../../cache.js";
-import mongoose from "mongoose";
 import { validateArray, validateNotEmpty, verifyInCache } from "../propertyValidation.js";
 import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../../mongoDb/collectionAccess.js";
 
@@ -78,7 +77,7 @@ export default class User {
 
     set _type(value) {
         validateNotEmpty('user type', value);
-        if(!['STUDENT', 'TEACHER', 'ADMIN'].includes(value)) throw new Error(`Invalid user type: ${ value }`);
+        if (![ 'STUDENT', 'TEACHER', 'ADMIN' ].includes(value)) throw new Error(`Invalid user type: ${ value }`);
         this.type = value;
     }
 
@@ -157,6 +156,8 @@ export default class User {
         const users = this.getUsers();
 
         const insertedUser = await createDocument(UserSchema, user);
+        if(!insertedUser) throw new Error(`Failed to create user:\n${ user }`);
+
         users.push(
             insertedUser
                 .populate('classes')
@@ -164,7 +165,10 @@ export default class User {
         );
         cache.put(`users`, users, expirationTime)
 
-        if (!this.verifyUserInCache(insertedUser)) throw new Error(`Failed to put user in cache:\n${ insertedUser }`);
+        if (!this.verifyUserInCache(insertedUser))
+
+            if(!verifyInCache(cache.get('messages'), insertedUser, this.updateUserCache))
+                throw new Error(`Failed to put user in cache:\n${ insertedUser }`);
 
         return insertedUser;
     }
@@ -180,14 +184,19 @@ export default class User {
         const users = this.getUsers();
 
         let updatedUser = await updateDocument(UserSchema, userId, updateUser);
+        if(!updatedUser) throw new Error(`Failed to update user:\n${ updateUser }`);
+
         updatedUser = updatedUser
-                        .populate('classes')
-                        .populate('extra_courses');
+            .populate('classes')
+            .populate('extra_courses');
 
         users.splice(users.findIndex(user => user._id === userId), 1, updatedUser);
         cache.put('users', users, expirationTime);
 
-        if (!this.verifyUserInCache(updatedUser)) throw new Error(`Failed to update user in cache:\n${ updatedUser }`);
+        if (!this.verifyUserInCache(updatedUser))
+
+            if(!verifyInCache(cache.get('messages'), updatedUser, this.updateUserCache))
+                throw new Error(`Failed to update user in cache:\n${ updatedUser }`);
 
         return updatedUser;
     }
@@ -206,7 +215,8 @@ export default class User {
         users.splice(users.findIndex(user => user._id === userId), 1);
         cache.put('users', users, expirationTime);
 
-        if (this.verifyUserInCache(deletedUser)) throw new Error(`Failed to delete user from cache:\n${ deletedUser }`);
+        if (this.verifyUserInCache(deletedUser))
+            throw new Error(`Failed to delete user from cache:\n${ deletedUser }`);
 
         return true;
     }
@@ -217,7 +227,11 @@ export default class User {
      * @returns {Boolean} True if the user is in the cache
      */
     static async verifyUserInCache(user) {
-        return verifyInCache(this.getUsers(), user, this.updateUserCache);
+
+        const cacheResult = cache.get('users').find(user_ => user_._id === user._id);
+
+        return Boolean(cacheResult);
+
     }
 
 }

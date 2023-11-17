@@ -1,22 +1,37 @@
-/*
-
-question
-anonymous
-answers
-
-*/
-
 export default class Poll {
 
-}
-
-const answers = [
-
-    {
-        id: "1", // 1,2,3,4...
-        optionName: "Option 1",
-        voters: [],
-        maxVotesPerUser: 1
+    constructor(
+        question,
+        anonymous,
+        answers
+    ) {
+        this._question = question;
+        this._anonymous = anonymous;
+        this._answers = answers;
     }
 
-]
+    get question() {
+        return this._question;
+    }
+
+    set question(value) {
+        this._question = value;
+    }
+
+    get anonymous() {
+        return this._anonymous;
+    }
+
+    set anonymous(value) {
+        this._anonymous = value;
+    }
+
+    get answers() {
+        return this._answers;
+    }
+
+    set answers(value) {
+        this._answers = value;
+    }
+
+}
