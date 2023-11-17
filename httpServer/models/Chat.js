@@ -51,7 +51,6 @@ export default class Chat {
         this.name = name;
         this.avatar = avatar;
         this.messages = messages;
-
     }
 
     get _type() {

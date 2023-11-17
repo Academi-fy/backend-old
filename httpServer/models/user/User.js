@@ -132,6 +132,7 @@ export default class User {
      * @returns {User} The user
      */
     static async getUserById(userId) {
+        //TODO connect to cache
         return getDocument(UserSchema, userId);
     }
 

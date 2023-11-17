@@ -34,12 +34,12 @@ export default class Message {
      * @param {Number} date - The date the message was created.
      */
     constructor(
-        chat = "",
-        author = "",
-        content = [],
-        reactions = [],
-        edits = [],
-        date = Date.now()
+        chat,
+        author,
+        content,
+        reactions,
+        edits,
+        date
     ) {
         this.chat = chat;
         this.author = author;
@@ -207,15 +207,17 @@ export default class Message {
      */
     static async deleteMessage(messageId) {
 
-        const deleteMessage = await deleteDocument(MessageSchema, messageId);
-        if (!deleteMessage) throw new Error(`Failed to delete message with id ${ messageId }`);
+        const deletedMessage = await deleteDocument(MessageSchema, messageId);
+        if (!deletedMessage) throw new Error(`Failed to delete message with id ${ messageId }`);
 
         const messages = this.getMessages();
         messages.splice(messages.findIndex(message => message._id === messageId), 1);
         cache.put('messages', messages, expirationTime);
 
-        if (this.verifyMessageInCache(deleteMessage))
-            throw new Error(`Failed to delete message from cache:\n${ deleteMessage }`);
+        if (this.verifyMessageInCache(deletedMessage))
+
+            if(!verifyInCache(cache.get('messages'), deletedMessage, this.updateMessageCache))
+                throw new Error(`Failed to delete message from cache:\n${ deletedMessage }`);
 
         return true;
     }
