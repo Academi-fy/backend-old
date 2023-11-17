@@ -1,7 +1,5 @@
 import dotenv from "dotenv";
 import mongoose from "mongoose";
-import School from "./httpServer/models/School.js";
-import User from "./httpServer/models/user/User.js";
 
 dotenv.config();
 

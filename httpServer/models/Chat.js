@@ -173,7 +173,7 @@ export default class Chat {
         const chats = this.getChats();
 
         const insertedChat = await createDocument(ChatSchema, chat);
-        if(!insertedChat) throw new Error(`Failed to create chat:\n${ chat }`);
+        if (!insertedChat) throw new Error(`Failed to create chat:\n${ chat }`);
 
         chats.push(
             this.populateChat(insertedChat)
@@ -182,7 +182,7 @@ export default class Chat {
 
         if (!this.verifyChatInCache(insertedChat))
 
-            if(!verifyInCache(cache.get('chats'), insertedChat, this.updateChatCache))
+            if (!verifyInCache(cache.get('chats'), insertedChat, this.updateChatCache))
                 throw new Error(`Failed to put chat in cache:\n${ insertedChat }`);
 
         return insertedChat;
@@ -199,7 +199,7 @@ export default class Chat {
         const chats = this.getChats();
 
         let updatedChat = await updateDocument(ChatSchema, chatId, updateChat);
-        if(!updatedChat) throw new Error(`Failed to update chat:\n${ updateChat }`);
+        if (!updatedChat) throw new Error(`Failed to update chat:\n${ updateChat }`);
 
         updatedChat = this.populateChat(updatedChat);
 
@@ -208,7 +208,7 @@ export default class Chat {
 
         if (!this.verifyChatInCache(updatedChat))
 
-            if(!verifyInCache(cache.get('chats'), updatedChat, this.updateChatCache))
+            if (!verifyInCache(cache.get('chats'), updatedChat, this.updateChatCache))
                 throw new Error(`Failed to update chat in cache:\n${ updatedChat }`);
 
         return updatedChat;

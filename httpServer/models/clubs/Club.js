@@ -8,7 +8,6 @@ import {
     getDocument,
     updateDocument
 } from "../../../mongoDb/collectionAccess.js";
-import ClubDetails from "./ClubDetails.js";
 
 // Cache expiration time in milliseconds
 const expirationTime = 5 * 60 * 1000;
@@ -162,7 +161,7 @@ export default class Club {
 
         if (!this.verifyClubInCache(insertedClub))
 
-            if(!verifyInCache(cache.get('clubs'), insertedClub, this.updateClubCache))
+            if (!verifyInCache(cache.get('clubs'), insertedClub, this.updateClubCache))
                 throw new Error(`Failed to put club in cache:\n${ insertedClub }`);
 
         return insertedClub;
@@ -179,7 +178,7 @@ export default class Club {
         const clubs = this.getClubs();
 
         let updatedClub = await updateDocument(ClubSchema, clubId, updatedClub);
-        if(!updatedClub) throw new Error(`Failed to update club:\n${ updatedClub }`);
+        if (!updatedClub) throw new Error(`Failed to update club:\n${ updatedClub }`);
 
         updatedClub = this.populateClub(updatedClub);
 
@@ -188,7 +187,7 @@ export default class Club {
 
         if (!this.verifyClubInCache(updatedClub))
 
-            if(!verifyInCache(cache.get('clubs'), updatedClub, this.updateClubCache))
+            if (!verifyInCache(cache.get('clubs'), updatedClub, this.updateClubCache))
                 throw new Error(`Failed to update club in cache:\n${ updatedClub }`);
 
         return updatedClub;

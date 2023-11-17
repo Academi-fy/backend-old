@@ -1,6 +1,5 @@
 import { createDocument, getAllDocuments, getDocument, updateDocument } from "../../mongoDb/collectionAccess.js";
 import SchoolSchema from "../../mongoDb/schemas/SchoolSchema.js";
-import { populate } from "dotenv";
 
 /**
  * @description Class representing a school.
@@ -126,7 +125,7 @@ export default class School {
      * @description Get all schools.
      * @return {Array<School>} The schools.
      */
-    static async getSchools(){
+    static async getSchools() {
         return getAllDocuments(SchoolSchema);
     }
 

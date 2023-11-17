@@ -158,7 +158,7 @@ export default class Message {
         const messages = this.getMessages();
 
         const insertedMessage = await createDocument(MessageSchema, message);
-        if(!insertedMessage) throw new Error(`Failed to create message:\n${ message }`);
+        if (!insertedMessage) throw new Error(`Failed to create message:\n${ message }`);
 
         messages.push(
             this.populateMessage(insertedMessage)
@@ -167,7 +167,7 @@ export default class Message {
 
         if (!this.verifyMessageInCache(message))
 
-            if(!verifyInCache(cache.get('messages'), insertedMessage, this.updateMessageCache))
+            if (!verifyInCache(cache.get('messages'), insertedMessage, this.updateMessageCache))
                 throw new Error(`Failed to put message in cache:\n${ insertedMessage }`);
 
         return insertedMessage;
@@ -185,7 +185,7 @@ export default class Message {
         const messages = this.getMessages();
 
         let updatedMessage = await updateDocument(MessageSchema, messageId, updateMessage);
-        if(!updatedMessage) throw new Error(`Failed to update message:\n${ updateMessage }`);
+        if (!updatedMessage) throw new Error(`Failed to update message:\n${ updateMessage }`);
 
         updatedMessage = this.populateMessage(updatedMessage);
 
@@ -194,7 +194,7 @@ export default class Message {
 
         if (!this.verifyMessageInCache(updatedMessage))
 
-            if(!verifyInCache(cache.get('messages'), updatedMessage, this.updateMessageCache))
+            if (!verifyInCache(cache.get('messages'), updatedMessage, this.updateMessageCache))
                 throw new Error(`Failed to update message in cache:\n${ updatedMessage }`);
 
         return updatedMessage;

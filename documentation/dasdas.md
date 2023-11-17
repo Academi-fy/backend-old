@@ -99,15 +99,15 @@ post(`http://messenger.rotteck.de/api/chats/create`, chat);
 Chat aktualisieren: `POST /api/chats/update/:id`
 
 ```javascript
-let updatedChat = {...};
-patch(`http://messenger.rotteck.de/api/chats/update/${updatedCourse.id}`, updatedCourse);
+let updatedChat = { ... };
+patch(`http://messenger.rotteck.de/api/chats/update/${ updatedCourse.id }`, updatedCourse);
 ```
 
 Chat löschen: `POST /api/chats/delete/:id`
 
 ```javascript
 let courseId = "507f191e810c19729de860ea";
-delete (`http://messenger.rotteck.de/api/chats/delete/${courseId}`);
+delete (`http://messenger.rotteck.de/api/chats/delete/${ courseId }`);
 ```
 
 ### Chat Schema in Mongodb

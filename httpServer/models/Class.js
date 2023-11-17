@@ -132,7 +132,7 @@ export default class Class {
         const classes = this.getClasses();
 
         const insertedClass = await createDocument(ClassSchema, class_);
-        if(!insertedClass) throw new Error(`Failed to create class:\n${ class_ }`);
+        if (!insertedClass) throw new Error(`Failed to create class:\n${ class_ }`);
 
         classes.push(
             this.populateClass(insertedClass)
@@ -141,7 +141,7 @@ export default class Class {
 
         if (!this.verifyClassInCache(insertedClass))
 
-            if(!verifyInCache(cache.get('classes'), insertedClass, this.updateClassCache))
+            if (!verifyInCache(cache.get('classes'), insertedClass, this.updateClassCache))
                 throw new Error(`Failed to put class in cache:\n${ insertedClass }`);
 
         return insertedClass;
@@ -158,7 +158,7 @@ export default class Class {
         const classes = this.getClasses();
 
         let updatedClass = await updateDocument(ClassSchema, classId, updateClass);
-        if(!updatedClass) throw new Error(`Failed to update class:\n${ updateClass }`);
+        if (!updatedClass) throw new Error(`Failed to update class:\n${ updateClass }`);
 
         updatedClass = this.populateClass(updatedClass);
 
@@ -167,7 +167,7 @@ export default class Class {
 
         if (!this.verifyClassInCache(updatedClass))
 
-            if(!verifyInCache(cache.get('classes'), updatedClass, this.updateClassCache))
+            if (!verifyInCache(cache.get('classes'), updatedClass, this.updateClassCache))
                 throw new Error(`Failed to update class in cache:\n${ updatedClass }`);
 
         return updatedClass;

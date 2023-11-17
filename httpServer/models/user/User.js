@@ -160,7 +160,7 @@ export default class User {
         const users = this.getUsers();
 
         const insertedUser = await createDocument(UserSchema, user);
-        if(!insertedUser) throw new Error(`Failed to create user:\n${ user }`);
+        if (!insertedUser) throw new Error(`Failed to create user:\n${ user }`);
 
         users.push(
             this.populateUser(insertedUser)
@@ -169,7 +169,7 @@ export default class User {
 
         if (!this.verifyUserInCache(insertedUser))
 
-            if(!verifyInCache(cache.get('messages'), insertedUser, this.updateUserCache))
+            if (!verifyInCache(cache.get('messages'), insertedUser, this.updateUserCache))
                 throw new Error(`Failed to put user in cache:\n${ insertedUser }`);
 
         return insertedUser;
@@ -186,7 +186,7 @@ export default class User {
         const users = this.getUsers();
 
         let updatedUser = await updateDocument(UserSchema, userId, updateUser);
-        if(!updatedUser) throw new Error(`Failed to update user:\n${ updateUser }`);
+        if (!updatedUser) throw new Error(`Failed to update user:\n${ updateUser }`);
 
         updatedUser = this.populateUser(updatedUser);
 
@@ -195,7 +195,7 @@ export default class User {
 
         if (!this.verifyUserInCache(updatedUser))
 
-            if(!verifyInCache(cache.get('messages'), updatedUser, this.updateUserCache))
+            if (!verifyInCache(cache.get('messages'), updatedUser, this.updateUserCache))
                 throw new Error(`Failed to update user in cache:\n${ updatedUser }`);
 
         return updatedUser;

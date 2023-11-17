@@ -114,24 +114,24 @@ export default class Blackboard {
      * @param {Blackboard} blackboard - The blackboard to create.
      * @return {Blackboard} The created blackboard.
      */
-     static async createBlackboard(blackboard) {
+    static async createBlackboard(blackboard) {
 
-         const blackboards = this.getBlackboards();
+        const blackboards = this.getBlackboards();
 
-         const insertedBlackboard = await createDocument(BlackboardSchema, blackboard);
-         if(!insertedBlackboard) throw new Error(`Failed to create blackboard:\n${ blackboard }`);
+        const insertedBlackboard = await createDocument(BlackboardSchema, blackboard);
+        if (!insertedBlackboard) throw new Error(`Failed to create blackboard:\n${ blackboard }`);
 
-         blackboards.push(
-             this.populateBlackboard(insertedBlackboard)
-         );
-         cache.put('blackboards', blackboards, expirationTime);
+        blackboards.push(
+            this.populateBlackboard(insertedBlackboard)
+        );
+        cache.put('blackboards', blackboards, expirationTime);
 
-         if(!this.verifyBlackboardInCache(insertedBlackboard))
+        if (!this.verifyBlackboardInCache(insertedBlackboard))
 
-             if(!verifyInCache(cache.get('blackboards'), insertedBlackboard, this.updateBlackboardCache))
+            if (!verifyInCache(cache.get('blackboards'), insertedBlackboard, this.updateBlackboardCache))
                 throw new Error(`Failed to put blackboard in cache:\n${ insertedBlackboard }`);
 
-         return insertedBlackboard;
+        return insertedBlackboard;
     }
 
     /**
@@ -142,22 +142,22 @@ export default class Blackboard {
      */
     static async updateBlackboard(blackboardId, updateBlackboard) {
 
-         const blackboards = this.getBlackboards();
+        const blackboards = this.getBlackboards();
 
-         let updatedBlackboard = await updateDocument(BlackboardSchema, blackboardId, updateBlackboard);
-         if(!updatedBlackboard) throw new Error(`Failed to update blackboard:\n${ updateBlackboard }`);
+        let updatedBlackboard = await updateDocument(BlackboardSchema, blackboardId, updateBlackboard);
+        if (!updatedBlackboard) throw new Error(`Failed to update blackboard:\n${ updateBlackboard }`);
 
-         updatedBlackboard = this.populateBlackboard(updatedBlackboard);
+        updatedBlackboard = this.populateBlackboard(updatedBlackboard);
 
-         blackboards.splice(blackboards.findIndex(blackboard => blackboard._id.toString() === blackboardId), 1, updatedBlackboard);
-         cache.put('blackboards', blackboards, expirationTime);
+        blackboards.splice(blackboards.findIndex(blackboard => blackboard._id.toString() === blackboardId), 1, updatedBlackboard);
+        cache.put('blackboards', blackboards, expirationTime);
 
-         if(!this.verifyBlackboardInCache(updatedBlackboard))
+        if (!this.verifyBlackboardInCache(updatedBlackboard))
 
-             if(!verifyInCache(cache.get('blackboards'), updatedBlackboard, this.updateBlackboardCache))
+            if (!verifyInCache(cache.get('blackboards'), updatedBlackboard, this.updateBlackboardCache))
                 throw new Error(`Failed to put blackboard in cache:\n${ updatedBlackboard }`);
 
-         return updatedBlackboard;
+        return updatedBlackboard;
     }
 
     /**
@@ -168,13 +168,13 @@ export default class Blackboard {
     static async deleteBlackboard(blackboardId) {
 
         const deleteBlackboard = await deleteDocument(BlackboardSchema, blackboardId);
-        if(!deleteBlackboard) throw new Error(`Failed to delete blackboard with id:\n${ blackboardId }`);
+        if (!deleteBlackboard) throw new Error(`Failed to delete blackboard with id:\n${ blackboardId }`);
 
         const blackboards = this.getBlackboards();
         blackboards.splice(blackboards.findIndex(blackboard => blackboard._id.toString() === blackboardId), 1);
         cache.put('blackboards', blackboards, expirationTime);
 
-        if(this.verifyBlackboardInCache(deleteBlackboard))
+        if (this.verifyBlackboardInCache(deleteBlackboard))
             throw new Error(`Failed to delete blackboard in cache:\n${ deleteBlackboard }`);
 
 

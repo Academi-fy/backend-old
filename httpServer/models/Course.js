@@ -125,7 +125,7 @@ export default class Course {
         const courses = this.getCourses();
 
         const insertedCourse = await createDocument(CourseSchema, course);
-        if(!insertedCourse) throw new Error(`Course could not be created:\n${ course }`);
+        if (!insertedCourse) throw new Error(`Course could not be created:\n${ course }`);
 
         courses.push(
             this.populateCourse(insertedCourse)
@@ -134,7 +134,7 @@ export default class Course {
 
         if (!this.verifyCourseInCache(insertedCourse))
 
-            if(!verifyInCache(cache.get('courses'), insertedCourse, this.updateCourseCache))
+            if (!verifyInCache(cache.get('courses'), insertedCourse, this.updateCourseCache))
                 throw new Error(`Course could not be created:\n${ insertedCourse }`);
 
         return insertedCourse;
@@ -151,7 +151,7 @@ export default class Course {
         const courses = this.getCourses();
 
         let updatedCourse = await updateDocument(CourseSchema, courseId, updateCourse);
-        if(!updatedCourse) throw new Error(`Course could not be updated:\n${ updateCourse }`);
+        if (!updatedCourse) throw new Error(`Course could not be updated:\n${ updateCourse }`);
 
         updatedCourse = this.populateCourse(updatedCourse);
 
@@ -160,7 +160,7 @@ export default class Course {
 
         if (!this.verifyCourseInCache(updatedCourse))
 
-            if(!verifyInCache(cache.get('courses'), updatedCourse, this.updateCourseCache))
+            if (!verifyInCache(cache.get('courses'), updatedCourse, this.updateCourseCache))
                 throw new Error(`Course could not be updated:\n${ updatedCourse }`);
 
 
