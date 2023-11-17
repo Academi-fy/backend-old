@@ -1,6 +1,12 @@
 import { validateArray, validateNotEmpty, validateNumber, verifyInCache } from "../propertyValidation.js";
 import cache from "../../cache.js";
-import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../../mongoDb/collectionAccess.js";
+import {
+    createDocument,
+    deleteDocument,
+    getAllDocuments,
+    getDocument,
+    updateDocument
+} from "../../../mongoDb/collectionAccess.js";
 import MessageSchema from "../../../mongoDb/schemas/MessageSchema.js";
 
 // Time in milliseconds after which the cache will expire
@@ -8,13 +14,13 @@ const expirationTime = 2 * 60 * 1000;
 
 /**
  * @description Class representing a Message.
- * @property {String} _id - The id of the message.
- * @property {Chat} chat - The chat that the message belongs to.
- * @property {User} author - The author of the message.
- * @property {Array<FileContent | ImageContent | PollContent | TextContent | VideoContent>} content - The content of the message.
- * @property {Array<MessageReaction>} reactions - The reactions to the message.
- * @property {Array<EditedMessage>} edits - The edits made to the message.
- * @property {Number} date - The date the message was created.
+ * @param {String} _id - The id of the message.
+ * @param {Chat} chat - The chat that the message belongs to.
+ * @param {User} author - The author of the message.
+ * @param {Array<FileContent | ImageContent | PollContent | TextContent | VideoContent>} content - The content of the message.
+ * @param {Array<MessageReaction>} reactions - The reactions to the message.
+ * @param {Array<EditedMessage>} edits - The edits made to the message.
+ * @param {Number} date - The date the message was created.
  */
 export default class Message {
 
@@ -109,9 +115,7 @@ export default class Message {
         const messages = [];
         for (const message of messagesFromDb) {
             messages.push(
-                message
-                    .populate('chat')
-                    .populate('author')
+                this.populateMessage(message)
             );
         }
 
@@ -140,8 +144,8 @@ export default class Message {
      * @param {String} id - The ID of the message.
      * @return {Message} The message object.
      */
-    static getMessageById(id) {
-        return this.getMessages().find(message => message._id === id);
+    static async getMessageById(id) {
+        return await getDocument(MessageSchema, id);
     }
 
     /**
@@ -157,9 +161,7 @@ export default class Message {
         if(!insertedMessage) throw new Error(`Failed to create message:\n${ message }`);
 
         messages.push(
-            insertedMessage
-                .populate('chat')
-                .populate('author')
+            this.populateMessage(insertedMessage)
         );
         cache.put('messages', messages, expirationTime);
 
@@ -185,9 +187,7 @@ export default class Message {
         let updatedMessage = await updateDocument(MessageSchema, messageId, updateMessage);
         if(!updatedMessage) throw new Error(`Failed to update message:\n${ updateMessage }`);
 
-        updatedMessage = updatedMessage
-            .populate('chat')
-            .populate('author');
+        updatedMessage = this.populateMessage(updatedMessage);
 
         messages.splice(messages.findIndex(message => message._id === messageId), 1, updatedMessage);
         cache.put('messages', messages, expirationTime);
@@ -231,6 +231,17 @@ export default class Message {
 
         return Boolean(cacheResult);
 
+    }
+
+    /**
+     * @description Populate a message.
+     * @param {Object} message - The message to populate.
+     * @return {Message} The populated message.
+     * */
+    static populateMessage(message) {
+        return message
+            .populate('chat')
+            .populate('author');
     }
 
 }

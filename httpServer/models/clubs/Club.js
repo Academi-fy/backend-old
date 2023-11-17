@@ -1,7 +1,13 @@
 import { validateArray, validateNotEmpty, validateObject, verifyInCache } from "../propertyValidation.js";
 import cache from "../../cache.js";
 import ClubSchema from "../../../mongoDb/schemas/ClubSchema.js";
-import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../../mongoDb/collectionAccess.js";
+import {
+    createDocument,
+    deleteDocument,
+    getAllDocuments,
+    getDocument,
+    updateDocument
+} from "../../../mongoDb/collectionAccess.js";
 import ClubDetails from "./ClubDetails.js";
 
 // Cache expiration time in milliseconds
@@ -9,12 +15,12 @@ const expirationTime = 5 * 60 * 1000;
 
 /**
  * @description Class representing a Club.
- * @property {String} _id - The id of the club.
- * @property {String} name - The name of the club.
- * @property {ClubDetails} details - The details of the club.
- * @property {Array<User>} leaders - The leaders of the club.
- * @property {Array<User>} members - The members of the club.
- * @property {Chat} chat - The chat of the club.
+ * @param {String} _id - The id of the club.
+ * @param {String} name - The name of the club.
+ * @param {ClubDetails} details - The details of the club.
+ * @param {Array<User>} leaders - The leaders of the club.
+ * @param {Array<User>} members - The members of the club.
+ * @param {Chat} chat - The chat of the club.
  */
 export default class Club {
 
@@ -104,11 +110,7 @@ export default class Club {
         let clubs = [];
         for (const club in clubsFromDb) {
             clubs.push(
-                club
-                    .populate('chat')
-                    .populate('leaders')
-                    .populate('members')
-                    .populate('details.events')
+                this.populateClub(club)
             );
         }
 
@@ -138,7 +140,7 @@ export default class Club {
      * @return {Club} The club.
      */
     static async getClubById(clubId) {
-        return (this.getClubs()).find(club => club._id === clubId);
+        return getDocument(ClubSchema, clubId);
     }
 
     /**
@@ -153,11 +155,8 @@ export default class Club {
         const insertedClub = await createDocument(ClubSchema, club);
         if (!insertedClub) throw new Error(`Failed to create club:\n${ insertedClub }`);
 
-        clubs.push(insertedClub
-            .populate('chat')
-            .populate('leaders')
-            .populate('members')
-            .populate('details.events')
+        clubs.push(
+            this.populateClub(insertedClub)
         );
         cache.put('clubs', clubs, expirationTime);
 
@@ -182,10 +181,7 @@ export default class Club {
         let updatedClub = await updateDocument(ClubSchema, clubId, updatedClub);
         if(!updatedClub) throw new Error(`Failed to update club:\n${ updatedClub }`);
 
-        updatedClub = updatedClub
-            .populate('chat')
-            .populate('leaders')
-            .populate('members')
+        updatedClub = this.populateClub(updatedClub);
 
         clubs.splice(clubs.findIndex(club => club._id === clubId), 1, updateClub);
         cache.put('clubs', clubs, expirationTime);
@@ -228,6 +224,19 @@ export default class Club {
         const cacheResults = cache.get('clubs').find(club => club._id === testClub._id);
 
         return Boolean(cacheResults);
+    }
+
+    /**
+     * @description Populate a club.
+     * @param {Object} club - The club to populate.
+     * @return {Club} The populated club.
+     */
+    static populateClub(club) {
+        return club
+            .populate('chat')
+            .populate('leaders')
+            .populate('members')
+            .populate('details.events')
     }
 
 }

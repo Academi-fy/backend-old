@@ -1,21 +1,27 @@
 import cache from "../cache.js";
 import ChatSchema from "../../mongoDb/schemas/ChatSchema.js";
 import { validateArray, validateNotEmpty, verifyInCache } from "./propertyValidation.js";
-import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../mongoDb/collectionAccess.js";
+import {
+    createDocument,
+    deleteDocument,
+    getAllDocuments,
+    getDocument,
+    updateDocument
+} from "../../mongoDb/collectionAccess.js";
 
 // Time in milliseconds after which the cache will expire
 const expirationTime = 2 * 60 * 1000;
 
 /**
  * @description Class representing a Chat.
- * @property {String} _id - The id of the chat.
- * @property {String} type - The type of the chat. Valid types are: 'PRIVATE', 'GROUP', 'COURSE', 'CLUB'.
- * @property {Array<User>} targets - The targets of the chat.
- * @property {Array<Course>} courses - The courses related to the chat.
- * @property {Array<Club>} clubs - The clubs related to the chat.
- * @property {String} name - The name of the chat.
- * @property {String} avatar - The avatar of the chat.
- * @property {Array<Message>} messages - The messages in the chat.
+ * @param {String} _id - The id of the chat.
+ * @param {String} type - The type of the chat. Valid types are: 'PRIVATE', 'GROUP', 'COURSE', 'CLUB'.
+ * @param {Array<User>} targets - The targets of the chat.
+ * @param {Array<Course>} courses - The courses related to the chat.
+ * @param {Array<Club>} clubs - The clubs related to the chat.
+ * @param {String} name - The name of the chat.
+ * @param {String} avatar - The avatar of the chat.
+ * @param {Array<Message>} messages - The messages in the chat.
  */
 export default class Chat {
 
@@ -124,11 +130,7 @@ export default class Chat {
         const chats = [];
         for (const chat of chatsFromDb) {
             chats.push(
-                chat
-                    .populate('messages')
-                    .populate('targets')
-                    .populate('courses')
-                    .populate('clubs')
+                this.populateChat(chat)
             );
         }
 
@@ -158,7 +160,7 @@ export default class Chat {
      * @return {Chat} The chat.
      */
     static async getChatById(chatId) {
-        return (this.getChats()).find(chat => chat._id === chatId);
+        return getDocument(ChatSchema, chatId);
     }
 
     /**
@@ -174,11 +176,7 @@ export default class Chat {
         if(!insertedChat) throw new Error(`Failed to create chat:\n${ chat }`);
 
         chats.push(
-            insertedChat
-                .populate('messages')
-                .populate('targets')
-                .populate('courses')
-                .populate('clubs')
+            this.populateChat(insertedChat)
         );
         cache.put('chats', chats, expirationTime);
 
@@ -203,11 +201,7 @@ export default class Chat {
         let updatedChat = await updateDocument(ChatSchema, chatId, updateChat);
         if(!updatedChat) throw new Error(`Failed to update chat:\n${ updateChat }`);
 
-        updatedChat = updatedChat
-            .populate('messages')
-            .populate('targets')
-            .populate('courses')
-            .populate('clubs');
+        updatedChat = this.populateChat(updatedChat);
 
         chats.splice(chats.findIndex(chat => chat._id === chatId), 1, updatedChat);
         cache.put('chats', chats, expirationTime);
@@ -251,6 +245,19 @@ export default class Chat {
 
         return Boolean(cacheResult);
 
+    }
+
+    /**
+     * @description Populate a chat.
+     * @param {Object} chat - The chat to populate.
+     * @return {Chat} The populated chat.
+     * */
+    static populateChat(chat) {
+        return chat
+            .populate('messages')
+            .populate('targets')
+            .populate('courses')
+            .populate('clubs');
     }
 
 }

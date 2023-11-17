@@ -7,11 +7,11 @@ const expirationTime = 10 * 60 * 1000;
 
 /**
  * @description Class representing a blackboard.
- * @property {String} _id - The id of the blackboard.
- * @property {String} title - The title of the blackboard.
- * @property {User} author - The author of the blackboard.
- * @property {String} coverImage - The cover image of the blackboard.
- * @property {String} text - The text of the blackboard.
+ * @param {String} _id - The id of the blackboard.
+ * @param {String} title - The title of the blackboard.
+ * @param {User} author - The author of the blackboard.
+ * @param {String} coverImage - The cover image of the blackboard.
+ * @param {String} text - The text of the blackboard.
  * */
 export default class Blackboard {
 
@@ -78,8 +78,7 @@ export default class Blackboard {
         const blackboards = [];
         for (const blackboard of blackboardsFromDb) {
             blackboards.push(
-                blackboard
-                    .populate('author')
+                this.populateBlackboard(blackboard)
             );
         }
 
@@ -123,8 +122,7 @@ export default class Blackboard {
          if(!insertedBlackboard) throw new Error(`Failed to create blackboard:\n${ blackboard }`);
 
          blackboards.push(
-             insertedBlackboard
-                 .populate('author')
+             this.populateBlackboard(insertedBlackboard)
          );
          cache.put('blackboards', blackboards, expirationTime);
 
@@ -149,8 +147,7 @@ export default class Blackboard {
          let updatedBlackboard = await updateDocument(BlackboardSchema, blackboardId, updateBlackboard);
          if(!updatedBlackboard) throw new Error(`Failed to update blackboard:\n${ updateBlackboard }`);
 
-         updatedBlackboard = updatedBlackboard
-                                .populate('author');
+         updatedBlackboard = this.populateBlackboard(updatedBlackboard);
 
          blackboards.splice(blackboards.findIndex(blackboard => blackboard._id.toString() === blackboardId), 1, updatedBlackboard);
          cache.put('blackboards', blackboards, expirationTime);
@@ -163,6 +160,11 @@ export default class Blackboard {
          return updatedBlackboard;
     }
 
+    /**
+     * Delete a blackboard.
+     * @param {String} blackboardId - The ID of the blackboard to delete.
+     * @return {Boolean} True if the blackboard was deleted, false otherwise.
+     */
     static async deleteBlackboard(blackboardId) {
 
         const deleteBlackboard = await deleteDocument(BlackboardSchema, blackboardId);
@@ -175,6 +177,8 @@ export default class Blackboard {
         if(this.verifyBlackboardInCache(deleteBlackboard))
             throw new Error(`Failed to delete blackboard in cache:\n${ deleteBlackboard }`);
 
+
+        return true;
     }
 
     /**
@@ -188,6 +192,16 @@ export default class Blackboard {
 
         return Boolean(cacheResult);
 
+    }
+
+    /**
+     * Populate a blackboard.
+     * @param {Object} blackboard - The blackboard to populate.
+     * @return {Blackboard} The populated blackboard.
+     */
+    static populateBlackboard(blackboard) {
+        return blackboard
+            .populate('author');
     }
 
 }

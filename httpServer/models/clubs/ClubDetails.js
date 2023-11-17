@@ -1,5 +1,15 @@
 import { validateArray, validateNotEmpty } from "../propertyValidation.js";
 
+/**
+ * @description Class representing the details of a club.
+ * @param {String} coverImage - The cover image of the club.
+ * @param {String} description - The description of the club.
+ * @param {String} location - The location of the club.
+ * @param {String} meetingTime - The meeting time of the club.
+ * @param {String} meetingDay - The meeting day of the club.
+ * @param {Array<ClubRequirement>} requirements - The requirements of the club.
+ * @param {Array<Event>} events - The events of the club.
+ */
 export default class ClubDetails {
 
     /**

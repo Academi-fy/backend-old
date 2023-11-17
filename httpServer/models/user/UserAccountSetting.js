@@ -1,7 +1,7 @@
 /**
  * @description Represents a user account setting.
- * @property {String} name - The name of the setting.
- * @property {String} value - The value of the setting.
+ * @param {String} name - The name of the setting.
+ * @param {String} value - The value of the setting.
  */
 export default class UserAccountSetting {
 

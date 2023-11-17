@@ -1,3 +1,7 @@
+export default class PollAnswer {
+    //TODO: implement PollAnswer
+}
+
 const answers = [
 
     {

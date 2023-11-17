@@ -1,6 +1,12 @@
 import { validateArray, validateNotEmpty, verifyInCache } from "./propertyValidation.js";
 import cache from "../cache.js";
-import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../mongoDb/collectionAccess.js";
+import {
+    createDocument,
+    deleteDocument,
+    getAllDocuments,
+    getDocument,
+    updateDocument
+} from "../../mongoDb/collectionAccess.js";
 import ClassSchema from "../../mongoDb/schemas/ClassSchema.js";
 
 // Cache expiration time in milliseconds
@@ -8,11 +14,11 @@ const expirationTime = 5 * 60 * 1000;
 
 /**
  * @description Class representing a school class.
- * @property {String} _id - The id of the class.
- * @property {Grade} grade - The grade of the class.
- * @property {Array<Course>} courses - The courses of the class.
- * @property {Array<User>} members - The members of the class.
- * @property {String} specified_grade - The specified grade of the class.
+ * @param {String} _id - The id of the class.
+ * @param {Grade} grade - The grade of the class.
+ * @param {Array<Course>} courses - The courses of the class.
+ * @param {Array<User>} members - The members of the class.
+ * @param {String} specified_grade - The specified grade of the class.
  */
 export default class Class {
 
@@ -83,10 +89,7 @@ export default class Class {
         const classes = [];
         for (const class_ of classesFromDb) {
             classes.push(
-                class_
-                    .populate('grade')
-                    .populate('courses')
-                    .populate('members')
+                this.populateClass(class_)
             )
         }
 
@@ -116,7 +119,7 @@ export default class Class {
      * @return {Class} The class.
      */
     static async getClassById(classId) {
-        return (this.getClasses()).find(class_ => class_._id === classId);
+        return getDocument(ClassSchema, classId);
     }
 
     /**
@@ -132,10 +135,7 @@ export default class Class {
         if(!insertedClass) throw new Error(`Failed to create class:\n${ class_ }`);
 
         classes.push(
-            insertedClass
-                .populate('grade')
-                .populate('courses')
-                .populate('members')
+            this.populateClass(insertedClass)
         );
         cache.put('classes', classes, expirationTime);
 
@@ -160,10 +160,7 @@ export default class Class {
         let updatedClass = await updateDocument(ClassSchema, classId, updateClass);
         if(!updatedClass) throw new Error(`Failed to update class:\n${ updateClass }`);
 
-        updatedClass = updatedClass
-            .populate('grade')
-            .populate('courses')
-            .populate('members');
+        updatedClass = this.populateClass(updatedClass);
 
         classes.splice(classes.findIndex(class_ => class_._id === classId), 1, updatedClass);
         cache.put('classes', classes, expirationTime);
@@ -205,6 +202,18 @@ export default class Class {
         const cacheResult = cache.get('classes').find(class__ => class__._id === class_._id);
 
         return Boolean(cacheResult);
+    }
+
+    /**
+     * @description Populate a class.
+     * @param {Object} class_ - The class to populate.
+     * @return {Class} The populated class.
+     * */
+    static populateClass(class_) {
+        return class_
+            .populate('grade')
+            .populate('courses')
+            .populate('members');
     }
 
 }

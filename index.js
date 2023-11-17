@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import mongoose from "mongoose";
-import Blackboard from "./httpServer/models/Blackboard.js";
+import School from "./httpServer/models/School.js";
+import User from "./httpServer/models/user/User.js";
 
 dotenv.config();
 
@@ -14,5 +15,3 @@ await mongoose.connect(mongoURI, {
               .catch(err => console.log(err));
 
 
-const test = new Blackboard("")
-console.log(test);

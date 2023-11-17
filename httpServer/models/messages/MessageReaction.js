@@ -1,5 +1,10 @@
 import { validateNotEmpty, validateNumber } from "../propertyValidation.js";
 
+/**
+ * @description Represents a message reaction.
+ * @param {String} emoji - The emoji used for the reaction.
+ * @param {Number} count - The count of the reaction (default is 0)
+ */
 export default class MessageReaction {
 
     /**

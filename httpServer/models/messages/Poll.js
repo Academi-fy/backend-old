@@ -1,5 +1,17 @@
+/**
+ * @description Represents a poll.
+ * @param {String} question - The question of the poll.
+ * @param {Boolean} anonymous - Whether the poll is anonymous.
+ * @param {Array<PollAnswer>} answers - The answers of the poll.
+ */
 export default class Poll {
 
+    /**
+     * @description Create a poll.
+     * @param {String} question - The question of the poll.
+     * @param {Boolean} anonymous - Whether the poll is anonymous.
+     * @param {Array<PollAnswer>} answers - The answers of the poll.
+     */
     constructor(
         question,
         anonymous,

@@ -1,6 +1,7 @@
 /**
  * @description Represents the content of a message.
- * @property {String} type - The type of the message content. Valid values are: "FILE", "IMAGE", "POLL", "TEXT", "VIDEO".
+ * @param {String} type - The type of the message content. Valid values are: "FILE", "IMAGE", "POLL", "TEXT", "VIDEO".
+ * @param {Object} value - The value of the message content.
  */
 export default class MessageContent {
 

@@ -1,19 +1,25 @@
 import UserSchema from "../../../mongoDb/schemas/user/UserSchema.js";
 import cache from "../../cache.js";
 import { validateArray, validateNotEmpty, verifyInCache } from "../propertyValidation.js";
-import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../../mongoDb/collectionAccess.js";
+import {
+    createDocument,
+    deleteDocument,
+    getAllDocuments,
+    getDocument,
+    updateDocument
+} from "../../../mongoDb/collectionAccess.js";
 
 const expirationTime = 3 * 60 * 1000;
 
 /**
  * @description Class representing a User.
- * @property {String} _id - The id of the user.
- * @property {String} first_name - The first name of the user.
- * @property {String} last_name - The last name of the user.
- * @property {String} avatar - The avatar URL of the user.
- * @property {String} type - The type of the user. Valid types are: 'STUDENT', 'TEACHER', 'ADMIN'.
- * @property {Array<Class>} classes - The classes of the user.
- * @property {Array<Course>} extra_courses - The extra courses of the user.
+ * @param {String} _id - The id of the user.
+ * @param {String} first_name - The first name of the user.
+ * @param {String} last_name - The last name of the user.
+ * @param {String} avatar - The avatar URL of the user.
+ * @param {String} type - The type of the user. Valid types are: 'STUDENT', 'TEACHER', 'ADMIN'.
+ * @param {Array<Class>} classes - The classes of the user.
+ * @param {Array<Course>} extra_courses - The extra courses of the user.
  */
 export default class User {
 
@@ -111,9 +117,7 @@ export default class User {
         const users = [];
         for (const user of usersFromDb) {
             users.push(
-                user
-                    .populate('classes')
-                    .populate('extra_courses')
+                this.populateUser(user)
             );
         }
 
@@ -128,7 +132,7 @@ export default class User {
      * @returns {User} The user
      */
     static async getUserById(userId) {
-        return (this.getUsers()).find(user => user._id === userId);
+        return getDocument(UserSchema, userId);
     }
 
     /**
@@ -159,9 +163,7 @@ export default class User {
         if(!insertedUser) throw new Error(`Failed to create user:\n${ user }`);
 
         users.push(
-            insertedUser
-                .populate('classes')
-                .populate('extra_courses')
+            this.populateUser(insertedUser)
         );
         cache.put(`users`, users, expirationTime)
 
@@ -186,9 +188,7 @@ export default class User {
         let updatedUser = await updateDocument(UserSchema, userId, updateUser);
         if(!updatedUser) throw new Error(`Failed to update user:\n${ updateUser }`);
 
-        updatedUser = updatedUser
-            .populate('classes')
-            .populate('extra_courses');
+        updatedUser = this.populateUser(updatedUser);
 
         users.splice(users.findIndex(user => user._id === userId), 1, updatedUser);
         cache.put('users', users, expirationTime);
@@ -232,6 +232,17 @@ export default class User {
 
         return Boolean(cacheResult);
 
+    }
+
+    /**
+     * Populate a user
+     * @param {Object} user - The user to populate
+     * @returns {User} The populated user
+     */
+    static populateUser(user) {
+        return user
+            .populate('classes')
+            .populate('extra_courses');
     }
 
 }

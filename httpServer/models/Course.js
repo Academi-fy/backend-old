@@ -1,6 +1,12 @@
 import { validateArray, validateNotEmpty, validateObject, verifyInCache } from "./propertyValidation.js";
 import cache from "../cache.js";
-import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../mongoDb/collectionAccess.js";
+import {
+    createDocument,
+    deleteDocument,
+    getAllDocuments,
+    getDocument,
+    updateDocument
+} from "../../mongoDb/collectionAccess.js";
 import CourseSchema from "../../mongoDb/schemas/CourseSchema.js";
 
 // Define the cache expiration time in milliseconds
@@ -8,12 +14,12 @@ const expirationTime = 5 * 60 * 1000;
 
 /**
  * @description Class representing a Course.
- * @property {String} _id - The id of the course.
- * @property {Array<User>} members - The members of the course.
- * @property {Array<Class>} classes - The classes in the course.
- * @property {User} teacher - The teacher of the course.
- * @property {Chat} chat - The chat of the course.
- * @property {Subject} subject - The subject of the course.
+ * @param {String} _id - The id of the course.
+ * @param {Array<User>} members - The members of the course.
+ * @param {Array<Class>} classes - The classes in the course.
+ * @param {User} teacher - The teacher of the course.
+ * @param {Chat} chat - The chat of the course.
+ * @param {Subject} subject - The subject of the course.
  */
 export default class Course {
 
@@ -106,7 +112,7 @@ export default class Course {
      * @return {Course} The course.
      */
     static async getCourseById(courseId) {
-        return (this.getCourses()).find(course => course._id === courseId);
+        return getDocument(CourseSchema, courseId);
     }
 
     /**
@@ -122,12 +128,7 @@ export default class Course {
         if(!insertedCourse) throw new Error(`Course could not be created:\n${ course }`);
 
         courses.push(
-            insertedCourse
-                .populate('members')
-                .populate('classes')
-                .populate('teacher')
-                .populate('chat')
-                .populate('subject')
+            this.populateCourse(insertedCourse)
         );
         cache.put('courses', courses, expirationTime);
 
@@ -152,12 +153,7 @@ export default class Course {
         let updatedCourse = await updateDocument(CourseSchema, courseId, updateCourse);
         if(!updatedCourse) throw new Error(`Course could not be updated:\n${ updateCourse }`);
 
-        updatedCourse = updatedCourse
-            .populate('members')
-            .populate('classes')
-            .populate('teacher')
-            .populate('chat')
-            .populate('subject');
+        updatedCourse = this.populateCourse(updatedCourse);
 
         courses.splice(courses.findIndex(course => course._id === courseId), 1, updatedCourse);
         cache.put('courses', courses, expirationTime);
@@ -214,18 +210,27 @@ export default class Course {
         const courses = [];
         for (const course of coursesFromDb) {
             courses.push(
-                course
-                    .populate('members')
-                    .populate('classes')
-                    .populate('teacher')
-                    .populate('chat')
-                    .populate('subject')
+                this.populateCourse(course)
             );
         }
 
         cache.put('courses', courses, expirationTime);
         return courses;
 
+    }
+
+    /**
+     * @description Populate a course.
+     * @param {Object} course - The course to populate.
+     * @return {Course} The populated course.
+     **/
+    static populateCourse(course) {
+        return course
+            .populate('members')
+            .populate('classes')
+            .populate('teacher')
+            .populate('chat')
+            .populate('subject');
     }
 
 }

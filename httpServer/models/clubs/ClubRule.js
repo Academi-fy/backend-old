@@ -1,5 +1,10 @@
 import { validateNotEmpty } from "../propertyValidation.js";
 
+/**
+ * @description Class representing a club rule.
+ * @param {String} emoji - The emoji representing the club rule.
+ * @param {String} description - The description of the club rule.
+ */
 export default class ClubRule {
 
     /**
