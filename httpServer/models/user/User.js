@@ -132,8 +132,14 @@ export default class User {
      * @returns {User} The user
      */
     static async getUserById(userId) {
-        //TODO connect to cache
-        return getDocument(UserSchema, userId);
+
+        const users = this.getUsers();
+
+        const user = users.find(user => user._id === userId);
+        if (!user) throw new Error(`User with id ${ userId } not found`);
+
+        return user;
+
     }
 
     /**

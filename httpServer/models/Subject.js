@@ -91,7 +91,14 @@ export default class Subject {
      * @return {Subject} The subject.
      */
     static async getSubjectById(id) {
-        return await getDocument(SubjectSchema, id);
+
+        const subjects = this.getSubjects();
+
+        const subject = subjects.find(subject => subject._id === id);
+        if (!subject) throw new Error(`Subject not found:\n${ id }`);
+
+        return subject;
+
     }
 
     /**

@@ -159,7 +159,14 @@ export default class Chat {
      * @return {Chat} The chat.
      */
     static async getChatById(chatId) {
-        return getDocument(ChatSchema, chatId);
+
+        const chats = this.getChats();
+
+        const chat = chats.find(chat => chat._id === chatId);
+        if (!chat) throw new Error(`Chat with id ${ chatId } not found`);
+
+        return chat;
+
     }
 
     /**

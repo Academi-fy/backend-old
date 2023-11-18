@@ -134,7 +134,7 @@ export default class School {
      * @param {String} id - The id of the school.
      * @return {School} The school.
      */
-    static async getSchool(id) {
+    static async getSchoolById(id) {
         return getDocument(SchoolSchema, id);
     }
 

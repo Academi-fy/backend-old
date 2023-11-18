@@ -146,8 +146,14 @@ export default class Event {
      * @returns {Event} The event.
      */
     static async getEventById(eventId) {
-        //TODO connect to cache
-        return getDocument(EventSchema, eventId);
+
+        const events = this.getEvents();
+
+        const event = events.find(event => event._id === eventId);
+        if(!event) throw new Error(`Failed to get event:\n${eventId}`);
+
+        return event;
+
     }
 
     /**

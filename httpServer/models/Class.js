@@ -119,7 +119,14 @@ export default class Class {
      * @return {Class} The class.
      */
     static async getClassById(classId) {
-        return getDocument(ClassSchema, classId);
+
+        const classes = this.getClasses();
+
+        const class_ = classes.find(class__ => class__._id === classId);
+        if (!class_) throw new Error(`Failed to find class with id ${ classId }`);
+
+        return class_;
+
     }
 
     /**

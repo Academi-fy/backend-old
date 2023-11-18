@@ -112,7 +112,14 @@ export default class Course {
      * @return {Course} The course.
      */
     static async getCourseById(courseId) {
-        return getDocument(CourseSchema, courseId);
+
+        const courses = this.getCourses();
+
+        const course = courses.find(course => course._id === courseId);
+        if (!course) throw new Error(`Course not found:\n${ courseId }`);
+
+        return course;
+
     }
 
     /**

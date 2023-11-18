@@ -139,7 +139,14 @@ export default class Club {
      * @return {Club} The club.
      */
     static async getClubById(clubId) {
-        return getDocument(ClubSchema, clubId);
+
+        const clubs = this.getClubs();
+
+        const club = clubs.find(club => club._id === clubId);
+        if (!club) throw new Error(`Failed to get club:\n${ clubId }`);
+
+        return club;
+
     }
 
     /**

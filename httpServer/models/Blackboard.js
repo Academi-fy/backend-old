@@ -106,7 +106,14 @@ export default class Blackboard {
      * @return {Blackboard} The blackboard.
      */
     static getBlackboardById(id) {
-        return this.getBlackboards().find(blackboard => blackboard._id.toString() === id);
+
+        const blackboards = this.getBlackboards();
+
+        const blackboard = blackboards.find(blackboard => blackboard._id.toString() === id);
+        if (!blackboard) throw new Error(`Failed to find blackboard with id:\n${ id }`);
+
+        return blackboard;
+
     }
 
     /**

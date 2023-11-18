@@ -86,7 +86,14 @@ export default class Grade {
      * @returns {Grade} The grade.
      */
     static async getGradeById(gradeId) {
-        return getDocument(GradeSchema, gradeId);
+
+        const grades = this.getGrades();
+
+        const grade = grades.find(grade => grade._id === gradeId);
+        if(!grade) throw new Error(`Failed to get grade by id:\n${ gradeId }`);
+
+        return grade;
+
     }
 
     /**

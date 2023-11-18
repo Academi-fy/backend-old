@@ -145,7 +145,14 @@ export default class Message {
      * @return {Message} The message object.
      */
     static async getMessageById(id) {
-        return await getDocument(MessageSchema, id);
+
+        const messages = this.getMessages();
+
+        const message = messages.find(message => message._id === id);
+        if (!message) throw new Error(`Message with id ${ id } not found`);
+
+        return message;
+
     }
 
     /**
