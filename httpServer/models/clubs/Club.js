@@ -20,6 +20,8 @@ const expirationTime = 5 * 60 * 1000;
  * @param {Array<User>} leaders - The leaders of the club.
  * @param {Array<User>} members - The members of the club.
  * @param {Chat} chat - The chat of the club.
+ * @param {Array<Event>} events - The events of the club.
+ * @param {String} state - The state of the club. Valid states are: 'SUGGESTED', 'REJECTED', 'ACCEPTED'.
  */
 export default class Club {
 
@@ -30,19 +32,25 @@ export default class Club {
      * @param {Array<String>} leaders - The ids of the leaders of the club.
      * @param {Array<String>} members - The ids of the members of the club.
      * @param {String} chat - The id of the chat of the club.
+     * @param {Array<String>} events - The ids of the events of the club.
+     * @param {String} state - The state of the club. Valid states are: 'SUGGESTED', 'REJECTED', 'ACCEPTED'.
      */
     constructor(
         name,
         details,
         leaders,
         members,
-        chat
+        chat,
+        events,
+        state
     ) {
         this.name = name;
         this.details = details;
         this.leaders = leaders;
         this.members = members;
         this.chat = chat;
+        this.events = events;
+        this.state = state;
     }
 
     get _name() {
@@ -97,6 +105,24 @@ export default class Club {
         this.chat = value;
     }
 
+    get _events() {
+        return this.events;
+    }
+
+    set _events(value) {
+        validateArray('Club events', value);
+        this.events = value;
+    }
+
+    get _state() {
+        return this.state;
+    }
+
+    set _state(value) {
+        validateNotEmpty('Club state', value);
+        this.state = value;
+    }
+
     /**
      * @description Update the club cache.
      * @return {Array<Club>} The updated clubs.
@@ -122,7 +148,7 @@ export default class Club {
      * @description Get all clubs.
      * @return {Array<Club>} The clubs.
      */
-    static async getClubs() {
+    static getClubs() {
 
         const cacheResults = cache.get('clubs');
 
@@ -138,7 +164,7 @@ export default class Club {
      * @param {String} clubId - The ID of the club.
      * @return {Club} The club.
      */
-    static async getClubById(clubId) {
+    static getClubById(clubId) {
 
         const clubs = this.getClubs();
 

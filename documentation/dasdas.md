@@ -1,7 +1,6 @@
 Ein Chat ist ein Kommunikations-Kanal zwischen Usern. Ein Chat kann mit einem Kurs verknüpft werden, aber auch zwischen
 zwei [Benutzern](https://github.com/Daanieeel/rotteck-messenger/wiki/User) erstellt werden.\
-Chats sind unabhängig von
-der [WebUntis API](https://help.untis.at/hc/de/articles/4886785534354-API-documentation-for-integration-partners).
+Chats sind unabhängig von der [WebUntis API](https://help.untis.at/hc/de/articles/4886785534354-API-documentation-for-integration-partners).
 
 ## Chat-Objekt
 

@@ -24,28 +24,37 @@ const { Schema, Types: { ObjectId } } = mongoose;
 
 const ClubSchema = new Schema(
     {
-
+        id: {
+            type: ObjectId,
+            unique: true,
+            required: true
+        },
         name: {
             type: String,
-            required: true
+            required: true,
+            default: 'Neue AG'
         },
         details: {
 
             description: {
                 type: String,
-                required: true
+                required: true,
+                default: 'AG Beschreibung'
             },
             location: {
                 type: String,
-                required: true
+                required: true,
+                default: 'AG Ort'
             },
             meetingTime: {
                 type: String,
-                required: true
+                required: true,
+                default: '13:00'
             },
             meetingDay: {
                 type: String,
-                required: true
+                required: true,
+                default: 'Montag'
             },
             requirements: [
                 {

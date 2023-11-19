@@ -8,12 +8,13 @@ import {
     getDocument,
     updateDocument
 } from "../../../mongoDb/collectionAccess.js";
+import mongoose from "mongoose";
 
 const expirationTime = 3 * 60 * 1000;
 
 /**
  * @description Class representing a User.
- * @param {String} _id - The id of the user.
+ * @param {String} id - The id of the user.
  * @param {String} first_name - The first name of the user.
  * @param {String} last_name - The last name of the user.
  * @param {String} avatar - The avatar URL of the user.
@@ -25,6 +26,7 @@ export default class User {
 
     /**
      * User constructor
+     * @param {String} id - The id of the user.
      * @param {String} first_name - The first name of the user.
      * @param {String} last_name - The last name of the user.
      * @param {String} avatar - The avatar URL of the user.
@@ -33,6 +35,7 @@ export default class User {
      * @param {Array<String>} extra_courses - The ids of the extra courses of the user.
      */
     constructor(
+        id,
         first_name,
         last_name,
         avatar,
@@ -41,6 +44,7 @@ export default class User {
         extra_courses
     ) {
 
+        this.id = id;
         this.first_name = first_name;
         this.last_name = last_name;
         this.avatar = avatar;
@@ -48,6 +52,15 @@ export default class User {
         this.classes = classes;
         this.extra_courses = extra_courses;
 
+    }
+
+    get _id() {
+        return this.id;
+    }
+
+    set _id(value) {
+        validateNotEmpty('user id', value);
+        this.id = value;
     }
 
     get _first_name() {
@@ -107,17 +120,28 @@ export default class User {
 
     /**
      * Update the user cache
-     * @returns {Array<User>} The updated users
+     * @returns {Promise<Array<User>>} The updated users
      */
     static async updateUserCache() {
 
-        cache.get("users").clear();
-        const usersFromDb = getAllDocuments(UserSchema);
+        cache.del('users');
+        const usersFromDb = await getAllDocuments(UserSchema);
 
         const users = [];
-        for (const user of usersFromDb) {
+        for (let user of usersFromDb) {
+
+            user = this.populateUser(user)
+
             users.push(
-                this.populateUser(user)
+                new User(
+                    user.id,
+                    user.first_name,
+                    user.last_name,
+                    user.avatar,
+                    user.type,
+                    user.classes,
+                    user.extra_courses
+                )
             );
         }
 
@@ -129,14 +153,47 @@ export default class User {
     /**
      * Get a user by their ID
      * @param {String} userId - The ID of the user
-     * @returns {User} The user
+     * @returns {Promise<User>} The user
      */
     static async getUserById(userId) {
 
-        const users = this.getUsers();
+        const users = await this.getUsers();
 
-        const user = users.find(user => user._id === userId);
+        let user = users.find(user => user.id === userId);
         if (!user) throw new Error(`User with id ${ userId } not found`);
+
+        user = this.populateUser(user);
+        user = new User(
+            user.id,
+            user.first_name,
+            user.last_name,
+            user.avatar,
+            user.type,
+            user.classes,
+            user.extra_courses
+        );
+
+        return user;
+
+    }
+
+    static async getUserByRule(rule) {
+
+        const users = await this.getUsers();
+
+        let user = users.find(user => user[Object.keys(rule)[0]] === Object.values(rule)[0]);
+        if (!user) throw new Error(`User with rule ${ rule } not found`);
+
+        user = this.populateUser(user);
+        user = new User(
+            user.id,
+            user.first_name,
+            user.last_name,
+            user.avatar,
+            user.type,
+            user.classes,
+            user.extra_courses
+        );
 
         return user;
 
@@ -144,7 +201,7 @@ export default class User {
 
     /**
      * Get all users
-     * @returns {Array<User>} The users
+     * @returns {Promise<Array<User>>} The users
      */
     static async getUsers() {
 
@@ -160,19 +217,30 @@ export default class User {
     /**
      * Create a new user
      * @param {User} user - The user to create
-     * @returns {User} The created user
+     * @returns {Promise<User>} The created user
      */
     static async createUser(user) {
 
-        const users = this.getUsers();
+        const users = await this.getUsers();
 
-        const insertedUser = await createDocument(UserSchema, user);
+        let insertedUser = await createDocument(UserSchema, { ...user, id: new mongoose.Types.ObjectId() });
         if (!insertedUser) throw new Error(`Failed to create user:\n${ user }`);
 
+        insertedUser = this.populateUser(insertedUser);
+        insertedUser = new User(
+            insertedUser.id,
+            insertedUser.first_name,
+            insertedUser.last_name,
+            insertedUser.avatar,
+            insertedUser.type,
+            insertedUser.classes,
+            insertedUser.extra_courses
+        )
+
         users.push(
-            this.populateUser(insertedUser)
+            insertedUser
         );
-        cache.put(`users`, users, expirationTime)
+        cache.put(`users`, users, expirationTime);
 
         if (!this.verifyUserInCache(insertedUser))
 
@@ -186,18 +254,27 @@ export default class User {
      * Update a user
      * @param {String} userId - The ID of the user to update.
      * @param {User} updateUser - The user to update.
-     * @returns {User} The updated user.
+     * @returns {Promise<User>} The updated user.
      */
     static async updateUser(userId, updateUser) {
 
-        const users = this.getUsers();
+        const users = await this.getUsers();
 
-        let updatedUser = await updateDocument(UserSchema, userId, updateUser);
-        if (!updatedUser) throw new Error(`Failed to update user:\n${ updateUser }`);
+        let updatedUser = await updateDocument(UserSchema, userId, { ...updateUser, id: userId });
+        if (!updatedUser) throw new Error(`Failed to update user:\n${ JSON.stringify(updateUser, null, 2) }`);
 
         updatedUser = this.populateUser(updatedUser);
+        updatedUser = new User(
+            updatedUser.id,
+            updatedUser.first_name,
+            updatedUser.last_name,
+            updatedUser.avatar,
+            updatedUser.type,
+            updatedUser.classes,
+            updatedUser.extra_courses
+        )
 
-        users.splice(users.findIndex(user => user._id === userId), 1, updatedUser);
+        users.splice(users.findIndex(user => user.id === userId), 1, updatedUser);
         cache.put('users', users, expirationTime);
 
         if (!this.verifyUserInCache(updatedUser))
@@ -208,18 +285,19 @@ export default class User {
         return updatedUser;
     }
 
+
     /**
      * Delete a user
      * @param {String} userId - The ID of the user to delete
-     * @returns {Boolean} True if the user was deleted successfully
+     * @returns {Promise<Boolean>} True if the user was deleted successfully
      */
     static async deleteUser(userId) {
 
         const deletedUser = await deleteDocument(UserSchema, userId);
         if (!deletedUser) throw new Error(`Failed to delete user with id ${ userId }`);
 
-        const users = this.getUsers();
-        users.splice(users.findIndex(user => user._id === userId), 1);
+        const users = await this.getUsers();
+        users.splice(users.findIndex(user => user.id === userId), 1);
         cache.put('users', users, expirationTime);
 
         if (this.verifyUserInCache(deletedUser))
@@ -235,7 +313,7 @@ export default class User {
      */
     static async verifyUserInCache(user) {
 
-        const cacheResult = cache.get('users').find(user_ => user_._id === user._id);
+        const cacheResult = cache.get('users').find(user_ => user_.id === user.id);
 
         return Boolean(cacheResult);
 
@@ -248,8 +326,8 @@ export default class User {
      */
     static populateUser(user) {
         return user
-            .populate('classes')
-            .populate('extra_courses');
+            // .populate('classes')
+            // .populate('extra_courses');
     }
 
 }

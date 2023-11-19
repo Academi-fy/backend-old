@@ -142,7 +142,7 @@ export default class Chat {
      * @description Get all chats.
      * @return {Array<Chat>} The chats.
      */
-    static async getChats() {
+    static getChats() {
 
         const cacheResults = cache.get('chats');
 
@@ -158,7 +158,7 @@ export default class Chat {
      * @param {String} chatId - The id of the chat.
      * @return {Chat} The chat.
      */
-    static async getChatById(chatId) {
+    static getChatById(chatId) {
 
         const chats = this.getChats();
 

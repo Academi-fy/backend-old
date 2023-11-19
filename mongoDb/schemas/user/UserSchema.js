@@ -16,6 +16,11 @@ const { Schema, Types: { ObjectId } } = mongoose;
 const UserSchema = new Schema(
     {
 
+        id: {
+            type: String,
+            unique: true,
+            required: true
+        },
         first_name: {
             type: String,
             required: true

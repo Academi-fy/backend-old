@@ -16,6 +16,7 @@ const expirationTime = 5 * 60 * 1000;
  * @param {String} description - The description of the event.
  * @param {String} location - The location of the event.
  * @param {String} host - The host of the event.
+ * @param {Array<Club>} clubs - The clubs of the event.
  * @param {Number} startDate - The start date of the event.
  * @param {Number} endDate - The end date of the event.
  * @param {Array<EventInformation>} information - The information of the event.
@@ -29,6 +30,7 @@ export default class Event {
      * @param {String} description - The description of the event.
      * @param {String} location - The location of the event.
      * @param {String} host - The host of the event.
+     * @param {Array<String>} clubs - The clubs of the event.
      * @param {Number} startDate - The start date of the event.
      * @param {Number} endDate - The end date of the event.
      * @param {Array<EventInformation>} information - The information of the event.
@@ -39,6 +41,7 @@ export default class Event {
         description,
         location,
         host,
+        clubs,
         startDate,
         endDate,
         information,
@@ -49,6 +52,7 @@ export default class Event {
         this.description = description;
         this.location = location;
         this.host = host;
+        this.clubs = clubs;
         this.startDate = startDate;
         this.endDate = endDate;
         this.information = information;
@@ -85,6 +89,14 @@ export default class Event {
 
     set _host(value) {
         this.host = value;
+    }
+
+    get _clubs() {
+        return this.clubs;
+    }
+
+    set _clubs(value) {
+        this.clubs = value;
     }
 
     get _startDate() {

@@ -44,6 +44,12 @@ const EventSchema = new Schema(
             type: String,
             required: true
         },
+        clubs: [
+            {
+                type: ObjectId,
+                ref: 'Club'
+            }
+        ],
         startDate: {
             type: Number,
             required: true
