@@ -68,12 +68,12 @@ export default class Blackboard {
 
     /**
      * Update the cache of blackboards.
-     * @return {Array<Blackboard>} The updated list of blackboards.
+     * @return {Promise<Array<Blackboard>>} The updated list of blackboards.
      */
-    static updateBlackboardCache() {
+    static async updateBlackboardCache() {
 
         cache.get("blackboards").clear();
-        const blackboardsFromDb = getAllDocuments(BlackboardSchema);
+        const blackboardsFromDb = await getAllDocuments(BlackboardSchema);
 
         const blackboards = [];
         for (const blackboard of blackboardsFromDb) {
@@ -88,26 +88,26 @@ export default class Blackboard {
 
     /**
      * Get all blackboards.
-     * @return {Array<Blackboard>} The list of blackboards.
+     * @return {Promise<Array<Blackboard>>} The list of blackboards.
      */
-    static getBlackboards() {
+    static async getBlackboards() {
 
         const blackboards = cache.get("blackboards");
 
         if (blackboards) {
             return blackboards;
         }
-        return this.updateBlackboardCache();
+        return await this.updateBlackboardCache();
     }
 
     /**
      * Get a blackboard by id.
      * @param {String} id - The id of the blackboard.
-     * @return {Blackboard} The blackboard.
+     * @return {Promise<Blackboard>} The blackboard.
      */
-    static getBlackboardById(id) {
+    static async getBlackboardById(id) {
 
-        const blackboards = this.getBlackboards();
+        const blackboards = await this.getBlackboards();
 
         const blackboard = blackboards.find(blackboard => blackboard._id.toString() === id);
         if (!blackboard) throw new Error(`Failed to find blackboard with id:\n${ id }`);
@@ -117,13 +117,29 @@ export default class Blackboard {
     }
 
     /**
+     * @description Get a blackboard by rule.
+     * @param {Object} rule - The rule to find the blackboard by.
+     * @return {Promise<Blackboard>} The blackboard.
+     */
+    static async getBlackboardByRule(rule) {
+
+        const blackboards = await this.getBlackboards();
+
+        const blackboard = blackboards.find(chat => chat[Object.keys(rule)[0]] === Object.keys(rule)[0]);
+        if (!blackboard) throw new Error(`Failed to find blackboard with rule:\n${ rule }`);
+
+        return blackboard;
+
+    }
+
+    /**
      * Create a new blackboard.
      * @param {Blackboard} blackboard - The blackboard to create.
-     * @return {Blackboard} The created blackboard.
+     * @return {Promise<Blackboard>} The created blackboard.
      */
     static async createBlackboard(blackboard) {
 
-        const blackboards = this.getBlackboards();
+        const blackboards = await this.getBlackboards();
 
         const insertedBlackboard = await createDocument(BlackboardSchema, blackboard);
         if (!insertedBlackboard) throw new Error(`Failed to create blackboard:\n${ blackboard }`);
@@ -145,11 +161,11 @@ export default class Blackboard {
      * Update a message.
      * @param {String} blackboardId - The ID of the blackboard to update.
      * @param {Blackboard} updateBlackboard - The updated blackboard object.
-     * @return {Blackboard} The updated blackboard object.
+     * @return {Promise<Blackboard>} The updated blackboard object.
      */
     static async updateBlackboard(blackboardId, updateBlackboard) {
 
-        const blackboards = this.getBlackboards();
+        const blackboards = await this.getBlackboards();
 
         let updatedBlackboard = await updateDocument(BlackboardSchema, blackboardId, updateBlackboard);
         if (!updatedBlackboard) throw new Error(`Failed to update blackboard:\n${ updateBlackboard }`);
@@ -170,14 +186,14 @@ export default class Blackboard {
     /**
      * Delete a blackboard.
      * @param {String} blackboardId - The ID of the blackboard to delete.
-     * @return {Boolean} True if the blackboard was deleted, false otherwise.
+     * @return {Promise<Boolean>} True if the blackboard was deleted, false otherwise.
      */
     static async deleteBlackboard(blackboardId) {
 
         const deleteBlackboard = await deleteDocument(BlackboardSchema, blackboardId);
         if (!deleteBlackboard) throw new Error(`Failed to delete blackboard with id:\n${ blackboardId }`);
 
-        const blackboards = this.getBlackboards();
+        const blackboards = await this.getBlackboards();
         blackboards.splice(blackboards.findIndex(blackboard => blackboard._id.toString() === blackboardId), 1);
         cache.put('blackboards', blackboards, expirationTime);
 

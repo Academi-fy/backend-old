@@ -79,12 +79,12 @@ export default class Class {
 
     /**
      * @description Update the class cache.
-     * @return {Array<Class>} The updated classes.
+     * @return {Promise<Array<Class>>} The updated classes.
      */
     static async updateClassCache() {
 
         cache.get("classes").clear();
-        const classesFromDb = getAllDocuments(ClassSchema);
+        const classesFromDb = await getAllDocuments(ClassSchema);
 
         const classes = [];
         for (const class_ of classesFromDb) {
@@ -100,7 +100,7 @@ export default class Class {
 
     /**
      * @description Get all classes.
-     * @return {Array<Class>} The classes.
+     * @return {Promise<Array<Class>>} The classes.
      */
     static async getClasses() {
 
@@ -109,18 +109,18 @@ export default class Class {
         if (cacheResults) {
             return cacheResults;
         }
-        else return this.updateClassCache();
+        else return await this.updateClassCache();
 
     }
 
     /**
      * @description Get a class by id.
      * @param {String} classId - The id of the class.
-     * @return {Class} The class.
+     * @return {Promise<Class>} The class.
      */
     static async getClassById(classId) {
 
-        const classes = this.getClasses();
+        const classes= await this.getClasses();
 
         const class_ = classes.find(class__ => class__._id === classId);
         if (!class_) throw new Error(`Failed to find class with id ${ classId }`);
@@ -132,11 +132,11 @@ export default class Class {
     /**
      * @description Create a class.
      * @param {Class} class_ - The class to create.
-     * @return {Class} The created class.
+     * @return {Promise<Class>} The created class.
      */
     static async createClass(class_) {
 
-        const classes = this.getClasses();
+        const classes= await this.getClasses();
 
         const insertedClass = await createDocument(ClassSchema, class_);
         if (!insertedClass) throw new Error(`Failed to create class:\n${ class_ }`);
@@ -158,11 +158,11 @@ export default class Class {
      * @description Update a class.
      * @param {String} classId - The id of the class to update.
      * @param {Class} updateClass - The updated class.
-     * @return {Class} The updated class.
+     * @return {Promise<Class>} The updated class.
      */
     static async updateClass(classId, updateClass) {
 
-        const classes = this.getClasses();
+        const classes = await this.getClasses();
 
         let updatedClass = await updateDocument(ClassSchema, classId, updateClass);
         if (!updatedClass) throw new Error(`Failed to update class:\n${ updateClass }`);
@@ -183,14 +183,14 @@ export default class Class {
     /**
      * @description Delete a class.
      * @param {String} classId - The id of the class to delete.
-     * @return {Boolean} The status of the deletion.
+     * @return {Promise<Boolean>} The status of the deletion.
      */
     static async deleteClass(classId) {
 
         const deletedClass = await deleteDocument(ClassSchema, classId);
         if (!deletedClass) throw new Error(`Failed to delete class with id ${ classId }`);
 
-        const classes = this.getClasses();
+        const classes = await this.getClasses();
         classes.splice(classes.findIndex(class_ => class_._id === classId), 1);
         cache.put('classes', classes, expirationTime);
 

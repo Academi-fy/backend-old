@@ -52,7 +52,7 @@ export async function getAllDocuments(model) {
 /**
  * @description Gets a document in the database by a custom rule.
  * @param {Object} model - The model to get the document in.
- * @param {Promise<any>} criteria - The searching criteria to get the document by.
+ * @param {Object} criteria - The searching criteria to get the document by.
  * */
 export async function getDocumentByRule(model, criteria) {
     return await model.findOne(criteria);

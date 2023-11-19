@@ -4,7 +4,6 @@ import {
     createDocument,
     deleteDocument,
     getAllDocuments,
-    getDocument,
     updateDocument
 } from "../../../mongoDb/collectionAccess.js";
 import CourseSchema from "../../../mongoDb/schemas/general/CourseSchema.js";
@@ -93,7 +92,7 @@ export default class Course {
 
     /**
      * @description Get all courses from cache or database.
-     * @return {Array} The courses.
+     * @return {Promise<Array>} The courses.
      */
     static async getCourses() {
 
@@ -102,18 +101,18 @@ export default class Course {
         if (cacheResults) {
             return cacheResults;
         }
-        else return this.updateCourseCache();
+        else return await this.updateCourseCache();
 
     }
 
     /**
      * @description Get a course by its ID.
      * @param {String} courseId - The ID of the course.
-     * @return {Course} The course.
+     * @return {Promise<Course>} The course.
      */
     static async getCourseById(courseId) {
 
-        const courses = this.getCourses();
+        const courses= await this.getCourses();
 
         const course = courses.find(course => course._id === courseId);
         if (!course) throw new Error(`Course not found:\n${ courseId }`);
@@ -125,11 +124,11 @@ export default class Course {
     /**
      * @description Create a new course and add it to the database and cache.
      * @param {Course} course - The course to create.
-     * @return {Course} The created course.
+     * @return {Promise<Course>} The created course.
      */
     static async createCourse(course) {
 
-        const courses = this.getCourses();
+        const courses= await this.getCourses();
 
         const insertedCourse = await createDocument(CourseSchema, course);
         if (!insertedCourse) throw new Error(`Course could not be created:\n${ course }`);
@@ -151,11 +150,11 @@ export default class Course {
      * @description Update a course in the database and cache.
      * @param {String} courseId - The ID of the course to update.
      * @param {Course} updateCourse - The course to update.
-     * @return {Course} The updated course.
+     * @return {Promise<Course>} The updated course.
      */
     static async updateCourse(courseId, updateCourse) {
 
-        const courses = this.getCourses();
+        const courses = await this.getCourses();
 
         let updatedCourse = await updateDocument(CourseSchema, courseId, updateCourse);
         if (!updatedCourse) throw new Error(`Course could not be updated:\n${ updateCourse }`);
@@ -177,7 +176,7 @@ export default class Course {
     /**
      * @description Delete a course in the database and cache.
      * @param {String} courseId - The ID of the course to update.
-     * @return {Boolean} State of the deletion.
+     * @return {Promise<Boolean>} State of the deletion.
      */
     static async deleteCourse(courseId) {
 
@@ -207,12 +206,12 @@ export default class Course {
 
     /**
      * Update the course cache from the database.
-     * @return {Array<Course>} The updated courses.
+     * @return {Promise<Array<Course>>} The updated courses.
      */
     static async updateCourseCache() {
 
         cache.get("courses").clear();
-        const coursesFromDb = getAllDocuments(CourseSchema);
+        const coursesFromDb = await getAllDocuments(CourseSchema);
 
         const courses = [];
         for (const course of coursesFromDb) {
@@ -233,9 +232,9 @@ export default class Course {
      **/
     static populateCourse(course) {
         return course
-            .populate('members')
-            .populate('classes')
-            .populate('teacher')
+            .populate({ populate: 'members' })
+            .populate({ populate: 'classes' })
+            .populate({ populate: 'teacher' })
             .populate('chat')
             .populate('subject');
     }

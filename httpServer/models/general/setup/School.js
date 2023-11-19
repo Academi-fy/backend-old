@@ -1,4 +1,10 @@
-import { createDocument, getAllDocuments, getDocument, updateDocument } from "../../../../mongoDb/collectionAccess.js";
+import {
+    createDocument,
+    deleteDocument,
+    getAllDocuments,
+    getDocument, getDocumentByRule,
+    updateDocument
+} from "../../../../mongoDb/collectionAccess.js";
 import SchoolSchema from "../../../../mongoDb/schemas/general/setup/SchoolSchema.js";
 
 /**
@@ -135,40 +141,70 @@ export default class School {
 
     /**
      * @description Get all schools.
-     * @return {Array<School>} The schools.
+     * @return {Promise<Array<School>>} The schools.
      */
     static async getSchools() {
-        return getAllDocuments(SchoolSchema);
+        return await getAllDocuments(SchoolSchema);
     }
 
     /**
      * @description Get a school by id.
      * @param {String} id - The id of the school.
-     * @return {School} The school.
+     * @return {Promise<School>} The school.
      */
     static async getSchoolById(id) {
-        return getDocument(SchoolSchema, id);
+        return await getDocument(SchoolSchema, id);
+    }
+
+    /**
+     * @description Get a school by rule.
+     * @param {Object} rule - The rule to find the school by.
+     * @return {Promise<School>} The school.
+     * */
+    static async getSchoolByRule(rule) {
+        return await getDocumentByRule(SchoolSchema, rule);
     }
 
     /**
      * @description Create a school.
      * @param {School} school - The school to create.
-     * @return {School} The created school.
+     * @return {Promise<School>} The created school.
      */
     static async createSchool(school) {
 
         const insertedSchool = await createDocument(SchoolSchema, school);
+        if(!insertedSchool) throw new Error(`Failed to create school:\n${ school }`);
 
         return this.populateSchool(insertedSchool);
 
     }
 
+    /**
+     * @description Update a school.
+     * @param {String} schoolId - The id of the school to update.
+     * @param {School} updateSchool - The updated school.
+     * @return {Promise<School>} The updated school.
+     * */
     static async updateSchool(schoolId, updateSchool) {
 
         const updatedSchool = await updateDocument(SchoolSchema, schoolId, updateSchool);
+        if(!updatedSchool) throw new Error(`Failed to update school:\n${ updatedSchool }`);
 
         return this.populateSchool(updatedSchool);
 
+    }
+
+    /**
+     * @description Delete a school.
+     * @param {String} schoolId - The id of the school to delete.
+     * @return {Promise<Boolean>} The state of the deletion.
+     * */
+    static async deleteSchool(schoolId) {
+
+        const deletedSchool = await deleteDocument(SchoolSchema, schoolId);
+        if(!deletedSchool) throw new Error(`Failed to delete school:\n${ schoolId }`);
+
+        return true;
     }
 
     /**

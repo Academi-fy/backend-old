@@ -125,7 +125,7 @@ export default class Club {
 
     /**
      * @description Update the club cache.
-     * @return {Array<Club>} The updated clubs.
+     * @return {Promise<Array<Club>>} The updated clubs.
      */
     static async updateClubCache() {
 
@@ -146,27 +146,27 @@ export default class Club {
 
     /**
      * @description Get all clubs.
-     * @return {Array<Club>} The clubs.
+     * @return {Promise<Array<Club>>} The clubs.
      */
-    static getClubs() {
+    static async getClubs() {
 
         const cacheResults = cache.get('clubs');
 
         if (cacheResults) {
             return cacheResults;
         }
-        else return this.updateClubCache();
+        else return await this.updateClubCache();
 
     }
 
     /**
      * @description Get a club by ID.
      * @param {String} clubId - The ID of the club.
-     * @return {Club} The club.
+     * @return {Promise<Club>} The club.
      */
-    static getClubById(clubId) {
+    static async getClubById(clubId) {
 
-        const clubs = this.getClubs();
+        const clubs = await this.getClubs();
 
         const club = clubs.find(club => club._id === clubId);
         if (!club) throw new Error(`Failed to get club:\n${ clubId }`);
@@ -176,13 +176,28 @@ export default class Club {
     }
 
     /**
+     * @description Get a club by name.
+     * @param {Object} rule - The rule to find the club by.
+     * @return {Promise<Club>} The club.
+     */
+    static async getClubByRule(rule) {
+
+        const clubs = await this.getClubs();
+
+        const club = clubs.find(club => club[Object.keys(rule)[0]] === Object.keys(rule)[0]);
+        if (!club) throw new Error(`Failed to get club by rule:\n${ rule }`);
+
+        return club;
+    }
+
+    /**
      * @description Create a club.
      * @param {Club} club - The club to create.
-     * @return {Club} The created club.
+     * @return {Promise<Club>} The created club.
      */
     static async createClub(club) {
 
-        const clubs = this.getClubs();
+        const clubs = await this.getClubs();
 
         const insertedClub = await createDocument(ClubSchema, club);
         if (!insertedClub) throw new Error(`Failed to create club:\n${ insertedClub }`);
@@ -204,11 +219,11 @@ export default class Club {
      * @description Update a club.
      * @param {String} clubId - The ID of the club to update.
      * @param {Club} updateClub - The club to update.
-     * @return {Club} The updated club.
+     * @return {Promise<Club>} The updated club.
      */
     static async updateClub(clubId, updateClub) {
 
-        const clubs = this.getClubs();
+        const clubs = await this.getClubs();
 
         let updatedClub = await updateDocument(ClubSchema, clubId, updatedClub);
         if (!updatedClub) throw new Error(`Failed to update club:\n${ updatedClub }`);
@@ -236,7 +251,7 @@ export default class Club {
         const deletedCourse = await deleteDocument(ClubSchema, clubId);
         if (!deletedCourse) throw new Error(`Failed to delete club: ${ clubId }`);
 
-        const clubs = this.getClubs();
+        const clubs = await this.getClubs();
         clubs.splice(clubs.findIndex(club => club._id === clubId), 1);
         cache.put('clubs', clubs, expirationTime);
 

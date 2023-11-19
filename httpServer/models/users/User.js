@@ -182,7 +182,7 @@ export default class User {
         const users = await this.getUsers();
 
         let user = users.find(user => user[Object.keys(rule)[0]] === Object.values(rule)[0]);
-        if (!user) throw new Error(`User with rule ${ rule } not found`);
+        if (!user) throw new Error(`Failed to get user by rule:\n${ rule }`);
 
         user = this.populateUser(user);
         user = new User(

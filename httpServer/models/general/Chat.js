@@ -5,7 +5,6 @@ import {
     createDocument,
     deleteDocument,
     getAllDocuments,
-    getDocument,
     updateDocument
 } from "../../../mongoDb/collectionAccess.js";
 
@@ -119,12 +118,12 @@ export default class Chat {
 
     /**
      * @description Update the chat cache.
-     * @return {Array<Chat>} The updated chats.
+     * @return {Promise<Array<Chat>>} The updated chats.
      */
     static async updateChatCache() {
 
         cache.get("chats").clear();
-        const chatsFromDb = getAllDocuments(ChatSchema);
+        const chatsFromDb = await getAllDocuments(ChatSchema);
 
         const chats = [];
         for (const chat of chatsFromDb) {
@@ -140,27 +139,27 @@ export default class Chat {
 
     /**
      * @description Get all chats.
-     * @return {Array<Chat>} The chats.
+     * @return {Promise<Array<Chat>>} The chats.
      */
-    static getChats() {
+    static async getChats() {
 
         const cacheResults = cache.get('chats');
 
         if (cacheResults) {
             return cacheResults;
         }
-        else return this.updateChatCache();
+        else return await this.updateChatCache();
 
     }
 
     /**
      * @description Get a chat by id.
      * @param {String} chatId - The id of the chat.
-     * @return {Chat} The chat.
+     * @return {Promise<Chat>} The chat.
      */
-    static getChatById(chatId) {
+    static async getChatById(chatId) {
 
-        const chats = this.getChats();
+        const chats = await this.getChats();
 
         const chat = chats.find(chat => chat._id === chatId);
         if (!chat) throw new Error(`Chat with id ${ chatId } not found`);
@@ -170,13 +169,29 @@ export default class Chat {
     }
 
     /**
+     * @description Get a chat by rule.
+     * @param {Object} rule - The rule to find the chat.
+     * @return {Promise<Chat>} The chat.
+     * */
+    static async getChatByRule(rule) {
+
+        const chats = await this.getChats();
+
+        const chat = chats.find(chat => chat[Object.keys(rule)[0]] === Object.keys(rule)[0]);
+        if (!chat) throw new Error(`Chat with rule ${ rule } not found`);
+
+        return chat;
+
+    }
+
+    /**
      * @description Create a chat.
      * @param {Chat} chat - The chat to create.
-     * @return {Chat} The created chat.
+     * @return {Promise<Chat>} The created chat.
      */
     static async createChat(chat) {
 
-        const chats = this.getChats();
+        const chats = await this.getChats();
 
         const insertedChat = await createDocument(ChatSchema, chat);
         if (!insertedChat) throw new Error(`Failed to create chat:\n${ chat }`);
@@ -198,11 +213,11 @@ export default class Chat {
      * @description Update a chat.
      * @param {String} chatId - The id of the chat to update.
      * @param {Chat} updateChat - The chat to update.
-     * @return {Chat} The updated chat.
+     * @return {Promise<Chat>} The updated chat.
      */
     static async updateChat(chatId, updateChat) {
 
-        const chats = this.getChats();
+        const chats = await this.getChats();
 
         let updatedChat = await updateDocument(ChatSchema, chatId, updateChat);
         if (!updatedChat) throw new Error(`Failed to update chat:\n${ updateChat }`);
@@ -223,14 +238,14 @@ export default class Chat {
     /**
      * @description Delete a chat.
      * @param {String} chatId - The id of the chat to delete.
-     * @return {Boolean} The status of the deletion.
+     * @return {Promise<Boolean>} The status of the deletion.
      */
     static async deleteChat(chatId) {
 
         const deletedChat = await deleteDocument(ChatSchema, chatId);
         if (!deletedChat) throw new Error(`Failed to delete chat with id ${ chatId }`);
 
-        const chats = this.getChats();
+        const chats = await this.getChats();
         chats.splice(chats.findIndex(chat => chat._id === chatId), 1);
         cache.put('chats', chats, expirationTime);
 

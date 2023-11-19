@@ -133,12 +133,12 @@ export default class Event {
 
     /**
      * @description Get all events from the cache.
-     * @returns {Array<Event>} All events from the cache.
+     * @returns {Promise<Array<Event>>} All events from the cache.
      */
     static async updateEventCache() {
 
         cache.get('events').clear();
-        const eventsFromDb = getAllDocuments(EventSchema);
+        const eventsFromDb = await getAllDocuments(EventSchema);
 
         const events = [];
         for(const event of eventsFromDb){
@@ -155,11 +155,11 @@ export default class Event {
     /**
      * @description Get an event by its ID.
      * @param {String} eventId - The ID of the event.
-     * @returns {Event} The event.
+     * @returns {Promise<Event>} The event.
      */
     static async getEventById(eventId) {
 
-        const events = this.getEvents();
+        const events = await this.getEvents();
 
         const event = events.find(event => event._id === eventId);
         if(!event) throw new Error(`Failed to get event:\n${eventId}`);
@@ -169,8 +169,24 @@ export default class Event {
     }
 
     /**
+     * @description Get an event by a rule.
+     * @param {Object} rule - The rule to find the event.
+     * @returns {Promise<Event>} The event.
+     * */
+    static async getEventByRule(rule) {
+
+        const events = await this.getEvents();
+
+        const event = events.find(event => event[Object.keys(rule)[0]] === Object.keys(rule)[0]);
+        if (!event) throw new Error(`Failed to get event by rule:\n${ rule }`);
+
+        return event;
+
+    }
+
+    /**
      * @description Get all events.
-     * @returns {Array<Event>} The events.
+     * @returns {Promise<Array<Event>>} The events.
      */
     static async getEvents() {
 
@@ -180,17 +196,17 @@ export default class Event {
             return cacheResults;
         }
 
-        return this.updateEventCache();
+        return await this.updateEventCache();
     }
 
     /**
      * @description Create an event.
      * @param {Event} event - The event to create.
-     * @returns {Event} The created event.
+     * @returns {Promise<Event>} The created event.
      */
     static async createEvent(event) {
 
-        const events  = this.getEvents();
+        const events = await this.getEvents();
 
         const insertedEvent = await createDocument(EventSchema, event);
         if(!insertedEvent) throw new Error(`Failed to create event:\n${event}`);
@@ -208,11 +224,11 @@ export default class Event {
      * @description Update an event.
      * @param {String} eventId - The ID of the event to update.
      * @param {Event} updateEvent - The updated event.
-     * @returns {Event} The updated event.
+     * @returns {Promise<Event>} The updated event.
      */
     static async updateEvent(eventId, updateEvent) {
 
-        const events = this.getEvents();
+        const events = await this.getEvents();
 
         const updatedEvent = await updateDocument(EventSchema, eventId, updateEvent);
         if (!updatedEvent) throw new Error(`Failed to update event:\n${ event }`);
@@ -228,14 +244,14 @@ export default class Event {
     /**
      * @description Delete an event.
      * @param {String} eventId - The ID of the event to delete.
-     * @returns {Event} The deleted event.
+     * @returns {Promise<Boolean>} The deleted event.
      */
     static async deleteEvent(eventId) {
 
         const deletedEvent = await deleteDocument(EventSchema, eventId);
         if(!deletedEvent) throw new Error(`Failed to delete event:\n${eventId}`);
 
-        const events = this.getEvents();
+        const events = await this.getEvents();
         events.splice(events.findIndex(event => event._id === eventId), 1);
         cache.put('events', events, expirationTime);
 
