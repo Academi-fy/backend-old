@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import mongoose from "mongoose";
-import User from "./httpServer/models/user/User.js";
+import User from "./httpServer/models/users/User.js";
+import UserAccount from "./httpServer/models/users/UserAccount.js";
 
 dotenv.config();
 
@@ -14,16 +15,3 @@ await mongoose.connect(mongoURI,
 ).then(() => console.log('MongoDB connected.')).catch(err => console.log(err));
 
 
-const user = new User(
-    null,
-    "1",
-    "6",
-    "test",
-    "TEACHER",
-    [],
-    []
-)
-
-const users = await User.getUsers();
-
-console.log(await User.updateUser(users[0].id, user));

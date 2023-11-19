@@ -3,15 +3,15 @@ import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
 /**
- * @description The schema for a user account.
- * @param {String} username - The username of the user.
- * @param {String} password - The password of the user.
- * @param {Array<UserAccountSetting>} settings - The settings of the user.
+ * @description The schema for a users account.
+ * @param {String} username - The username of the users.
+ * @param {String} password - The password of the users.
+ * @param {Array<UserAccountSetting>} settings - The settings of the users.
  * @param {String} settings.name - The name of the setting.
  * @param {String} settings.value - The value of the setting.
  * @param {Date} createdAt - The date the ticket was created.
  * @param {Date} updatedAt - The date the ticket was last updated.
- * @return {Schema} The schema for a user account.
+ * @return {Schema} The schema for a users account.
  */
 const UserAccountSchema = new Schema(
     {

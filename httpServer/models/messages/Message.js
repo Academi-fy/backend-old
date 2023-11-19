@@ -7,7 +7,7 @@ import {
     getDocument,
     updateDocument
 } from "../../../mongoDb/collectionAccess.js";
-import MessageSchema from "../../../mongoDb/schemas/MessageSchema.js";
+import MessageSchema from "../../../mongoDb/schemas/messages/MessageSchema.js";
 
 // Time in milliseconds after which the cache will expire
 const expirationTime = 2 * 60 * 1000;

@@ -1,6 +1,6 @@
 import { validateArray, validateNotEmpty, validateObject, verifyInCache } from "../propertyValidation.js";
 import cache from "../../cache.js";
-import ClubSchema from "../../../mongoDb/schemas/ClubSchema.js";
+import ClubSchema from "../../../mongoDb/schemas/clubs/ClubSchema.js";
 import {
     createDocument,
     deleteDocument,

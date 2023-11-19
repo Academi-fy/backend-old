@@ -3,15 +3,15 @@ import mongoose from 'mongoose';
 const { Schema, Types: { ObjectId } } = mongoose;
 
 /**
- * @description The schema for a user.
- * @param {String} first_name - The first name of the user.
- * @param {String} last_name - The last name of the user.
- * @param {String} avatar - The avatar of the user.
- * @param {String} type - The type of the user. Can be 'STUDENT', 'TEACHER', or 'ADMIN'.
- * @param {Array<ObjectId>} classes - The classes of the user.
+ * @description The schema for a users.
+ * @param {String} first_name - The first name of the users.
+ * @param {String} last_name - The last name of the users.
+ * @param {String} avatar - The avatar of the users.
+ * @param {String} type - The type of the users. Can be 'STUDENT', 'TEACHER', or 'ADMIN'.
+ * @param {Array<ObjectId>} classes - The classes of the users.
  * @param {Date} createdAt - The date the ticket was created.
  * @param {Date} updatedAt - The date the ticket was last updated.
- * @return {Schema} The schema for a user.
+ * @return {Schema} The schema for a users.
  */
 const UserSchema = new Schema(
     {

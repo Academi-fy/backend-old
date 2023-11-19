@@ -39,7 +39,7 @@ const EventTicketSchema = new Schema(
 );
 
 /**
- * Exporting the EventTicket model
+ * Exporting the EventTicket.md model
  * @name EventTicket
  * @type {mongoose.Model}
  */

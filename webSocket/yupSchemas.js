@@ -84,7 +84,7 @@ export default {
     }),
 
     /**
-     * @description The event that is fired when a user starts or stops typing.
+     * @description The event that is fired when a users starts or stops typing.
      * @param {String} sender - The sender of the message.
      * @param {Object} data - The data of the message.
      * @param {boolean} data.isTyping - Whether the sender is typing or not.
@@ -97,7 +97,7 @@ export default {
     }),
 
     /**
-     * @description The event that is fired when a user adds a vote in a poll.
+     * @description The event that is fired when a users adds a vote in a poll.
      * @param {String} sender - The sender of the message.
      * @param {Object} data - The data of the message.
      * @param {String} data.messageId - The unique identifier of the message.
@@ -112,7 +112,7 @@ export default {
     }),
 
     /**
-     * @description The event that is fired when a user removes a vote in a poll.
+     * @description The event that is fired when a users removes a vote in a poll.
      * @param {String} sender - The sender of the message.
      * @param {Object} data - The data of the message.
      * @param {String} data.messageId - The unique identifier of the message.

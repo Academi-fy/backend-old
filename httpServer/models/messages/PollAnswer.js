@@ -5,7 +5,7 @@ import { validateNotEmpty } from "../propertyValidation.js";
  * @param {Number} id - The id of the poll answer. Schema: 1, 2, 3, ...
  * @param {String} optionName - The name of the poll answer.
  * @param {Array<User>} voters - The  users that voted for this answer.
- * @param {Number} maxVotesPerUser - The maximum number of votes a user can give to this answer.
+ * @param {Number} maxVotesPerUser - The maximum number of votes a users can give to this answer.
  */
 export default class PollAnswer {
 
@@ -14,7 +14,7 @@ export default class PollAnswer {
      * @param {Number} id - The id of the poll answer. Schema: 1, 2, 3, ...
      * @param {String} optionName - The name of the poll answer.
      * @param {Array<String>} voters - The ids of the users that voted for this answer.
-     * @param {Number} maxVotesPerUser - The maximum number of votes a user can give to this answer.
+     * @param {Number} maxVotesPerUser - The maximum number of votes a users can give to this answer.
      */
     constructor(
         id,
