@@ -1,3 +1,8 @@
+/**
+ * @file Club.js - Module for handling clubs.
+ * @author Daniel Dopatka
+ * @copyright 2023 Daniel Dopatka, Linus Bung
+ */
 import { validateArray, validateNotEmpty, validateObject, verifyInCache } from "../propertyValidation.js";
 import cache from "../../cache.js";
 import ClubSchema from "../../../mongoDb/schemas/clubs/ClubSchema.js";

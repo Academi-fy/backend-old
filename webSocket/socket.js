@@ -1,3 +1,8 @@
+/**
+ * @file socket.js - Class launching the WebSocket server and handling incoming connections.
+ * @author Daniel Dopatka
+ * @copyright 2023 Daniel Dopatka, Linus Bung
+ */
 import dotenv from "dotenv";
 import { WebSocketServer } from "ws";
 import { parseMessage } from "./parseMessage.js";

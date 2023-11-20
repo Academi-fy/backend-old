@@ -1,3 +1,8 @@
+/**
+ * @file PollContent.js - Module for representing a poll content of message.
+ * @author Daniel Dopatka
+ * @copyright 2023 Daniel Dopatka, Linus Bung
+ */
 import MessageContent from "../MessageContent.js";
 import { validateNotEmpty, validatePoll } from "../../propertyValidation.js";
 

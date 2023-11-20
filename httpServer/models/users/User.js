@@ -1,3 +1,8 @@
+/**
+ * @file User.js - Module for representing a user.
+ * @author Daniel Dopatka
+ * @copyright 2023 Daniel Dopatka, Linus Bung
+ */
 import UserSchema from "../../../mongoDb/schemas/user/UserSchema.js";
 import cache from "../../cache.js";
 import { validateArray, validateNotEmpty, verifyInCache } from "../propertyValidation.js";

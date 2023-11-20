@@ -1,3 +1,8 @@
+/**
+ * @file ClubDetails.js - Module for representing the details of a club.
+ * @author Daniel Dopatka
+ * @copyright 2023 Daniel Dopatka, Linus Bung
+ */
 import { validateArray, validateNotEmpty } from "../propertyValidation.js";
 
 /**

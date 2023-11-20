@@ -1,3 +1,8 @@
+/**
+ * @file School.js - Module for representing a school.
+ * @author Daniel Dopatka
+ * @copyright 2023 Daniel Dopatka, Linus Bung
+ */
 import {
     createDocument,
     deleteDocument,

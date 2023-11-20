@@ -1,3 +1,8 @@
+/**
+ * @file Grade.js - Module for representing a grade.
+ * @author Daniel Dopatka
+ * @copyright 2023 Daniel Dopatka, Linus Bung
+ */
 import cache from "../../cache.js";
 import {
     createDocument,

@@ -1,3 +1,8 @@
+/**
+ * @file PollAnswer.js - Module for representing a poll answer.
+ * @author Daniel Dopatka
+ * @copyright 2023 Daniel Dopatka, Linus Bung
+ */
 import { validateArray, validateNotEmpty, validateNumber } from "../propertyValidation.js";
 
 /**

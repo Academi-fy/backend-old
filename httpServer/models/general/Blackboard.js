@@ -1,3 +1,8 @@
+/**
+ * @file Blackboard.js - Module for representing a blackboard.
+ * @author Daniel Dopatka
+ * @copyright 2023 Daniel Dopatka, Linus Bung
+ */
 import cache from "../../cache.js";
 import BlackboardSchema from "../../../mongoDb/schemas/general/BlackboardSchema.js";
 import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../../mongoDb/collectionAccess.js";

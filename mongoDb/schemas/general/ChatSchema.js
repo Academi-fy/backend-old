@@ -1,3 +1,8 @@
+/**
+ * @file ChatSchema.js - Class representing the chat schema for MongoDB.
+ * @author Daniel Dopatka
+ * @copyright 2023 Daniel Dopatka, Linus Bung
+ */
 import mongoose from 'mongoose';
 
 const { Schema, Types: { ObjectId } } = mongoose;

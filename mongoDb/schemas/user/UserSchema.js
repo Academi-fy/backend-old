@@ -1,3 +1,8 @@
+/**
+ * @file UserSchema.js - Class representing the user schema for MongoDB.
+ * @author Daniel Dopatka
+ * @copyright 2023 Daniel Dopatka, Linus Bung
+ */
 import mongoose from 'mongoose';
 
 const { Schema, Types: { ObjectId } } = mongoose;

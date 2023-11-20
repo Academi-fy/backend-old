@@ -1,3 +1,8 @@
+/**
+ * @file EventTicket.js - Module for representing an event ticket.
+ * @author Daniel Dopatka
+ * @copyright 2023 Daniel Dopatka, Linus Bung
+ */
 import cache from "../../cache.js";
 import EventTicketSchema from "../../../mongoDb/schemas/events/EventTicketSchema.js";
 import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../../mongoDb/collectionAccess.js";

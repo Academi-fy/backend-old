@@ -1,10 +1,15 @@
 /**
+ * @file collectionAccess.js - Class exporting functions to access the database.
+ * @author Daniel Dopatka
+ * @copyright 2023 Daniel Dopatka, Linus Bung
+ *
  * @description Creates a document in the database.
  * @param {Object} model - The model to create the document in.
  * @param {Object} document - The document to create.
  * @return {Promise<any>} The created document.
  * */
 export async function createDocument(model, document) {
+    //TODO asynchrony needed?
     return await model.create(document);
 }
 

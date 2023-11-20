@@ -1,3 +1,8 @@
+/**
+ * @file Message.js - Module for representing a message in a chat.
+ * @author Daniel Dopatka
+ * @copyright 2023 Daniel Dopatka, Linus Bung
+ */
 import {
     validateArray,
     validateNotEmpty,
@@ -10,7 +15,6 @@ import {
     createDocument,
     deleteDocument,
     getAllDocuments,
-    getDocument,
     updateDocument
 } from "../../../mongoDb/collectionAccess.js";
 import MessageSchema from "../../../mongoDb/schemas/messages/MessageSchema.js";

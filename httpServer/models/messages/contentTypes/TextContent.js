@@ -1,3 +1,8 @@
+/**
+ * @file Textcontent.js - Module for representing a text content of message.
+ * @author Daniel Dopatka
+ * @copyright 2023 Daniel Dopatka, Linus Bung
+ */
 import MessageContent from "../MessageContent.js";
 import { validateNotEmpty } from "../../propertyValidation.js";
 

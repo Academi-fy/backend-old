@@ -1,3 +1,8 @@
+/**
+ * @file Event.js - Module for representing an event.
+ * @author Daniel Dopatka
+ * @copyright 2023 Daniel Dopatka, Linus Bung
+ */
 import cache from "../../cache.js";
 import {
     createDocument,

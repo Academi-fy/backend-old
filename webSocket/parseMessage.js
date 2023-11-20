@@ -1,3 +1,8 @@
+/**
+ * @file parseMessage.js - Parses a message and validates its payload. It is used in webSocket/eventHandler.js.
+ * @author Daniel Dopatka
+ * @copyright 2023 Daniel Dopatka, Linus Bung
+ */
 import yupSchemas from "./yupSchemas.js";
 
 /**

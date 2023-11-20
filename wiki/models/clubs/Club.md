@@ -182,3 +182,5 @@ Generiert über [mongoose](https://mongoosejs.com/docs/guide.html) [npm package]
     timestamps: true
 }
 ```
+
+<sub>@ Copyright: Daniel Dopatka, Linus Bung (2023)</sub>

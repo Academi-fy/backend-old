@@ -1,3 +1,8 @@
+/**
+ * @file SetupAccount.js - Module for representing a setup account.
+ * @author Daniel Dopatka
+ * @copyright 2023 Daniel Dopatka, Linus Bung
+ */
 import { validateNotEmpty, validateObject } from "../../propertyValidation.js";
 
 /**

@@ -1,3 +1,8 @@
+/**
+ * @file Chat.js - Module for representing a chat.
+ * @author Daniel Dopatka
+ * @copyright 2023 Daniel Dopatka, Linus Bung
+ */
 import cache from "../../cache.js";
 import ChatSchema from "../../../mongoDb/schemas/general/ChatSchema.js";
 import { validateArray, validateNotEmpty, verifyInCache } from "../propertyValidation.js";

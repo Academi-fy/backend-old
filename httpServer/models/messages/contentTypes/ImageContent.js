@@ -1,3 +1,8 @@
+/**
+ * @file ImageContent.js - Module for representing an image content of message.
+ * @author Daniel Dopatka
+ * @copyright 2023 Daniel Dopatka, Linus Bung
+ */
 import MessageContent from "../MessageContent.js";
 import { validateNotEmpty } from "../../propertyValidation.js";
 

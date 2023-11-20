@@ -1,3 +1,8 @@
+/**
+ * @file EventInformation.js - Module for representing an event information.
+ * @author Daniel Dopatka
+ * @copyright 2023 Daniel Dopatka, Linus Bung
+ */
 import { validateNotEmpty } from "../propertyValidation.js";
 
 /**

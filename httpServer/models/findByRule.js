@@ -1,4 +1,8 @@
 /**
+ * @file findByRule.js - Method to find objects in a list that are matching a certain rule. Mostly user for models.
+ * @author Daniel Dopatka
+ * @copyright 2023 Daniel Dopatka, Linus Bung
+ *
  * @description Finds an object in a list by a rule.
  * @param {Array<Object>} list - The list to search.
  * @param {Object} rule - The rule to find the object by.

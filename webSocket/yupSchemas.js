@@ -1,3 +1,8 @@
+/**
+ * @file yupSchemas.js - Class unifying all Schemas
+ * @author Daniel Dopatka
+ * @copyright 2023 Daniel Dopatka, Linus Bung
+ */
 import yup from "yup";
 import YupMessageSchema from "./yupSchemas/message/YupMessageSchema.js";
 

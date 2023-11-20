@@ -1,3 +1,8 @@
+/**
+ * @file UserAccount.js - Module for representing a user account. User accounts containt the privacy information of users.
+ * @author Daniel Dopatka
+ * @copyright 2023 Daniel Dopatka, Linus Bung
+ */
 import {
     createDocument,
     deleteDocument,

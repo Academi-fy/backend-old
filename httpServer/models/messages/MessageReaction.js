@@ -1,3 +1,8 @@
+/**
+ * @file MessageReaction.js - Module for representing a message reaction in a chat message.
+ * @author Daniel Dopatka
+ * @copyright 2023 Daniel Dopatka, Linus Bung
+ */
 import { validateNotEmpty, validateNumber } from "../propertyValidation.js";
 
 /**

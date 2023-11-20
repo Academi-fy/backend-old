@@ -1,8 +1,11 @@
+/**
+ * @file YupMessageSchema.js - Yup schema for validating messages objects.
+ * @author Daniel Dopatka
+ * @copyright 2023 Daniel Dopatka, Linus Bung
+ */
 import yup from "yup";
 
-import YupContentTypeSchema from "./YupContentTypeSchema.js";
-import YupMessageReaction from "./YupMessageReaction.js";
-import YupEditedMessage from "./YupEditedMessage.js";
+//TODO add the other schemas
 
 /**
  * @typedef {Object} Message

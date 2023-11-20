@@ -1,3 +1,8 @@
+/**
+ * @file Course.js - Module for representing a course.
+ * @author Daniel Dopatka
+ * @copyright 2023 Daniel Dopatka, Linus Bung
+ */
 import { validateArray, validateNotEmpty, validateObject, verifyInCache } from "../propertyValidation.js";
 import cache from "../../cache.js";
 import {

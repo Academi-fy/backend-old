@@ -1,3 +1,8 @@
+/**
+ * @file EditedMessage.js - Module for representing a message that has been edited.
+ * @author Daniel Dopatka
+ * @copyright 2023 Daniel Dopatka, Linus Bung
+ */
 import { validateNotEmpty, validateNumber } from "../propertyValidation.js";
 
 /**

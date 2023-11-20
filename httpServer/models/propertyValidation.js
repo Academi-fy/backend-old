@@ -1,3 +1,8 @@
+/**
+ * @file propertyValidation.js - Class exporting methods to validate the data types objects. Mostly used in models.
+ * @author Daniel Dopatka
+ * @copyright 2023 Daniel Dopatka, Linus Bung
+ */
 import Poll from "./messages/Poll.js";
 
 /**

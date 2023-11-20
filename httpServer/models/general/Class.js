@@ -1,3 +1,8 @@
+/**
+ * @file Class.js - Module for representing a school class.
+ * @author Daniel Dopatka
+ * @copyright 2023 Daniel Dopatka, Linus Bung
+ */
 import { validateArray, validateNotEmpty, verifyInCache } from "../propertyValidation.js";
 import cache from "../../cache.js";
 import {

@@ -1,3 +1,8 @@
+/**
+ * @file MessageContent.js - Module for representing the content of a message in a chat.
+ * @author Daniel Dopatka
+ * @copyright 2023 Daniel Dopatka, Linus Bung
+ */
 import { validateNotEmpty, validateObject } from "../propertyValidation.js";
 
 /**

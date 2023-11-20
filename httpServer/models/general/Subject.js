@@ -1,3 +1,8 @@
+/**
+ * @file Subject.js - Module for representing a subject.
+ * @author Daniel Dopatka
+ * @copyright 2023 Daniel Dopatka, Linus Bung
+ */
 import cache from "../../cache.js";
 import {
     createDocument,
