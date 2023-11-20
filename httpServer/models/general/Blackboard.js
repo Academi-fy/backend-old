@@ -7,7 +7,7 @@ const expirationTime = 10 * 60 * 1000;
 
 /**
  * @description Class representing a blackboard.
- * @param {String} _id - The id of the blackboard.
+ * @param {String} id - The id of the blackboard.
  * @param {String} title - The title of the blackboard.
  * @param {User} author - The author of the blackboard.
  * @param {String} coverImage - The cover image of the blackboard.
@@ -17,21 +17,32 @@ export default class Blackboard {
 
     /**
      * @description Create a blackboard.
+     * @param {String} id - The id of the blackboard.
      * @param {String} title - The title of the blackboard.
      * @param {String} author - The id of the author of the blackboard.
      * @param {String} coverImage - The cover image of the blackboard.
      * @param {String} text - The text of the blackboard.
      */
     constructor(
+        id,
         title,
         author,
         coverImage,
         text
     ) {
+        this.id = id;
         this.title = title;
         this.author = author;
         this.coverImage = coverImage;
         this.text = text;
+    }
+
+    get _id() {
+        return this.id;
+    }
+
+    set _id(id) {
+        this.id = id;
     }
 
     get _title() {
@@ -151,7 +162,7 @@ export default class Blackboard {
 
         if (!this.verifyBlackboardInCache(insertedBlackboard))
 
-            if (!verifyInCache(cache.get('blackboards'), insertedBlackboard, this.updateBlackboardCache))
+            if (!await verifyInCache(cache.get('blackboards'), insertedBlackboard, this.updateBlackboardCache))
                 throw new Error(`Failed to put blackboard in cache:\n${ insertedBlackboard }`);
 
         return insertedBlackboard;
@@ -177,7 +188,7 @@ export default class Blackboard {
 
         if (!this.verifyBlackboardInCache(updatedBlackboard))
 
-            if (!verifyInCache(cache.get('blackboards'), updatedBlackboard, this.updateBlackboardCache))
+            if (!await verifyInCache(cache.get('blackboards'), updatedBlackboard, this.updateBlackboardCache))
                 throw new Error(`Failed to put blackboard in cache:\n${ updatedBlackboard }`);
 
         return updatedBlackboard;

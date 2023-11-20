@@ -9,6 +9,7 @@ import UserAccountSchema from "../../../mongoDb/schemas/user/UserAccountSchema.j
 
 /**
  * @description The model for a users account.
+ * @param {String} id - The id of the users account.
  * @param {String} users - The id of the users of the users account.
  * @param {String} username - The username of the users.
  * @param {String} password - The password of the users.
@@ -18,6 +19,7 @@ export default class UserAccount {
 
     /**
      * @description The constructor for a users account.
+     * @param {String} id - The id of the users account.
      * @param {User} user - The users of the users account.
      * @param {String} username - The username of the users.
      * @param {String} password - The password of the users.
@@ -25,6 +27,7 @@ export default class UserAccount {
      * @param {Array<String>} permissions - The permissions of the users.
      */
     constructor(
+        id,
         user,
         username,
         password,
@@ -35,6 +38,14 @@ export default class UserAccount {
         this.password = password;
         this.settings = settings;
         this.permissions = permissions;
+    }
+
+    get _id() {
+        return this.id;
+    }
+
+    set _id(id) {
+        this.id = id;
     }
 
     get _user() {
@@ -82,21 +93,21 @@ export default class UserAccount {
     }
 
     /**
-    * @description Get a users account by its id.
-    * @param {String} id - The id of the users account.
-    * @return {Object} The users account.
-    * */
-    static getUserAccountById(id) {
-        return getDocument('userAccounts', id);
+     * @description Get a users account by its id.
+     * @param {String} id - The id of the users account.
+     * @return {Promise<Object>} The users account.
+     * */
+    static async getUserAccountById(id) {
+        return await getDocument('userAccounts', id);
     }
 
     /**
      * @description Get a users account by its username.
      * @param {String} username - The username of the users account.
-     * @return {Object} The users account.
+     * @return {Promise<UserAccount>} The users account.
      */
-    static getUserAccountByUsername(username) {
-        return getDocumentByRule(UserAccountSchema, {
+    static async getUserAccountByUsername(username) {
+        return await getDocumentByRule(UserAccountSchema, {
             username: username
         });
     }
@@ -104,10 +115,10 @@ export default class UserAccount {
     /**
      * @description Get a users account by its users.
      * @param {User} user - The users of the users account.
-     * @return {Object} The users account.
+     * @return {Promise<UserAccount>} The users account.
      */
-    static getUserAccountByUser(user) {
-        return getDocumentByRule(UserAccountSchema, {
+    static async getUserAccountByUser(user) {
+        return await getDocumentByRule(UserAccountSchema, {
             user: {
                 id: user._id
             }
@@ -117,7 +128,7 @@ export default class UserAccount {
     /**
      * @description Create a users account.
      * @param {UserAccount} userAccount - The users account to create.
-     * @return {UserAccount} The created users account.
+     * @return {Promise<UserAccount>} The created users account.
      */
     static async createUserAccount(userAccount) {
 
@@ -130,7 +141,7 @@ export default class UserAccount {
     /**
      * @description Update a users account.
      * @param {UserAccount} userAccount - The users account to update.
-     * @return {UserAccount} The updated users account.
+     * @return {Promise<UserAccount>} The updated users account.
      */
     static async updateUserAccount(userAccount) {
 
@@ -144,14 +155,14 @@ export default class UserAccount {
     /**
      * @description Delete a users account.
      * @param {UserAccount} userAccount - The users account to delete.
-     * @return {UserAccount} The deleted users account.
+     * @return {Promise<Boolean>} The deleted users account.
      */
     static async deleteUserAccount(userAccount) {
 
         const deletedUserAccount = await deleteDocument(UserAccountSchema, userAccount._id);
         if (!deletedUserAccount) throw new Error(`Failed to delete user account:\n${ userAccount }`);
 
-        return deletedUserAccount;
+        return true;
     }
 
     /**

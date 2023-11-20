@@ -9,6 +9,7 @@ import SchoolSchema from "../../../../mongoDb/schemas/general/setup/SchoolSchema
 
 /**
  * @description Class representing a school.
+ * @param {String} id - The id of the school.
  * @param {String} name - The name of the school.
  * @param {Array<Grade>} grades - The grades in the school.
  * @param {Array<Course>} courses - The courses in the school.
@@ -24,6 +25,7 @@ export default class School {
 
     /**
      * Create a school.
+     * @param {String} id - The id of the school.
      * @param {String} name - The name of the school.
      * @param {Array<String>} grades - The ids of the grades in the school.
      * @param {Array<String>} courses - The ids of the courses in the school.
@@ -36,6 +38,7 @@ export default class School {
      * @param {Array<String>} blackboards - The ids of the blackboards in the school.
      * */
     constructor(
+        id,
         name,
         grades,
         courses,
@@ -47,6 +50,7 @@ export default class School {
         events,
         blackboards
     ) {
+        this.id = id;
         this.name = name;
         this.grades = grades;
         this.courses = courses;
@@ -57,6 +61,14 @@ export default class School {
         this.clubs = clubs;
         this.events = events;
         this.blackboards = blackboards;
+    }
+
+    get _id() {
+        return this.id;
+    }
+
+    set _id(id) {
+        this.id = id;
     }
 
     get _name() {

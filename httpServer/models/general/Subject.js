@@ -13,7 +13,7 @@ const expirationTime = 10 * 60 * 1000;
 
 /**
  * @description Class representing a Subject.
- * @param {String} _id - The id of the subject.
+ * @param {String} id - The id of the subject.
  * @param {String} type - The type of the subject.
  * @param {Array<Course>} courses - The courses of the subject.
  */
@@ -21,15 +21,25 @@ export default class Subject {
 
     /**
      * Create a subject.
+     * @param {String} id - The id of the subject.
      * @param {String} type - The type of the subject.
      * @param {Array<String>} courses - The ids of the courses of the subject.
      */
     constructor(
+        id,
         type,
         courses
     ) {
         this.type = type;
         this.courses = courses;
+    }
+
+    get _id() {
+        return this.id;
+    }
+
+    set _id(value) {
+        this.id = value;
     }
 
     get _type() {
@@ -50,12 +60,12 @@ export default class Subject {
 
     /**
      * Update the cache of subjects.
-     * @return {Array<Subject>} The updated list of subjects.
+     * @return {Promise<Array<Subject>>} The updated list of subjects.
      */
-    static updateSubjectCache(){
+    static async updateSubjectCache() {
 
         cache.get("subjects").clear();
-        const subjectsFromDb = getAllDocuments(MessageSchema);
+        const subjectsFromDb = await getAllDocuments(SubjectSchema);
 
         const subjects = [];
         for (const subjectFromDb of subjectsFromDb) {
@@ -72,27 +82,27 @@ export default class Subject {
 
     /**
      * Get all subjects.
-     * @return {Array<Subject>} The list of subjects.
+     * @return {Promise<Array<Subject>>} The list of subjects.
      */
-    static getSubjects() {
+    static async getSubjects() {
 
         const cacheResults = cache.get("subjects");
 
         if (!cacheResults) {
             return cacheResults;
         }
-        else return this.updateSubjectCache();
+        else return await this.updateSubjectCache();
 
     }
 
     /**
      * Get a subject by its id.
      * @param {String} id - The id of the subject.
-     * @return {Subject} The subject.
+     * @return {Promise<Subject>} The subject.
      */
     static async getSubjectById(id) {
 
-        const subjects = this.getSubjects();
+        const subjects = await this.getSubjects();
 
         const subject = subjects.find(subject => subject._id === id);
         if (!subject) throw new Error(`Subject not found:\n${ id }`);
@@ -104,12 +114,11 @@ export default class Subject {
     /**
      * Create a subject.
      * @param {Subject} subject - The subject.
-     * @return {Array<Subject>} The updated list of subjects.
-     * @throws {Error} If the subject could not be created.
+     * @return {Promise<Array<Subject>>} The updated list of subjects.
      */
     static async createSubject(subject) {
 
-        const subjects = this.getSubjects();
+        const subjects = await this.getSubjects();
 
         const insertedSubject = await createDocument(SubjectSchema, subject);
         if(!insertedSubject) throw new Error(`Failed to create subject:\n${ subject }`);
@@ -121,7 +130,7 @@ export default class Subject {
 
         if(!this.verifySubjectInCache(insertedSubject))
 
-            if(!verifyInCache(subjects, subject, this.updateSubjectCache))
+            if(!await verifyInCache(subjects, subject, this.updateSubjectCache))
                 throw new Error(`Failed to create subject:\n${ subject }`);
 
     }
@@ -130,11 +139,11 @@ export default class Subject {
      * Update a subject.
      * @param {String} subjectId - The id of the subject.
      * @param {Subject} subject - The subject.
-     * @return {Subject} The updated subject.
+     * @return {Promise<Subject>} The updated subject.
      */
     static async updateSubject(subjectId, subject) {
 
-        const subjects = this.getSubjects();
+        const subjects = await this.getSubjects();
 
         let updatedSubject = await updateDocument(SubjectSchema, subjectId, subject);
         if(!updatedSubject) throw new Error(`Failed to update subject:\n${ subject }`);
@@ -146,7 +155,7 @@ export default class Subject {
 
         if(!this.verifySubjectInCache(updatedSubject))
 
-            if(!verifyInCache(subjects, updatedSubject, this.updateSubjectCache))
+            if(!await verifyInCache(subjects, updatedSubject, this.updateSubjectCache))
                 throw new Error(`Failed to update subject:\n${ updatedSubject }`);
 
         return updatedSubject;
@@ -155,21 +164,21 @@ export default class Subject {
     /**
      * Delete a subject.
      * @param {String} subjectId - The id of the subject.
-     * @return {Subject} The deleted subject.
+     * @return {Promise<Subject>} The deleted subject.
      */
     static async deleteSubject(subjectId) {
 
         const deletedSubject = await deleteDocument(SubjectSchema, subjectId);
         if (!deletedSubject) throw new Error(`Failed to delete subject:\n${ subjectId }`);
 
-        const subjects = this.getSubjects();
+        const subjects = await this.getSubjects();
         subjects.splice(subjects.findIndex(subject => subject._id === subjectId), 1);
         cache.put('subjects', subjects, expirationTime);
 
 
         if(this.verifySubjectInCache(deletedSubject))
 
-            if(!verifyInCache(subjects, deletedSubject, this.updateSubjectCache))
+            if(!await verifyInCache(subjects, deletedSubject, this.updateSubjectCache))
                 throw new Error(`Failed to delete subject:\n${ deletedSubject }`);
 
         return deletedSubject;

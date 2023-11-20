@@ -7,11 +7,13 @@ import {
     updateDocument
 } from "../../../mongoDb/collectionAccess.js";
 import EventSchema from "../../../mongoDb/schemas/events/EventSchema.js";
+import { verifyInCache } from "../propertyValidation.js";
 
 const expirationTime = 5 * 60 * 1000;
 
 /**
  * @description Class representing an Event.
+ * @param {String} id - The ID of the event.
  * @param {String} title - The title of the event.
  * @param {String} description - The description of the event.
  * @param {String} location - The location of the event.
@@ -26,6 +28,7 @@ export default class Event {
 
     /**
      * Create an event.
+     * @param {String} id - The ID of the event.
      * @param {String} title - The title of the event.
      * @param {String} description - The description of the event.
      * @param {String} location - The location of the event.
@@ -37,6 +40,7 @@ export default class Event {
      * @param {Array<EventTicket>} tickets - The tickets of the event.
      */
     constructor(
+        id,
         title,
         description,
         location,
@@ -48,6 +52,7 @@ export default class Event {
         tickets
     ) {
 
+        this.id = id;
         this.title = title;
         this.description = description;
         this.location = location;
@@ -214,7 +219,12 @@ export default class Event {
         events.push(
             insertedEvent
         );
-        cache.put(`events`, events, expirationTime)
+        cache.put(`events`, events, expirationTime);
+
+        if(!this.verifyEventInCache(insertedEvent))
+
+            if(!await verifyInCache(cache.get('events'), insertedEvent, this.updateEventCache))
+                throw new Error(`Failed to create event in cache:\n${ insertedEvent }`);
 
         return insertedEvent;
 
@@ -236,7 +246,12 @@ export default class Event {
         events.push(
             updatedEvent
         );
-        cache.put(`events`, events, expirationTime)
+        cache.put(`events`, events, expirationTime);
+
+        if(!this.verifyEventInCache(updatedEvent))
+
+            if(!await verifyInCache(cache.get('events'), updatedEvent, this.updateEventCache))
+                throw new Error(`Failed to update event in cache:\n${ updatedEvent }`);
 
         return updatedEvent;
     }

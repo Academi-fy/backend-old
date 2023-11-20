@@ -244,7 +244,7 @@ export default class User {
 
         if (!this.verifyUserInCache(insertedUser))
 
-            if (!verifyInCache(cache.get('messages'), insertedUser, this.updateUserCache))
+            if (!await verifyInCache(cache.get('messages'), insertedUser, this.updateUserCache))
                 throw new Error(`Failed to put user in cache:\n${ insertedUser }`);
 
         return insertedUser;
@@ -279,7 +279,7 @@ export default class User {
 
         if (!this.verifyUserInCache(updatedUser))
 
-            if (!verifyInCache(cache.get('messages'), updatedUser, this.updateUserCache))
+            if (!await verifyInCache(cache.get('messages'), updatedUser, this.updateUserCache))
                 throw new Error(`Failed to update user in cache:\n${ updatedUser }`);
 
         return updatedUser;

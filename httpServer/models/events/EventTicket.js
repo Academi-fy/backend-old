@@ -6,7 +6,7 @@ const expirationTime = 15 * 60 * 1000;
 
 /**
  * @description The class for an event ticket.
- * @param {String} _id - The id of the event ticket.
+ * @param {String} id - The id of the event ticket.
  * @param {Event} event - The id of the event of the ticket.
  * @param {User} buyer - The id of the buyer of the ticket.
  * @param {Number} price - The price of the ticket.
@@ -16,17 +16,20 @@ export default class EventTicket {
 
     /**
      * @description The constructor for an event ticket.
+     * @param {String} id - The id of the event ticket.
      * @param {String} event - The id of the event of the ticket.
      * @param {String} buyer - The id of the buyer of the ticket.
      * @param {Number} price - The price of the ticket.
      * @param {Number} saleDate - The date the ticket was sold.
      */
     constructor(
+        id,
         event,
         buyer,
         price,
         saleDate
     ) {
+        this.id = id;
         this.event = event;
         this.buyer = buyer;
         this.price = price;

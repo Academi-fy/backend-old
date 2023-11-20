@@ -14,7 +14,7 @@ const expirationTime = 5 * 60 * 1000;
 
 /**
  * @description Class representing a Club.
- * @param {String} _id - The id of the club.
+ * @param {String} id - The id of the club.
  * @param {String} name - The name of the club.
  * @param {ClubDetails} details - The details of the club.
  * @param {Array<User>} leaders - The leaders of the club.
@@ -27,6 +27,7 @@ export default class Club {
 
     /**
      * @description Create a club.
+     * @param {String} id - The id of the club.
      * @param {String} name - The name of the club.
      * @param {ClubDetails} details - The details of the club.
      * @param {Array<String>} leaders - The ids of the leaders of the club.
@@ -36,6 +37,7 @@ export default class Club {
      * @param {String} state - The state of the club. Valid states are: 'SUGGESTED', 'REJECTED', 'ACCEPTED'.
      */
     constructor(
+        id,
         name,
         details,
         leaders,
@@ -44,6 +46,7 @@ export default class Club {
         events,
         state
     ) {
+        this.id = id;
         this.name = name;
         this.details = details;
         this.leaders = leaders;
@@ -51,6 +54,15 @@ export default class Club {
         this.chat = chat;
         this.events = events;
         this.state = state;
+    }
+
+    get _id() {
+        return this.id;
+    }
+
+    set _id(value) {
+        validateNotEmpty('Club id', value);
+        this.id = value;
     }
 
     get _name() {
@@ -209,7 +221,7 @@ export default class Club {
 
         if (!this.verifyClubInCache(insertedClub))
 
-            if (!verifyInCache(cache.get('clubs'), insertedClub, this.updateClubCache))
+            if (!await verifyInCache(cache.get('clubs'), insertedClub, this.updateClubCache))
                 throw new Error(`Failed to put club in cache:\n${ insertedClub }`);
 
         return insertedClub;
@@ -235,7 +247,7 @@ export default class Club {
 
         if (!this.verifyClubInCache(updatedClub))
 
-            if (!verifyInCache(cache.get('clubs'), updatedClub, this.updateClubCache))
+            if (!await verifyInCache(cache.get('clubs'), updatedClub, this.updateClubCache))
                 throw new Error(`Failed to update club in cache:\n${ updatedClub }`);
 
         return updatedClub;

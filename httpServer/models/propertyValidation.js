@@ -95,7 +95,7 @@ export function validatePoll(propertyName, value) {
  * @param {Array} list - The list to check.
  * @param {Object} testObject - The object to verify.
  * @param {Function} updateFunction - The function to call to update the list.
- * @return {boolean} True if the object is in the list, false otherwise.
+ * @return {Promise<Boolean>} True if the object is in the list, false otherwise.
  */
 export async function verifyInCache(list, testObject, updateFunction) {
 
@@ -106,7 +106,7 @@ export async function verifyInCache(list, testObject, updateFunction) {
             return true;
         }
         else {
-            updateFunction();
+            await updateFunction();
             retries--;
             await new Promise(resolve => setTimeout(resolve, 500)); // wait before retrying
         }

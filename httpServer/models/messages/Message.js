@@ -14,7 +14,7 @@ const expirationTime = 2 * 60 * 1000;
 
 /**
  * @description Class representing a Message.
- * @param {String} _id - The id of the message.
+ * @param {String} id - The id of the message.
  * @param {Chat} chat - The chat that the message belongs to.
  * @param {User} author - The author of the message.
  * @param {Array<FileContent | ImageContent | PollContent | TextContent | VideoContent>} content - The content of the message.
@@ -26,6 +26,7 @@ export default class Message {
 
     /**
      * Create a message.
+     * @param {String} id - The id of the message.
      * @param {String} chat - The id of the chat that the message belongs to.
      * @param {String} author - The id of the author of the message.
      * @param {Array<FileContent | ImageContent | PollContent | TextContent | VideoContent>} content - The content of the message.
@@ -34,6 +35,7 @@ export default class Message {
      * @param {Number} date - The date the message was created.
      */
     constructor(
+        id,
         chat,
         author,
         content,
@@ -41,6 +43,7 @@ export default class Message {
         edits,
         date
     ) {
+        this.id = id;
         this.chat = chat;
         this.author = author;
         this.content = content;
@@ -105,12 +108,12 @@ export default class Message {
 
     /**
      * Update the cache of messages.
-     * @return {Array<Message>} The updated list of messages.
+     * @return {Promise<Array<Message>>} The updated list of messages.
      */
-    static updateMessageCache() {
+    static async updateMessageCache() {
 
         cache.get("messages").clear();
-        const messagesFromDb = getAllDocuments(MessageSchema);
+        const messagesFromDb = await getAllDocuments(MessageSchema);
 
         const messages = [];
         for (const message of messagesFromDb) {
@@ -126,27 +129,27 @@ export default class Message {
 
     /**
      * Get all messages.
-     * @return {Array<Message>} The list of messages.
+     * @return {Promise<Array<Message>>} The list of messages.
      */
-    static getMessages() {
+    static async getMessages() {
 
         const cacheResults = cache.get("messages");
 
         if (!cacheResults) {
             return cacheResults;
         }
-        else return this.updateMessageCache();
+        else return await this.updateMessageCache();
 
     }
 
     /**
      * Get a message by its ID.
      * @param {String} id - The ID of the message.
-     * @return {Message} The message object.
+     * @return {Promise<Message>} The message object.
      */
     static async getMessageById(id) {
 
-        const messages = this.getMessages();
+        const messages= await this.getMessages();
 
         const message = messages.find(message => message._id === id);
         if (!message) throw new Error(`Message with id ${ id } not found`);
@@ -158,11 +161,11 @@ export default class Message {
     /**
      * Create a new message.
      * @param {Message} message - The message object.
-     * @return {Message} The created message object.
+     * @return {Promise<Message>} The created message object.
      */
     static async createMessage(message) {
 
-        const messages = this.getMessages();
+        const messages= await this.getMessages();
 
         const insertedMessage = await createDocument(MessageSchema, message);
         if (!insertedMessage) throw new Error(`Failed to create message:\n${ message }`);
@@ -174,7 +177,7 @@ export default class Message {
 
         if (!this.verifyMessageInCache(message))
 
-            if (!verifyInCache(cache.get('messages'), insertedMessage, this.updateMessageCache))
+            if (!await verifyInCache(cache.get('messages'), insertedMessage, this.updateMessageCache))
                 throw new Error(`Failed to put message in cache:\n${ insertedMessage }`);
 
         return insertedMessage;
@@ -185,11 +188,11 @@ export default class Message {
      * Update a message.
      * @param {String} messageId - The ID of the message to update.
      * @param {Message} updateMessage - The updated message object.
-     * @return {Message} The updated message object.
+     * @return {Promise<Message>} The updated message object.
      */
     static async updateMessages(messageId, updateMessage) {
 
-        const messages = this.getMessages();
+        const messages = await this.getMessages();
 
         let updatedMessage = await updateDocument(MessageSchema, messageId, updateMessage);
         if (!updatedMessage) throw new Error(`Failed to update message:\n${ updateMessage }`);
@@ -201,7 +204,7 @@ export default class Message {
 
         if (!this.verifyMessageInCache(updatedMessage))
 
-            if (!verifyInCache(cache.get('messages'), updatedMessage, this.updateMessageCache))
+            if (!await verifyInCache(cache.get('messages'), updatedMessage, this.updateMessageCache))
                 throw new Error(`Failed to update message in cache:\n${ updatedMessage }`);
 
         return updatedMessage;
@@ -210,20 +213,20 @@ export default class Message {
     /**
      * Delete a message.
      * @param {String} messageId - The ID of the message to delete.
-     * @return {Boolean} The status of the deletion. Reaction
+     * @return {Promise<Boolean>} The status of the deletion. Reaction
      */
     static async deleteMessage(messageId) {
 
         const deletedMessage = await deleteDocument(MessageSchema, messageId);
         if (!deletedMessage) throw new Error(`Failed to delete message with id ${ messageId }`);
 
-        const messages = this.getMessages();
+        const messages= await this.getMessages();
         messages.splice(messages.findIndex(message => message._id === messageId), 1);
         cache.put('messages', messages, expirationTime);
 
         if (this.verifyMessageInCache(deletedMessage))
 
-            if(!verifyInCache(cache.get('messages'), deletedMessage, this.updateMessageCache))
+            if(!await verifyInCache(cache.get('messages'), deletedMessage, this.updateMessageCache))
                 throw new Error(`Failed to delete message from cache:\n${ deletedMessage }`);
 
         return true;

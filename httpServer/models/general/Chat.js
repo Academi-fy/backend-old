@@ -13,7 +13,7 @@ const expirationTime = 2 * 60 * 1000;
 
 /**
  * @description Class representing a Chat.
- * @param {String} _id - The id of the chat.
+ * @param {String} id - The id of the chat.
  * @param {String} type - The type of the chat. Valid types are: 'PRIVATE', 'GROUP', 'COURSE', 'CLUB'.
  * @param {Array<User>} targets - The targets of the chat.
  * @param {Array<Course>} courses - The courses related to the chat.
@@ -26,6 +26,7 @@ export default class Chat {
 
     /**
      * Create a chat.
+     * @param {String} id - The id of the chat.
      * @param {String} type - The type of the chat. Valid types are: 'PRIVATE', 'GROUP', 'COURSE', 'CLUB'.
      * @param {Array<String>} targets - The ids of the targets of the chat.
      * @param {Array<String>} courses - The ids of the courses related to the chat.
@@ -35,6 +36,7 @@ export default class Chat {
      * @param {Array} messages - The messages in the chat.
      */
     constructor(
+        id,
         type,
         targets,
         courses,
@@ -43,6 +45,7 @@ export default class Chat {
         avatar,
         messages
     ) {
+        this.id = id;
         this.type = type;
         this.targets = targets;
         this.courses = courses;
@@ -203,7 +206,7 @@ export default class Chat {
 
         if (!this.verifyChatInCache(insertedChat))
 
-            if (!verifyInCache(cache.get('chats'), insertedChat, this.updateChatCache))
+            if (!await verifyInCache(cache.get('chats'), insertedChat, this.updateChatCache))
                 throw new Error(`Failed to put chat in cache:\n${ insertedChat }`);
 
         return insertedChat;
@@ -229,7 +232,7 @@ export default class Chat {
 
         if (!this.verifyChatInCache(updatedChat))
 
-            if (!verifyInCache(cache.get('chats'), updatedChat, this.updateChatCache))
+            if (!await verifyInCache(cache.get('chats'), updatedChat, this.updateChatCache))
                 throw new Error(`Failed to update chat in cache:\n${ updatedChat }`);
 
         return updatedChat;

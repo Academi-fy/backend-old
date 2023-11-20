@@ -12,6 +12,7 @@ const GradeSchema = new Schema(
 
         level: {
             type: Number,
+            unique: true,
             required: true
         },
         classes: [

@@ -13,7 +13,7 @@ const expirationTime = 5 * 60 * 1000;
 
 /**
  * @description Class representing a Course.
- * @param {String} _id - The id of the course.
+ * @param {String} id - The id of the course.
  * @param {Array<User>} members - The members of the course.
  * @param {Array<Class>} classes - The classes in the course.
  * @param {User} teacher - The teacher of the course.
@@ -24,6 +24,7 @@ export default class Course {
 
     /**
      * @description Create a course.
+     * @param {String} id - The id of the course.
      * @param {Array} members - The members of the course.
      * @param {Array} classes - The classes in the course.
      * @param {String} teacher - The id of the teacher of the course.
@@ -31,13 +32,14 @@ export default class Course {
      * @param {String} subject - The id of the subject of the course.
      */
     constructor(
+        id,
         members,
         classes,
         teacher,
         chat,
         subject
     ) {
-
+        this.id = id;
         this.members = members;
         this.classes = classes;
         this.teacher = teacher;
@@ -140,7 +142,7 @@ export default class Course {
 
         if (!this.verifyCourseInCache(insertedCourse))
 
-            if (!verifyInCache(cache.get('courses'), insertedCourse, this.updateCourseCache))
+            if (!await verifyInCache(cache.get('courses'), insertedCourse, this.updateCourseCache))
                 throw new Error(`Course could not be created:\n${ insertedCourse }`);
 
         return insertedCourse;
@@ -166,7 +168,7 @@ export default class Course {
 
         if (!this.verifyCourseInCache(updatedCourse))
 
-            if (!verifyInCache(cache.get('courses'), updatedCourse, this.updateCourseCache))
+            if (!await verifyInCache(cache.get('courses'), updatedCourse, this.updateCourseCache))
                 throw new Error(`Course could not be updated:\n${ updatedCourse }`);
 
 
@@ -183,7 +185,7 @@ export default class Course {
         const deletedCourse = await deleteDocument(CourseSchema, courseId);
         if (!deletedCourse) throw new Error(`Course could not be deleted:\n${ courseId }`);
 
-        const courses = this.getCourses();
+        const courses = await this.getCourses();
         courses.splice(courses.findIndex(course => course._id === courseId), 1);
         cache.put('courses', courses, expirationTime);
 

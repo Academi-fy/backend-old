@@ -14,7 +14,7 @@ const expirationTime = 5 * 60 * 1000;
 
 /**
  * @description Class representing a school class.
- * @param {String} _id - The id of the class.
+ * @param {String} id - The id of the class.
  * @param {Grade} grade - The grade of the class.
  * @param {Array<Course>} courses - The courses of the class.
  * @param {Array<User>} members - The members of the class.
@@ -24,21 +24,33 @@ export default class Class {
 
     /**
      * @description Create a class.
+     * @param {String} id - The id of the class.
      * @param {String} grade - The id of the grade of the class.
      * @param {Array<String>} courses - The ids of the courses of the class.
      * @param {Array<String>} members - The ids of the members of the class.
      * @param {String} specified_grade - The specified grade of the class.
      */
     constructor(
+        id,
         grade,
         courses,
         members,
         specified_grade
     ) {
+        this.id = id;
         this.grade = grade;
         this.courses = courses;
         this.members = members;
         this.specified_grade = specified_grade;
+    }
+
+    get _id() {
+        return this.id;
+    }
+
+    set _id(value) {
+        validateNotEmpty('Class id', value);
+        this.id = value;
     }
 
     get _grade() {
@@ -148,7 +160,7 @@ export default class Class {
 
         if (!this.verifyClassInCache(insertedClass))
 
-            if (!verifyInCache(cache.get('classes'), insertedClass, this.updateClassCache))
+            if (!await verifyInCache(cache.get('classes'), insertedClass, this.updateClassCache))
                 throw new Error(`Failed to put class in cache:\n${ insertedClass }`);
 
         return insertedClass;
@@ -174,7 +186,7 @@ export default class Class {
 
         if (!this.verifyClassInCache(updatedClass))
 
-            if (!verifyInCache(cache.get('classes'), updatedClass, this.updateClassCache))
+            if (!await verifyInCache(cache.get('classes'), updatedClass, this.updateClassCache))
                 throw new Error(`Failed to update class in cache:\n${ updatedClass }`);
 
         return updatedClass;
