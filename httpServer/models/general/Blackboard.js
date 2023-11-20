@@ -113,7 +113,7 @@ export default class Blackboard {
      * Get all blackboards.
      * @return {Promise<Array<Blackboard>>} The list of blackboards.
      */
-    static async getBlackboards() {
+    static async getAllBlackboards() {
 
         const blackboards = cache.get("blackboards");
 
@@ -130,7 +130,7 @@ export default class Blackboard {
      */
     static async getBlackboardById(id) {
 
-        const blackboards = await this.getBlackboards();
+        const blackboards = await this.getAllBlackboards();
 
         const blackboard = blackboards.find(blackboard => blackboard._id.toString() === id);
         if (!blackboard) throw new Error(`Failed to find blackboard with id:\n${ id }`);
@@ -144,9 +144,9 @@ export default class Blackboard {
      * @param {Object} rule - The rule to find the blackboards by.
      * @return {Promise<Array<Blackboard>>} The matching blackboard.
      */
-    static async getBlackboardsByRule(rule) {
+    static async getAllBlackboardsByRule(rule) {
 
-        const blackboards = await this.getBlackboards();
+        const blackboards = await this.getAllBlackboards();
 
         const matchingBlackboards = findByRule(blackboards, rule);
         if (!matchingBlackboards) throw new Error(`Failed to find blackboards matching rule:\n${ rule }`);
@@ -162,7 +162,7 @@ export default class Blackboard {
      */
     static async createBlackboard(blackboard) {
 
-        const blackboards = await this.getBlackboards();
+        const blackboards = await this.getAllBlackboards();
 
         const insertedBlackboard = await createDocument(BlackboardSchema, blackboard);
         if (!insertedBlackboard) throw new Error(`Failed to create blackboard:\n${ blackboard }`);
@@ -188,7 +188,7 @@ export default class Blackboard {
      */
     static async updateBlackboard(blackboardId, updateBlackboard) {
 
-        const blackboards = await this.getBlackboards();
+        const blackboards = await this.getAllBlackboards();
 
         let updatedBlackboard = await updateDocument(BlackboardSchema, blackboardId, updateBlackboard);
         if (!updatedBlackboard) throw new Error(`Failed to update blackboard:\n${ updateBlackboard }`);
@@ -216,7 +216,7 @@ export default class Blackboard {
         const deleteBlackboard = await deleteDocument(BlackboardSchema, blackboardId);
         if (!deleteBlackboard) throw new Error(`Failed to delete blackboard with id:\n${ blackboardId }`);
 
-        const blackboards = await this.getBlackboards();
+        const blackboards = await this.getAllBlackboards();
         blackboards.splice(blackboards.findIndex(blackboard => blackboard._id.toString() === blackboardId), 1);
         cache.put('blackboards', blackboards, expirationTime);
 

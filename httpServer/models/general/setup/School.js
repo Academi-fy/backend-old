@@ -179,7 +179,7 @@ export default class School {
      * @description Get all schools.
      * @return {Promise<Array<School>>} The schools.
      */
-    static async getSchools() {
+    static async getAllSchools() {
         return await getAllDocuments(SchoolSchema);
     }
 

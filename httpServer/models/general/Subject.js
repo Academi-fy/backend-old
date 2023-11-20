@@ -88,7 +88,7 @@ export default class Subject {
      * Get all subjects.
      * @return {Promise<Array<Subject>>} The list of subjects.
      */
-    static async getSubjects() {
+    static async getAllSubjects() {
 
         const cacheResults = cache.get("subjects");
 
@@ -106,7 +106,7 @@ export default class Subject {
      */
     static async getSubjectById(id) {
 
-        const subjects = await this.getSubjects();
+        const subjects = await this.getAllSubjects();
 
         const subject = subjects.find(subject => subject._id === id);
         if (!subject) throw new Error(`Subject not found:\n${ id }`);
@@ -120,9 +120,9 @@ export default class Subject {
      * @param {Object} rule - The rule to find the subject.
      * @return {Promise<Array<Subject>>} The matching subjects.
      * */
-    static async getSubjectsByRule(rule) {
+    static async getAllSubjectsByRule(rule) {
 
-        const subjects = await this.getSubjects();
+        const subjects = await this.getAllSubjects();
 
         const matchingSubjects = findByRule(subjects, rule);
         if (!matchingSubjects) throw new Error(`Failed to find subjects with rule:\n${ rule }`);
@@ -137,7 +137,7 @@ export default class Subject {
      */
     static async createSubject(subject) {
 
-        const subjects = await this.getSubjects();
+        const subjects = await this.getAllSubjects();
 
         const insertedSubject = await createDocument(SubjectSchema, subject);
         if(!insertedSubject) throw new Error(`Failed to create subject:\n${ subject }`);
@@ -162,7 +162,7 @@ export default class Subject {
      */
     static async updateSubject(subjectId, subject) {
 
-        const subjects = await this.getSubjects();
+        const subjects = await this.getAllSubjects();
 
         let updatedSubject = await updateDocument(SubjectSchema, subjectId, subject);
         if(!updatedSubject) throw new Error(`Failed to update subject:\n${ subject }`);
@@ -190,7 +190,7 @@ export default class Subject {
         const deletedSubject = await deleteDocument(SubjectSchema, subjectId);
         if (!deletedSubject) throw new Error(`Failed to delete subject:\n${ subjectId }`);
 
-        const subjects = await this.getSubjects();
+        const subjects = await this.getAllSubjects();
         subjects.splice(subjects.findIndex(subject => subject._id === subjectId), 1);
         cache.put('subjects', subjects, expirationTime);
 

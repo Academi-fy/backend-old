@@ -154,7 +154,7 @@ export default class Chat {
      * @description Get all chats.
      * @return {Promise<Array<Chat>>} The chats.
      */
-    static async getChats() {
+    static async getAllChats() {
 
         const cacheResults = cache.get('chats');
 
@@ -172,7 +172,7 @@ export default class Chat {
      */
     static async getChatById(chatId) {
 
-        const chats = await this.getChats();
+        const chats = await this.getAllChats();
 
         const chat = chats.find(chat => chat._id === chatId);
         if (!chat) throw new Error(`Chat with id ${ chatId } not found`);
@@ -186,9 +186,9 @@ export default class Chat {
      * @param {Object} rule - The rule to find the chats by.
      * @return {Promise<Array<Chat>>} The chat.
      * */
-    static async getChatsByRule(rule) {
+    static async getAllChatsByRule(rule) {
 
-        const chats = await this.getChats();
+        const chats = await this.getAllChats();
 
         const chat = findByRule(chats, rule);
         if (!chat) throw new Error(`Failed to find chats matching rule:\n${ rule }`);
@@ -204,7 +204,7 @@ export default class Chat {
      */
     static async createChat(chat) {
 
-        const chats = await this.getChats();
+        const chats = await this.getAllChats();
 
         const insertedChat = await createDocument(ChatSchema, chat);
         if (!insertedChat) throw new Error(`Failed to create chat:\n${ chat }`);
@@ -230,7 +230,7 @@ export default class Chat {
      */
     static async updateChat(chatId, updateChat) {
 
-        const chats = await this.getChats();
+        const chats = await this.getAllChats();
 
         let updatedChat = await updateDocument(ChatSchema, chatId, updateChat);
         if (!updatedChat) throw new Error(`Failed to update chat:\n${ updateChat }`);
@@ -258,7 +258,7 @@ export default class Chat {
         const deletedChat = await deleteDocument(ChatSchema, chatId);
         if (!deletedChat) throw new Error(`Failed to delete chat with id ${ chatId }`);
 
-        const chats = await this.getChats();
+        const chats = await this.getAllChats();
         chats.splice(chats.findIndex(chat => chat._id === chatId), 1);
         cache.put('chats', chats, expirationTime);
 

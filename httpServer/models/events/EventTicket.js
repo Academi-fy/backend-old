@@ -113,7 +113,7 @@ export default class EventTicket {
      * @description Get all the event tickets.
      * @returns {Promise<Array<EventTicket>>} - The event tickets.
      */
-    static async getEventTickets() {
+    static async getAllEventTickets() {
 
         const cacheResults = cache.get('eventTickets');
 
@@ -131,7 +131,7 @@ export default class EventTicket {
      */
     static async getEventTicketById(eventTicketId) {
 
-        const eventTickets = await this.getEventTickets();
+        const eventTickets = await this.getAllEventTickets();
 
         const eventTicket = eventTickets.find(eventTicket => eventTicket._id === eventTicketId);
         if (!eventTicket) throw new Error(`Failed to get event ticket:\n${ eventTicketId }`);
@@ -145,9 +145,9 @@ export default class EventTicket {
      * @param {Object} rule - The rule to find the event tickets by.
      * @returns {Promise<Array<EventTicket>>} - The matching event tickets.
      * */
-    static async getEventTicketsByRule(rule) {
+    static async getAllEventTicketsByRule(rule) {
 
-        const eventTickets = await this.getEventTickets();
+        const eventTickets = await this.getAllEventTickets();
 
         const matchingTickets = findByRule(eventTickets, rule);
         if (!matchingTickets) throw new Error(`Failed to get event tickets with rule:\n${ rule }`);
@@ -163,7 +163,7 @@ export default class EventTicket {
      */
     static async createEventTicket(eventTicket) {
 
-        const eventTickets = await this.getEventTickets();
+        const eventTickets = await this.getAllEventTickets();
 
         const insertedEventTicket = await createDocument(EventTicketSchema, eventTicket);
         if(!insertedEventTicket) throw new Error(`Failed to create event ticket:\n${ eventTicket }`);
@@ -188,7 +188,7 @@ export default class EventTicket {
      */
     static async updateEventTicket(eventTicket) {
 
-        const eventTickets = await this.getEventTickets();
+        const eventTickets = await this.getAllEventTickets();
 
         let updatedEventTicket = await updateDocument(EventTicketSchema, eventTicket._id, eventTicket);
         if(!updatedEventTicket) throw new Error(`Failed to update event ticket:\n${ eventTicket }`);
@@ -216,7 +216,7 @@ export default class EventTicket {
         const deletedEventTicket = await deleteDocument(EventTicketSchema, eventTicketId);
         if(!deletedEventTicket) throw new Error(`Failed to delete event ticket:\n${ eventTicketId }`);
 
-        const eventTickets = await this.getEventTickets();
+        const eventTickets = await this.getAllEventTickets();
         eventTickets.splice(eventTickets.indexOf(deletedEventTicket), 1);
         cache.put('eventTickets', eventTickets, expirationTime);
 

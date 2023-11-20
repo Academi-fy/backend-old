@@ -89,7 +89,7 @@ export default class Grade {
      * @description Get all grades.
      * @returns {Promise<Array<Grade>>} The grades.
      */
-    static async getGrades() {
+    static async getAllGrades() {
 
         const cacheResult = cache.get('grades');
 
@@ -106,7 +106,7 @@ export default class Grade {
      */
     static async getGradeById(gradeId) {
 
-        const grades = await this.getGrades();
+        const grades = await this.getAllGrades();
 
         const grade = grades.find(grade => grade._id === gradeId);
         if(!grade) throw new Error(`Failed to get grade by id:\n${ gradeId }`);
@@ -120,9 +120,9 @@ export default class Grade {
      * @param {String} rule - The rule to find the grades by.
      * @returns {Promise<Array<Grade>>} The matching grades.
      * */
-    static async getGradesByRule(rule) {
+    static async getAllGradesByRule(rule) {
 
-        const grades = await this.getGrades();
+        const grades = await this.getAllGrades();
 
         const matchingGrades = findByRule(grades, rule);
         if(!matchingGrades) throw new Error(`Failed to get grade by rule:\n${ rule }`);
@@ -138,7 +138,7 @@ export default class Grade {
      */
     static async createGrade(grade) {
 
-        const grades= await this.getGrades();
+        const grades= await this.getAllGrades();
 
         const insertedGrade = await createDocument(GradeSchema, grade);
         if(!insertedGrade) throw new Error(`Failed to create grade:\n${ grade }`);
@@ -162,7 +162,7 @@ export default class Grade {
      */
     static async updateGrade(gradeId, updateGrade) {
 
-        const grades = await this.getGrades();
+        const grades = await this.getAllGrades();
 
         let updatedGrade = await updateDocument(GradeSchema, gradeId, updateGrade);
         if(!updatedGrade) throw new Error(`Failed to update grade:\n${ updateGrade }`);
@@ -190,7 +190,7 @@ export default class Grade {
         const deletedGrade = await deleteDocument(GradeSchema, gradeId);
         if(!deletedGrade) throw new Error(`Failed to delete grade:\n${ gradeId }`);
 
-        const grades = await this.getGrades();
+        const grades = await this.getAllGrades();
         grades.splice(grades.findIndex(grade => grade._id === gradeId), 1);
         cache.put('grades', grades, expirationTime);
 

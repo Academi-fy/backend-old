@@ -163,7 +163,7 @@ export default class Club {
      * @description Get all clubs.
      * @return {Promise<Array<Club>>} The clubs.
      */
-    static async getClubs() {
+    static async getAllClubs() {
 
         const cacheResults = cache.get('clubs');
 
@@ -181,7 +181,7 @@ export default class Club {
      */
     static async getClubById(clubId) {
 
-        const clubs = await this.getClubs();
+        const clubs = await this.getAllClubs();
 
         const club = clubs.find(club => club._id === clubId);
         if (!club) throw new Error(`Failed to get club:\n${ clubId }`);
@@ -195,9 +195,9 @@ export default class Club {
      * @param {Object} rule - The rule to find the clubs by.
      * @return {Promise<Array<Club>>} The matching clubs.
      */
-    static async getClubsByRule(rule) {
+    static async getAllClubsByRule(rule) {
 
-        const clubs = await this.getClubs();
+        const clubs = await this.getAllClubs();
 
         const matchingClubs = findByRule(clubs, rule);
         if (!matchingClubs) throw new Error(`Failed to get clubs with rule:\n${ rule }`);
@@ -212,7 +212,7 @@ export default class Club {
      */
     static async createClub(club) {
 
-        const clubs = await this.getClubs();
+        const clubs = await this.getAllClubs();
 
         const insertedClub = await createDocument(ClubSchema, club);
         if (!insertedClub) throw new Error(`Failed to create club:\n${ insertedClub }`);
@@ -238,7 +238,7 @@ export default class Club {
      */
     static async updateClub(clubId, updateClub) {
 
-        const clubs = await this.getClubs();
+        const clubs = await this.getAllClubs();
 
         let updatedClub = await updateDocument(ClubSchema, clubId, updatedClub);
         if (!updatedClub) throw new Error(`Failed to update club:\n${ updatedClub }`);
@@ -266,7 +266,7 @@ export default class Club {
         const deletedCourse = await deleteDocument(ClubSchema, clubId);
         if (!deletedCourse) throw new Error(`Failed to delete club: ${ clubId }`);
 
-        const clubs = await this.getClubs();
+        const clubs = await this.getAllClubs();
         clubs.splice(clubs.findIndex(club => club._id === clubId), 1);
         cache.put('clubs', clubs, expirationTime);
 

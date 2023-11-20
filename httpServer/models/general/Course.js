@@ -125,7 +125,7 @@ export default class Course {
      * @description Get all courses from cache or database.
      * @return {Promise<Array>} The courses.
      */
-    static async getCourses() {
+    static async getAllCourses() {
 
         const cacheResults = cache.get('courses');
 
@@ -143,7 +143,7 @@ export default class Course {
      */
     static async getCourseById(courseId) {
 
-        const courses= await this.getCourses();
+        const courses= await this.getAllCourses();
 
         const course = courses.find(course => course._id === courseId);
         if (!course) throw new Error(`Course not found:\n${ courseId }`);
@@ -157,9 +157,9 @@ export default class Course {
      * @param {String} rule - The rule to find courses by.
      * @return {Promise<Array<Course>>} The matching courses.
      * */
-    static async getCoursesByRule(rule) {
+    static async getAllCoursesByRule(rule) {
 
-        const courses = await this.getCourses();
+        const courses = await this.getAllCourses();
 
         const matchingCourses = findByRule(courses, rule);
         if (!matchingCourses) throw new Error(`Failed to find courses matching rule:\n${ rule }`);
@@ -175,7 +175,7 @@ export default class Course {
      */
     static async createCourse(course) {
 
-        const courses= await this.getCourses();
+        const courses= await this.getAllCourses();
 
         const insertedCourse = await createDocument(CourseSchema, course);
         if (!insertedCourse) throw new Error(`Course could not be created:\n${ course }`);
@@ -201,7 +201,7 @@ export default class Course {
      */
     static async updateCourse(courseId, updateCourse) {
 
-        const courses = await this.getCourses();
+        const courses = await this.getAllCourses();
 
         let updatedCourse = await updateDocument(CourseSchema, courseId, updateCourse);
         if (!updatedCourse) throw new Error(`Course could not be updated:\n${ updateCourse }`);
@@ -230,7 +230,7 @@ export default class Course {
         const deletedCourse = await deleteDocument(CourseSchema, courseId);
         if (!deletedCourse) throw new Error(`Course could not be deleted:\n${ courseId }`);
 
-        const courses = await this.getCourses();
+        const courses = await this.getAllCourses();
         courses.splice(courses.findIndex(course => course._id === courseId), 1);
         cache.put('courses', courses, expirationTime);
 

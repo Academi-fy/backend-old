@@ -146,7 +146,7 @@ export default class Message {
      * Get all messages.
      * @return {Promise<Array<Message>>} The list of messages.
      */
-    static async getMessages() {
+    static async getAllMessages() {
 
         const cacheResults = cache.get("messages");
 
@@ -164,7 +164,7 @@ export default class Message {
      */
     static async getMessageById(id) {
 
-        const messages= await this.getMessages();
+        const messages= await this.getAllMessages();
 
         const message = messages.find(message => message._id === id);
         if (!message) throw new Error(`Message with id ${ id } not found`);
@@ -173,9 +173,9 @@ export default class Message {
 
     }
 
-    static async getMessagesByRule(rule) {
+    static async getAllMessagesByRule(rule) {
 
-        const messages = await this.getMessages();
+        const messages = await this.getAllMessages();
 
         const matchingMessages = findByRule(messages, rule);
         if (!matchingMessages) throw new Error(`Failed to find messages matching rule:\n${ rule }`);
@@ -191,7 +191,7 @@ export default class Message {
      */
     static async createMessage(message) {
 
-        const messages= await this.getMessages();
+        const messages= await this.getAllMessages();
 
         const insertedMessage = await createDocument(MessageSchema, message);
         if (!insertedMessage) throw new Error(`Failed to create message:\n${ message }`);
@@ -218,7 +218,7 @@ export default class Message {
      */
     static async updateMessages(messageId, updateMessage) {
 
-        const messages = await this.getMessages();
+        const messages = await this.getAllMessages();
 
         let updatedMessage = await updateDocument(MessageSchema, messageId, updateMessage);
         if (!updatedMessage) throw new Error(`Failed to update message:\n${ updateMessage }`);
@@ -246,7 +246,7 @@ export default class Message {
         const deletedMessage = await deleteDocument(MessageSchema, messageId);
         if (!deletedMessage) throw new Error(`Failed to delete message with id ${ messageId }`);
 
-        const messages= await this.getMessages();
+        const messages= await this.getAllMessages();
         messages.splice(messages.findIndex(message => message._id === messageId), 1);
         cache.put('messages', messages, expirationTime);
 

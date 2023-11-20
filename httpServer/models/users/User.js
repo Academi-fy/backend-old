@@ -163,7 +163,7 @@ export default class User {
      * Get all users
      * @returns {Promise<Array<User>>} The users
      */
-    static async getUsers() {
+    static async getAllUsers() {
 
         const cacheResults = cache.get('users');
 
@@ -181,7 +181,7 @@ export default class User {
      */
     static async getUserById(userId) {
 
-        const users = await this.getUsers();
+        const users = await this.getAllUsers();
 
         let user = users.find(user => user.id === userId);
         if (!user) throw new Error(`User with id ${ userId } not found`);
@@ -203,7 +203,7 @@ export default class User {
 
     static async getUserByRule(rule) {
 
-        const users = await this.getUsers();
+        const users = await this.getAllUsers();
 
         let user = findByRule(users, rule);
         if (!user) throw new Error(`Failed to get user matching rule:\n${ rule }`);
@@ -230,7 +230,7 @@ export default class User {
      */
     static async createUser(user) {
 
-        const users = await this.getUsers();
+        const users = await this.getAllUsers();
 
         let insertedUser = await createDocument(UserSchema, { ...user, id: new mongoose.Types.ObjectId() });
         if (!insertedUser) throw new Error(`Failed to create user:\n${ user }`);
@@ -267,7 +267,7 @@ export default class User {
      */
     static async updateUser(userId, updateUser) {
 
-        const users = await this.getUsers();
+        const users = await this.getAllUsers();
 
         let updatedUser = await updateDocument(UserSchema, userId, { ...updateUser, id: userId });
         if (!updatedUser) throw new Error(`Failed to update user:\n${ JSON.stringify(updateUser, null, 2) }`);
@@ -305,7 +305,7 @@ export default class User {
         const deletedUser = await deleteDocument(UserSchema, userId);
         if (!deletedUser) throw new Error(`Failed to delete user with id ${ userId }`);
 
-        const users = await this.getUsers();
+        const users = await this.getAllUsers();
         users.splice(users.findIndex(user => user.id === userId), 1);
         cache.put('users', users, expirationTime);
 

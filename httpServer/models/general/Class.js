@@ -121,7 +121,7 @@ export default class Class {
      * @description Get all classes.
      * @return {Promise<Array<Class>>} The classes.
      */
-    static async getClasses() {
+    static async getAllClasses() {
 
         const cacheResults = cache.get('classes');
 
@@ -139,7 +139,7 @@ export default class Class {
      */
     static async getClassById(classId) {
 
-        const classes= await this.getClasses();
+        const classes= await this.getAllClasses();
 
         const class_ = classes.find(class__ => class__._id === classId);
         if (!class_) throw new Error(`Failed to find class with id ${ classId }`);
@@ -153,9 +153,9 @@ export default class Class {
      * @param {Object} rule - The rule to find classes by.
      * @return {Promise<Array<Class>>} The matching classes.
      */
-    static async getClassesByRule(rule) {
+    static async getAllClassesByRule(rule) {
 
-        const classes = await this.getClasses();
+        const classes = await this.getAllClasses();
 
         const matchingClasses = findByRule(classes, rule);
         if (!matchingClasses) throw new Error(`Failed to find classes matching rule:\n${ rule }`);
@@ -171,7 +171,7 @@ export default class Class {
      */
     static async createClass(class_) {
 
-        const classes= await this.getClasses();
+        const classes= await this.getAllClasses();
 
         const insertedClass = await createDocument(ClassSchema, class_);
         if (!insertedClass) throw new Error(`Failed to create class:\n${ class_ }`);
@@ -197,7 +197,7 @@ export default class Class {
      */
     static async updateClass(classId, updateClass) {
 
-        const classes = await this.getClasses();
+        const classes = await this.getAllClasses();
 
         let updatedClass = await updateDocument(ClassSchema, classId, updateClass);
         if (!updatedClass) throw new Error(`Failed to update class:\n${ updateClass }`);
@@ -225,7 +225,7 @@ export default class Class {
         const deletedClass = await deleteDocument(ClassSchema, classId);
         if (!deletedClass) throw new Error(`Failed to delete class with id ${ classId }`);
 
-        const classes = await this.getClasses();
+        const classes = await this.getAllClasses();
         classes.splice(classes.findIndex(class_ => class_._id === classId), 1);
         cache.put('classes', classes, expirationTime);
 

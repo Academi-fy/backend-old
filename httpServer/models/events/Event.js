@@ -185,7 +185,7 @@ export default class Event {
      */
     static async getEventById(eventId) {
 
-        const events = await this.getEvents();
+        const events = await this.getAllEvents();
 
         const event = events.find(event => event._id === eventId);
         if(!event) throw new Error(`Failed to get event:\n${eventId}`);
@@ -199,9 +199,9 @@ export default class Event {
      * @param {Object} rule - The rule to find the events by.
      * @returns {Promise<Array<Event>>} The matching event.
      * */
-    static async getEventsByRule(rule) {
+    static async getAllEventsByRule(rule) {
 
-        const events = await this.getEvents();
+        const events = await this.getAllEvents();
 
         const event = findByRule(events, rule);
         if (!event) throw new Error(`Failed to get events with rule:\n${ rule }`);
@@ -214,7 +214,7 @@ export default class Event {
      * @description Get all events.
      * @returns {Promise<Array<Event>>} The events.
      */
-    static async getEvents() {
+    static async getAllEvents() {
 
         const cacheResults = cache.get('events');
 
@@ -232,7 +232,7 @@ export default class Event {
      */
     static async createEvent(event) {
 
-        const events = await this.getEvents();
+        const events = await this.getAllEvents();
 
         const insertedEvent = await createDocument(EventSchema, event);
         if(!insertedEvent) throw new Error(`Failed to create event:\n${event}`);
@@ -259,7 +259,7 @@ export default class Event {
      */
     static async updateEvent(eventId, updateEvent) {
 
-        const events = await this.getEvents();
+        const events = await this.getAllEvents();
 
         const updatedEvent = await updateDocument(EventSchema, eventId, updateEvent);
         if (!updatedEvent) throw new Error(`Failed to update event:\n${ event }`);
@@ -287,7 +287,7 @@ export default class Event {
         const deletedEvent = await deleteDocument(EventSchema, eventId);
         if(!deletedEvent) throw new Error(`Failed to delete event:\n${eventId}`);
 
-        const events = await this.getEvents();
+        const events = await this.getAllEvents();
         events.splice(events.findIndex(event => event._id === eventId), 1);
         cache.put('events', events, expirationTime);
 
