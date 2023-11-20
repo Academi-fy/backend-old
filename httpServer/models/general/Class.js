@@ -9,6 +9,9 @@ import {
 } from "../../../mongoDb/collectionAccess.js";
 import ClassSchema from "../../../mongoDb/schemas/general/ClassSchema.js";
 import { findByRule } from "../findByRule.js";
+import RetrievalError from "../../errors/RetrievalError.js";
+import DatabaseError from "../../errors/DatabaseError.js";
+import CacheError from "../../errors/CacheError.js";
 
 // Cache expiration time in milliseconds
 const expirationTime = 5 * 60 * 1000;
@@ -135,14 +138,15 @@ export default class Class {
     /**
      * @description Get a class by id.
      * @param {String} classId - The id of the class.
-     * @return {Promise<Class>} The class.
+     * @returns {Promise<Class>} The class.
+     * @throws {RetrievalError} When no class matches the id.
      */
     static async getClassById(classId) {
 
         const classes= await this.getAllClasses();
 
         const class_ = classes.find(class__ => class__._id === classId);
-        if (!class_) throw new Error(`Failed to find class with id ${ classId }`);
+        if (!class_) throw new RetrievalError(`Failed to find class with id ${ classId }`);
 
         return class_;
 
@@ -151,14 +155,15 @@ export default class Class {
     /**
      * @description Get classes by a rule.
      * @param {Object} rule - The rule to find classes by.
-     * @return {Promise<Array<Class>>} The matching classes.
+     * @returns {Promise<Array<Class>>} The matching classes.
+     * @throws {RetrievalError} When no classes match the rule.
      */
     static async getAllClassesByRule(rule) {
 
         const classes = await this.getAllClasses();
 
         const matchingClasses = findByRule(classes, rule);
-        if (!matchingClasses) throw new Error(`Failed to find classes matching rule:\n${ rule }`);
+        if (!matchingClasses) throw new RetrievalError(`Failed to find classes matching rule:\n${ rule }`);
 
         return matchingClasses;
 
@@ -168,13 +173,15 @@ export default class Class {
      * @description Create a class.
      * @param {Class} class_ - The class to create.
      * @return {Promise<Class>} The created class.
+     * @throws {DatabaseError} When the class fails to be created.
+     * @throws {CacheError} When the class fails to be put in cache.
      */
     static async createClass(class_) {
 
         const classes= await this.getAllClasses();
 
         const insertedClass = await createDocument(ClassSchema, class_);
-        if (!insertedClass) throw new Error(`Failed to create class:\n${ class_ }`);
+        if (!insertedClass) throw new DatabaseError(`Failed to create class:\n${ class_ }`);
 
         classes.push(
             this.populateClass(insertedClass)
@@ -184,7 +191,7 @@ export default class Class {
         if (!this.verifyClassInCache(insertedClass))
 
             if (!await verifyInCache(cache.get('classes'), insertedClass, this.updateClassCache))
-                throw new Error(`Failed to put class in cache:\n${ insertedClass }`);
+                throw new CacheError(`Failed to put class in cache:\n${ insertedClass }`);
 
         return insertedClass;
     }
@@ -194,13 +201,15 @@ export default class Class {
      * @param {String} classId - The id of the class to update.
      * @param {Class} updateClass - The updated class.
      * @return {Promise<Class>} The updated class.
+     * @throws {DatabaseError} When the class fails to be updated.
+     * @throws {CacheError} When the class fails to be updated in cache.
      */
     static async updateClass(classId, updateClass) {
 
         const classes = await this.getAllClasses();
 
         let updatedClass = await updateDocument(ClassSchema, classId, updateClass);
-        if (!updatedClass) throw new Error(`Failed to update class:\n${ updateClass }`);
+        if (!updatedClass) throw new DatabaseError(`Failed to update class:\n${ updateClass }`);
 
         updatedClass = this.populateClass(updatedClass);
 
@@ -210,7 +219,7 @@ export default class Class {
         if (!this.verifyClassInCache(updatedClass))
 
             if (!await verifyInCache(cache.get('classes'), updatedClass, this.updateClassCache))
-                throw new Error(`Failed to update class in cache:\n${ updatedClass }`);
+                throw new CacheError(`Failed to update class in cache:\n${ updatedClass }`);
 
         return updatedClass;
     }
@@ -219,18 +228,20 @@ export default class Class {
      * @description Delete a class.
      * @param {String} classId - The id of the class to delete.
      * @return {Promise<Boolean>} The status of the deletion.
+     * @throws {DatabaseError} When the class fails to be deleted.
+     * @throws {CacheError} When the class fails to be deleted from cache.
      */
     static async deleteClass(classId) {
 
         const deletedClass = await deleteDocument(ClassSchema, classId);
-        if (!deletedClass) throw new Error(`Failed to delete class with id ${ classId }`);
+        if (!deletedClass) throw new DatabaseError(`Failed to delete class with id ${ classId }`);
 
         const classes = await this.getAllClasses();
         classes.splice(classes.findIndex(class_ => class_._id === classId), 1);
         cache.put('classes', classes, expirationTime);
 
         if (this.verifyClassInCache(deletedClass))
-            throw new Error(`Failed to delete class from cache:\n${ deletedClass }`);
+            throw new CacheError(`Failed to delete class from cache:\n${ deletedClass }`);
 
         return true;
     }

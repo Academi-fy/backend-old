@@ -8,6 +8,9 @@ import {
 } from "../../../mongoDb/collectionAccess.js";
 import CourseSchema from "../../../mongoDb/schemas/general/CourseSchema.js";
 import { findByRule } from "../findByRule.js";
+import RetrievalError from "../../errors/RetrievalError.js";
+import DatabaseError from "../../errors/DatabaseError.js";
+import CacheError from "../../errors/CacheError.js";
 
 // Define the cache expiration time in milliseconds
 const expirationTime = 5 * 60 * 1000;
@@ -138,15 +141,16 @@ export default class Course {
 
     /**
      * @description Get a course by its ID.
-     * @param {String} courseId - The ID of the course.
+     * @param {String} courseId - The id of the course.
      * @return {Promise<Course>} The course.
+     * @throws {RetrievalError} When no course matches the id.
      */
     static async getCourseById(courseId) {
 
         const courses= await this.getAllCourses();
 
         const course = courses.find(course => course._id === courseId);
-        if (!course) throw new Error(`Course not found:\n${ courseId }`);
+        if (!course) throw new RetrievalError(`Course not found:\n${ courseId }`);
 
         return course;
 
@@ -156,13 +160,14 @@ export default class Course {
      * @description Get courses by rule.
      * @param {String} rule - The rule to find courses by.
      * @return {Promise<Array<Course>>} The matching courses.
+     * @throws {RetrievalError} When no course matches the rule.
      * */
     static async getAllCoursesByRule(rule) {
 
         const courses = await this.getAllCourses();
 
         const matchingCourses = findByRule(courses, rule);
-        if (!matchingCourses) throw new Error(`Failed to find courses matching rule:\n${ rule }`);
+        if (!matchingCourses) throw new RetrievalError(`Failed to find courses matching rule:\n${ rule }`);
 
         return matchingCourses;
 
@@ -172,13 +177,15 @@ export default class Course {
      * @description Create a new course and add it to the database and cache.
      * @param {Course} course - The course to create.
      * @return {Promise<Course>} The created course.
+     * @throws {DatabaseError} When the course could not be created.
+     * @throws {CacheError} When the course could not be created in the cache.
      */
     static async createCourse(course) {
 
         const courses= await this.getAllCourses();
 
         const insertedCourse = await createDocument(CourseSchema, course);
-        if (!insertedCourse) throw new Error(`Course could not be created:\n${ course }`);
+        if (!insertedCourse) throw new DatabaseError(`Course could not be created:\n${ course }`);
 
         courses.push(
             this.populateCourse(insertedCourse)
@@ -188,7 +195,7 @@ export default class Course {
         if (!this.verifyCourseInCache(insertedCourse))
 
             if (!await verifyInCache(cache.get('courses'), insertedCourse, this.updateCourseCache))
-                throw new Error(`Course could not be created:\n${ insertedCourse }`);
+                throw new CacheError(`Course could not be created:\n${ insertedCourse }`);
 
         return insertedCourse;
     }
@@ -198,13 +205,15 @@ export default class Course {
      * @param {String} courseId - The ID of the course to update.
      * @param {Course} updateCourse - The course to update.
      * @return {Promise<Course>} The updated course.
+     * @throws {DatabaseError} When the course could not be updated.
+     * @throws {CacheError} When the course could not be updated in the cache.
      */
     static async updateCourse(courseId, updateCourse) {
 
         const courses = await this.getAllCourses();
 
         let updatedCourse = await updateDocument(CourseSchema, courseId, updateCourse);
-        if (!updatedCourse) throw new Error(`Course could not be updated:\n${ updateCourse }`);
+        if (!updatedCourse) throw new DatabaseError(`Course could not be updated:\n${ updateCourse }`);
 
         updatedCourse = this.populateCourse(updatedCourse);
 
@@ -214,7 +223,7 @@ export default class Course {
         if (!this.verifyCourseInCache(updatedCourse))
 
             if (!await verifyInCache(cache.get('courses'), updatedCourse, this.updateCourseCache))
-                throw new Error(`Course could not be updated:\n${ updatedCourse }`);
+                throw new CacheError(`Course could not be updated:\n${ updatedCourse }`);
 
 
         return updatedCourse;
@@ -224,17 +233,19 @@ export default class Course {
      * @description Delete a course in the database and cache.
      * @param {String} courseId - The ID of the course to update.
      * @return {Promise<Boolean>} State of the deletion.
+     * @throws {DatabaseError} When the course could not be deleted.
      */
     static async deleteCourse(courseId) {
 
         const deletedCourse = await deleteDocument(CourseSchema, courseId);
-        if (!deletedCourse) throw new Error(`Course could not be deleted:\n${ courseId }`);
+        if (!deletedCourse) throw new DatabaseError(`Course could not be deleted:\n${ courseId }`);
 
         const courses = await this.getAllCourses();
         courses.splice(courses.findIndex(course => course._id === courseId), 1);
         cache.put('courses', courses, expirationTime);
 
-        if (this.verifyCourseInCache(deletedCourse)) throw new Error(`Course could not be deleted from cache:\n${ deletedCourse }`);
+        if (this.verifyCourseInCache(deletedCourse))
+            throw new CacheError(`Course could not be deleted from cache:\n${ deletedCourse }`);
 
         return true;
     }

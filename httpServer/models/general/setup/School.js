@@ -7,6 +7,8 @@ import {
 } from "../../../../mongoDb/collectionAccess.js";
 import SchoolSchema from "../../../../mongoDb/schemas/general/setup/SchoolSchema.js";
 import { validateArray, validateNotEmpty } from "../../propertyValidation.js";
+import DatabaseError from "../../../errors/DatabaseError.js";
+import RetrievalError from "../../../errors/RetrievalError.js";
 
 /**
  * @description Class representing a school.
@@ -25,7 +27,7 @@ import { validateArray, validateNotEmpty } from "../../propertyValidation.js";
 export default class School {
 
     /**
-     * Create a school.
+     * @description Create a school.
      * @param {String} id - The id of the school.
      * @param {String} name - The name of the school.
      * @param {Array<String>} grades - The ids of the grades in the school.
@@ -180,7 +182,13 @@ export default class School {
      * @return {Promise<Array<School>>} The schools.
      */
     static async getAllSchools() {
-        return await getAllDocuments(SchoolSchema);
+
+        const schools = await getAllDocuments(SchoolSchema);
+        if(!schools) throw new RetrievalError(`Failed to get all schools`);
+
+        //TODO populate
+
+        return schools;
     }
 
     /**
@@ -189,7 +197,13 @@ export default class School {
      * @return {Promise<School>} The school.
      */
     static async getSchoolById(id) {
-        return await getDocument(SchoolSchema, id);
+
+        const school = await getDocument(SchoolSchema, id);
+        if(!school) throw new RetrievalError(`Failed to get school with id:\n${ id }`);
+
+        //TODO populate
+
+        return school;
     }
 
     /**
@@ -198,7 +212,13 @@ export default class School {
      * @return {Promise<School>} The school.
      * */
     static async getSchoolByRule(rule) {
-        return await getDocumentByRule(SchoolSchema, rule);
+
+        const school = await getDocumentByRule(SchoolSchema, rule);
+        if(!school) throw new RetrievalError(`Failed to get school matching rule:\n${ rule }`);
+
+        //TODO populate
+
+        return school;
     }
 
     /**
@@ -209,7 +229,7 @@ export default class School {
     static async createSchool(school) {
 
         const insertedSchool = await createDocument(SchoolSchema, school);
-        if(!insertedSchool) throw new Error(`Failed to create school:\n${ school }`);
+        if(!insertedSchool) throw new DatabaseError(`Failed to create school:\n${ school }`);
 
         return this.populateSchool(insertedSchool);
 
@@ -224,7 +244,7 @@ export default class School {
     static async updateSchool(schoolId, updateSchool) {
 
         const updatedSchool = await updateDocument(SchoolSchema, schoolId, updateSchool);
-        if(!updatedSchool) throw new Error(`Failed to update school:\n${ updatedSchool }`);
+        if(!updatedSchool) throw new DatabaseError(`Failed to update school:\n${ updatedSchool }`);
 
         return this.populateSchool(updatedSchool);
 
@@ -238,7 +258,7 @@ export default class School {
     static async deleteSchool(schoolId) {
 
         const deletedSchool = await deleteDocument(SchoolSchema, schoolId);
-        if(!deletedSchool) throw new Error(`Failed to delete school:\n${ schoolId }`);
+        if(!deletedSchool) throw new DatabaseError(`Failed to delete school:\n${ schoolId }`);
 
         return true;
     }
@@ -249,6 +269,7 @@ export default class School {
      * @return {School} The populated school.
      */
     static populateSchool(school) {
+        //TODO populate
         return school
             .populate('grades')
             .populate('courses')

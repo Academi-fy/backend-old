@@ -9,6 +9,9 @@ import {
 import GradeSchema from "../../../mongoDb/schemas/general/GradeSchema.js";
 import { validateArray, validateNotEmpty, validateNumber, verifyInCache } from "../propertyValidation.js";
 import { findByRule } from "../findByRule.js";
+import RetrievalError from "../../errors/RetrievalError.js";
+import DatabaseError from "../../errors/DatabaseError.js";
+import CacheError from "../../errors/CacheError.js";
 
 const expirationTime = 10 * 60 * 1000;
 
@@ -103,13 +106,14 @@ export default class Grade {
      * @description Get a grade by its id.
      * @param {String} gradeId - The id of the grade.
      * @returns {Promise<Grade>} The grade.
+     * @throws {RetrievalError} When the grade could not be retrieved.
      */
     static async getGradeById(gradeId) {
 
         const grades = await this.getAllGrades();
 
         const grade = grades.find(grade => grade._id === gradeId);
-        if(!grade) throw new Error(`Failed to get grade by id:\n${ gradeId }`);
+        if(!grade) throw new RetrievalError(`Failed to get grade by id:\n${ gradeId }`);
 
         return grade;
 
@@ -119,13 +123,14 @@ export default class Grade {
      * @description Get all grades by a rule.
      * @param {String} rule - The rule to find the grades by.
      * @returns {Promise<Array<Grade>>} The matching grades.
+     * @throws {RetrievalError} When the grades could not be retrieved.
      * */
     static async getAllGradesByRule(rule) {
 
         const grades = await this.getAllGrades();
 
         const matchingGrades = findByRule(grades, rule);
-        if(!matchingGrades) throw new Error(`Failed to get grade by rule:\n${ rule }`);
+        if(!matchingGrades) throw new RetrievalError(`Failed to get grade by rule:\n${ rule }`);
 
         return matchingGrades;
 
@@ -135,13 +140,15 @@ export default class Grade {
      * @description Create a grade.
      * @param {Grade} grade - The grade to create.
      * @returns {Promise<Grade>} The created grade.
+     * @throws {DatabaseError} When the grade could not be created.
+     * @throws {CacheError} When the grade could not be put in the cache.
      */
     static async createGrade(grade) {
 
         const grades= await this.getAllGrades();
 
         const insertedGrade = await createDocument(GradeSchema, grade);
-        if(!insertedGrade) throw new Error(`Failed to create grade:\n${ grade }`);
+        if(!insertedGrade) throw new DatabaseError(`Failed to create grade:\n${ grade }`);
 
         grades.push(
             this.populateGrade(insertedGrade)
@@ -151,7 +158,7 @@ export default class Grade {
         if(!this.verifyGradeInCache(insertedGrade._id))
 
             if(!await verifyInCache(cache.get('grades'), insertedGrade, this.updateGradeCache))
-                throw new Error(`Failed to put grade in cache:\n${ grade }`);
+                throw new CacheError(`Failed to put grade in cache:\n${ grade }`);
     }
 
     /**
@@ -159,13 +166,15 @@ export default class Grade {
      * @param {String} gradeId - The id of the grade.
      * @param {Grade} updateGrade - The grade to update.
      * @returns {Promise<Grade>} The updated grade.
+     * @throws {DatabaseError} When the grade could not be updated.
+     * @throws {CacheError} When the grade could not be put in the cache.
      */
     static async updateGrade(gradeId, updateGrade) {
 
         const grades = await this.getAllGrades();
 
         let updatedGrade = await updateDocument(GradeSchema, gradeId, updateGrade);
-        if(!updatedGrade) throw new Error(`Failed to update grade:\n${ updateGrade }`);
+        if(!updatedGrade) throw new DatabaseError(`Failed to update grade:\n${ updateGrade }`);
 
         updateGrade = this.populateGrade(updatedGrade);
 
@@ -175,7 +184,7 @@ export default class Grade {
         if(!this.verifyGradeInCache(updatedGrade._id))
 
             if(!await verifyInCache(cache.get('grades'), updatedGrade, this.updateGradeCache))
-                throw new Error(`Failed to put grade in cache:\n${ updatedGrade }`);
+                throw new CacheError(`Failed to put grade in cache:\n${ updatedGrade }`);
 
         return updatedGrade;
     }
@@ -184,11 +193,13 @@ export default class Grade {
      * @description Delete a grade.
      * @param {String} gradeId - The id of the grade.
      * @returns {Promise<Grade>} The deleted grade.
+     * @throws {DatabaseError} When the grade could not be deleted.
+     * @throws {CacheError} When the grade could not be deleted from the cache.
      */
     static async deleteGrade(gradeId) {
 
         const deletedGrade = await deleteDocument(GradeSchema, gradeId);
-        if(!deletedGrade) throw new Error(`Failed to delete grade:\n${ gradeId }`);
+        if(!deletedGrade) throw new DatabaseError(`Failed to delete grade:\n${ gradeId }`);
 
         const grades = await this.getAllGrades();
         grades.splice(grades.findIndex(grade => grade._id === gradeId), 1);
@@ -196,8 +207,8 @@ export default class Grade {
 
         if(this.verifyGradeInCache(gradeId))
 
-            if(!verifyInCache(cache.get('grades'), deletedGrade, this.updateGradeCache))
-                throw new Error(`Failed to delete grade in cache:\n${ deletedGrade }`);
+            if(!await verifyInCache(cache.get('grades'), deletedGrade, this.updateGradeCache))
+                throw new CacheError(`Failed to delete grade in cache:\n${ deletedGrade }`);
 
         return deletedGrade;
     }

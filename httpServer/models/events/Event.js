@@ -9,6 +9,9 @@ import {
 import EventSchema from "../../../mongoDb/schemas/events/EventSchema.js";
 import { validateArray, validateNotEmpty, validateNumber, verifyInCache } from "../propertyValidation.js";
 import { findByRule } from "../findByRule.js";
+import RetrievalError from "../../errors/RetrievalError.js";
+import DatabaseError from "../../errors/DatabaseError.js";
+import CacheError from "../../errors/CacheError.js";
 
 const expirationTime = 5 * 60 * 1000;
 
@@ -28,7 +31,7 @@ const expirationTime = 5 * 60 * 1000;
 export default class Event {
 
     /**
-     * Create an event.
+     * @description Create an event.
      * @param {String} id - The ID of the event.
      * @param {String} title - The title of the event.
      * @param {String} description - The description of the event.
@@ -182,13 +185,14 @@ export default class Event {
      * @description Get an event by its ID.
      * @param {String} eventId - The ID of the event.
      * @returns {Promise<Event>} The event.
+     * @throws {RetrievalError} When the event could not be retrieved.
      */
     static async getEventById(eventId) {
 
         const events = await this.getAllEvents();
 
         const event = events.find(event => event._id === eventId);
-        if(!event) throw new Error(`Failed to get event:\n${eventId}`);
+        if(!event) throw new RetrievalError(`Failed to get event:\n${eventId}`);
 
         return event;
 
@@ -198,13 +202,14 @@ export default class Event {
      * @description Get all events that match the rule.
      * @param {Object} rule - The rule to find the events by.
      * @returns {Promise<Array<Event>>} The matching event.
+     * @throws {RetrievalError} When the events could not be retrieved.
      * */
     static async getAllEventsByRule(rule) {
 
         const events = await this.getAllEvents();
 
         const event = findByRule(events, rule);
-        if (!event) throw new Error(`Failed to get events with rule:\n${ rule }`);
+        if (!event) throw new RetrievalError(`Failed to get events with rule:\n${ rule }`);
 
         return event;
 
@@ -229,13 +234,15 @@ export default class Event {
      * @description Create an event.
      * @param {Event} event - The event to create.
      * @returns {Promise<Event>} The created event.
+     * @throws {DatabaseError} When the event could not be created.
+     * @throws {CacheError} When the event could not be created in the cache.
      */
     static async createEvent(event) {
 
         const events = await this.getAllEvents();
 
         const insertedEvent = await createDocument(EventSchema, event);
-        if(!insertedEvent) throw new Error(`Failed to create event:\n${event}`);
+        if(!insertedEvent) throw new DatabaseError(`Failed to create event:\n${event}`);
 
         events.push(
             insertedEvent
@@ -245,7 +252,7 @@ export default class Event {
         if(!this.verifyEventInCache(insertedEvent))
 
             if(!await verifyInCache(cache.get('events'), insertedEvent, this.updateEventCache))
-                throw new Error(`Failed to create event in cache:\n${ insertedEvent }`);
+                throw new CacheError(`Failed to create event in cache:\n${ insertedEvent }`);
 
         return insertedEvent;
 
@@ -256,13 +263,15 @@ export default class Event {
      * @param {String} eventId - The ID of the event to update.
      * @param {Event} updateEvent - The updated event.
      * @returns {Promise<Event>} The updated event.
+     * @throws {DatabaseError} When the event could not be updated.
+     * @throws {CacheError} When the event could not be updated in the cache.
      */
     static async updateEvent(eventId, updateEvent) {
 
         const events = await this.getAllEvents();
 
         const updatedEvent = await updateDocument(EventSchema, eventId, updateEvent);
-        if (!updatedEvent) throw new Error(`Failed to update event:\n${ event }`);
+        if (!updatedEvent) throw new DatabaseError(`Failed to update event:\n${ event }`);
 
         events.push(
             updatedEvent
@@ -272,7 +281,7 @@ export default class Event {
         if(!this.verifyEventInCache(updatedEvent))
 
             if(!await verifyInCache(cache.get('events'), updatedEvent, this.updateEventCache))
-                throw new Error(`Failed to update event in cache:\n${ updatedEvent }`);
+                throw new CacheError(`Failed to update event in cache:\n${ updatedEvent }`);
 
         return updatedEvent;
     }
@@ -281,18 +290,20 @@ export default class Event {
      * @description Delete an event.
      * @param {String} eventId - The ID of the event to delete.
      * @returns {Promise<Boolean>} The deleted event.
+     * @throws {DatabaseError} When the event could not be deleted.
+     * @throws {CacheError} When the event could not be deleted in the cache.
      */
     static async deleteEvent(eventId) {
 
         const deletedEvent = await deleteDocument(EventSchema, eventId);
-        if(!deletedEvent) throw new Error(`Failed to delete event:\n${eventId}`);
+        if(!deletedEvent) throw new DatabaseError(`Failed to delete event:\n${eventId}`);
 
         const events = await this.getAllEvents();
         events.splice(events.findIndex(event => event._id === eventId), 1);
         cache.put('events', events, expirationTime);
 
         if(this.verifyEventInCache(deletedEvent))
-            throw new Error(`Failed to delete event from cache:\n${deletedEvent}`);
+            throw new CacheError(`Failed to delete event from cache:\n${deletedEvent}`);
 
         return true;
     }

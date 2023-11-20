@@ -8,6 +8,7 @@ import {
 import UserAccountSchema from "../../../mongoDb/schemas/user/UserAccountSchema.js";
 import { validateArray, validateNotEmpty, validateObject } from "../propertyValidation.js";
 import AccountSettings from "./AccountSettings.js";
+import DatabaseError from "../../errors/DatabaseError.js";
 
 /**
  * @description The model for a users account.
@@ -166,11 +167,12 @@ export default class UserAccount {
      * @description Create a users account.
      * @param {UserAccount} userAccount - The users account to create.
      * @return {Promise<UserAccount>} The created users account.
+     * @throws {DatabaseError} When the users account is not created.
      */
     static async createUserAccount(userAccount) {
 
         const insertedUserAccount = await createDocument(UserAccountSchema, userAccount);
-        if (!insertedUserAccount) throw new Error(`Failed to create user account:\n${ userAccount }`);
+        if (!insertedUserAccount) throw new DatabaseError(`Failed to create user account:\n${ userAccount }`);
 
         return insertedUserAccount;
     }
@@ -179,11 +181,12 @@ export default class UserAccount {
      * @description Update a users account.
      * @param {UserAccount} userAccount - The users account to update.
      * @return {Promise<UserAccount>} The updated users account.
+     * @throws {DatabaseError} When the users account is not updated.
      */
     static async updateUserAccount(userAccount) {
 
         const updatedUserAccount = await updateDocument(UserAccountSchema, userAccount._id, userAccount);
-        if (!updatedUserAccount) throw new Error(`Failed to update user account:\n${ userAccount }`);
+        if (!updatedUserAccount) throw new DatabaseError(`Failed to update user account:\n${ userAccount }`);
 
         return this.populateUserAccount(updatedUserAccount);
 
@@ -193,11 +196,12 @@ export default class UserAccount {
      * @description Delete a users account.
      * @param {UserAccount} userAccount - The users account to delete.
      * @return {Promise<Boolean>} The deleted users account.
+     * @throws {DatabaseError} When the users account is not deleted.
      */
     static async deleteUserAccount(userAccount) {
 
         const deletedUserAccount = await deleteDocument(UserAccountSchema, userAccount._id);
-        if (!deletedUserAccount) throw new Error(`Failed to delete user account:\n${ userAccount }`);
+        if (!deletedUserAccount) throw new DatabaseError(`Failed to delete user account:\n${ userAccount }`);
 
         return true;
     }

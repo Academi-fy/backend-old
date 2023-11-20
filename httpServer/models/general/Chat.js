@@ -8,6 +8,9 @@ import {
     updateDocument
 } from "../../../mongoDb/collectionAccess.js";
 import { findByRule } from "../findByRule.js";
+import RetrievalError from "../../errors/RetrievalError.js";
+import DatabaseError from "../../errors/DatabaseError.js";
+import CacheError from "../../errors/CacheError.js";
 
 // Time in milliseconds after which the cache will expire
 const expirationTime = 2 * 60 * 1000;
@@ -169,13 +172,14 @@ export default class Chat {
      * @description Get a chat by id.
      * @param {String} chatId - The id of the chat.
      * @return {Promise<Chat>} The chat.
+     * @throws {RetrievalError} When the chat could not be found.
      */
     static async getChatById(chatId) {
 
         const chats = await this.getAllChats();
 
         const chat = chats.find(chat => chat._id === chatId);
-        if (!chat) throw new Error(`Chat with id ${ chatId } not found`);
+        if (!chat) throw new RetrievalError(`Failed to find chat with id ${ chatId }`);
 
         return chat;
 
@@ -185,13 +189,14 @@ export default class Chat {
      * @description Get all chats that match the rule.
      * @param {Object} rule - The rule to find the chats by.
      * @return {Promise<Array<Chat>>} The chat.
+     * @throws {RetrievalError} When the chat could not be found.
      * */
     static async getAllChatsByRule(rule) {
 
         const chats = await this.getAllChats();
 
         const chat = findByRule(chats, rule);
-        if (!chat) throw new Error(`Failed to find chats matching rule:\n${ rule }`);
+        if (!chat) throw new RetrievalError(`Failed to find chats matching rule:\n${ rule }`);
 
         return chat;
 
@@ -201,13 +206,15 @@ export default class Chat {
      * @description Create a chat.
      * @param {Chat} chat - The chat to create.
      * @return {Promise<Chat>} The created chat.
+     * @throws {DatabaseError} When the chat could not be created.
+     * @throws {CacheError} When the chat could not be put in cache.
      */
     static async createChat(chat) {
 
         const chats = await this.getAllChats();
 
         const insertedChat = await createDocument(ChatSchema, chat);
-        if (!insertedChat) throw new Error(`Failed to create chat:\n${ chat }`);
+        if (!insertedChat) throw new DatabaseError(`Failed to create chat:\n${ chat }`);
 
         chats.push(
             this.populateChat(insertedChat)
@@ -217,7 +224,7 @@ export default class Chat {
         if (!this.verifyChatInCache(insertedChat))
 
             if (!await verifyInCache(cache.get('chats'), insertedChat, this.updateChatCache))
-                throw new Error(`Failed to put chat in cache:\n${ insertedChat }`);
+                throw new CacheError(`Failed to put chat in cache:\n${ insertedChat }`);
 
         return insertedChat;
     }
@@ -227,13 +234,15 @@ export default class Chat {
      * @param {String} chatId - The id of the chat to update.
      * @param {Chat} updateChat - The chat to update.
      * @return {Promise<Chat>} The updated chat.
+     * @throws {DatabaseError} When the chat could not be updated.
+     * @throws {CacheError} When the chat could not be updated in cache.
      */
     static async updateChat(chatId, updateChat) {
 
         const chats = await this.getAllChats();
 
         let updatedChat = await updateDocument(ChatSchema, chatId, updateChat);
-        if (!updatedChat) throw new Error(`Failed to update chat:\n${ updateChat }`);
+        if (!updatedChat) throw new DatabaseError(`Failed to update chat:\n${ updateChat }`);
 
         updatedChat = this.populateChat(updatedChat);
 
@@ -243,7 +252,7 @@ export default class Chat {
         if (!this.verifyChatInCache(updatedChat))
 
             if (!await verifyInCache(cache.get('chats'), updatedChat, this.updateChatCache))
-                throw new Error(`Failed to update chat in cache:\n${ updatedChat }`);
+                throw new CacheError(`Failed to update chat in cache:\n${ updatedChat }`);
 
         return updatedChat;
     }
@@ -252,18 +261,20 @@ export default class Chat {
      * @description Delete a chat.
      * @param {String} chatId - The id of the chat to delete.
      * @return {Promise<Boolean>} The status of the deletion.
+     * @throws {DatabaseError} When the chat could not be deleted.
+     * @throws {CacheError} When the chat could not be deleted from cache.
      */
     static async deleteChat(chatId) {
 
         const deletedChat = await deleteDocument(ChatSchema, chatId);
-        if (!deletedChat) throw new Error(`Failed to delete chat with id ${ chatId }`);
+        if (!deletedChat) throw new DatabaseError(`Failed to delete chat with id ${ chatId }`);
 
         const chats = await this.getAllChats();
         chats.splice(chats.findIndex(chat => chat._id === chatId), 1);
         cache.put('chats', chats, expirationTime);
 
         if (this.verifyChatInCache(deletedChat))
-            throw new Error(`Failed to delete chat from cache:\n${ deletedChat }`);
+            throw new CacheError(`Failed to delete chat from cache:\n${ deletedChat }`);
 
         return true;
     }

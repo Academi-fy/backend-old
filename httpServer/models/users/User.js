@@ -10,6 +10,9 @@ import {
 } from "../../../mongoDb/collectionAccess.js";
 import mongoose from "mongoose";
 import { findByRule } from "../findByRule.js";
+import RetrievalError from "../../errors/RetrievalError.js";
+import DatabaseError from "../../errors/DatabaseError.js";
+import CacheError from "../../errors/CacheError.js";
 
 const expirationTime = 3 * 60 * 1000;
 
@@ -128,7 +131,7 @@ export default class User {
     }
 
     /**
-     * Update the users cache
+     * @description Update the users cache
      * @returns {Promise<Array<User>>} The updated users
      */
     static async updateUserCache() {
@@ -160,7 +163,7 @@ export default class User {
     }
 
     /**
-     * Get all users
+     * @description Get all users
      * @returns {Promise<Array<User>>} The users
      */
     static async getAllUsers() {
@@ -175,7 +178,7 @@ export default class User {
     }
 
     /**
-     * Get a users by their ID
+     * @description Get a users by their ID
      * @param {String} userId - The ID of the users
      * @returns {Promise<User>} The users
      */
@@ -201,39 +204,38 @@ export default class User {
 
     }
 
+    /**
+     * @description Get all users that match a rule.
+     * @param {String} rule - The rule to match.
+     * @return {Promise<Array<User>>} The list of users.
+     * @throws {RetrievalError} When no users match the rule.
+     * */
     static async getUserByRule(rule) {
 
         const users = await this.getAllUsers();
 
         let user = findByRule(users, rule);
-        if (!user) throw new Error(`Failed to get user matching rule:\n${ rule }`);
+        if (!user) throw new RetrievalError(`Failed to get user matching rule:\n${ rule }`);
 
-        user = this.populateUser(user);
-        user = new User(
-            user.id,
-            user.first_name,
-            user.last_name,
-            user.avatar,
-            user.type,
-            user.classes,
-            user.extra_courses
-        );
+        //TODO populate
 
         return user;
 
     }
 
     /**
-     * Create a new users
+     * @description Create a new users
      * @param {User} user - The users to create
      * @returns {Promise<User>} The created users
+     * @throws {DatabaseError} When the users is not created
+     * @throws {CacheError} When the users is not created in the cache
      */
     static async createUser(user) {
 
         const users = await this.getAllUsers();
 
         let insertedUser = await createDocument(UserSchema, { ...user, id: new mongoose.Types.ObjectId() });
-        if (!insertedUser) throw new Error(`Failed to create user:\n${ user }`);
+        if (!insertedUser) throw new DatabaseError(`Failed to create user:\n${ user }`);
 
         insertedUser = this.populateUser(insertedUser);
         insertedUser = new User(
@@ -254,23 +256,25 @@ export default class User {
         if (!this.verifyUserInCache(insertedUser))
 
             if (!await verifyInCache(cache.get('messages'), insertedUser, this.updateUserCache))
-                throw new Error(`Failed to put user in cache:\n${ insertedUser }`);
+                throw new CacheError(`Failed to put user in cache:\n${ insertedUser }`);
 
         return insertedUser;
     }
 
     /**
-     * Update a users
+     * @description Update a users
      * @param {String} userId - The ID of the users to update.
      * @param {User} updateUser - The users to update.
      * @returns {Promise<User>} The updated users.
+     * @throws {DatabaseError} When the users is not updated.
+     * @throws {CacheError} When the users is not updated in the cache.
      */
     static async updateUser(userId, updateUser) {
 
         const users = await this.getAllUsers();
 
         let updatedUser = await updateDocument(UserSchema, userId, { ...updateUser, id: userId });
-        if (!updatedUser) throw new Error(`Failed to update user:\n${ JSON.stringify(updateUser, null, 2) }`);
+        if (!updatedUser) throw new DatabaseError(`Failed to update user:\n${ JSON.stringify(updateUser, null, 2) }`);
 
         updatedUser = this.populateUser(updatedUser);
         updatedUser = new User(
@@ -289,28 +293,30 @@ export default class User {
         if (!this.verifyUserInCache(updatedUser))
 
             if (!await verifyInCache(cache.get('messages'), updatedUser, this.updateUserCache))
-                throw new Error(`Failed to update user in cache:\n${ updatedUser }`);
+                throw new CacheError(`Failed to update user in cache:\n${ updatedUser }`);
 
         return updatedUser;
     }
 
 
     /**
-     * Delete a users
+     * @description Delete a users
      * @param {String} userId - The ID of the users to delete
      * @returns {Promise<Boolean>} True if the users was deleted successfully
+     * @throws {DatabaseError} When the users is not deleted
+     * @throws {CacheError} When the users is not deleted in the cache
      */
     static async deleteUser(userId) {
 
         const deletedUser = await deleteDocument(UserSchema, userId);
-        if (!deletedUser) throw new Error(`Failed to delete user with id ${ userId }`);
+        if (!deletedUser) throw new DatabaseError(`Failed to delete user with id ${ userId }`);
 
         const users = await this.getAllUsers();
         users.splice(users.findIndex(user => user.id === userId), 1);
         cache.put('users', users, expirationTime);
 
         if (this.verifyUserInCache(deletedUser))
-            throw new Error(`Failed to delete user from cache:\n${ deletedUser }`);
+            throw new CacheError(`Failed to delete user from cache:\n${ deletedUser }`);
 
         return true;
     }
@@ -323,7 +329,6 @@ export default class User {
     static async verifyUserInCache(user) {
 
         const cacheResult = cache.get('users').find(user_ => user_.id === user.id);
-
         return Boolean(cacheResult);
 
     }

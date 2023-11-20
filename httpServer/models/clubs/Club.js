@@ -9,6 +9,8 @@ import {
     updateDocument
 } from "../../../mongoDb/collectionAccess.js";
 import { findByRule } from "../findByRule.js";
+import DatabaseError from "../../errors/DatabaseError.js";
+import CacheError from "../../errors/CacheError.js";
 
 // Cache expiration time in milliseconds
 const expirationTime = 5 * 60 * 1000;
@@ -145,14 +147,9 @@ export default class Club {
     static async updateClubCache() {
 
         cache.get("clubs").clear();
-        const clubsFromDb = getAllDocuments(ClubSchema);
+        const clubsFromDb = await getAllDocuments(ClubSchema);
 
-        let clubs = [];
-        for (const club in clubsFromDb) {
-            clubs.push(
-                this.populateClub(club)
-            );
-        }
+        //TODO: Populate clubs
 
         cache.put('clubs', clubs, expirationTime);
         return clubs;
@@ -178,6 +175,7 @@ export default class Club {
      * @description Get a club by ID.
      * @param {String} clubId - The ID of the club.
      * @return {Promise<Club>} The club.
+     * @throws {Error} When the club is not found.
      */
     static async getClubById(clubId) {
 
@@ -194,6 +192,7 @@ export default class Club {
      * @description Get all clubs that match a rule.
      * @param {Object} rule - The rule to find the clubs by.
      * @return {Promise<Array<Club>>} The matching clubs.
+     * @throws {Error} When no clubs match the rule.
      */
     static async getAllClubsByRule(rule) {
 
@@ -209,13 +208,15 @@ export default class Club {
      * @description Create a club.
      * @param {Club} club - The club to create.
      * @return {Promise<Club>} The created club.
+     * @throws {DatabaseError} When the club fails to be created in the database.
+     * @throws {CacheError} When the club fails to be put in the cache.
      */
     static async createClub(club) {
 
         const clubs = await this.getAllClubs();
 
         const insertedClub = await createDocument(ClubSchema, club);
-        if (!insertedClub) throw new Error(`Failed to create club:\n${ insertedClub }`);
+        if (!insertedClub) throw new DatabaseError(`Failed to create club:\n${ insertedClub }`);
 
         clubs.push(
             this.populateClub(insertedClub)
@@ -225,7 +226,7 @@ export default class Club {
         if (!this.verifyClubInCache(insertedClub))
 
             if (!await verifyInCache(cache.get('clubs'), insertedClub, this.updateClubCache))
-                throw new Error(`Failed to put club in cache:\n${ insertedClub }`);
+                throw new CacheError(`Failed to put club in cache:\n${ insertedClub }`);
 
         return insertedClub;
     }
@@ -235,13 +236,15 @@ export default class Club {
      * @param {String} clubId - The ID of the club to update.
      * @param {Club} updateClub - The club to update.
      * @return {Promise<Club>} The updated club.
+     * @throws {DatabaseError} When the club fails to be updated in the database.
+     * @throws {CacheError} When the club fails to be updated in the cache.
      */
     static async updateClub(clubId, updateClub) {
 
         const clubs = await this.getAllClubs();
 
         let updatedClub = await updateDocument(ClubSchema, clubId, updatedClub);
-        if (!updatedClub) throw new Error(`Failed to update club:\n${ updatedClub }`);
+        if (!updatedClub) throw new DatabaseError(`Failed to update club:\n${ updatedClub }`);
 
         updatedClub = this.populateClub(updatedClub);
 
@@ -251,7 +254,7 @@ export default class Club {
         if (!this.verifyClubInCache(updatedClub))
 
             if (!await verifyInCache(cache.get('clubs'), updatedClub, this.updateClubCache))
-                throw new Error(`Failed to update club in cache:\n${ updatedClub }`);
+                throw new CacheError(`Failed to update club in cache:\n${ updatedClub }`);
 
         return updatedClub;
     }
@@ -260,18 +263,20 @@ export default class Club {
      * @description Delete a club.
      * @param {String} clubId - The ID of the club to delete.
      * @return {Boolean} The state of the deletion.
+     * @throws {DatabaseError} When the club fails to be deleted from the database.
+     * @throws {CacheError} When the club fails to be deleted from the cache.
      */
     static async deleteClub(clubId) {
 
         const deletedCourse = await deleteDocument(ClubSchema, clubId);
-        if (!deletedCourse) throw new Error(`Failed to delete club: ${ clubId }`);
+        if (!deletedCourse) throw new DatabaseError(`Failed to delete club: ${ clubId }`);
 
         const clubs = await this.getAllClubs();
         clubs.splice(clubs.findIndex(club => club._id === clubId), 1);
         cache.put('clubs', clubs, expirationTime);
 
         if (this.verifyClubInCache(deletedCourse))
-            throw new Error(`Failed to delete club from cache:\n${ clubId }`);
+            throw new CacheError(`Failed to delete club from cache:\n${ clubId }`);
 
         return true;
     }

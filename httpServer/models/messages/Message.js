@@ -15,6 +15,9 @@ import {
 } from "../../../mongoDb/collectionAccess.js";
 import MessageSchema from "../../../mongoDb/schemas/messages/MessageSchema.js";
 import { findByRule } from "../findByRule.js";
+import RetrievalError from "../../errors/RetrievalError.js";
+import DatabaseError from "../../errors/DatabaseError.js";
+import CacheError from "../../errors/CacheError.js";
 
 // Time in milliseconds after which the cache will expire
 const expirationTime = 2 * 60 * 1000;
@@ -32,7 +35,7 @@ const expirationTime = 2 * 60 * 1000;
 export default class Message {
 
     /**
-     * Create a message.
+     * @description Create a message.
      * @param {String} id - The id of the message.
      * @param {String} chat - The id of the chat that the message belongs to.
      * @param {String} author - The id of the author of the message.
@@ -122,7 +125,7 @@ export default class Message {
     }
 
     /**
-     * Update the cache of messages.
+     * @description Update the cache of messages.
      * @return {Promise<Array<Message>>} The updated list of messages.
      */
     static async updateMessageCache() {
@@ -143,7 +146,7 @@ export default class Message {
     }
 
     /**
-     * Get all messages.
+     * @description Get all messages.
      * @return {Promise<Array<Message>>} The list of messages.
      */
     static async getAllMessages() {
@@ -158,43 +161,52 @@ export default class Message {
     }
 
     /**
-     * Get a message by its ID.
+     * @description Get a message by its ID.
      * @param {String} id - The ID of the message.
      * @return {Promise<Message>} The message object.
+     * @throws {RetrievalError} If the message is not found.
      */
     static async getMessageById(id) {
 
         const messages= await this.getAllMessages();
 
         const message = messages.find(message => message._id === id);
-        if (!message) throw new Error(`Message with id ${ id } not found`);
+        if (!message) throw new RetrievalError(`Failed to find message with id: ${ id }`);
 
         return message;
 
     }
 
+    /**
+     * @description Get all messages that match a rule.
+     * @param {String} rule - The rule to match.
+     * @return {Promise<Array<Message>>} The list of messages.
+     * @throws {RetrievalError} When no messages match the rule.
+     * */
     static async getAllMessagesByRule(rule) {
 
         const messages = await this.getAllMessages();
 
         const matchingMessages = findByRule(messages, rule);
-        if (!matchingMessages) throw new Error(`Failed to find messages matching rule:\n${ rule }`);
+        if (!matchingMessages) throw new RetrievalError(`Failed to find messages matching rule:\n${ rule }`);
 
         return matchingMessages;
 
     }
 
     /**
-     * Create a new message.
+     * @description Create a new message.
      * @param {Message} message - The message object.
      * @return {Promise<Message>} The created message object.
+     * @throws {DatabaseError} When the message is not created.
+     * @throws {CacheError} When the message is not created in the cache.
      */
     static async createMessage(message) {
 
         const messages= await this.getAllMessages();
 
         const insertedMessage = await createDocument(MessageSchema, message);
-        if (!insertedMessage) throw new Error(`Failed to create message:\n${ message }`);
+        if (!insertedMessage) throw new DatabaseError(`Failed to create message:\n${ message }`);
 
         messages.push(
             this.populateMessage(insertedMessage)
@@ -204,24 +216,26 @@ export default class Message {
         if (!this.verifyMessageInCache(message))
 
             if (!await verifyInCache(cache.get('messages'), insertedMessage, this.updateMessageCache))
-                throw new Error(`Failed to put message in cache:\n${ insertedMessage }`);
+                throw new CacheError(`Failed to put message in cache:\n${ insertedMessage }`);
 
         return insertedMessage;
 
     }
 
     /**
-     * Update a message.
+     * @description Update a message.
      * @param {String} messageId - The ID of the message to update.
      * @param {Message} updateMessage - The updated message object.
      * @return {Promise<Message>} The updated message object.
+     * @throws {DatabaseError} When the message is not updated.
+     * @throws {CacheError} When the message is not updated in the cache.
      */
     static async updateMessages(messageId, updateMessage) {
 
         const messages = await this.getAllMessages();
 
         let updatedMessage = await updateDocument(MessageSchema, messageId, updateMessage);
-        if (!updatedMessage) throw new Error(`Failed to update message:\n${ updateMessage }`);
+        if (!updatedMessage) throw new DatabaseError(`Failed to update message:\n${ updateMessage }`);
 
         updatedMessage = this.populateMessage(updatedMessage);
 
@@ -231,7 +245,7 @@ export default class Message {
         if (!this.verifyMessageInCache(updatedMessage))
 
             if (!await verifyInCache(cache.get('messages'), updatedMessage, this.updateMessageCache))
-                throw new Error(`Failed to update message in cache:\n${ updatedMessage }`);
+                throw new CacheError(`Failed to update message in cache:\n${ updatedMessage }`);
 
         return updatedMessage;
     }
@@ -239,12 +253,14 @@ export default class Message {
     /**
      * Delete a message.
      * @param {String} messageId - The ID of the message to delete.
-     * @return {Promise<Boolean>} The status of the deletion. Reaction
+     * @return {Promise<Boolean>} The status of the deletion.
+     * @throws {DatabaseError} When the message is not deleted.
+     * @throws {CacheError} When the message is not deleted in the cache.
      */
     static async deleteMessage(messageId) {
 
         const deletedMessage = await deleteDocument(MessageSchema, messageId);
-        if (!deletedMessage) throw new Error(`Failed to delete message with id ${ messageId }`);
+        if (!deletedMessage) throw new DatabaseError(`Failed to delete message with id ${ messageId }`);
 
         const messages= await this.getAllMessages();
         messages.splice(messages.findIndex(message => message._id === messageId), 1);
@@ -253,7 +269,7 @@ export default class Message {
         if (this.verifyMessageInCache(deletedMessage))
 
             if(!await verifyInCache(cache.get('messages'), deletedMessage, this.updateMessageCache))
-                throw new Error(`Failed to delete message from cache:\n${ deletedMessage }`);
+                throw new CacheError(`Failed to delete message from cache:\n${ deletedMessage }`);
 
         return true;
     }
@@ -266,7 +282,6 @@ export default class Message {
     static verifyMessageInCache(testMessage) {
 
         const cacheResult = cache.get("messages").find(message => message._id === testMessage._id);
-
         return Boolean(cacheResult);
 
     }

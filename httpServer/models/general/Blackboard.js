@@ -3,6 +3,9 @@ import BlackboardSchema from "../../../mongoDb/schemas/general/BlackboardSchema.
 import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../../mongoDb/collectionAccess.js";
 import { validateNotEmpty, verifyInCache } from "../propertyValidation.js";
 import { findByRule } from "../findByRule.js";
+import RetrievalError from "../../errors/RetrievalError.js";
+import DatabaseError from "../../errors/DatabaseError.js";
+import CacheError from "../../errors/CacheError.js";
 
 const expirationTime = 10 * 60 * 1000;
 
@@ -127,13 +130,14 @@ export default class Blackboard {
      * Get a blackboard by id.
      * @param {String} id - The id of the blackboard.
      * @return {Promise<Blackboard>} The blackboard.
+     * @throws {RetrievalError} When the blackboard could not be found.
      */
     static async getBlackboardById(id) {
 
         const blackboards = await this.getAllBlackboards();
 
         const blackboard = blackboards.find(blackboard => blackboard._id.toString() === id);
-        if (!blackboard) throw new Error(`Failed to find blackboard with id:\n${ id }`);
+        if (!blackboard) throw new RetrievalError(`Failed to find blackboard with id:\n${ id }`);
 
         return blackboard;
 
@@ -143,13 +147,14 @@ export default class Blackboard {
      * @description Get all blackboards that match the rule.
      * @param {Object} rule - The rule to find the blackboards by.
      * @return {Promise<Array<Blackboard>>} The matching blackboard.
+     * @throws {RetrievalError} When the blackboards could not be found.
      */
     static async getAllBlackboardsByRule(rule) {
 
         const blackboards = await this.getAllBlackboards();
 
         const matchingBlackboards = findByRule(blackboards, rule);
-        if (!matchingBlackboards) throw new Error(`Failed to find blackboards matching rule:\n${ rule }`);
+        if (!matchingBlackboards) throw new RetrievalError(`Failed to find blackboards matching rule:\n${ rule }`);
 
         return matchingBlackboards;
 
@@ -159,13 +164,15 @@ export default class Blackboard {
      * Create a new blackboard.
      * @param {Blackboard} blackboard - The blackboard to create.
      * @return {Promise<Blackboard>} The created blackboard.
+     * @throws {DatabaseError} When the blackboard could not be created.
+     * @throws {CacheError} When the blackboard could not be put in the cache.
      */
     static async createBlackboard(blackboard) {
 
         const blackboards = await this.getAllBlackboards();
 
         const insertedBlackboard = await createDocument(BlackboardSchema, blackboard);
-        if (!insertedBlackboard) throw new Error(`Failed to create blackboard:\n${ blackboard }`);
+        if (!insertedBlackboard) throw new DatabaseError(`Failed to create blackboard:\n${ blackboard }`);
 
         blackboards.push(
             this.populateBlackboard(insertedBlackboard)
@@ -175,7 +182,7 @@ export default class Blackboard {
         if (!this.verifyBlackboardInCache(insertedBlackboard))
 
             if (!await verifyInCache(cache.get('blackboards'), insertedBlackboard, this.updateBlackboardCache))
-                throw new Error(`Failed to put blackboard in cache:\n${ insertedBlackboard }`);
+                throw new CacheError(`Failed to put blackboard in cache:\n${ insertedBlackboard }`);
 
         return insertedBlackboard;
     }
@@ -185,13 +192,15 @@ export default class Blackboard {
      * @param {String} blackboardId - The ID of the blackboard to update.
      * @param {Blackboard} updateBlackboard - The updated blackboard object.
      * @return {Promise<Blackboard>} The updated blackboard object.
+     * @throws {DatabaseError} When the blackboard could not be updated.
+     * @throws {CacheError} When the blackboard could not be put in the cache.
      */
     static async updateBlackboard(blackboardId, updateBlackboard) {
 
         const blackboards = await this.getAllBlackboards();
 
         let updatedBlackboard = await updateDocument(BlackboardSchema, blackboardId, updateBlackboard);
-        if (!updatedBlackboard) throw new Error(`Failed to update blackboard:\n${ updateBlackboard }`);
+        if (!updatedBlackboard) throw new DatabaseError(`Failed to update blackboard:\n${ updateBlackboard }`);
 
         updatedBlackboard = this.populateBlackboard(updatedBlackboard);
 
@@ -201,7 +210,7 @@ export default class Blackboard {
         if (!this.verifyBlackboardInCache(updatedBlackboard))
 
             if (!await verifyInCache(cache.get('blackboards'), updatedBlackboard, this.updateBlackboardCache))
-                throw new Error(`Failed to put blackboard in cache:\n${ updatedBlackboard }`);
+                throw new CacheError(`Failed to put blackboard in cache:\n${ updatedBlackboard }`);
 
         return updatedBlackboard;
     }
@@ -210,18 +219,20 @@ export default class Blackboard {
      * Delete a blackboard.
      * @param {String} blackboardId - The ID of the blackboard to delete.
      * @return {Promise<Boolean>} True if the blackboard was deleted, false otherwise.
+     * @throws {DatabaseError} When the blackboard could not be deleted.
+     * @throws {CacheError} When the blackboard could not be deleted from the cache.
      */
     static async deleteBlackboard(blackboardId) {
 
         const deleteBlackboard = await deleteDocument(BlackboardSchema, blackboardId);
-        if (!deleteBlackboard) throw new Error(`Failed to delete blackboard with id:\n${ blackboardId }`);
+        if (!deleteBlackboard) throw new DatabaseError(`Failed to delete blackboard with id:\n${ blackboardId }`);
 
         const blackboards = await this.getAllBlackboards();
         blackboards.splice(blackboards.findIndex(blackboard => blackboard._id.toString() === blackboardId), 1);
         cache.put('blackboards', blackboards, expirationTime);
 
         if (this.verifyBlackboardInCache(deleteBlackboard))
-            throw new Error(`Failed to delete blackboard in cache:\n${ deleteBlackboard }`);
+            throw new CacheError(`Failed to delete blackboard in cache:\n${ deleteBlackboard }`);
 
 
         return true;
