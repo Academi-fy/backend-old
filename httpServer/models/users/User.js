@@ -6,13 +6,7 @@
 import UserSchema from "../../../mongoDb/schemas/user/UserSchema.js";
 import cache from "../../cache.js";
 import { validateArray, validateNotEmpty, verifyInCache } from "../propertyValidation.js";
-import {
-    createDocument,
-    deleteDocument,
-    getAllDocuments,
-    getDocument,
-    updateDocument
-} from "../../../mongoDb/collectionAccess.js";
+import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../../mongoDb/collectionAccess.js";
 import mongoose from "mongoose";
 import { findByRule } from "../findByRule.js";
 import RetrievalError from "../../errors/RetrievalError.js";
@@ -345,8 +339,8 @@ export default class User {
      */
     static populateUser(user) {
         return user
-            // .populate('classes')
-            // .populate('extra_courses');
+        // .populate('classes')
+        // .populate('extra_courses');
     }
 
 }

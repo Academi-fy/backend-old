@@ -5,13 +5,7 @@
  */
 import { validateArray, validateNotEmpty, verifyInCache } from "../propertyValidation.js";
 import cache from "../../cache.js";
-import {
-    createDocument,
-    deleteDocument,
-    getAllDocuments,
-    getDocument,
-    updateDocument
-} from "../../../mongoDb/collectionAccess.js";
+import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../../mongoDb/collectionAccess.js";
 import ClassSchema from "../../../mongoDb/schemas/general/ClassSchema.js";
 import { findByRule } from "../findByRule.js";
 import RetrievalError from "../../errors/RetrievalError.js";
@@ -148,7 +142,7 @@ export default class Class {
      */
     static async getClassById(classId) {
 
-        const classes= await this.getAllClasses();
+        const classes = await this.getAllClasses();
 
         const class_ = classes.find(class__ => class__._id === classId);
         if (!class_) throw new RetrievalError(`Failed to find class with id ${ classId }`);
@@ -183,7 +177,7 @@ export default class Class {
      */
     static async createClass(class_) {
 
-        const classes= await this.getAllClasses();
+        const classes = await this.getAllClasses();
 
         const insertedClass = await createDocument(ClassSchema, class_);
         if (!insertedClass) throw new DatabaseError(`Failed to create class:\n${ class_ }`);

@@ -5,12 +5,7 @@
  */
 import { validateArray, validateNotEmpty, validateObject, verifyInCache } from "../propertyValidation.js";
 import cache from "../../cache.js";
-import {
-    createDocument,
-    deleteDocument,
-    getAllDocuments,
-    updateDocument
-} from "../../../mongoDb/collectionAccess.js";
+import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../../mongoDb/collectionAccess.js";
 import CourseSchema from "../../../mongoDb/schemas/general/CourseSchema.js";
 import { findByRule } from "../findByRule.js";
 import RetrievalError from "../../errors/RetrievalError.js";
@@ -152,7 +147,7 @@ export default class Course {
      */
     static async getCourseById(courseId) {
 
-        const courses= await this.getAllCourses();
+        const courses = await this.getAllCourses();
 
         const course = courses.find(course => course._id === courseId);
         if (!course) throw new RetrievalError(`Course not found:\n${ courseId }`);
@@ -187,7 +182,7 @@ export default class Course {
      */
     static async createCourse(course) {
 
-        const courses= await this.getAllCourses();
+        const courses = await this.getAllCourses();
 
         const insertedCourse = await createDocument(CourseSchema, course);
         if (!insertedCourse) throw new DatabaseError(`Course could not be created:\n${ course }`);

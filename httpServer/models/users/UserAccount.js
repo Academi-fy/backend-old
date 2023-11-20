@@ -56,12 +56,12 @@ export default class UserAccount {
         validateArray('User account settings', settings);
         validateArray('User account permissions', permissions);
 
-        for(let perm of permissions) {
+        for (let perm of permissions) {
 
-            if(typeof perm !== 'string') throw new Error(`User account permissions must be of type string:\n${ perm }`);
+            if (typeof perm !== 'string') throw new Error(`User account permissions must be of type string:\n${ perm }`);
 
             const allPerms = Object.keys(AccountSettings);
-            if(!allPerms.includes(perm)) throw new Error(`User account permission does not exist:\n${ perm }`);
+            if (!allPerms.includes(perm)) throw new Error(`User account permission does not exist:\n${ perm }`);
 
         }
 
@@ -119,20 +119,16 @@ export default class UserAccount {
     set _permissions(permissions) {
         validateArray('User account permissions', permissions);
 
-        for(let perm of permissions) {
+        for (let perm of permissions) {
 
-            if(typeof perm !== 'string') throw new Error(`User account permissions must be of type string:\n${ perm }`);
+            if (typeof perm !== 'string') throw new Error(`User account permissions must be of type string:\n${ perm }`);
 
             const allPerms = Object.keys(AccountSettings);
-            if(!allPerms.includes(perm)) throw new Error(`User account permission does not exist:\n${ perm }`);
+            if (!allPerms.includes(perm)) throw new Error(`User account permission does not exist:\n${ perm }`);
 
         }
 
         this.permissions = permissions;
-    }
-
-    hasPermission(permission) {
-        return this._permissions.includes(permission);
     }
 
     /**
@@ -219,6 +215,10 @@ export default class UserAccount {
     static populateUserAccount(userAccount) {
         return userAccount
             .populate('user');
+    }
+
+    hasPermission(permission) {
+        return this._permissions.includes(permission);
     }
 
 }

@@ -4,13 +4,7 @@
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
 import cache from "../../cache.js";
-import {
-    createDocument,
-    deleteDocument,
-    getAllDocuments,
-    getDocument,
-    updateDocument
-} from "../../../mongoDb/collectionAccess.js";
+import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../../mongoDb/collectionAccess.js";
 import EventSchema from "../../../mongoDb/schemas/events/EventSchema.js";
 import { validateArray, validateNotEmpty, validateNumber, verifyInCache } from "../propertyValidation.js";
 import { findByRule } from "../findByRule.js";
@@ -175,9 +169,9 @@ export default class Event {
         const eventsFromDb = await getAllDocuments(EventSchema);
 
         const events = [];
-        for(const event of eventsFromDb){
+        for (const event of eventsFromDb) {
             events.push(
-               event
+                event
             )
         }
 
@@ -197,7 +191,7 @@ export default class Event {
         const events = await this.getAllEvents();
 
         const event = events.find(event => event._id === eventId);
-        if(!event) throw new RetrievalError(`Failed to get event:\n${eventId}`);
+        if (!event) throw new RetrievalError(`Failed to get event:\n${ eventId }`);
 
         return event;
 
@@ -247,16 +241,16 @@ export default class Event {
         const events = await this.getAllEvents();
 
         const insertedEvent = await createDocument(EventSchema, event);
-        if(!insertedEvent) throw new DatabaseError(`Failed to create event:\n${event}`);
+        if (!insertedEvent) throw new DatabaseError(`Failed to create event:\n${ event }`);
 
         events.push(
             insertedEvent
         );
         cache.put(`events`, events, expirationTime);
 
-        if(!this.verifyEventInCache(insertedEvent))
+        if (!this.verifyEventInCache(insertedEvent))
 
-            if(!await verifyInCache(cache.get('events'), insertedEvent, this.updateEventCache))
+            if (!await verifyInCache(cache.get('events'), insertedEvent, this.updateEventCache))
                 throw new CacheError(`Failed to create event in cache:\n${ insertedEvent }`);
 
         return insertedEvent;
@@ -283,9 +277,9 @@ export default class Event {
         );
         cache.put(`events`, events, expirationTime);
 
-        if(!this.verifyEventInCache(updatedEvent))
+        if (!this.verifyEventInCache(updatedEvent))
 
-            if(!await verifyInCache(cache.get('events'), updatedEvent, this.updateEventCache))
+            if (!await verifyInCache(cache.get('events'), updatedEvent, this.updateEventCache))
                 throw new CacheError(`Failed to update event in cache:\n${ updatedEvent }`);
 
         return updatedEvent;
@@ -301,14 +295,14 @@ export default class Event {
     static async deleteEvent(eventId) {
 
         const deletedEvent = await deleteDocument(EventSchema, eventId);
-        if(!deletedEvent) throw new DatabaseError(`Failed to delete event:\n${eventId}`);
+        if (!deletedEvent) throw new DatabaseError(`Failed to delete event:\n${ eventId }`);
 
         const events = await this.getAllEvents();
         events.splice(events.findIndex(event => event._id === eventId), 1);
         cache.put('events', events, expirationTime);
 
-        if(this.verifyEventInCache(deletedEvent))
-            throw new CacheError(`Failed to delete event from cache:\n${deletedEvent}`);
+        if (this.verifyEventInCache(deletedEvent))
+            throw new CacheError(`Failed to delete event from cache:\n${ deletedEvent }`);
 
         return true;
     }

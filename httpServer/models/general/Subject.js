@@ -4,13 +4,7 @@
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
 import cache from "../../cache.js";
-import {
-    createDocument,
-    deleteDocument,
-    getAllDocuments,
-    getDocument,
-    updateDocument
-} from "../../../mongoDb/collectionAccess.js";
+import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../../mongoDb/collectionAccess.js";
 import { validateArray, validateNotEmpty, verifyInCache } from "../propertyValidation.js";
 import SubjectSchema from "../../../mongoDb/schemas/general/SubjectSchema.js";
 import { findByRule } from "../findByRule.js";
@@ -146,16 +140,16 @@ export default class Subject {
         const subjects = await this.getAllSubjects();
 
         const insertedSubject = await createDocument(SubjectSchema, subject);
-        if(!insertedSubject) throw new DatabaseError(`Failed to create subject:\n${ subject }`);
+        if (!insertedSubject) throw new DatabaseError(`Failed to create subject:\n${ subject }`);
 
         subjects.push(
             this.populateSubject(insertedSubject)
         );
         cache.put('subjects', subjects, expirationTime);
 
-        if(!this.verifySubjectInCache(insertedSubject))
+        if (!this.verifySubjectInCache(insertedSubject))
 
-            if(!await verifyInCache(subjects, subject, this.updateSubjectCache))
+            if (!await verifyInCache(subjects, subject, this.updateSubjectCache))
                 throw new CacheError(`Failed to create subject:\n${ subject }`);
 
     }
@@ -173,16 +167,16 @@ export default class Subject {
         const subjects = await this.getAllSubjects();
 
         let updatedSubject = await updateDocument(SubjectSchema, subjectId, subject);
-        if(!updatedSubject) throw new DatabaseError(`Failed to update subject:\n${ subject }`);
+        if (!updatedSubject) throw new DatabaseError(`Failed to update subject:\n${ subject }`);
 
         updatedSubject = this.populateSubject(updatedSubject);
 
         subjects.splice(subjects.findIndex(subject => subject._id === subjectId), 1, updatedSubject);
         cache.put('subjects', subjects, expirationTime);
 
-        if(!this.verifySubjectInCache(updatedSubject))
+        if (!this.verifySubjectInCache(updatedSubject))
 
-            if(!await verifyInCache(subjects, updatedSubject, this.updateSubjectCache))
+            if (!await verifyInCache(subjects, updatedSubject, this.updateSubjectCache))
                 throw new CacheError(`Failed to update subject:\n${ updatedSubject }`);
 
         return updatedSubject;
@@ -203,9 +197,9 @@ export default class Subject {
         subjects.splice(subjects.findIndex(subject => subject._id === subjectId), 1);
         cache.put('subjects', subjects, expirationTime);
 
-        if(this.verifySubjectInCache(deletedSubject))
+        if (this.verifySubjectInCache(deletedSubject))
 
-            if(!await verifyInCache(subjects, deletedSubject, this.updateSubjectCache))
+            if (!await verifyInCache(subjects, deletedSubject, this.updateSubjectCache))
                 throw new CacheError(`Failed to delete subject:\n${ deletedSubject }`);
 
         return deletedSubject;

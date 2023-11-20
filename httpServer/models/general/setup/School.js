@@ -7,7 +7,8 @@ import {
     createDocument,
     deleteDocument,
     getAllDocuments,
-    getDocument, getDocumentByRule,
+    getDocument,
+    getDocumentByRule,
     updateDocument
 } from "../../../../mongoDb/collectionAccess.js";
 import SchoolSchema from "../../../../mongoDb/schemas/general/setup/SchoolSchema.js";
@@ -189,7 +190,7 @@ export default class School {
     static async getAllSchools() {
 
         const schools = await getAllDocuments(SchoolSchema);
-        if(!schools) throw new RetrievalError(`Failed to get all schools`);
+        if (!schools) throw new RetrievalError(`Failed to get all schools`);
 
         //TODO populate
 
@@ -204,7 +205,7 @@ export default class School {
     static async getSchoolById(id) {
 
         const school = await getDocument(SchoolSchema, id);
-        if(!school) throw new RetrievalError(`Failed to get school with id:\n${ id }`);
+        if (!school) throw new RetrievalError(`Failed to get school with id:\n${ id }`);
 
         //TODO populate
 
@@ -219,7 +220,7 @@ export default class School {
     static async getSchoolByRule(rule) {
 
         const school = await getDocumentByRule(SchoolSchema, rule);
-        if(!school) throw new RetrievalError(`Failed to get school matching rule:\n${ rule }`);
+        if (!school) throw new RetrievalError(`Failed to get school matching rule:\n${ rule }`);
 
         //TODO populate
 
@@ -234,7 +235,7 @@ export default class School {
     static async createSchool(school) {
 
         const insertedSchool = await createDocument(SchoolSchema, school);
-        if(!insertedSchool) throw new DatabaseError(`Failed to create school:\n${ school }`);
+        if (!insertedSchool) throw new DatabaseError(`Failed to create school:\n${ school }`);
 
         return this.populateSchool(insertedSchool);
 
@@ -249,7 +250,7 @@ export default class School {
     static async updateSchool(schoolId, updateSchool) {
 
         const updatedSchool = await updateDocument(SchoolSchema, schoolId, updateSchool);
-        if(!updatedSchool) throw new DatabaseError(`Failed to update school:\n${ updatedSchool }`);
+        if (!updatedSchool) throw new DatabaseError(`Failed to update school:\n${ updatedSchool }`);
 
         return this.populateSchool(updatedSchool);
 
@@ -263,7 +264,7 @@ export default class School {
     static async deleteSchool(schoolId) {
 
         const deletedSchool = await deleteDocument(SchoolSchema, schoolId);
-        if(!deletedSchool) throw new DatabaseError(`Failed to delete school:\n${ schoolId }`);
+        if (!deletedSchool) throw new DatabaseError(`Failed to delete school:\n${ schoolId }`);
 
         return true;
     }

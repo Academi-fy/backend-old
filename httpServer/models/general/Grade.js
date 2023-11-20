@@ -4,13 +4,7 @@
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
 import cache from "../../cache.js";
-import {
-    createDocument,
-    deleteDocument,
-    getAllDocuments,
-    getDocument,
-    updateDocument
-} from "../../../mongoDb/collectionAccess.js";
+import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../../mongoDb/collectionAccess.js";
 import GradeSchema from "../../../mongoDb/schemas/general/GradeSchema.js";
 import { validateArray, validateNotEmpty, validateNumber, verifyInCache } from "../propertyValidation.js";
 import { findByRule } from "../findByRule.js";
@@ -103,7 +97,8 @@ export default class Grade {
 
         if (cacheResult) {
             return cacheResult;
-        } else return this.updateGradeCache();
+        }
+        else return this.updateGradeCache();
 
     }
 
@@ -118,7 +113,7 @@ export default class Grade {
         const grades = await this.getAllGrades();
 
         const grade = grades.find(grade => grade._id === gradeId);
-        if(!grade) throw new RetrievalError(`Failed to get grade by id:\n${ gradeId }`);
+        if (!grade) throw new RetrievalError(`Failed to get grade by id:\n${ gradeId }`);
 
         return grade;
 
@@ -135,7 +130,7 @@ export default class Grade {
         const grades = await this.getAllGrades();
 
         const matchingGrades = findByRule(grades, rule);
-        if(!matchingGrades) throw new RetrievalError(`Failed to get grade by rule:\n${ rule }`);
+        if (!matchingGrades) throw new RetrievalError(`Failed to get grade by rule:\n${ rule }`);
 
         return matchingGrades;
 
@@ -150,19 +145,19 @@ export default class Grade {
      */
     static async createGrade(grade) {
 
-        const grades= await this.getAllGrades();
+        const grades = await this.getAllGrades();
 
         const insertedGrade = await createDocument(GradeSchema, grade);
-        if(!insertedGrade) throw new DatabaseError(`Failed to create grade:\n${ grade }`);
+        if (!insertedGrade) throw new DatabaseError(`Failed to create grade:\n${ grade }`);
 
         grades.push(
             this.populateGrade(insertedGrade)
         );
         cache.put('grades', grades, expirationTime);
 
-        if(!this.verifyGradeInCache(insertedGrade._id))
+        if (!this.verifyGradeInCache(insertedGrade._id))
 
-            if(!await verifyInCache(cache.get('grades'), insertedGrade, this.updateGradeCache))
+            if (!await verifyInCache(cache.get('grades'), insertedGrade, this.updateGradeCache))
                 throw new CacheError(`Failed to put grade in cache:\n${ grade }`);
     }
 
@@ -179,16 +174,16 @@ export default class Grade {
         const grades = await this.getAllGrades();
 
         let updatedGrade = await updateDocument(GradeSchema, gradeId, updateGrade);
-        if(!updatedGrade) throw new DatabaseError(`Failed to update grade:\n${ updateGrade }`);
+        if (!updatedGrade) throw new DatabaseError(`Failed to update grade:\n${ updateGrade }`);
 
         updateGrade = this.populateGrade(updatedGrade);
 
         grades.splice(grades.findIndex(grade => grade._id === gradeId), 1, updateGrade);
         cache.put('grades', grades, expirationTime);
 
-        if(!this.verifyGradeInCache(updatedGrade._id))
+        if (!this.verifyGradeInCache(updatedGrade._id))
 
-            if(!await verifyInCache(cache.get('grades'), updatedGrade, this.updateGradeCache))
+            if (!await verifyInCache(cache.get('grades'), updatedGrade, this.updateGradeCache))
                 throw new CacheError(`Failed to put grade in cache:\n${ updatedGrade }`);
 
         return updatedGrade;
@@ -204,15 +199,15 @@ export default class Grade {
     static async deleteGrade(gradeId) {
 
         const deletedGrade = await deleteDocument(GradeSchema, gradeId);
-        if(!deletedGrade) throw new DatabaseError(`Failed to delete grade:\n${ gradeId }`);
+        if (!deletedGrade) throw new DatabaseError(`Failed to delete grade:\n${ gradeId }`);
 
         const grades = await this.getAllGrades();
         grades.splice(grades.findIndex(grade => grade._id === gradeId), 1);
         cache.put('grades', grades, expirationTime);
 
-        if(this.verifyGradeInCache(gradeId))
+        if (this.verifyGradeInCache(gradeId))
 
-            if(!await verifyInCache(cache.get('grades'), deletedGrade, this.updateGradeCache))
+            if (!await verifyInCache(cache.get('grades'), deletedGrade, this.updateGradeCache))
                 throw new CacheError(`Failed to delete grade in cache:\n${ deletedGrade }`);
 
         return deletedGrade;

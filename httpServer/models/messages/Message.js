@@ -11,12 +11,7 @@ import {
     verifyInCache
 } from "../propertyValidation.js";
 import cache from "../../cache.js";
-import {
-    createDocument,
-    deleteDocument,
-    getAllDocuments,
-    updateDocument
-} from "../../../mongoDb/collectionAccess.js";
+import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../../mongoDb/collectionAccess.js";
 import MessageSchema from "../../../mongoDb/schemas/messages/MessageSchema.js";
 import { findByRule } from "../findByRule.js";
 import RetrievalError from "../../errors/RetrievalError.js";
@@ -172,7 +167,7 @@ export default class Message {
      */
     static async getMessageById(id) {
 
-        const messages= await this.getAllMessages();
+        const messages = await this.getAllMessages();
 
         const message = messages.find(message => message._id === id);
         if (!message) throw new RetrievalError(`Failed to find message with id: ${ id }`);
@@ -207,7 +202,7 @@ export default class Message {
      */
     static async createMessage(message) {
 
-        const messages= await this.getAllMessages();
+        const messages = await this.getAllMessages();
 
         const insertedMessage = await createDocument(MessageSchema, message);
         if (!insertedMessage) throw new DatabaseError(`Failed to create message:\n${ message }`);
@@ -266,13 +261,13 @@ export default class Message {
         const deletedMessage = await deleteDocument(MessageSchema, messageId);
         if (!deletedMessage) throw new DatabaseError(`Failed to delete message with id ${ messageId }`);
 
-        const messages= await this.getAllMessages();
+        const messages = await this.getAllMessages();
         messages.splice(messages.findIndex(message => message._id === messageId), 1);
         cache.put('messages', messages, expirationTime);
 
         if (this.verifyMessageInCache(deletedMessage))
 
-            if(!await verifyInCache(cache.get('messages'), deletedMessage, this.updateMessageCache))
+            if (!await verifyInCache(cache.get('messages'), deletedMessage, this.updateMessageCache))
                 throw new CacheError(`Failed to delete message from cache:\n${ deletedMessage }`);
 
         return true;

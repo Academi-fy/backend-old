@@ -6,13 +6,7 @@
 import { validateArray, validateNotEmpty, validateObject, verifyInCache } from "../propertyValidation.js";
 import cache from "../../cache.js";
 import ClubSchema from "../../../mongoDb/schemas/clubs/ClubSchema.js";
-import {
-    createDocument,
-    deleteDocument,
-    getAllDocuments,
-    getDocument,
-    updateDocument
-} from "../../../mongoDb/collectionAccess.js";
+import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../../mongoDb/collectionAccess.js";
 import { findByRule } from "../findByRule.js";
 import DatabaseError from "../../errors/DatabaseError.js";
 import CacheError from "../../errors/CacheError.js";

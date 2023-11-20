@@ -6,12 +6,7 @@
 import cache from "../../cache.js";
 import ChatSchema from "../../../mongoDb/schemas/general/ChatSchema.js";
 import { validateArray, validateNotEmpty, verifyInCache } from "../propertyValidation.js";
-import {
-    createDocument,
-    deleteDocument,
-    getAllDocuments,
-    updateDocument
-} from "../../../mongoDb/collectionAccess.js";
+import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../../mongoDb/collectionAccess.js";
 import { findByRule } from "../findByRule.js";
 import RetrievalError from "../../errors/RetrievalError.js";
 import DatabaseError from "../../errors/DatabaseError.js";

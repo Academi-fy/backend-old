@@ -1,21 +1,26 @@
 Ein Club ist eine AG.\
-Clubs können mit einem Chat verbunden werden. Dieser Chat ist dann nur für die [Mitglieder](https://github.com/Academi-fy/backend/wiki/User) des Clubs sichtbar.
-Ein Club kann mehrere [Mitglieder](https://github.com/Academi-fy/backend/wiki/User) haben. Ein [Mitglied](https://github.com/Academi-fy/backend/wiki/User) kann in mehreren Clubs sein.
+Clubs können mit einem Chat verbunden werden. Dieser Chat ist dann nur für
+die [Mitglieder](https://github.com/Academi-fy/backend/wiki/User) des Clubs sichtbar.
+Ein Club kann mehrere [Mitglieder](https://github.com/Academi-fy/backend/wiki/User) haben.
+Ein [Mitglied](https://github.com/Academi-fy/backend/wiki/User) kann in mehreren Clubs sein.
 Ein Club kann mehrere [Events](https://github.com/Academi-fy/backend/wiki/Event) haben. \
 Jeder Club hat einen oder mehrere [Leiter](https://github.com/Academi-fy/backend/wiki/User).\
-Clubs sind unabhängig von der [WebUntis API](https://help.untis.at/hc/de/articles/4886785534354-API-documentation-for-integration-partners).
+Clubs sind unabhängig von
+der [WebUntis API](https://help.untis.at/hc/de/articles/4886785534354-API-documentation-for-integration-partners).
 
 ## Club-Objekt
 
-Das Club-Objekt ist ein eigenes JSON-Objekt. Die Clubs werden in MongoDB gespeichert und sind über den HTTP-Server abzurufen, wo sie gecacht werden. \
+Das Club-Objekt ist ein eigenes JSON-Objekt. Die Clubs werden in MongoDB gespeichert und sind über den HTTP-Server
+abzurufen, wo sie gecacht werden. \
 Die Club-Cache wird alle **5 Minuten** aktualisiert sowie:
+
 - beim Erstellen eines Clubs
 - beim Löschen eines Clubs
 
 ## Standard Berechtigungen
-                  
+
 🟢 = Erlaubt,
-🟡 = Vorschlag erlaubt, 
+🟡 = Vorschlag erlaubt,
 🔴 = Nicht erlaubt
 
 #### Basic Operations
@@ -28,8 +33,8 @@ Die Club-Cache wird alle **5 Minuten** aktualisiert sowie:
 | ABLEHNEN   | `CLUB_REJECT`  | 🔴                                                          | 🔴                                                                    | 🟢                                                       |
 | BEITRETEN  | `CLUB_JOIN`    | 🟢                                                          | 🟢                                                                    | 🟢                                                       |
 | VERLASSEN  | `CLUB_LEAVE`   | 🟢                                                          | 🟢                                                                    | 🟢                                                       |
-> <sup>1</sup> User haben, wenn sie die Leiter des Clubs sind, Lehrer-Rechte 
 
+> <sup>1</sup> User haben, wenn sie die Leiter des Clubs sind, Lehrer-Rechte
 
 #### Club verändern
 
@@ -41,6 +46,7 @@ Die Club-Cache wird alle **5 Minuten** aktualisiert sowie:
 | [Leader](https://github.com/Academi-fy/backend/wiki/User) SETZEN & ENTFERNEN       | `CLUB_MEMBER_PROMOTE_DEMOTE` | 🔴                                                          | 🟡<sup>2,3</sup>                                                      | 🟢                                                       |   
 | [Benutzer](https://github.com/Academi-fy/backend/wiki/User) HINZUFÜGEN & ENTFERNEN | `CLUB_MEMBER_ADD_REMOVE`     | 🔴                                                          | 🟢                                                                    | 🟢                                                       |   
 | [Lehrer](https://github.com/Academi-fy/backend/wiki/User) HINZUFÜGEN & ENTFERNEN   | `CLUB_TEACHER_ADD_REMOVE`    | 🔴                                                          | 🔴                                                                    | 🟢                                                       |   
+
 > <sup>2</sup> noch nicht final \
 > <sup>3</sup> mit dem Entfernen des letzten Leaders wird der Club gelöscht
 
@@ -52,11 +58,11 @@ Attribute des Club-Objekts:
 new Club(
     /*id:*/ "507f191e810c19729de860ea",
     /*name:*/ "Bienen AG",
-    /*details:*/ {...},
+    /*details:*/ { ... },
     /*avatar:*/ "https://link.to/avatar.png",
-    /*events:*/ [ {...} ],
-    /*members:*/ [ {...} ],
-    /*leaders:*/ [ {...} ],
+    /*events:*/ [ { ... } ],
+    /*members:*/ [ { ... } ],
+    /*leaders:*/ [ { ... } ],
     /*state:*/ "APPROVED"
 )
 ```
@@ -73,39 +79,51 @@ new Club(
 | `approved` | String                                                                | Ob der Club genehmigt wurde. Möglich sind: `SUGGESTED`, `REJECTED`,`ACCEPTED` |
 
 #### Besonderheiten
-- `events`, `members` und `leaders` sind MongoDB Referenzen zu den jeweiligen Objekten
-  - sie werden erste beim Abrufen auf dem HTTP-Server aufgelöst
 
-Beim Abfragen eines Clubs über den HTTP-Server werden die Attribute `events`, `members` und `leaders` aufgelöst und mit den jeweiligen Objekten ersetzt.
+- `events`, `members` und `leaders` sind MongoDB Referenzen zu den jeweiligen Objekten
+    - sie werden erste beim Abrufen auf dem HTTP-Server aufgelöst
+
+Beim Abfragen eines Clubs über den HTTP-Server werden die Attribute `events`, `members` und `leaders` aufgelöst und mit
+den jeweiligen Objekten ersetzt.
 
 ## Zugriff auf Clubs über den HTTP-Server
-          
+
 #### Alle Clubs abrufen
-Ruft alle Clubs ab. Die Clubs werden gecacht und alle 5 Minuten aktualisiert. 
+
+Ruft alle Clubs ab. Die Clubs werden gecacht und alle 5 Minuten aktualisiert.
+
 ``` http request
 GET /api/clubs
 ```              
 
 #### Club über ID abrufen
+
 Ruft einen Club über die ID ab. Die Clubs werden gecacht und alle 5 Minuten aktualisiert.
+
 ``` http request
 GET /api/clubs/:id
 ```
 
 #### Club erstellen oder bearbeiten
-Erstellt einen Club. Der Club wird in der Datenbank gespeichert und gecacht. 
+
+Erstellt einen Club. Der Club wird in der Datenbank gespeichert und gecacht.
+
 ``` http request
 PUT /api/clubs/<club>
 ```
 
 #### Club löschen
+
 Löscht einen Club. Der Club wird aus der Datenbank gelöscht und aus dem Cache entfernt.
+
 ```http request
 DELETE /api/clubs/:id
 ```
-         
+
 ## Club Schema in MongoDB
+
 Generiert über [mongoose](https://mongoosejs.com/docs/guide.html) [npm package]
+
 ``` javascript
 {
     id: {

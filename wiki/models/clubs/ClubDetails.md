@@ -1,7 +1,10 @@
 Ein Club ist eine AG. \
-ClubsDetails beschreiben einen Club genauer. Sie werden bei der Erstellung des [Clubs](https://github.com/Academi-fy/backend/wiki/Club) angegeben und können später geändert werden.
-Sie werden nicht explizit in MongoDB gespeichert, sondern nur in dem jeweiligen [Club](https://github.com/Academi-fy/backend/wiki/Club). \
-ClubDetails sind, genau wie [Clubs](https://github.com/Academi-fy/backend/wiki/Club), unabhängig von der [WebUntis API](https://help.untis.at/hc/de/articles/4886785534354-API-documentation-for-integration-partners).
+ClubsDetails beschreiben einen Club genauer. Sie werden bei der Erstellung
+des [Clubs](https://github.com/Academi-fy/backend/wiki/Club) angegeben und können später geändert werden.
+Sie werden nicht explizit in MongoDB gespeichert, sondern nur in dem
+jeweiligen [Club](https://github.com/Academi-fy/backend/wiki/Club). \
+ClubDetails sind, genau wie [Clubs](https://github.com/Academi-fy/backend/wiki/Club), unabhängig von
+der [WebUntis API](https://help.untis.at/hc/de/articles/4886785534354-API-documentation-for-integration-partners).
 
 ## ClubDetails-Objekt
 
@@ -19,6 +22,7 @@ Die ClubDetails werden im [Club](https://github.com/Academi-fy/backend/wiki/Club
 | Operation      | Permission            | [Benutzer](https://github.com/Academi-fy/backend/wiki/User) | [Lehrer](https://github.com/Academi-fy/backend/wiki/User)<sup>1</sup> | [Admin](https://github.com/Academi-fy/backend/wiki/User) |
 |----------------|-----------------------|-------------------------------------------------------------|-----------------------------------------------------------------------|----------------------------------------------------------|
 | Details ÄNDERN | `CLUB_DETAILS_CHANGE` | 🔴                                                          | 🟢                                                                    | 🟢                                                       |
+
 > (_aus [Club](https://github.com/Academi-fy/backend/wiki/Club)_)\
 > <sup>1</sup> User haben, wenn sie die Leiter des Clubs sind, Lehrer-Rechte
 
@@ -49,14 +53,17 @@ new ClubDetails(
 | `events`       | Array<[Event](https://github.com/Academi-fy/backend/wiki/ClubRequirement)>       | Events des Clubs             |
 
 #### Besonderheiten
+
 - `events` sind MongoDB Referenzen zu den jeweiligen Objekten
     - sie werden erste beim Abrufen auf dem HTTP-Server aufgelöst
 
-Beim Abfragen eines [Clubs](https://github.com/Academi-fy/backend/wiki/Club) über den HTTP-Server werden die `events` aufgelöst und mit den jeweiligen Objekten ersetzt.
+Beim Abfragen eines [Clubs](https://github.com/Academi-fy/backend/wiki/Club) über den HTTP-Server werden die `events`
+aufgelöst und mit den jeweiligen Objekten ersetzt.
 
 ### Schema in MongoDB
 
 `club.details` ist ein Teil des [Club Schemas](https://github.com/Academi-fy/backend/wiki/Club#club-schema-in-mongodb)
+
 ```javascript
 details: {
 

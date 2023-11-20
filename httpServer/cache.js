@@ -4,4 +4,5 @@
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
 import memoryCache from 'memory-cache';
+
 export default memoryCache;
