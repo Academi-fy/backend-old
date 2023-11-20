@@ -1,3 +1,5 @@
+import { validateNotEmpty, validateObject } from "../propertyValidation.js";
+
 /**
  * @description Represents the content of a message.
  * @param {String} type - The type of the message content. Valid values are: "FILE", "IMAGE", "POLL", "TEXT", "VIDEO".
@@ -27,6 +29,7 @@ export default class MessageContent {
     }
 
     set _value(value) {
+        validateObject('Message content value', value);
         this.value = value;
     }
 
@@ -35,6 +38,7 @@ export default class MessageContent {
     }
 
     set _type(value) {
+        validateNotEmpty('Message content type', value);
         this.type = value;
     }
 

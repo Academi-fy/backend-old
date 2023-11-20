@@ -7,6 +7,7 @@ import {
     getAllDocuments,
     updateDocument
 } from "../../../mongoDb/collectionAccess.js";
+import { findByRule } from "../findByRule.js";
 
 // Time in milliseconds after which the cache will expire
 const expirationTime = 2 * 60 * 1000;
@@ -53,6 +54,15 @@ export default class Chat {
         this.name = name;
         this.avatar = avatar;
         this.messages = messages;
+
+        validateNotEmpty('Chat id', id);
+        validateNotEmpty('Chat type', type);
+        validateArray('Chat targets', targets);
+        validateArray('Chat courses', courses);
+        validateArray('Chat clubs', clubs);
+        validateNotEmpty('Chat name', name);
+        validateNotEmpty('Chat avatar', avatar);
+        validateArray('Chat messages', messages);
     }
 
     get _type() {
@@ -125,7 +135,7 @@ export default class Chat {
      */
     static async updateChatCache() {
 
-        cache.get("chats").clear();
+        cache.del('chats');
         const chatsFromDb = await getAllDocuments(ChatSchema);
 
         const chats = [];
@@ -172,16 +182,16 @@ export default class Chat {
     }
 
     /**
-     * @description Get a chat by rule.
-     * @param {Object} rule - The rule to find the chat.
-     * @return {Promise<Chat>} The chat.
+     * @description Get all chats that match the rule.
+     * @param {Object} rule - The rule to find the chats by.
+     * @return {Promise<Array<Chat>>} The chat.
      * */
-    static async getChatByRule(rule) {
+    static async getChatsByRule(rule) {
 
         const chats = await this.getChats();
 
-        const chat = chats.find(chat => chat[Object.keys(rule)[0]] === Object.keys(rule)[0]);
-        if (!chat) throw new Error(`Chat with rule ${ rule } not found`);
+        const chat = findByRule(chats, rule);
+        if (!chat) throw new Error(`Failed to find chats matching rule:\n${ rule }`);
 
         return chat;
 

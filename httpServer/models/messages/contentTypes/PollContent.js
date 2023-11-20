@@ -7,9 +7,10 @@ export default class PollContent extends MessageContent {
         value
     ) {
         const type = "POLL";
-        validatePoll("PollContent value", value);
-
         super(type, value);
+
+        validatePoll("PollContent value", value);
+        validateNotEmpty("PollContent value", value);
     }
 
     get _value() {

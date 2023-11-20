@@ -22,6 +22,10 @@ export default class EditedMessage {
         this.updatedDate = updatedDate;
         this.oldContent = oldContent;
         this.newContent = newContent;
+
+        validateNumber('EditedMessage updated date', updatedDate);
+        validateNotEmpty("EditedMessage old content", oldContent);
+        validateNotEmpty("EditedMessage new content", newContent);
     }
 
     get _updatedDate() {

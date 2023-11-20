@@ -8,6 +8,7 @@ import {
     getDocument,
     updateDocument
 } from "../../../mongoDb/collectionAccess.js";
+import { findByRule } from "../findByRule.js";
 
 // Cache expiration time in milliseconds
 const expirationTime = 5 * 60 * 1000;
@@ -54,6 +55,15 @@ export default class Club {
         this.chat = chat;
         this.events = events;
         this.state = state;
+
+        validateNotEmpty('Club id', this.id);
+        validateNotEmpty('Club name', this.name);
+        validateObject('Club details', this.details);
+        validateArray('Club leaders', this.leaders);
+        validateArray('Club members', this.members);
+        validateObject('Club chat', this.chat);
+        validateArray('Club events', this.events);
+        validateNotEmpty('Club state', this.state);
     }
 
     get _id() {
@@ -80,13 +90,6 @@ export default class Club {
 
     set _details(value) {
         validateObject('Club details', value)
-        validateNotEmpty('Club description', value.description);
-        validateNotEmpty('Club location', value.location);
-        validateNotEmpty('Club meeting time', value.meetingTime);
-        validateNotEmpty('Club meeting day', value.meetingDay);
-        validateArray('Club rules', value.rules);
-        validateArray('Club events', value.events);
-
         this.details = value;
     }
 
@@ -188,18 +191,18 @@ export default class Club {
     }
 
     /**
-     * @description Get a club by name.
-     * @param {Object} rule - The rule to find the club by.
-     * @return {Promise<Club>} The club.
+     * @description Get all clubs that match a rule.
+     * @param {Object} rule - The rule to find the clubs by.
+     * @return {Promise<Array<Club>>} The matching clubs.
      */
-    static async getClubByRule(rule) {
+    static async getClubsByRule(rule) {
 
         const clubs = await this.getClubs();
 
-        const club = clubs.find(club => club[Object.keys(rule)[0]] === Object.keys(rule)[0]);
-        if (!club) throw new Error(`Failed to get club by rule:\n${ rule }`);
+        const matchingClubs = findByRule(clubs, rule);
+        if (!matchingClubs) throw new Error(`Failed to get clubs with rule:\n${ rule }`);
 
-        return club;
+        return matchingClubs;
     }
 
     /**

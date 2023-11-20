@@ -1,3 +1,5 @@
+import { validateNotEmpty } from "../propertyValidation.js";
+
 /**
  * @description Class for an event information.
  * @param {String} title - The title of the event information.
@@ -17,6 +19,7 @@ export default class EventInformation {
         this.title = title;
         this.descriptionElements = descriptionElements;
 
+        validateNotEmpty('Event information title', title);
         this.validateDescriptionElements(descriptionElements);
     }
 
@@ -25,6 +28,7 @@ export default class EventInformation {
     }
 
     set _title(title) {
+        validateNotEmpty('Event information title', title);
         this.title = title;
     }
 

@@ -7,7 +7,8 @@ import {
     updateDocument
 } from "../../../mongoDb/collectionAccess.js";
 import GradeSchema from "../../../mongoDb/schemas/general/GradeSchema.js";
-import { verifyInCache } from "../propertyValidation.js";
+import { validateArray, validateNotEmpty, validateNumber, verifyInCache } from "../propertyValidation.js";
+import { findByRule } from "../findByRule.js";
 
 const expirationTime = 10 * 60 * 1000;
 
@@ -32,6 +33,19 @@ export default class Grade {
         this.id = id;
         this.level = level;
         this.classes = classes;
+
+        validateNotEmpty('Grade id', id);
+        validateNumber('Grade level', level);
+        validateArray('Grade classes', classes);
+    }
+
+    get _id() {
+        return this.id;
+    }
+
+    set _id(value) {
+        validateNotEmpty('Grade id', value);
+        this.id = value;
     }
 
     get _level() {
@@ -39,6 +53,7 @@ export default class Grade {
     }
 
     set _level(value) {
+        validateNumber('Grade level', value);
         this.level = value;
     }
 
@@ -47,6 +62,7 @@ export default class Grade {
     }
 
     set _classes(value) {
+        validateArray('Grade classes', value);
         this.classes = value;
     }
 
@@ -56,7 +72,7 @@ export default class Grade {
      * */
     static async updateGradeCache() {
 
-        cache.get('grades').clear();
+        cache.del('grades');
         const gradesFromDb = await getAllDocuments(GradeSchema);
 
         const grades = [];
@@ -96,6 +112,22 @@ export default class Grade {
         if(!grade) throw new Error(`Failed to get grade by id:\n${ gradeId }`);
 
         return grade;
+
+    }
+
+    /**
+     * @description Get all grades by a rule.
+     * @param {String} rule - The rule to find the grades by.
+     * @returns {Promise<Array<Grade>>} The matching grades.
+     * */
+    static async getGradesByRule(rule) {
+
+        const grades = await this.getGrades();
+
+        const matchingGrades = findByRule(grades, rule);
+        if(!matchingGrades) throw new Error(`Failed to get grade by rule:\n${ rule }`);
+
+        return matchingGrades;
 
     }
 

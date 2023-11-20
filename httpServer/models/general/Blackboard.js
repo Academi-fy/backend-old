@@ -1,7 +1,8 @@
 import cache from "../../cache.js";
 import BlackboardSchema from "../../../mongoDb/schemas/general/BlackboardSchema.js";
 import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../../mongoDb/collectionAccess.js";
-import { verifyInCache } from "../propertyValidation.js";
+import { validateNotEmpty, verifyInCache } from "../propertyValidation.js";
+import { findByRule } from "../findByRule.js";
 
 const expirationTime = 10 * 60 * 1000;
 
@@ -35,6 +36,12 @@ export default class Blackboard {
         this.author = author;
         this.coverImage = coverImage;
         this.text = text;
+
+        validateNotEmpty('Blackboard id', id);
+        validateNotEmpty('Blackboard title', title);
+        validateNotEmpty('Blackboard author', author);
+        validateNotEmpty('Blackboard cover image', coverImage);
+        validateNotEmpty('Blackboard text', text);
     }
 
     get _id() {
@@ -42,6 +49,7 @@ export default class Blackboard {
     }
 
     set _id(id) {
+        validateNotEmpty('Blackboard id', id);
         this.id = id;
     }
 
@@ -50,6 +58,7 @@ export default class Blackboard {
     }
 
     set _title(title) {
+        validateNotEmpty('Blackboard title', title);
         this.title = title;
     }
 
@@ -58,6 +67,7 @@ export default class Blackboard {
     }
 
     set _author(author) {
+        validateNotEmpty('Blackboard author', author);
         this.author = author;
     }
 
@@ -66,6 +76,7 @@ export default class Blackboard {
     }
 
     set _coverImage(coverImage) {
+        validateNotEmpty('Blackboard cover image', coverImage);
         this.coverImage = coverImage;
     }
 
@@ -74,6 +85,7 @@ export default class Blackboard {
     }
 
     set _text(text) {
+        validateNotEmpty('Blackboard text', text);
         this.text = text;
     }
 
@@ -83,7 +95,7 @@ export default class Blackboard {
      */
     static async updateBlackboardCache() {
 
-        cache.get("blackboards").clear();
+        cache.del('blackboards');
         const blackboardsFromDb = await getAllDocuments(BlackboardSchema);
 
         const blackboards = [];
@@ -128,18 +140,18 @@ export default class Blackboard {
     }
 
     /**
-     * @description Get a blackboard by rule.
-     * @param {Object} rule - The rule to find the blackboard by.
-     * @return {Promise<Blackboard>} The blackboard.
+     * @description Get all blackboards that match the rule.
+     * @param {Object} rule - The rule to find the blackboards by.
+     * @return {Promise<Array<Blackboard>>} The matching blackboard.
      */
-    static async getBlackboardByRule(rule) {
+    static async getBlackboardsByRule(rule) {
 
         const blackboards = await this.getBlackboards();
 
-        const blackboard = blackboards.find(chat => chat[Object.keys(rule)[0]] === Object.keys(rule)[0]);
-        if (!blackboard) throw new Error(`Failed to find blackboard with rule:\n${ rule }`);
+        const matchingBlackboards = findByRule(blackboards, rule);
+        if (!matchingBlackboards) throw new Error(`Failed to find blackboards matching rule:\n${ rule }`);
 
-        return blackboard;
+        return matchingBlackboards;
 
     }
 

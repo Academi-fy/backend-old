@@ -1,4 +1,4 @@
-import { validateNotEmpty } from "../propertyValidation.js";
+import { validateArray, validateNotEmpty, validateNumber } from "../propertyValidation.js";
 
 /**
  * @description Class representing a PollAnswer.
@@ -26,6 +26,11 @@ export default class PollAnswer {
         this.optionName = optionName;
         this.voters = voters;
         this.maxVotesPerUser = maxVotesPerUser;
+
+        validateNotEmpty('Poll answer id', id);
+        validateNotEmpty('Poll answer option name', optionName);
+        validateArray('Poll answer voters', voters);
+        validateNumber('Poll answer max votes per user', maxVotesPerUser);
     }
 
     get _id() {

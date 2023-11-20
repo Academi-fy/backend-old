@@ -1,4 +1,10 @@
-import { validateArray, validateNotEmpty, validateNumber, verifyInCache } from "../propertyValidation.js";
+import {
+    validateArray,
+    validateNotEmpty,
+    validateNumber,
+    validateObject,
+    verifyInCache
+} from "../propertyValidation.js";
 import cache from "../../cache.js";
 import {
     createDocument,
@@ -8,6 +14,7 @@ import {
     updateDocument
 } from "../../../mongoDb/collectionAccess.js";
 import MessageSchema from "../../../mongoDb/schemas/messages/MessageSchema.js";
+import { findByRule } from "../findByRule.js";
 
 // Time in milliseconds after which the cache will expire
 const expirationTime = 2 * 60 * 1000;
@@ -50,6 +57,14 @@ export default class Message {
         this.reactions = reactions;
         this.edits = edits;
         this.date = date;
+
+        validateNotEmpty('Message id', id);
+        validateObject('Message chat', chat);
+        validateObject('Message author', author);
+        validateObject('Message content', content);
+        validateArray('Message reactions', reactions);
+        validateArray('Message edits', edits);
+        validateNumber('Message date', date);
     }
 
     get _chat() {
@@ -57,7 +72,7 @@ export default class Message {
     }
 
     set _chat(value) {
-        validateNotEmpty('Message chat', value);
+        validateObject('Message chat', value);
         this.chat = value;
     }
 
@@ -66,7 +81,7 @@ export default class Message {
     }
 
     set _author(value) {
-        validateNotEmpty('Message author', value);
+        validateObject('Message author', value);
         this.author = value;
     }
 
@@ -75,7 +90,7 @@ export default class Message {
     }
 
     set _content(value) {
-        validateArray('Message content', value);
+        validateObject('Message content', value);
         this.content = value;
     }
 
@@ -112,7 +127,7 @@ export default class Message {
      */
     static async updateMessageCache() {
 
-        cache.get("messages").clear();
+        cache.del('messages');
         const messagesFromDb = await getAllDocuments(MessageSchema);
 
         const messages = [];
@@ -155,6 +170,17 @@ export default class Message {
         if (!message) throw new Error(`Message with id ${ id } not found`);
 
         return message;
+
+    }
+
+    static async getMessagesByRule(rule) {
+
+        const messages = await this.getMessages();
+
+        const matchingMessages = findByRule(messages, rule);
+        if (!matchingMessages) throw new Error(`Failed to find messages matching rule:\n${ rule }`);
+
+        return matchingMessages;
 
     }
 

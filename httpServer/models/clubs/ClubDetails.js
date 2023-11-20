@@ -37,6 +37,13 @@ export default class ClubDetails {
         this.meetingDay = meetingDay;
         this.requirements = requirements;
         this.events = events;
+
+        validateNotEmpty('Club description', this.description);
+        validateNotEmpty('Club location', this.location);
+        validateNotEmpty('Club meeting time', this.meetingTime);
+        validateNotEmpty('Club meeting day', this.meetingDay);
+        validateArray('Club requirements', this.requirements);
+        validateArray('Club events', this.events);
     }
 
     get _description() {

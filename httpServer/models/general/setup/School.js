@@ -6,6 +6,7 @@ import {
     updateDocument
 } from "../../../../mongoDb/collectionAccess.js";
 import SchoolSchema from "../../../../mongoDb/schemas/general/setup/SchoolSchema.js";
+import { validateArray, validateNotEmpty } from "../../propertyValidation.js";
 
 /**
  * @description Class representing a school.
@@ -61,6 +62,18 @@ export default class School {
         this.clubs = clubs;
         this.events = events;
         this.blackboards = blackboards;
+
+        validateNotEmpty('School id', id);
+        validateNotEmpty('School name', name);
+        validateArray('School grades', grades);
+        validateArray('School courses', courses);
+        validateArray('School members', members);
+        validateArray('School classes', classes);
+        validateArray('School messages', messages);
+        validateArray('School subjects', subjects);
+        validateArray('School clubs', clubs);
+        validateArray('School events', events);
+        validateArray('School blackboards', blackboards);
     }
 
     get _id() {
@@ -68,6 +81,7 @@ export default class School {
     }
 
     set _id(id) {
+        validateNotEmpty('School id', id);
         this.id = id;
     }
 
@@ -76,6 +90,7 @@ export default class School {
     }
 
     set _name(name) {
+        validateNotEmpty('School name', name);
         this.name = name;
     }
 
@@ -84,6 +99,7 @@ export default class School {
     }
 
     set _grades(grades) {
+        validateArray('School grades', grades)
         this.grades = grades;
     }
 
@@ -92,6 +108,7 @@ export default class School {
     }
 
     set _courses(courses) {
+        validateArray('School courses', courses)
         this.courses = courses;
     }
 
@@ -100,6 +117,7 @@ export default class School {
     }
 
     set _members(members) {
+        validateArray('School members', members)
         this.members = members;
     }
 
@@ -108,6 +126,7 @@ export default class School {
     }
 
     set _classes(classes) {
+        validateArray('School classes', classes)
         this.classes = classes;
     }
 
@@ -116,6 +135,7 @@ export default class School {
     }
 
     set _messages(messages) {
+        validateArray('School messages', messages)
         this.messages = messages;
     }
 
@@ -124,6 +144,7 @@ export default class School {
     }
 
     set _subjects(subjects) {
+        validateArray('School subjects', subjects)
         this.subjects = subjects;
     }
 
@@ -132,6 +153,7 @@ export default class School {
     }
 
     set _clubs(clubs) {
+        validateArray('School clubs', clubs)
         this.clubs = clubs;
     }
 
@@ -140,6 +162,7 @@ export default class School {
     }
 
     set _events(events) {
+        validateArray('School events', events)
         this.events = events;
     }
 
@@ -148,6 +171,7 @@ export default class School {
     }
 
     set _blackboards(blackboards) {
+        validateArray('School blackboards', blackboards)
         this.blackboards = blackboards;
     }
 

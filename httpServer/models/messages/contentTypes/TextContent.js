@@ -8,6 +8,7 @@ export default class TextContent extends MessageContent {
     ) {
         const type = "TEXT";
         super(type, value);
+
         validateNotEmpty("TextContent value", value);
     }
 

@@ -8,6 +8,8 @@ export default class ImageContent extends MessageContent {
     ) {
         const type = "IMAGE";
         super(type, value);
+
+        validateNotEmpty("FileContent value", value);
     }
 
     get _value() {

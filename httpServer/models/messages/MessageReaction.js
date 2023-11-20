@@ -18,6 +18,9 @@ export default class MessageReaction {
     ) {
         this.emoji = emoji;
         this.count = count;
+
+        validateNotEmpty("Message reaction emoji", emoji);
+        validateNumber("Message reaction count", count);
     }
 
     get _emoji() {

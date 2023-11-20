@@ -7,7 +7,8 @@ import {
     updateDocument
 } from "../../../mongoDb/collectionAccess.js";
 import EventSchema from "../../../mongoDb/schemas/events/EventSchema.js";
-import { verifyInCache } from "../propertyValidation.js";
+import { validateArray, validateNotEmpty, validateNumber, verifyInCache } from "../propertyValidation.js";
+import { findByRule } from "../findByRule.js";
 
 const expirationTime = 5 * 60 * 1000;
 
@@ -62,6 +63,17 @@ export default class Event {
         this.endDate = endDate;
         this.information = information;
         this.tickets = tickets;
+
+        validateNotEmpty('Event id', id);
+        validateNotEmpty('Event title', title);
+        validateNotEmpty('Event description', description);
+        validateNotEmpty('Event location', location);
+        validateNotEmpty('Event host', host);
+        validateArray('Event clubs', clubs);
+        validateNumber('Event start date', startDate);
+        validateNumber('Event end date', endDate);
+        validateArray('Event information', information);
+        validateArray('Event tickets', tickets);
     }
 
     get _title() {
@@ -69,6 +81,7 @@ export default class Event {
     }
 
     set _title(value) {
+        validateNotEmpty('Event title', value)
         this.title = value;
     }
 
@@ -77,6 +90,7 @@ export default class Event {
     }
 
     set _description(value) {
+        validateNotEmpty('Event description', value)
         this.description = value;
     }
 
@@ -85,6 +99,7 @@ export default class Event {
     }
 
     set _location(value) {
+        validateNotEmpty('Event location', value)
         this.location = value;
     }
 
@@ -93,6 +108,7 @@ export default class Event {
     }
 
     set _host(value) {
+        validateNotEmpty('Event host', value)
         this.host = value;
     }
 
@@ -101,6 +117,7 @@ export default class Event {
     }
 
     set _clubs(value) {
+        validateArray('Event clubs', value);
         this.clubs = value;
     }
 
@@ -109,6 +126,7 @@ export default class Event {
     }
 
     set _startDate(value) {
+        validateNumber('Event start date', value);
         this.startDate = value;
     }
 
@@ -117,6 +135,7 @@ export default class Event {
     }
 
     set _endDate(value) {
+        validateNumber('Event end date', value);
         this.endDate = value;
     }
 
@@ -125,6 +144,7 @@ export default class Event {
     }
 
     set _information(value) {
+        validateArray('Event information', value);
         this.information = value;
     }
 
@@ -133,6 +153,7 @@ export default class Event {
     }
 
     set _tickets(value) {
+        validateArray('Event tickets', value);
         this.tickets = value;
     }
 
@@ -142,7 +163,7 @@ export default class Event {
      */
     static async updateEventCache() {
 
-        cache.get('events').clear();
+        cache.del('events');
         const eventsFromDb = await getAllDocuments(EventSchema);
 
         const events = [];
@@ -174,16 +195,16 @@ export default class Event {
     }
 
     /**
-     * @description Get an event by a rule.
-     * @param {Object} rule - The rule to find the event.
-     * @returns {Promise<Event>} The event.
+     * @description Get all events that match the rule.
+     * @param {Object} rule - The rule to find the events by.
+     * @returns {Promise<Array<Event>>} The matching event.
      * */
-    static async getEventByRule(rule) {
+    static async getEventsByRule(rule) {
 
         const events = await this.getEvents();
 
-        const event = events.find(event => event[Object.keys(rule)[0]] === Object.keys(rule)[0]);
-        if (!event) throw new Error(`Failed to get event by rule:\n${ rule }`);
+        const event = findByRule(events, rule);
+        if (!event) throw new Error(`Failed to get events with rule:\n${ rule }`);
 
         return event;
 

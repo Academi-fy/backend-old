@@ -9,6 +9,7 @@ import {
     updateDocument
 } from "../../../mongoDb/collectionAccess.js";
 import mongoose from "mongoose";
+import { findByRule } from "../findByRule.js";
 
 const expirationTime = 3 * 60 * 1000;
 
@@ -51,6 +52,14 @@ export default class User {
         this.type = type;
         this.classes = classes;
         this.extra_courses = extra_courses;
+
+        validateNotEmpty('User id', id);
+        validateNotEmpty('User first name', first_name);
+        validateNotEmpty('User last name', last_name);
+        validateNotEmpty('User avatar', avatar);
+        validateNotEmpty('User type', type);
+        validateArray('User classes', classes);
+        validateArray('User extra courses', extra_courses);
 
     }
 
@@ -151,6 +160,21 @@ export default class User {
     }
 
     /**
+     * Get all users
+     * @returns {Promise<Array<User>>} The users
+     */
+    static async getUsers() {
+
+        const cacheResults = cache.get('users');
+
+        if (cacheResults) {
+            return cacheResults;
+        }
+        else return this.updateUserCache();
+
+    }
+
+    /**
      * Get a users by their ID
      * @param {String} userId - The ID of the users
      * @returns {Promise<User>} The users
@@ -181,8 +205,8 @@ export default class User {
 
         const users = await this.getUsers();
 
-        let user = users.find(user => user[Object.keys(rule)[0]] === Object.values(rule)[0]);
-        if (!user) throw new Error(`Failed to get user by rule:\n${ rule }`);
+        let user = findByRule(users, rule);
+        if (!user) throw new Error(`Failed to get user matching rule:\n${ rule }`);
 
         user = this.populateUser(user);
         user = new User(
@@ -196,21 +220,6 @@ export default class User {
         );
 
         return user;
-
-    }
-
-    /**
-     * Get all users
-     * @returns {Promise<Array<User>>} The users
-     */
-    static async getUsers() {
-
-        const cacheResults = cache.get('users');
-
-        if (cacheResults) {
-            return cacheResults;
-        }
-        else return this.updateUserCache();
 
     }
 

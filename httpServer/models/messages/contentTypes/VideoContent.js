@@ -8,6 +8,8 @@ export default class VideoContent extends MessageContent {
     ) {
         const type = "VIDEO";
         super(type, value);
+
+        validateNotEmpty("VideoContent value", value);
     }
 
     get _value() {

@@ -1,3 +1,5 @@
+import { validateNotEmpty, validateObject } from "../../propertyValidation.js";
+
 /**
  * @description The setup account model.
  * @param {String} id - The id of the setup account.
@@ -20,6 +22,10 @@ export default class SetupAccount {
         this.id = id;
         this.schoolName = schoolName;
         this.school = school;
+
+        validateNotEmpty('Setup account id', id);
+        validateNotEmpty('Setup account school name', schoolName);
+        validateObject('Setup account school', school);
     }
 
     get _id() {
@@ -27,6 +33,7 @@ export default class SetupAccount {
     }
 
     set _id(id) {
+        validateNotEmpty('Setup account id', id);
         this.id = id;
     }
 
@@ -35,6 +42,7 @@ export default class SetupAccount {
     }
 
     set _schoolName(schoolName) {
+        validateNotEmpty('Setup account school name', schoolName);
         this.schoolName = schoolName;
     }
 
@@ -43,7 +51,10 @@ export default class SetupAccount {
     }
 
     set _school(school) {
+        validateObject('Setup account school', school);
         this.school = school;
     }
+
+    //TODO: caching
 
 }

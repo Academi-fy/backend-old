@@ -1,3 +1,5 @@
+import { validateArray, validateBoolean, validateNotEmpty } from "../propertyValidation.js";
+
 /**
  * @description Represents a poll.
  * @param {String} question - The question of the poll.
@@ -27,6 +29,7 @@ export default class Poll {
     }
 
     set question(value) {
+        validateNotEmpty('Poll question', value)
         this._question = value;
     }
 
@@ -35,6 +38,7 @@ export default class Poll {
     }
 
     set anonymous(value) {
+        validateBoolean('Poll anonymous', value)
         this._anonymous = value;
     }
 
@@ -43,6 +47,7 @@ export default class Poll {
     }
 
     set answers(value) {
+        validateArray('Poll answers', value);
         this._answers = value;
     }
 

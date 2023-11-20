@@ -7,6 +7,7 @@ import {
     updateDocument
 } from "../../../mongoDb/collectionAccess.js";
 import CourseSchema from "../../../mongoDb/schemas/general/CourseSchema.js";
+import { findByRule } from "../findByRule.js";
 
 // Define the cache expiration time in milliseconds
 const expirationTime = 5 * 60 * 1000;
@@ -45,6 +46,13 @@ export default class Course {
         this.teacher = teacher;
         this.chat = chat;
         this.subject = subject;
+
+        validateNotEmpty('Course id', id);
+        validateArray('Course members', members);
+        validateArray('Course classes', classes);
+        validateObject('Course teacher', teacher);
+        validateObject('Course chat', chat);
+        validateObject('Course subject', subject);
     }
 
     get _members() {
@@ -93,6 +101,27 @@ export default class Course {
     }
 
     /**
+     * Update the course cache from the database.
+     * @return {Promise<Array<Course>>} The updated courses.
+     */
+    static async updateCourseCache() {
+
+        cache.del('courses');
+        const coursesFromDb = await getAllDocuments(CourseSchema);
+
+        const courses = [];
+        for (const course of coursesFromDb) {
+            courses.push(
+                this.populateCourse(course)
+            );
+        }
+
+        cache.put('courses', courses, expirationTime);
+        return courses;
+
+    }
+
+    /**
      * @description Get all courses from cache or database.
      * @return {Promise<Array>} The courses.
      */
@@ -120,6 +149,22 @@ export default class Course {
         if (!course) throw new Error(`Course not found:\n${ courseId }`);
 
         return course;
+
+    }
+
+    /**
+     * @description Get courses by rule.
+     * @param {String} rule - The rule to find courses by.
+     * @return {Promise<Array<Course>>} The matching courses.
+     * */
+    static async getCoursesByRule(rule) {
+
+        const courses = await this.getCourses();
+
+        const matchingCourses = findByRule(courses, rule);
+        if (!matchingCourses) throw new Error(`Failed to find courses matching rule:\n${ rule }`);
+
+        return matchingCourses;
 
     }
 
@@ -204,27 +249,6 @@ export default class Course {
         const cacheResult = cache.get('courses').find(course_ => course_._id === course._id)
 
         return Boolean(cacheResult);
-    }
-
-    /**
-     * Update the course cache from the database.
-     * @return {Promise<Array<Course>>} The updated courses.
-     */
-    static async updateCourseCache() {
-
-        cache.get("courses").clear();
-        const coursesFromDb = await getAllDocuments(CourseSchema);
-
-        const courses = [];
-        for (const course of coursesFromDb) {
-            courses.push(
-                this.populateCourse(course)
-            );
-        }
-
-        cache.put('courses', courses, expirationTime);
-        return courses;
-
     }
 
     /**

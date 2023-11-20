@@ -6,6 +6,8 @@ import {
     updateDocument
 } from "../../../mongoDb/collectionAccess.js";
 import UserAccountSchema from "../../../mongoDb/schemas/user/UserAccountSchema.js";
+import { validateArray, validateNotEmpty, validateObject } from "../propertyValidation.js";
+import AccountSettings from "./AccountSettings.js";
 
 /**
  * @description The model for a users account.
@@ -13,7 +15,7 @@ import UserAccountSchema from "../../../mongoDb/schemas/user/UserAccountSchema.j
  * @param {String} users - The id of the users of the users account.
  * @param {String} username - The username of the users.
  * @param {String} password - The password of the users.
- * @param {Array<UserAccountSetting>} settings - The settings of the users.
+ * @param {Array<String>} settings - The settings of the users.
  * */
 export default class UserAccount {
 
@@ -23,7 +25,7 @@ export default class UserAccount {
      * @param {User} user - The users of the users account.
      * @param {String} username - The username of the users.
      * @param {String} password - The password of the users.
-     * @param {Array<UserAccountSetting>} settings - The settings of the users.
+     * @param {Array<String>} settings - The settings of the users.
      * @param {Array<String>} permissions - The permissions of the users.
      */
     constructor(
@@ -34,10 +36,29 @@ export default class UserAccount {
         settings,
         permissions
     ) {
+        this.id = id;
+        this.user = user;
         this.username = username;
         this.password = password;
         this.settings = settings;
         this.permissions = permissions;
+
+        validateNotEmpty('User account id', id);
+        validateObject('User account user', user);
+        validateNotEmpty('User account username', username);
+        validateNotEmpty('User account password', password);
+        validateArray('User account settings', settings);
+        validateArray('User account permissions', permissions);
+
+        for(let perm of permissions) {
+
+            if(typeof perm !== 'string') throw new Error(`User account permissions must be of type string:\n${ perm }`);
+
+            const allPerms = Object.keys(AccountSettings);
+            if(!allPerms.includes(perm)) throw new Error(`User account permission does not exist:\n${ perm }`);
+
+        }
+
     }
 
     get _id() {
@@ -45,6 +66,7 @@ export default class UserAccount {
     }
 
     set _id(id) {
+        validateNotEmpty('User account id', id);
         this.id = id;
     }
 
@@ -53,6 +75,7 @@ export default class UserAccount {
     }
 
     set _user(user) {
+        validateObject('User account user', user);
         this.user = user;
     }
 
@@ -61,6 +84,7 @@ export default class UserAccount {
     }
 
     set _username(username) {
+        validateNotEmpty('User account username', username);
         this.username = username;
     }
 
@@ -69,6 +93,7 @@ export default class UserAccount {
     }
 
     set _password(password) {
+        validateNotEmpty('User account password', password);
         this.password = password;
     }
 
@@ -77,6 +102,7 @@ export default class UserAccount {
     }
 
     set _settings(settings) {
+        validateArray('User account settings', settings)
         this.settings = settings;
     }
 
@@ -85,6 +111,17 @@ export default class UserAccount {
     }
 
     set _permissions(permissions) {
+        validateArray('User account permissions', permissions);
+
+        for(let perm of permissions) {
+
+            if(typeof perm !== 'string') throw new Error(`User account permissions must be of type string:\n${ perm }`);
+
+            const allPerms = Object.keys(AccountSettings);
+            if(!allPerms.includes(perm)) throw new Error(`User account permission does not exist:\n${ perm }`);
+
+        }
+
         this.permissions = permissions;
     }
 

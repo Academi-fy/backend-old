@@ -18,6 +18,9 @@ export default class ClubRequirement {
     ) {
         this.emoji = emoji;
         this.description = description;
+
+        validateNotEmpty('Club requirement emoji', this.emoji);
+        validateNotEmpty('Club requirement description', this.description);
     }
 
     get _emoji() {

@@ -8,6 +8,7 @@ import {
     updateDocument
 } from "../../../mongoDb/collectionAccess.js";
 import ClassSchema from "../../../mongoDb/schemas/general/ClassSchema.js";
+import { findByRule } from "../findByRule.js";
 
 // Cache expiration time in milliseconds
 const expirationTime = 5 * 60 * 1000;
@@ -42,6 +43,12 @@ export default class Class {
         this.courses = courses;
         this.members = members;
         this.specified_grade = specified_grade;
+
+        validateNotEmpty('Class id', id);
+        validateNotEmpty('Class grade', grade);
+        validateArray('Class courses', courses);
+        validateArray('Class members', members);
+        validateNotEmpty('Class specified grade', specified_grade);
     }
 
     get _id() {
@@ -95,7 +102,7 @@ export default class Class {
      */
     static async updateClassCache() {
 
-        cache.get("classes").clear();
+        cache.del('classes');
         const classesFromDb = await getAllDocuments(ClassSchema);
 
         const classes = [];
@@ -138,6 +145,22 @@ export default class Class {
         if (!class_) throw new Error(`Failed to find class with id ${ classId }`);
 
         return class_;
+
+    }
+
+    /**
+     * @description Get classes by a rule.
+     * @param {Object} rule - The rule to find classes by.
+     * @return {Promise<Array<Class>>} The matching classes.
+     */
+    static async getClassesByRule(rule) {
+
+        const classes = await this.getClasses();
+
+        const matchingClasses = findByRule(classes, rule);
+        if (!matchingClasses) throw new Error(`Failed to find classes matching rule:\n${ rule }`);
+
+        return matchingClasses;
 
     }
 

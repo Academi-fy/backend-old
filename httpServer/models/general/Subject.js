@@ -6,8 +6,9 @@ import {
     getDocument,
     updateDocument
 } from "../../../mongoDb/collectionAccess.js";
-import { verifyInCache } from "../propertyValidation.js";
+import { validateArray, validateNotEmpty, verifyInCache } from "../propertyValidation.js";
 import SubjectSchema from "../../../mongoDb/schemas/general/SubjectSchema.js";
+import { findByRule } from "../findByRule.js";
 
 const expirationTime = 10 * 60 * 1000;
 
@@ -39,6 +40,7 @@ export default class Subject {
     }
 
     set _id(value) {
+        validateNotEmpty('Subject id', value);
         this.id = value;
     }
 
@@ -47,6 +49,7 @@ export default class Subject {
     }
 
     set _type(value) {
+        validateNotEmpty('Subject type', value);
         this.type = value;
     }
 
@@ -55,6 +58,7 @@ export default class Subject {
     }
 
     set _courses(value) {
+        validateArray('Subject courses', value);
         this.courses = value;
     }
 
@@ -64,7 +68,7 @@ export default class Subject {
      */
     static async updateSubjectCache() {
 
-        cache.get("subjects").clear();
+        cache.del('subjects');
         const subjectsFromDb = await getAllDocuments(SubjectSchema);
 
         const subjects = [];
@@ -109,6 +113,21 @@ export default class Subject {
 
         return subject;
 
+    }
+
+    /**
+     * @description Get all subjects that match a rule.
+     * @param {Object} rule - The rule to find the subject.
+     * @return {Promise<Array<Subject>>} The matching subjects.
+     * */
+    static async getSubjectsByRule(rule) {
+
+        const subjects = await this.getSubjects();
+
+        const matchingSubjects = findByRule(subjects, rule);
+        if (!matchingSubjects) throw new Error(`Failed to find subjects with rule:\n${ rule }`);
+
+        return matchingSubjects;
     }
 
     /**

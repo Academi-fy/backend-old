@@ -8,6 +8,8 @@ export default class FileContent extends MessageContent {
     ) {
         const type = "FILE";
         super(type, value);
+
+        validateNotEmpty("FileContent value", value);
     }
 
     get _value() {

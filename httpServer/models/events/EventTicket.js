@@ -1,6 +1,8 @@
 import cache from "../../cache.js";
 import EventTicketSchema from "../../../mongoDb/schemas/events/EventTicketSchema.js";
 import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../../mongoDb/collectionAccess.js";
+import { validateNotEmpty, validateNumber, validateObject, verifyInCache } from "../propertyValidation.js";
+import { findByRule } from "../findByRule.js";
 
 const expirationTime = 15 * 60 * 1000;
 
@@ -34,6 +36,21 @@ export default class EventTicket {
         this.buyer = buyer;
         this.price = price;
         this.saleDate = saleDate;
+
+        validateNotEmpty('Event ticket id', id);
+        validateObject('Event ticket event', event);
+        validateObject('Event ticket buyer', buyer);
+        validateNumber('Event ticket price', price);
+        validateNumber('Event ticket sale date', saleDate);
+    }
+
+    get _id() {
+        return this.id;
+    }
+
+    set _id(id) {
+        validateNotEmpty('id', id)
+        this.id = id;
     }
 
     get _event() {
@@ -41,6 +58,7 @@ export default class EventTicket {
     }
 
     set _event(event) {
+        validateObject('Event ticket event', event)
         this.event = event;
     }
 
@@ -49,6 +67,7 @@ export default class EventTicket {
     }
 
     set _buyer(buyer) {
+        validateObject('Event ticket buyer', buyer)
         this.buyer = buyer;
     }
 
@@ -57,6 +76,7 @@ export default class EventTicket {
     }
 
     set _price(price) {
+        validateNumber('Event ticket price', price);
         this.price = price;
     }
 
@@ -65,17 +85,18 @@ export default class EventTicket {
     }
 
     set _saleDate(saleDate) {
+        validateNumber('Event ticket sale date', saleDate);
         this.saleDate = saleDate;
     }
 
     /**
      * @description Create an event ticket.
-     * @returns {Array<EventTicket>} - The updated event tickets.
+     * @returns {Promise<Array<EventTicket>>} - The updated event tickets.
      */
     static async updateEventTicketCache() {
 
-        cache.get('eventTickets').clear();
-        const eventTicketsFromDb = getAllDocuments(EventTicketSchema);
+        cache.del('eventTickets');
+        const eventTicketsFromDb = await getAllDocuments(EventTicketSchema);
 
         let eventTickets = [];
         for (const eventTicket in eventTicketsFromDb) {
@@ -90,27 +111,27 @@ export default class EventTicket {
 
     /**
      * @description Get all the event tickets.
-     * @returns {Array<EventTicket>} - The event tickets.
+     * @returns {Promise<Array<EventTicket>>} - The event tickets.
      */
-    static getEventTickets() {
+    static async getEventTickets() {
 
         const cacheResults = cache.get('eventTickets');
 
         if (cacheResults) {
             return cacheResults;
         }
-        else return this.updateEventTicketCache();
+        else return await this.updateEventTicketCache();
 
     }
 
     /**
      * @description Get an event ticket by its id.
      * @param {String} eventTicketId - The id of the event ticket.
-     * @returns {EventTicket} - The event ticket.
+     * @returns {Promise<EventTicket>} - The event ticket.
      */
-    static getEventTicketById(eventTicketId) {
+    static async getEventTicketById(eventTicketId) {
 
-        const eventTickets = this.getEventTickets();
+        const eventTickets = await this.getEventTickets();
 
         const eventTicket = eventTickets.find(eventTicket => eventTicket._id === eventTicketId);
         if (!eventTicket) throw new Error(`Failed to get event ticket:\n${ eventTicketId }`);
@@ -120,13 +141,29 @@ export default class EventTicket {
     }
 
     /**
+     * @description Get all event ticket that match a rule.
+     * @param {Object} rule - The rule to find the event tickets by.
+     * @returns {Promise<Array<EventTicket>>} - The matching event tickets.
+     * */
+    static async getEventTicketsByRule(rule) {
+
+        const eventTickets = await this.getEventTickets();
+
+        const matchingTickets = findByRule(eventTickets, rule);
+        if (!matchingTickets) throw new Error(`Failed to get event tickets with rule:\n${ rule }`);
+
+        return matchingTickets;
+
+    }
+
+    /**
      * @description Create an event ticket.
      * @param {EventTicket} eventTicket - The event ticket to create.
-     * @returns {EventTicket} - The created event ticket.
+     * @returns {Promise<EventTicket>} - The created event ticket.
      */
     static async createEventTicket(eventTicket) {
 
-        const eventTickets = this.getEventTickets();
+        const eventTickets = await this.getEventTickets();
 
         const insertedEventTicket = await createDocument(EventTicketSchema, eventTicket);
         if(!insertedEventTicket) throw new Error(`Failed to create event ticket:\n${ eventTicket }`);
@@ -138,7 +175,7 @@ export default class EventTicket {
 
         if(!this.verifyTicketInCache(insertedEventTicket))
 
-            if(!this.verifyTicketInCache(insertedEventTicket))
+            if(!await verifyInCache(cache.get('eventTickets'), insertedEventTicket, this.updateEventTicketCache))
                 throw new Error(`Failed to put event ticket in cache:\n${ insertedEventTicket }`);
 
         return insertedEventTicket;
@@ -147,11 +184,11 @@ export default class EventTicket {
     /**
      * @description Update an event ticket.
      * @param {EventTicket} eventTicket - The event ticket to update.
-     * @returns {EventTicket} - The updated event ticket.
+     * @returns {Promise<EventTicket>} - The updated event ticket.
      */
     static async updateEventTicket(eventTicket) {
 
-        const eventTickets = this.getEventTickets();
+        const eventTickets = await this.getEventTickets();
 
         let updatedEventTicket = await updateDocument(EventTicketSchema, eventTicket._id, eventTicket);
         if(!updatedEventTicket) throw new Error(`Failed to update event ticket:\n${ eventTicket }`);
@@ -163,7 +200,7 @@ export default class EventTicket {
 
         if(!this.verifyTicketInCache(updatedEventTicket))
 
-            if(!this.verifyTicketInCache(updatedEventTicket))
+            if(!await verifyInCache(cache.get('eventTickets'), updatedEventTicket, this.updateEventTicketCache))
                 throw new Error(`Failed to put event ticket in cache:\n${ updatedEventTicket }`);
 
         return updatedEventTicket;
@@ -172,14 +209,14 @@ export default class EventTicket {
     /**
      * @description Delete an event ticket.
      * @param {String} eventTicketId - The id of the event ticket to delete.
-     * @returns {Boolean} - Whether the event ticket was deleted.
+     * @returns {Promise<Boolean>} - Whether the event ticket was deleted.
      */
     static async deleteEventTicket(eventTicketId) {
 
         const deletedEventTicket = await deleteDocument(EventTicketSchema, eventTicketId);
         if(!deletedEventTicket) throw new Error(`Failed to delete event ticket:\n${ eventTicketId }`);
 
-        const eventTickets = this.getEventTickets();
+        const eventTickets = await this.getEventTickets();
         eventTickets.splice(eventTickets.indexOf(deletedEventTicket), 1);
         cache.put('eventTickets', eventTickets, expirationTime);
 
