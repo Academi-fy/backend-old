@@ -48,45 +48,45 @@ export default class Blackboard {
         return this.id;
     }
 
-    set _id(id) {
-        validateNotEmpty('Blackboard id', id);
-        this.id = id;
+    set _id(value) {
+        validateNotEmpty('Blackboard id', value);
+        this.id = value;
     }
 
     get _title() {
         return this.title;
     }
 
-    set _title(title) {
-        validateNotEmpty('Blackboard title', title);
-        this.title = title;
+    set _title(value) {
+        validateNotEmpty('Blackboard title', value);
+        this.title = value;
     }
 
     get _author() {
         return this.author;
     }
 
-    set _author(author) {
-        validateNotEmpty('Blackboard author', author);
-        this.author = author;
+    set _author(value) {
+        validateNotEmpty('Blackboard author', value);
+        this.author = value;
     }
 
     get _coverImage() {
         return this.coverImage;
     }
 
-    set _coverImage(coverImage) {
-        validateNotEmpty('Blackboard cover image', coverImage);
-        this.coverImage = coverImage;
+    set _coverImage(value) {
+        validateNotEmpty('Blackboard cover image', value);
+        this.coverImage = value;
     }
 
     get _text() {
         return this.text;
     }
 
-    set _text(text) {
-        validateNotEmpty('Blackboard text', text);
-        this.text = text;
+    set _text(value) {
+        validateNotEmpty('Blackboard text', value);
+        this.text = value;
     }
 
     /**

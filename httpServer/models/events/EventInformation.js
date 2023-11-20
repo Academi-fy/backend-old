@@ -27,9 +27,9 @@ export default class EventInformation {
         return this.title;
     }
 
-    set _title(title) {
-        validateNotEmpty('Event information title', title);
-        this.title = title;
+    set _title(value) {
+        validateNotEmpty('Event information title', value);
+        this.title = value;
     }
 
     get _descriptionElements() {

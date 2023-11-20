@@ -32,27 +32,27 @@ export default class SetupAccount {
         return this.id;
     }
 
-    set _id(id) {
-        validateNotEmpty('Setup account id', id);
-        this.id = id;
+    set _id(value) {
+        validateNotEmpty('Setup account id', value);
+        this.id = value;
     }
 
     get _schoolName() {
         return this.schoolName;
     }
 
-    set _schoolName(schoolName) {
-        validateNotEmpty('Setup account school name', schoolName);
-        this.schoolName = schoolName;
+    set _schoolName(value) {
+        validateNotEmpty('Setup account school name', value);
+        this.schoolName = value;
     }
 
     get _school() {
         return this.school;
     }
 
-    set _school(school) {
-        validateObject('Setup account school', school);
-        this.school = school;
+    set _school(value) {
+        validateObject('Setup account school', value);
+        this.school = value;
     }
 
     //TODO: caching

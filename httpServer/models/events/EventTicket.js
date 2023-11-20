@@ -48,45 +48,45 @@ export default class EventTicket {
         return this.id;
     }
 
-    set _id(id) {
-        validateNotEmpty('id', id)
-        this.id = id;
+    set _id(value) {
+        validateNotEmpty('id', value)
+        this.id = value;
     }
 
     get _event() {
         return this.event;
     }
 
-    set _event(event) {
-        validateObject('Event ticket event', event)
-        this.event = event;
+    set _event(value) {
+        validateObject('Event ticket event', value)
+        this.event = value;
     }
 
     get _buyer() {
         return this.buyer;
     }
 
-    set _buyer(buyer) {
-        validateObject('Event ticket buyer', buyer)
-        this.buyer = buyer;
+    set _buyer(value) {
+        validateObject('Event ticket buyer', value)
+        this.buyer = value;
     }
 
     get _price() {
         return this.price;
     }
 
-    set _price(price) {
-        validateNumber('Event ticket price', price);
-        this.price = price;
+    set _price(value) {
+        validateNumber('Event ticket price', value);
+        this.price = value;
     }
 
     get _saleDate() {
         return this.saleDate;
     }
 
-    set _saleDate(saleDate) {
-        validateNumber('Event ticket sale date', saleDate);
-        this.saleDate = saleDate;
+    set _saleDate(value) {
+        validateNumber('Event ticket sale date', value);
+        this.saleDate = value;
     }
 
     /**

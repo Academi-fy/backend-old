@@ -65,45 +65,45 @@ export default class UserAccount {
         return this.id;
     }
 
-    set _id(id) {
-        validateNotEmpty('User account id', id);
-        this.id = id;
+    set _id(value) {
+        validateNotEmpty('User account id', value);
+        this.id = value;
     }
 
     get _user() {
         return this.user;
     }
 
-    set _user(user) {
-        validateObject('User account user', user);
-        this.user = user;
+    set _user(value) {
+        validateObject('User account user', value);
+        this.user = value;
     }
 
     get _username() {
         return this.username;
     }
 
-    set _username(username) {
-        validateNotEmpty('User account username', username);
-        this.username = username;
+    set _username(value) {
+        validateNotEmpty('User account username', value);
+        this.username = value;
     }
 
     get _password() {
         return this.password;
     }
 
-    set _password(password) {
-        validateNotEmpty('User account password', password);
-        this.password = password;
+    set _password(value) {
+        validateNotEmpty('User account password', value);
+        this.password = value;
     }
 
     get _settings() {
         return this.settings;
     }
 
-    set _settings(settings) {
-        validateArray('User account settings', settings)
-        this.settings = settings;
+    set _settings(value) {
+        validateArray('User account settings', value)
+        this.settings = value;
     }
 
     get _permissions() {

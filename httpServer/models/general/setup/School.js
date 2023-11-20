@@ -80,18 +80,18 @@ export default class School {
         return this.id;
     }
 
-    set _id(id) {
-        validateNotEmpty('School id', id);
-        this.id = id;
+    set _id(value) {
+        validateNotEmpty('School id', value);
+        this.id = value;
     }
 
     get _name() {
         return this.name;
     }
 
-    set _name(name) {
-        validateNotEmpty('School name', name);
-        this.name = name;
+    set _name(value) {
+        validateNotEmpty('School name', value);
+        this.name = value;
     }
 
     get _grades() {
@@ -99,80 +99,80 @@ export default class School {
     }
 
     set _grades(grades) {
-        validateArray('School grades', grades)
-        this.grades = grades;
+        validateArray('School grades', value)
+        this.grades = value;
     }
 
     get _courses() {
         return this.courses;
     }
 
-    set _courses(courses) {
-        validateArray('School courses', courses)
-        this.courses = courses;
+    set _courses(value) {
+        validateArray('School courses', value)
+        this.courses = value;
     }
 
     get _members() {
         return this.members;
     }
 
-    set _members(members) {
-        validateArray('School members', members)
-        this.members = members;
+    set _members(value) {
+        validateArray('School members', value)
+        this.members = value;
     }
 
     get _classes() {
         return this.classes;
     }
 
-    set _classes(classes) {
-        validateArray('School classes', classes)
-        this.classes = classes;
+    set _classes(value) {
+        validateArray('School classes', value)
+        this.classes = value;
     }
 
     get _messages() {
         return this.messages;
     }
 
-    set _messages(messages) {
-        validateArray('School messages', messages)
-        this.messages = messages;
+    set _messages(value) {
+        validateArray('School messages', value)
+        this.messages = value;
     }
 
     get _subjects() {
         return this.subjects;
     }
 
-    set _subjects(subjects) {
-        validateArray('School subjects', subjects)
-        this.subjects = subjects;
+    set _subjects(value) {
+        validateArray('School subjects', value)
+        this.subjects = value;
     }
 
     get _clubs() {
         return this.clubs;
     }
 
-    set _clubs(clubs) {
-        validateArray('School clubs', clubs)
-        this.clubs = clubs;
+    set _clubs(value) {
+        validateArray('School clubs', value)
+        this.clubs = value;
     }
 
     get _events() {
         return this.events;
     }
 
-    set _events(events) {
-        validateArray('School events', events)
-        this.events = events;
+    set _events(value) {
+        validateArray('School events', value)
+        this.events = value;
     }
 
     get _blackboards() {
         return this.blackboards;
     }
 
-    set _blackboards(blackboards) {
-        validateArray('School blackboards', blackboards)
-        this.blackboards = blackboards;
+    set _blackboards(value) {
+        validateArray('School blackboards', value)
+        this.blackboards = value;
     }
 
     /**

@@ -71,13 +71,7 @@ export default class Subject {
         cache.del('subjects');
         const subjectsFromDb = await getAllDocuments(SubjectSchema);
 
-        const subjects = [];
-        for (const subjectFromDb of subjectsFromDb) {
-            subjects.push(new Subject(
-                subjectFromDb.type,
-                subjectFromDb.courses
-            ));
-        }
+        //TODO update subjects with populate
 
         cache.put('subjects', subjects, expirationTime);
         return subjects;
