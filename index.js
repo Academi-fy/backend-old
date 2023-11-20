@@ -1,9 +1,10 @@
+/**
+ * @file index.js - Class launching the HTTP server.
+ * @author Daniel Dopatka
+ * @copyright 2023 Daniel Dopatka, Linus Bung
+ */
 import dotenv from "dotenv";
 import mongoose from "mongoose";
-import User from "./httpServer/models/users/User.js";
-import UserAccount from "./httpServer/models/users/UserAccount.js";
-import CacheError from "./httpServer/errors/CacheError.js";
-import DatabaseError from "./httpServer/errors/DatabaseError.js";
 
 dotenv.config();
 
