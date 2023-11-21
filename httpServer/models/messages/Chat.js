@@ -37,7 +37,7 @@ export default class Chat {
      * @param {Array<String>} clubs - The ids of the clubs related to the chat.
      * @param {String} name - The name of the chat.
      * @param {String} avatar - The avatar of the chat.
-     * @param {Array} messages - The messages in the chat.
+     * @param {Array<String>} messages - The ids of the messages in the chat.
      */
     constructor(
         id,

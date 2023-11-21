@@ -5,7 +5,7 @@ Events sind unabhängig von der [WebUntis API](https://help.untis.at/hc/de/artic
 ## Event-Objekt
 
 Das Event-Objekt ist ein eigenes JSON-Objekt. Die Events werde in MongoDB gespeichert und sind über den HTTP Server abzurufen, wo sie gecacht werden. \
-Die Event-Cache wird alle **5 Minuten** aktualisiert sowie:
+Der Event-Cache wird alle **5 Minuten** aktualisiert sowie:
 - beim Start des HTTP Servers
 - beim Erstellen eines Events
 

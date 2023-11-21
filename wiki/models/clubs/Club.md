@@ -12,7 +12,7 @@ der [WebUntis API](https://help.untis.at/hc/de/articles/4886785534354-API-docume
 
 Das Club-Objekt ist ein eigenes JSON-Objekt. Die Clubs werden in MongoDB gespeichert und sind über den HTTP-Server
 abzurufen, wo sie gecacht werden. \
-Die Club-Cache wird alle **5 Minuten** aktualisiert sowie:
+Der Club-Cache wird alle **5 Minuten** aktualisiert sowie:
 - beim Start des HTTP Servers
 - beim Erstellen eines Clubs
 - beim Löschen eines Clubs
