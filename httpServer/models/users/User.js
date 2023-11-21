@@ -231,7 +231,7 @@ export default class User {
      */
     static async createUser(user) {
 
-        const users = await this.getAllUsers();
+        const users = await this.updateUserCache();
 
         let insertedUser = await createDocument(UserSchema, { ...user, id: new mongoose.Types.ObjectId() });
         if (!insertedUser) throw new DatabaseError(`Failed to create user:\n${ user }`);
@@ -310,9 +310,7 @@ export default class User {
         const deletedUser = await deleteDocument(UserSchema, userId);
         if (!deletedUser) throw new DatabaseError(`Failed to delete user with id ${ userId }`);
 
-        const users = await this.getAllUsers();
-        users.splice(users.findIndex(user => user.id === userId), 1);
-        cache.put('users', users, expirationTime);
+        await this.updateUserCache();
 
         if (this.verifyUserInCache(deletedUser))
             throw new CacheError(`Failed to delete user from cache:\n${ deletedUser }`);

@@ -13,7 +13,7 @@ der [WebUntis API](https://help.untis.at/hc/de/articles/4886785534354-API-docume
 Das Club-Objekt ist ein eigenes JSON-Objekt. Die Clubs werden in MongoDB gespeichert und sind über den HTTP-Server
 abzurufen, wo sie gecacht werden. \
 Die Club-Cache wird alle **5 Minuten** aktualisiert sowie:
-
+- beim Start des HTTP Servers
 - beim Erstellen eines Clubs
 - beim Löschen eines Clubs
 
@@ -34,7 +34,7 @@ Die Club-Cache wird alle **5 Minuten** aktualisiert sowie:
 | BEITRETEN  | `CLUB_JOIN`    | 🟢                                                          | 🟢                                                                    | 🟢                                                       |
 | VERLASSEN  | `CLUB_LEAVE`   | 🟢                                                          | 🟢                                                                    | 🟢                                                       |
 
-> <sup>1</sup> User haben, wenn sie die Leiter des Clubs sind, Lehrer-Rechte
+> <sup>1</sup> [User](https://github.com/Academi-fy/backend/wiki/User) haben, wenn sie die Leiter des Clubs sind, Lehrer-Rechte
 
 #### Club verändern
 
@@ -81,7 +81,7 @@ new Club(
 #### Besonderheiten
 
 - `events`, `members` und `leaders` sind MongoDB Referenzen zu den jeweiligen Objekten
-    - sie werden erste beim Abrufen auf dem HTTP-Server aufgelöst
+    - sie werden erst beim Abrufen auf dem HTTP-Server aufgelöst
 
 Beim Abfragen eines Clubs über den HTTP-Server werden die Attribute `events`, `members` und `leaders` aufgelöst und mit
 den jeweiligen Objekten ersetzt.
@@ -103,6 +103,8 @@ Ruft einen Club über die ID ab. Die Clubs werden gecacht und alle 5 Minuten akt
 ``` http request
 GET /api/clubs/:id
 ```
+
+> weitere Möglichkeiten, einen Club abzurufen: [RuleSearching](https://github.com/Academi-fy/backend/wiki/RuleSearching)
 
 #### Club erstellen oder bearbeiten
 

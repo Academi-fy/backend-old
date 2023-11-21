@@ -12,7 +12,7 @@ import {
 } from "../../../mongoDb/collectionAccess.js";
 import UserAccountSchema from "../../../mongoDb/schemas/user/UserAccountSchema.js";
 import { validateArray, validateNotEmpty, validateObject } from "../propertyValidation.js";
-import AccountSettings from "./AccountSettings.js";
+import AccountSettings from "./UserAccountSettings.js";
 import DatabaseError from "../../errors/DatabaseError.js";
 
 /**

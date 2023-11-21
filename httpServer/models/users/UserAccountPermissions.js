@@ -18,6 +18,15 @@ export default {
         'CLUB_MEMBER_PROMOTE_DEMOTE',
         'CLUB_MEMBER_ADD_REMOVE',
         'CLUB_TEACHER_ADD_REMOVE'
+    ],
+    event: [
+        'EVENT_CREATE',
+        'EVENT_DELETE',
+        'EVENT_VIEW',
+        'EVENT_APPROVE',
+        'EVENT_REJECT',
+        'EVENT_EDIT',
+        'EVENT_TICKET_MANAGE'
     ]
 
 }

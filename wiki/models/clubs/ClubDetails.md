@@ -38,19 +38,21 @@ new ClubDetails(
     /*meetingTime*/ "12:00",
     /*meetingDay*/ "Montag",
     /*requirements*/ [ {...} ],
+    /*tags*/ [ {...} ],
     /*events*/ [ {...} ]
 )
 ```
 
-| Attribut       | Type                                                                             | Beschreibung                 |
-|----------------|----------------------------------------------------------------------------------|------------------------------|
-| `coverImage`   | String                                                                           | URL zum Cover-Bild des Clubs |
-| `description`  | String                                                                           | Beschreibung des Clubs       |
-| `location`     | String                                                                           | Ort des Clubs                |
-| `meetingTime`  | String                                                                           | Zeitpunkt des Treffens       |
-| `meetingDay`   | String                                                                           | Tag des Treffens             |
-| `requirements` | Array<[Requirement](https://github.com/Academi-fy/backend/wiki/ClubRequirement)> | Voraussetzungen für den Club |
-| `events`       | Array<[Event](https://github.com/Academi-fy/backend/wiki/ClubRequirement)>       | Events des Clubs             |
+| Attribut       | Type                                                                                 | Beschreibung                 |
+|----------------|--------------------------------------------------------------------------------------|------------------------------|
+| `coverImage`   | String                                                                               | URL zum Cover-Bild des Clubs |
+| `description`  | String                                                                               | Beschreibung des Clubs       |
+| `location`     | String                                                                               | Ort des Clubs                |
+| `meetingTime`  | String                                                                               | Zeitpunkt des Treffens       |
+| `meetingDay`   | String                                                                               | Tag des Treffens             |
+| `requirements` | Array<[ClubRequirement](https://github.com/Academi-fy/backend/wiki/ClubRequirement)> | Voraussetzungen für den Club |
+| `tags`         | Array<[ClubTag](https://github.com/Academi-fy/backend/wiki/ClubTag)>                 | Tags des Clubs               |
+| `events`       | Array<[Event](https://github.com/Academi-fy/backend/wiki/ClubRequirement)>           | Events des Clubs             |
 
 #### Besonderheiten
 
@@ -99,6 +101,12 @@ details: {
             }
         }
     ], 
+    tags: [
+        {
+          type: String,
+          required: true
+        }
+    ] 
     events: [
         {
             type: ObjectId,

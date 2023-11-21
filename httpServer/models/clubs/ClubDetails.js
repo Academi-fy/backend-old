@@ -25,6 +25,7 @@ export default class ClubDetails {
      * @param {String} meetingTime - The meeting time of the club.
      * @param {String} meetingDay - The meeting day of the club.
      * @param {Array<ClubRequirement>} requirements - The requirements of the club.
+     * @param {Array<ClubTag>} tags - The tags of the club.
      * @param {Array<Event>} events - The events of the club.
      */
     constructor(
@@ -34,6 +35,7 @@ export default class ClubDetails {
         meetingTime,
         meetingDay,
         requirements,
+        tags,
         events
     ) {
         this.description = description;
@@ -41,6 +43,7 @@ export default class ClubDetails {
         this.meetingTime = meetingTime;
         this.meetingDay = meetingDay;
         this.requirements = requirements;
+        this.tags = tags;
         this.events = events;
 
         validateNotEmpty('Club description', this.description);

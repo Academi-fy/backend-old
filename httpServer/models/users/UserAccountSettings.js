@@ -1,5 +1,5 @@
 /**
- * @file AccountSettings.js - Object listing all account settings and their default values.
+ * @file UserAccountSettings.js - Object listing all account settings and their default values.
  * @author Daniel Dopatka
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */

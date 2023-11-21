@@ -73,6 +73,12 @@ const ClubSchema = new Schema(
                     }
                 }
             ],
+            tags: [
+                {
+                    type: String,
+                    required: true
+                }
+            ],
             events: [
                 {
                     type: ObjectId,
