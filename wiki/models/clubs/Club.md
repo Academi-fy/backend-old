@@ -203,4 +203,4 @@ Generiert über [mongoose](https://mongoosejs.com/docs/guide.html) [npm package]
 }
 ```
 
-<sub>@ Copyright: Daniel Dopatka, Linus Bung (2023)</sub>
+<sub>© Copyright: Daniel Dopatka, Linus Bung (2023)</sub>

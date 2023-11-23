@@ -1,5 +1,5 @@
-Chats sind Unterhaltungen zwischen zwei oder mehreren Usern. \
-Chats können sowohl zwischen Schülern, Lehrern (auch mehreren) stattfinden als auch Kursen bzw. AGs zugewiesen werden. \
+Chats sind Unterhaltungen zwischen zwei oder mehreren [Usern](https://github.com/Academi-fy/backend/wiki/User). \
+Chats können sowohl zwischen [Schülern](https://github.com/Academi-fy/backend/wiki/User), [Lehrern](https://github.com/Academi-fy/backend/wiki/User) (auch mehreren) stattfinden als auch [Kursen](https://github.com/Academi-fy/backend/wiki/Course) bzw. [AGs](https://github.com/Academi-fy/backend/wiki/Club) zugewiesen werden. \
 Chats sind unabhängig von der [WebUntis API](https://help.untis.at/hc/de/articles/4886785534354-API-documentation-for-integration-partners).
 
 ## Chat-Objekt
@@ -8,7 +8,7 @@ Das Chat-Objekt ist ein eigenes JSON-Objekt. Die Chats werde in MongoDB gespeich
 Der Chat-Cache wird alle **2 Minuten** aktualisiert sowie:
 - beim Start des HTTP Servers
 - beim Erstellen eines Chats
-- beim Hinzufügen eines Kurses bzw. einer AG zu einem Chat
+- beim Hinzufügen eines [Kurses](https://github.com/Academi-fy/backend/wiki/Course) bzw. einer [AG](https://github.com/Academi-fy/backend/wiki/Club) zu einem Chat
 
 ## Standard Berechtigungen
 
@@ -96,7 +96,7 @@ Ruft einen Chat über die ID ab. Die Chats werden gecacht und alle 2 Minuten akt
 GET /api/chats/:id
 ```
 
-> weitere Möglichkeiten, einen Chat abzurufen: [RuleSearching](
+> weitere Möglichkeiten, einen Chat abzurufen: [RuleSearching](https://github.com/Academi-fy/backend/wiki/RuleSearching)
 
 #### Chat erstellen oder bearbeiten
 
@@ -158,4 +158,4 @@ Generiert über [mongoose](https://mongoosejs.com/docs/guide.html) [npm package]
 }
 ```
 
-<sub>@ Copyright: Daniel Dopatka, Linus Bung (2023)</sub>
+<sub>© Copyright: Daniel Dopatka, Linus Bung (2023)</sub>
