@@ -48,7 +48,7 @@ For more details on the available endpoints and their usage, refer to the indivi
 
 ## Contributing
 
-Contributions are welcome! Please read the contributing guidelines before making any changes.
+Contributions currently not planned.
 
 ## License
 
