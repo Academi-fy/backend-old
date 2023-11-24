@@ -131,3 +131,5 @@ dist
 
 .idea
 .idea/workspace.xml
+
+qodana.yaml

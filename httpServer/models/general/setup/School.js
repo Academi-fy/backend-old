@@ -106,7 +106,7 @@ export default class School {
         return this.grades;
     }
 
-    set _grades(grades) {
+    set _grades(value) {
         validateArray('School grades', value)
         this.grades = value;
     }

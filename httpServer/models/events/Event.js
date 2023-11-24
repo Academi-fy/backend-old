@@ -270,7 +270,7 @@ export default class Event {
         const events = await this.getAllEvents();
 
         const updatedEvent = await updateDocument(EventSchema, eventId, updateEvent);
-        if (!updatedEvent) throw new DatabaseError(`Failed to update event:\n${ event }`);
+        if (!updatedEvent) throw new DatabaseError(`Failed to update event:\n${ updatedEvent }`);
 
         events.push(
             updatedEvent

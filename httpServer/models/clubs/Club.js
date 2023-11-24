@@ -242,7 +242,7 @@ export default class Club {
 
         const clubs = await this.getAllClubs();
 
-        let updatedClub = await updateDocument(ClubSchema, clubId, updatedClub);
+        let updatedClub = await updateDocument(ClubSchema, clubId, updateClub);
         if (!updatedClub) throw new DatabaseError(`Failed to update club:\n${ updatedClub }`);
 
         updatedClub = this.populateClub(updatedClub);
