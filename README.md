@@ -48,7 +48,7 @@ For more details on the available endpoints and their usage, refer to the indivi
 
 ## Contributing
 
-Contributions currently not planned.
+Contributions are currently not planned.
 
 ## License
 
