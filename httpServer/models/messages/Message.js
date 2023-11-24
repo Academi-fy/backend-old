@@ -17,6 +17,8 @@ import { findByRule } from "../findByRule.js";
 import RetrievalError from "../../errors/RetrievalError.js";
 import DatabaseError from "../../errors/DatabaseError.js";
 import CacheError from "../../errors/CacheError.js";
+import yup from "yup";
+import YupMessageSchema from "../../../webSocket/yupSchemas/message/YupMessageSchema.js";
 
 // Time in milliseconds after which the cache will expire
 const expirationTime = 2 * 60 * 1000;
@@ -33,6 +35,7 @@ const expirationTime = 2 * 60 * 1000;
  */
 export default class Message {
 
+
     /**
      * @description Create a message.
      * @param {String} id - The id of the message.
@@ -40,6 +43,7 @@ export default class Message {
      * @param {String} author - The id of the author of the message.
      * @param {Array<FileContent | ImageContent | PollContent | TextContent | VideoContent>} content - The content of the message.
      * @param {Array<MessageReaction>} reactions - The reactions to the message.
+     * @param {Message} answer - The message that this message is an answer to.
      * @param {Array<EditedMessage>} edits - The edits made to the message.
      * @param {Number} date - The date the message was created.
      */
@@ -49,6 +53,7 @@ export default class Message {
         author,
         content,
         reactions,
+        answer,
         edits,
         date
     ) {
@@ -57,6 +62,7 @@ export default class Message {
         this.author = author;
         this.content = content;
         this.reactions = reactions;
+        this.answer = answer;
         this.edits = edits;
         this.date = date;
 
@@ -103,6 +109,15 @@ export default class Message {
     set _reactions(value) {
         validateArray('Message reactions', value);
         this.reactions = value;
+    }
+
+    get _answer() {
+        return this.answer;
+    }
+
+    set _answer(value) {
+        validateObject('Message answer', value);
+        this.answer = value;
     }
 
     get _edits() {

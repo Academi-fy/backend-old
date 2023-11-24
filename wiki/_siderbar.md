@@ -9,6 +9,6 @@
 - [Allgemein](https://github.com/Academi-fy/backend/wiki/ContentIndex#allgemein)
 - [Clubs](https://github.com/Academi-fy/backend/wiki/ContentIndex#clubs)
 - [Events](https://github.com/Academi-fy/backend/wiki/ContentIndex#events)
-- [Message](https://github.com/Academi-fy/backend/wiki/ContentIndex#messages)
+- [Messages](https://github.com/Academi-fy/backend/wiki/ContentIndex#messages)
 - [Users](https://github.com/Academi-fy/backend/wiki/ContentIndex#users)
 ## [WebSocket](https://github.com/Academi-fy/backend/wiki/ContentIndex#websocket)

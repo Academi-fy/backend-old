@@ -47,6 +47,10 @@ const MessageSchema = new Schema(
                 },
             }
         ],
+        answer: {
+            type: ObjectId,
+            ref: 'Message'
+        },
         edits: {
             type: Array,
             required: true,
