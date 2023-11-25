@@ -78,12 +78,6 @@ const ClubSchema = new Schema(
                     type: String,
                     required: true
                 }
-            ],
-            events: [
-                {
-                    type: ObjectId,
-                    ref: 'Event'
-                }
             ]
 
         },
@@ -102,8 +96,18 @@ const ClubSchema = new Schema(
         chat: {
             type: ObjectId,
             ref: 'Chat'
+        },
+        events: [
+            {
+                type: ObjectId,
+                ref: 'Event'
+            }
+        ],
+        state: {
+            type: String,
+            required: true,
+            default: 'SUGGESTED'
         }
-
     },
     {
         timestamps: true

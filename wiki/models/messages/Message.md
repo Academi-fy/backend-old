@@ -143,3 +143,47 @@ DELETE /api/clubs/:id
 ## Club Schema in MongoDB
 
 Generiert über [mongoose](https://mongoosejs.com/docs/guide.html) [npm package]
+
+```javascript
+{
+
+    chat: {
+        type: ObjectId,
+        ref: 'Chat'
+    },
+    author: {
+        type: ObjectId,
+        ref: 'User'
+    },
+    content: {
+        type: Array,
+        required: true,
+        default: ""
+    },
+    reactions: [
+        {
+            emoji: {
+                type: Object,
+                required: true
+            },
+            count: {
+                type: Number,
+                required: true,
+                default: 0
+            },
+        }
+    ],
+    answer: {
+        type: ObjectId,
+        ref: 'Message'
+    },
+    edits: {
+        type: Array,
+        required: true,
+        default: []
+    }
+},
+{
+    timestamps: true
+}
+```

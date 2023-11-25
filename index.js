@@ -5,6 +5,11 @@
  */
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import Club from "./httpServer/models/clubs/Club.js";
+import ClubDetails from "./httpServer/models/clubs/ClubDetails.js";
+import ClubRequirement from "./httpServer/models/clubs/ClubRequirement.js";
+import Chat from "./httpServer/models/messages/Chat.js";
+import cache from "./httpServer/cache.js";
 
 dotenv.config();
 

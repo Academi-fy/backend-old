@@ -13,6 +13,7 @@ import { validateArray, validateNotEmpty } from "../propertyValidation.js";
  * @param {String} meetingTime - The meeting time of the club.
  * @param {String} meetingDay - The meeting day of the club.
  * @param {Array<ClubRequirement>} requirements - The requirements of the club.
+ * @param {Array<ClubTag>} tags - The tags of the club.
  * @param {Array<Event>} events - The events of the club.
  */
 export default class ClubDetails {
@@ -26,7 +27,6 @@ export default class ClubDetails {
      * @param {String} meetingDay - The meeting day of the club.
      * @param {Array<ClubRequirement>} requirements - The requirements of the club.
      * @param {Array<ClubTag>} tags - The tags of the club.
-     * @param {Array<Event>} events - The events of the club.
      */
     constructor(
         coverImage,
@@ -36,7 +36,6 @@ export default class ClubDetails {
         meetingDay,
         requirements,
         tags,
-        events
     ) {
         this.description = description;
         this.location = location;
@@ -44,14 +43,12 @@ export default class ClubDetails {
         this.meetingDay = meetingDay;
         this.requirements = requirements;
         this.tags = tags;
-        this.events = events;
 
         validateNotEmpty('Club description', this.description);
         validateNotEmpty('Club location', this.location);
         validateNotEmpty('Club meeting time', this.meetingTime);
         validateNotEmpty('Club meeting day', this.meetingDay);
         validateArray('Club requirements', this.requirements);
-        validateArray('Club events', this.events);
     }
 
     get _description() {
@@ -97,15 +94,6 @@ export default class ClubDetails {
     set _requirements(value) {
         validateArray('Club requirements', value);
         this.requirements = value;
-    }
-
-    get _events() {
-        return this.events;
-    }
-
-    set _events(value) {
-        validateArray('Club events', value);
-        this.events = value;
     }
 
 }

@@ -10,21 +10,11 @@ import { createDocument, deleteDocument, getAllDocuments, updateDocument } from 
 import { findByRule } from "../findByRule.js";
 import DatabaseError from "../../errors/DatabaseError.js";
 import CacheError from "../../errors/CacheError.js";
+import { populate } from "dotenv";
 
 // Cache expiration time in milliseconds
 const expirationTime = 5 * 60 * 1000;
 
-/**
- * @description Class representing a Club.
- * @param {String} id - The id of the club.
- * @param {String} name - The name of the club.
- * @param {ClubDetails} details - The details of the club.
- * @param {Array<User>} leaders - The leaders of the club.
- * @param {Array<User>} members - The members of the club.
- * @param {Chat} chat - The chat of the club.
- * @param {Array<Event>} events - The events of the club.
- * @param {String} state - The state of the club. Valid states are: 'SUGGESTED', 'REJECTED', 'ACCEPTED'.
- */
 export default class Club {
 
     /**
@@ -32,10 +22,10 @@ export default class Club {
      * @param {String} id - The id of the club.
      * @param {String} name - The name of the club.
      * @param {ClubDetails} details - The details of the club.
-     * @param {Array<String>} leaders - The ids of the leaders of the club.
-     * @param {Array<String>} members - The ids of the members of the club.
-     * @param {String} chat - The id of the chat of the club.
-     * @param {Array<String>} events - The ids of the events of the club.
+     * @param {Array<User>} leaders - The leaders of the club.
+     * @param {Array<User>} members - The members of the club.
+     * @param {Chat} chat - The chat of the club.
+     * @param {Array<Event>} events - The events of the club.
      * @param {String} state - The state of the club. Valid states are: 'SUGGESTED', 'REJECTED', 'ACCEPTED'.
      */
     constructor(
@@ -145,10 +135,17 @@ export default class Club {
      */
     static async updateClubCache() {
 
-        cache.get("clubs").clear();
+        cache.del('clubs');
         const clubsFromDb = await getAllDocuments(ClubSchema);
 
-        //TODO: Populate clubs
+        const clubs = [];
+        for(let club of clubsFromDb) {
+
+            club = await this.populateClub(club);
+            clubs.push(
+                club
+            );
+        }
 
         cache.put('clubs', clubs, expirationTime);
         return clubs;
@@ -214,11 +211,15 @@ export default class Club {
 
         const clubs = await this.getAllClubs();
 
-        const insertedClub = await createDocument(ClubSchema, club);
+        club.chat = club.chat.id;
+
+        let insertedClub = await createDocument(ClubSchema, club);
         if (!insertedClub) throw new DatabaseError(`Failed to create club:\n${ insertedClub }`);
 
+        insertedClub = await this.populateClub(insertedClub);
+
         clubs.push(
-            this.populateClub(insertedClub)
+            insertedClub
         );
         cache.put('clubs', clubs, expirationTime);
 
@@ -245,7 +246,7 @@ export default class Club {
         let updatedClub = await updateDocument(ClubSchema, clubId, updateClub);
         if (!updatedClub) throw new DatabaseError(`Failed to update club:\n${ updatedClub }`);
 
-        updatedClub = this.populateClub(updatedClub);
+        updatedClub = await this.populateClub(updatedClub);
 
         clubs.splice(clubs.findIndex(club => club._id === clubId), 1, updateClub);
         cache.put('clubs', clubs, expirationTime);
@@ -297,12 +298,21 @@ export default class Club {
      * @param {Object} club - The club to populate.
      * @return {Club} The populated club.
      */
-    static populateClub(club) {
-        return club
-            .populate('chat')
-            .populate('leaders')
-            .populate('members')
-            .populate('details.events')
+    static async populateClub(club) {
+
+        club = await club
+            .populate({ path: 'chat' })
+
+        return new Club(
+            club.id,
+            club.name,
+            club.details,
+            club.leaders,
+            club.members,
+            club.chat,
+            club.events,
+            club.state
+        );
     }
 
 }
