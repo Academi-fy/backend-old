@@ -299,20 +299,25 @@ export default class Club {
      * @return {Club} The populated club.
      */
     static async populateClub(club) {
+        try {
+            club = await ClubSchema.findById(club._id)
+                .populate(['leaders', 'members', 'chat', 'events'])
+                .exec();
 
-        club = await club
-            .populate({ path: 'chat' })
-
-        return new Club(
-            club.id,
-            club.name,
-            club.details,
-            club.leaders,
-            club.members,
-            club.chat,
-            club.events,
-            club.state
-        );
+            return new Club(
+                club._id,
+                club.name,
+                club.details,
+                club.leaders,
+                club.members,
+                club.chat,
+                club.events,
+                club.state
+            );
+        } catch (error) {
+            console.error(`Failed to populate club: ${error}`);
+            return null;
+        }
     }
 
 }

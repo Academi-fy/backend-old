@@ -21,3 +21,5 @@ await mongoose.connect(mongoURI,
         useUnifiedTopology: true
     }
 ).then(() => console.log('MongoDB connected.')).catch(err => console.log(err));
+
+console.log(await Club.getAllClubs())
