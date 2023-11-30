@@ -15,7 +15,7 @@ const { Schema, Types: { ObjectId } } = mongoose;
  * @param {ObjectId} chat - The chat of the course.
  * @param {ObjectId} subject - The subject of the course.
  */
-const CourseSchema = new Schema(
+export default new Schema(
     {
 
         members: [
@@ -48,10 +48,3 @@ const CourseSchema = new Schema(
         timestamps: true
     }
 );
-
-/**
- * Exporting the Course model
- * @name Course
- * @type {mongoose.Model}
- */
-export default mongoose.model("Course", CourseSchema);

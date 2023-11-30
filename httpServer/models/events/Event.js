@@ -26,6 +26,7 @@ const expirationTime = 5 * 60 * 1000;
  * @param {Number} endDate - The end date of the event.
  * @param {Array<EventInformation>} information - The information of the event.
  * @param {Array<EventTicket>} tickets - The tickets of the event.
+ * @param {String} state - The state of the event. Valid states are: 'SUGGESTED', 'REJECTED', 'ACCEPTED'.
  * */
 export default class Event {
 
@@ -41,6 +42,7 @@ export default class Event {
      * @param {Number} endDate - The end date of the event.
      * @param {Array<EventInformation>} information - The information of the event.
      * @param {Array<EventTicket>} tickets - The tickets of the event.
+     * @param {String} state - The state of the event. Valid states are: 'SUGGESTED', 'REJECTED', 'ACCEPTED'.
      */
     constructor(
         id,
@@ -52,7 +54,8 @@ export default class Event {
         startDate,
         endDate,
         information,
-        tickets
+        tickets,
+        state
     ) {
 
         this.id = id;
@@ -65,6 +68,7 @@ export default class Event {
         this.endDate = endDate;
         this.information = information;
         this.tickets = tickets;
+        this.state = state;
 
         validateNotEmpty('Event id', id);
         validateNotEmpty('Event title', title);
@@ -157,6 +161,14 @@ export default class Event {
     set _tickets(value) {
         validateArray('Event tickets', value);
         this.tickets = value;
+    }
+
+    get _state() {
+        return this.state;
+    }
+
+    set _state(value) {
+        this.state = value;
     }
 
     /**

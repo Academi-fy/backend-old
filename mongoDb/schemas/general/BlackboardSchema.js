@@ -17,7 +17,7 @@ const { Schema, Types: { ObjectId } } = mongoose;
  * @param {Date} updatedAt - The date the ticket was last updated.
  * @return {Schema} The schema for a blackboard.
  */
-const BlackboardSchema = new Schema(
+export default new Schema(
     {
 
         title: {
@@ -42,10 +42,3 @@ const BlackboardSchema = new Schema(
         timestamps: true
     }
 );
-
-/**
- * Exporting the Blackboard model
- * @name Blackboard
- * @type {mongoose.Model}
- */
-export default mongoose.model("Blackboard", BlackboardSchema);

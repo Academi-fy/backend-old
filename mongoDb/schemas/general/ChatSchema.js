@@ -19,7 +19,7 @@ const { Schema, Types: { ObjectId } } = mongoose;
  * @param {Date} updatedAt - The date the ticket was last updated.
  * @return {Schema} The schema for a chat.
  */
-const ChatSchema = new Schema(
+export default new Schema(
     {
 
         type: {
@@ -60,10 +60,3 @@ const ChatSchema = new Schema(
         timestamps: true
     }
 );
-
-/**
- * Exporting the Chat model
- * @name Chat
- * @type {mongoose.Model}
- */
-export default mongoose.model("Chat", ChatSchema);

@@ -12,7 +12,7 @@ const { Schema, Types: { ObjectId } } = mongoose;
  * @param {Number} level - The level of the grade.
  * @param {Array<ObjectId>} classes - The classes of the grade.
  */
-const GradeSchema = new Schema(
+export default new Schema(
     {
 
         level: {
@@ -31,10 +31,3 @@ const GradeSchema = new Schema(
         timestamps: true
     }
 );
-
-/**
- * Exporting the Grade model
- * @name Grade
- * @type {mongoose.Model}
- */
-export default mongoose.model("Grade", GradeSchema);

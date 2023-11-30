@@ -26,11 +26,12 @@ const { Schema, Types: { ObjectId } } = mongoose;
  * @param {String} tickets.ticketDetails.description - The description of the ticket.
  * @param {Number} tickets.ticketDetails.amount - The amount of the ticket.
  * @param {Array<ObjectId>} tickets.sold - The tickets that have been sold.
+ * @param {String} state - The state of the event. Valid states are: 'SUGGESTED', 'REJECTED', 'ACCEPTED'.
  * @param {Date} createdAt - The date the event was created.
  * @param {Date} updatedAt - The date the event was last updated.
  * @return {Schema} The schema for an event.
  */
-const EventSchema = new Schema(
+export default new Schema(
     {
 
         title: {
@@ -66,37 +67,34 @@ const EventSchema = new Schema(
         information: [
             {
                 title: {
-                    type: String,
-                    required: true
+                    type: String
                 },
                 items: [
                     {
                         emoji: {
-                            type: String,
-                            required: true
+                            type: String
                         },
                         description: {
-                            type: String,
-                            required: true
+                            type: String
                         }
                     }
-                ]
-            }
+                ],
+                type: Array,
+                required: false
+            },
+
         ],
         tickets: {
             ticketDetails: {
                 price: {
-                    type: Number,
-                    required: true
+                    type: Number
                 },
                 description: {
-                    type: String,
-                    required: true
+                    type: String
                 },
                 amount: {
-                    type: Number,
-                    required: true
-                },
+                    type: Number
+                }
             },
             sold: [
                 {
@@ -104,16 +102,13 @@ const EventSchema = new Schema(
                     ref: 'EventTicket'
                 }
             ]
+        },
+        state: {
+            type: String,
+            required: true
         }
     },
     {
         timestamps: true,
     }
 );
-
-/**
- * Exporting the Event model
- * @name Event
- * @type {mongoose.Model}
- */
-export default mongoose.model("Event", EventSchema);

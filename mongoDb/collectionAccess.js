@@ -1,3 +1,6 @@
+import mongoose, { mongo } from "mongoose";
+import { getModel } from "./initializeSchemas.js";
+
 /**
  * @file collectionAccess.js - Class exporting functions to access the database.
  * @author Daniel Dopatka
@@ -9,7 +12,7 @@
  * @return {Promise<any>} The created document.
  * */
 export async function createDocument(model, document) {
-    //TODO asynchrony needed?
+    model = getModel(model);
     return await model.create(document);
 }
 
@@ -21,8 +24,7 @@ export async function createDocument(model, document) {
  * @return {Promise<any>} The updated document.
  * */
 export async function updateDocument(model, oldDocumentId, newDocument) {
-    await model.findOneAndUpdate({ id: oldDocumentId }, newDocument, { new: true })
-    return await getDocument(model, oldDocumentId);
+    return await model.findOneAndUpdate({ id: oldDocumentId }, newDocument, { new: true });
 }
 
 /**
@@ -32,7 +34,9 @@ export async function updateDocument(model, oldDocumentId, newDocument) {
  * @return {Promise<any>} The deleted document.
  * */
 export async function deleteDocument(model, id) {
-    return await model.deleteOne({ id: id });
+    let deleted = getDocument(model, id);
+    await model.deleteOne({ id: id });
+    return deleted;
 }
 
 /**
@@ -51,6 +55,7 @@ export async function getDocument(model, id) {
  * @return {Promise<Array<any>>} The documents.
  * */
 export async function getAllDocuments(model) {
+    model = getModel(model);
     return await model.find({});
 }
 
@@ -60,5 +65,6 @@ export async function getAllDocuments(model) {
  * @param {Object} criteria - The searching criteria to get the document by.
  * */
 export async function getDocumentByRule(model, criteria) {
+    model = getModel(model);
     return await model.findOne(criteria);
 }

@@ -17,7 +17,7 @@ const { Schema, Types: { ObjectId } } = mongoose;
  * @param {Date} updatedAt - The date the ticket was last updated.
  * @return {Schema} The schema for an event ticket.
  */
-const EventTicketSchema = new Schema(
+export default new Schema(
     {
 
         event: {
@@ -42,10 +42,3 @@ const EventTicketSchema = new Schema(
         timestamps: true
     }
 );
-
-/**
- * Exporting the EventTicket.md model
- * @name EventTicket
- * @type {mongoose.Model}
- */
-export default mongoose.model("EventTicket", EventTicketSchema);

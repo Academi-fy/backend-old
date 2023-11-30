@@ -16,7 +16,7 @@ const { Schema, Types: { ObjectId } } = mongoose;
  * @param {Date} updatedAt - The date the setup account was last updated.
  * @return {Schema} The schema for a setup account.
  */
-const SetupAccountSchema = new Schema(
+export default new Schema(
     {
 
         id: {
@@ -39,10 +39,3 @@ const SetupAccountSchema = new Schema(
         timestamps: true
     }
 );
-
-/**
- * Exporting the SetupACcount model
- * @name SetupACcount
- * @type {mongoose.Model}
- */
-export default mongoose.model("SetupAccount", SetupAccountSchema);

@@ -18,7 +18,7 @@ const { Schema, Types: { ObjectId } } = mongoose;
  * @param {Date} updatedAt - The date the ticket was last updated.
  * @return {Schema} The schema for a users.
  */
-const UserSchema = new Schema(
+export default new Schema(
     {
 
         id: {
@@ -61,10 +61,3 @@ const UserSchema = new Schema(
         timestamps: true
     }
 );
-
-/**
- * Exporting the User model
- * @name User
- * @type {mongoose.Model}
- */
-export default mongoose.model("User", UserSchema);

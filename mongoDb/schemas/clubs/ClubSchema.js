@@ -27,7 +27,7 @@ const { Schema, Types: { ObjectId } } = mongoose;
  * @return {Schema} The schema for a club.
  */
 
-const ClubSchema = new Schema(
+export default new Schema(
     {
         id: {
             type: ObjectId,
@@ -64,19 +64,16 @@ const ClubSchema = new Schema(
             requirements: [
                 {
                     emoji: {
-                        type: String,
-                        required: true
+                        type: String
                     },
                     description: {
-                        type: String,
-                        required: true
+                        type: String
                     }
                 }
             ],
             tags: [
                 {
-                    type: String,
-                    required: true
+                    type: String
                 }
             ]
 
@@ -113,10 +110,3 @@ const ClubSchema = new Schema(
         timestamps: true
     }
 );
-
-/**
- * Exporting the Club model
- * @name Club
- * @type {mongoose.Model}
- */
-export default mongoose.model("Club", ClubSchema);

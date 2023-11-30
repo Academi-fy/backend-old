@@ -30,11 +30,14 @@ export default class Course {
      * @description Create a course.
      * @param {String} id - The id of the course.
      * @param {Array} members - The members of the course.
-     * @param {Array} classes - The classes in the course.
+     * @param {Array<String>} classes - The classes in the course.
      * @param {String} teacher - The id of the teacher of the course.
      * @param {String} chat - The id of the chat of the course.
      * @param {String} subject - The id of the subject of the course.
      */
+
+    //TODO: Array<Grade> grades
+
     constructor(
         id,
         members,
@@ -267,13 +270,26 @@ export default class Course {
      * @param {Object} course - The course to populate.
      * @return {Course} The populated course.
      **/
-    static populateCourse(course) {
-        return course
-            .populate({ populate: 'members' })
-            .populate({ populate: 'classes' })
-            .populate({ populate: 'teacher' })
-            .populate('chat')
-            .populate('subject');
+    static async populateCourse(course) {
+
+        try {
+            course = await course
+                .populate(['members', 'classes', 'teacher', 'chat', 'subject'])
+                .exec();
+
+            return new Course(
+                course.id,
+                course.members,
+                course.classes,
+                course.teacher,
+                course.chat,
+                course.subject
+            );
+        }
+        catch (error) {
+            throw new DatabaseError(`Failed to populate course:\n${ course }\n${ error }`);
+        }
+
     }
 
 }

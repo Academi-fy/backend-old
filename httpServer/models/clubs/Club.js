@@ -11,6 +11,8 @@ import { findByRule } from "../findByRule.js";
 import DatabaseError from "../../errors/DatabaseError.js";
 import CacheError from "../../errors/CacheError.js";
 import { populate } from "dotenv";
+import clubSchema from "../../../mongoDb/schemas/clubs/ClubSchema.js";
+import { getModel } from "../../../mongoDb/initializeSchemas.js";
 
 // Cache expiration time in milliseconds
 const expirationTime = 5 * 60 * 1000;
@@ -126,6 +128,7 @@ export default class Club {
 
     set _state(value) {
         validateNotEmpty('Club state', value);
+        if(!['SUGGESTED', 'REJECTED', 'ACCEPTED'].includes(value)) throw new Error(`Invalid club state: ${ value }`);
         this.state = value;
     }
 
@@ -213,7 +216,7 @@ export default class Club {
 
         club.chat = club.chat.id;
 
-        let insertedClub = await createDocument(ClubSchema, club);
+        let insertedClub = (await createDocument(ClubSchema, club)).populate(['leaders', 'members', 'chat', 'events']);
         if (!insertedClub) throw new DatabaseError(`Failed to create club:\n${ insertedClub }`);
 
         insertedClub = await this.populateClub(insertedClub);
@@ -300,12 +303,12 @@ export default class Club {
      */
     static async populateClub(club) {
         try {
-            club = await ClubSchema.findById(club._id)
+            club = await getModel(ClubSchema).findOne({ id: club.id })
                 .populate(['leaders', 'members', 'chat', 'events'])
                 .exec();
 
             return new Club(
-                club._id,
+                club.id,
                 club.name,
                 club.details,
                 club.leaders,
@@ -315,8 +318,7 @@ export default class Club {
                 club.state
             );
         } catch (error) {
-            console.error(`Failed to populate club: ${error}`);
-            return null;
+            throw new DatabaseError(`Failed to populate club:\n${ club }\n${ error }`);
         }
     }
 

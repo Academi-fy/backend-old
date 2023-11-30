@@ -22,7 +22,7 @@ const { Schema, Types: { ObjectId } } = mongoose;
  * @param {Date} updatedAt - The date the school was last updated.
  * @return {Schema} The schema for a school.
  */
-const SchoolSchema = new Schema(
+export default new Schema(
     {
 
         grades: [
@@ -84,10 +84,3 @@ const SchoolSchema = new Schema(
         timestamps: true
     }
 );
-
-/**
- * Exporting the School model
- * @name School
- * @type {mongoose.Model}
- */
-export default mongoose.model("School", SchoolSchema);

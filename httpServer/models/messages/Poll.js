@@ -24,6 +24,7 @@ export default class Poll {
         anonymous,
         answers
     ) {
+        //TODO: unterstriche weg
         this._question = question;
         this._anonymous = anonymous;
         this._answers = answers;

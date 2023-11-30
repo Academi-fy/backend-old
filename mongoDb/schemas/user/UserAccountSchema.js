@@ -18,7 +18,7 @@ const { Schema } = mongoose;
  * @param {Date} updatedAt - The date the ticket was last updated.
  * @return {Schema} The schema for a users account.
  */
-const UserAccountSchema = new Schema(
+export default new Schema(
     {
 
         username: {
@@ -44,10 +44,3 @@ const UserAccountSchema = new Schema(
 
     }
 );
-
-/**
- * Exporting the UserAccount model
- * @name UserAccount
- * @type {mongoose.Model}
- */
-export default mongoose.model("UserAccount", UserAccountSchema);

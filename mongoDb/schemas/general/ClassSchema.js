@@ -17,7 +17,7 @@ const { Schema, Types: { ObjectId } } = mongoose;
  * @param {Date} updatedAt - The date the class was last updated.
  * @return {Schema} The schema for a class.
  */
-const ClassSchema = new Schema(
+export default new Schema(
     {
 
         grade: {
@@ -46,10 +46,3 @@ const ClassSchema = new Schema(
         timestamps: true
     }
 );
-
-/**
- * Exporting the Class model
- * @name Class
- * @type {mongoose.Model}
- */
-export default mongoose.model("Class", ClassSchema);

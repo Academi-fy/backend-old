@@ -15,7 +15,7 @@ const { Schema, Types: { ObjectId } } = mongoose;
  * @param {Date} updatedAt - The date the subject was last updated.
  * @return {Schema} The schema for a subject.
  */
-const SubjectSchema = new Schema(
+export default new Schema(
     {
 
         type: {
@@ -33,10 +33,3 @@ const SubjectSchema = new Schema(
         timestamps: true
     }
 );
-
-/**
- * Exporting the Subject model
- * @name Subject
- * @type {mongoose.Model}
- */
-export default mongoose.model("Subject", SubjectSchema);

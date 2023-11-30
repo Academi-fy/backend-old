@@ -18,7 +18,7 @@ import DatabaseError from "../../errors/DatabaseError.js";
 /**
  * @description The model for a users account.
  * @param {String} id - The id of the users account.
- * @param {String} users - The id of the users of the users account.
+ * @param {String} user - The id of the user of the users account.
  * @param {String} username - The username of the users.
  * @param {String} password - The password of the users.
  * @param {Array<String>} settings - The settings of the users.
