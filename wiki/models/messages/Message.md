@@ -147,45 +147,43 @@ Generiert über [mongoose](https://mongoosejs.com/docs/guide.html) [npm package]
 ```javascript
 {
 
-  chat: {
-    type: ObjectId,
-            ref: 'Chat'
-  },
-  author: {
-    type: ObjectId,
-            ref: 'User'
-  },
-  content: {
-    type: Array,
-            required: true,
-  default: ""
-  },
-  reactions: [
-    {
-      emoji: {
-        type: Object,
-        required: true
-      },
-      count: {
-        type: Number,
+    chat: {
+        type: ObjectId,
+        ref: 'Chat'
+    },
+    author: {
+        type: ObjectId,
+        ref: 'User'
+    },
+    content: {
+        type: Array,
         required: true,
-        default: 0
-      },
+        default: ""
+    },
+    reactions: [
+        {
+            emoji: {
+                type: Object,
+                required: true
+            },
+            count: {
+                type: Number,
+                required: true,
+                default: 0
+            },
+        }
+    ],
+    answer: {
+        type: ObjectId,
+        ref: 'Message'
+    },
+    editHistory: {
+        type: Array,
+        required: true,
+        default: []
     }
-  ],
-          answer: {
-    type: ObjectId,
-            ref: 'Message'
-  },
-  editHistory: {
-    type: Array,
-            required: true,
-  default: []
-  }
 },
 {
-  timestamps: true
+    timestamps: true
 }
 ```
-
-<sub>© Copyright: Daniel Dopatka, Linus Bung (2023)</sub>

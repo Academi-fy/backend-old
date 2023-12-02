@@ -119,88 +119,88 @@ Generiert über [mongoose](https://mongoosejs.com/docs/guide.html) [npm package]
 ```javascript
 {
 
-  title: {
-    type: String,
-            required: true
-  },
-  description: {
-    type: String,
-            required: true
-  },
-  location: {
-    type: String,
-            required: true
-  },
-  host: {
-    type: String,
-            required: true
-  },
-  clubs: [
-    {
-      type: ObjectId,
-      ref: 'Club'
-    }
-  ],
-          startDate: {
-    type: Number,
-            required: true
-  },
-  endDate: {
-    type: Number,
-            required: true
-  },
-  information: [
-    {
-      title: {
-        type: String
-      },
-      items: [
+    title: {
+        type: String,
+        required: true
+    },
+    description: {
+        type: String,
+        required: true
+    },
+    location: {
+        type: String,
+        required: true
+    },
+    host: {
+        type: String,
+        required: true
+    },
+    clubs: [
         {
-          emoji: {
-            type: String
-          },
-          description: {
-            type: String
-          }
+            type: ObjectId,
+            ref: 'Club'
         }
-      ],
-      type: Array,
-      required: false
+    ],
+    startDate: {
+        type: Number,
+        required: true
     },
+    endDate: {
+        type: Number,
+        required: true
+    },
+    information: [
+        {
+            title: {
+                type: String
+            },
+            items: [
+                {
+                    emoji: {
+                        type: String
+                    },
+                    description: {
+                        type: String
+                    }
+                }
+            ],
+            type: Array,
+            required: false
+        },
 
-  ],
-          tickets: {
-    ticketDetails: {
-      price: {
-        type: Number
-      },
-      description: {
-        type: String
-      },
-      amount: {
-        type: Number
-      }
+    ],
+    tickets: {
+        ticketDetails: {
+            price: {
+                type: Number
+            },
+            description: {
+                type: String
+            },
+            amount: {
+                type: Number
+            }
+        },
+        sold: [
+            {
+                type: ObjectId,
+                ref: 'EventTicket'
+            }
+        ]
     },
-    sold: [
-      {
-        type: ObjectId,
-        ref: 'EventTicket'
-      }
+    state: {
+        type: String,
+        required: true,
+        default: "SUGGESTED"
+    },
+    editHistory: [
+        {
+            type: Object,
+            required: false
+        }
     ]
-  },
-  state: {
-    type: String,
-            required: true,
-  default: "SUGGESTED"
-  },
-  editHistory: [
-    {
-      type: Object,
-      required: false
-    }
-  ]
 },
 {
-  timestamps: true
+    timestamps: true
 }
 ```
