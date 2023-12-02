@@ -37,22 +37,26 @@ new Blackboard(
     /*author*/ {...},
     /*coverImage*/ "https://example.com/image.png",
     /*text*/ "Text",
-    /*date*/ 1701475668245
+    /*tags*/ [ 'tag1', 'tag2' ],
+    /*date*/ 1701475668245,
+    /*state*/ 'SUGGESTED'
 )
 ```
 
-| Attribut     | Typ                                                     | Beschreibung                                                                           |
-|--------------|---------------------------------------------------------|----------------------------------------------------------------------------------------|
-| `id`         | String                                                  | Die ID des Blackboards.                                                                |
-| `title`      | String                                                  | Der Titel des Blackboards.                                                             |
-| `author`     | [User](https://github.com/Academi-fy/backend/wiki/User) | Der Autor des Blackboards.                                                             |
-| `coverImage` | String                                                  | Der Link zum Coverbild des Blackboards.                                                |
-| `text`       | String                                                  | Der Text des Blackboards.                                                              |
-| `date`       | Number                                                  | Das Datum, an dem das Blackboard erstellt wurde. Angegeben in Millisekunden seit 1970. |
+| Attribut     | Typ                                                     | Beschreibung                                                                                                                                                                               |
+|--------------|---------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `id`         | String                                                  | Die ID des Blackboards.                                                                                                                                                                    |
+| `title`      | String                                                  | Der Titel des Blackboards.                                                                                                                                                                 |
+| `author`     | [User](https://github.com/Academi-fy/backend/wiki/User) | Der Autor des Blackboards.                                                                                                                                                                 |
+| `coverImage` | String                                                  | Der Link zum Coverbild des Blackboards.                                                                                                                                                    |
+| `text`       | String                                                  | Der Text des Blackboards.                                                                                                                                                                  |
+| `tags`       | Array<String>                                           | Die Tags des Blackboards                                                                                                                                                                   |
+| `date`       | Number                                                  | Das Datum, an dem das Blackboard erstellt wurde. Angegeben in Millisekunden seit 1970.                                                                                                     |
+| `state`      | String                                                  | Der Zustand in der Genehmigung. Möglich: `SUGGESTED`, `REJECTED`, `APPROVED`, `EDIT_SUGGESTED`, `EDIT_REJECTED`, `EDIT_APPROVED`, `DELETE_SUGGESTED`, `DELETE_REJECTED`, `DELETE_APPROVED` |
 
 #### Besonderheiten
 
-- `author`ist eine MongoDB Referenz zum jeweiligen Objekten
+- `author` ist eine MongoDB Referenz zum jeweiligen Objekten
     - er wird erst beim Abrufen auf dem HTTP-Server aufgelöst
 
 ## Zugriff auf Blackboards über den HTTP-Server
@@ -80,7 +84,7 @@ GET /api/blackboards/:id
 Erstellt ein Blackboard. Das Blackboard wird in der Datenbank gespeichert und gecacht.
 
 ``` http request
-PUT /api/blackboards/<club>
+PUT /api/blackboards/<blackboard>
 ```
 
 #### Blackboard löschen
@@ -91,13 +95,12 @@ Löscht ein Blackboard. Das Blackboard wird aus der Datenbank gelöscht und aus 
 DELETE /api/blackboards/:id
 ```
 
-## Club Schema in MongoDB
+## Blackboard Schema in MongoDB
 
 Generiert über [mongoose](https://mongoosejs.com/docs/guide.html) [npm package]
 
 ```javascript
 {
-
     title: {
         type: String,
         required: true
@@ -114,6 +117,12 @@ Generiert über [mongoose](https://mongoosejs.com/docs/guide.html) [npm package]
         type: String,
         required: true
     },
+    tags: [
+        {
+            type: String,
+            required: false
+        }
+    ],
     expirationDate: {
         type: Number,
         required: false
@@ -129,7 +138,6 @@ Generiert über [mongoose](https://mongoosejs.com/docs/guide.html) [npm package]
             required: false
         }
     ]
-
 },
 {
     timestamps: true
