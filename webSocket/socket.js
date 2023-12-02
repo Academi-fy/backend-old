@@ -7,6 +7,7 @@ import dotenv from "dotenv";
 import { WebSocketServer } from "ws";
 import { parseMessage } from "./parseMessage.js";
 import { handleEvents } from "./eventHandler.js";
+import config from "../config.js";
 
 dotenv.config();
 
@@ -14,7 +15,7 @@ dotenv.config();
  * @description Creates a new WebSocket server instance and listens for incoming connections.
  * @type {WebSocketServer}
  */
-const wss = new WebSocketServer({ port: parseInt(process.env.WEBSOCKET_PORT) });
+const wss = new WebSocketServer({ port: parseInt(config.WEBSOCKET_PORT) });
 wss.on('connection', ws => {
 
     // Event listener for incoming messages

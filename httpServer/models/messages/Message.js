@@ -30,7 +30,7 @@ const expirationTime = 2 * 60 * 1000;
  * @param {User} author - The author of the message.
  * @param {Array<FileContent | ImageContent | PollContent | TextContent | VideoContent>} content - The content of the message.
  * @param {Array<MessageReaction>} reactions - The reactions to the message.
- * @param {Array<EditedMessage>} edits - The edits made to the message.
+ * @param {Array<EditedMessage>} editHistory - The editHistory made to the message.
  * @param {Number} date - The date the message was created.
  */
 export default class Message {
@@ -44,7 +44,7 @@ export default class Message {
      * @param {Array<FileContent | ImageContent | PollContent | TextContent | VideoContent>} content - The content of the message.
      * @param {Array<MessageReaction>} reactions - The reactions to the message.
      * @param {Message} answer - The message that this message is an answer to.
-     * @param {Array<EditedMessage>} edits - The edits made to the message.
+     * @param {Array<Message>} editHistory - The editHistory made to the message.
      * @param {Number} date - The date the message was created.
      */
     constructor(
@@ -54,7 +54,7 @@ export default class Message {
         content,
         reactions,
         answer,
-        edits,
+        editHistory,
         date
     ) {
         this.id = id;
@@ -63,7 +63,7 @@ export default class Message {
         this.content = content;
         this.reactions = reactions;
         this.answer = answer;
-        this.edits = edits;
+        this.editHistory = editHistory;
         this.date = date;
 
         validateNotEmpty('Message id', id);
@@ -71,7 +71,7 @@ export default class Message {
         validateObject('Message author', author);
         validateObject('Message content', content);
         validateArray('Message reactions', reactions);
-        validateArray('Message edits', edits);
+        validateArray('Message editHistory', editHistory);
         validateNumber('Message date', date);
     }
 
@@ -120,13 +120,13 @@ export default class Message {
         this.answer = value;
     }
 
-    get _edits() {
-        return this.edits;
+    get _editHistory() {
+        return this.editHistory;
     }
 
-    set _edits(value) {
-        validateArray('Message edits', value);
-        this.edits = value;
+    set _editHistory(value) {
+        validateArray('Message editHistory', value);
+        this.editHistory = value;
     }
 
     get _date() {

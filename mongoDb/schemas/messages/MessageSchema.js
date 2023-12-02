@@ -51,7 +51,7 @@ export default new Schema(
             type: ObjectId,
             ref: 'Message'
         },
-        edits: {
+        editHistory: {
             type: Array,
             required: true,
             default: []

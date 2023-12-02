@@ -45,15 +45,15 @@ new User(
 )
 ```
 
-| Attribut      | Type                                                               | Beschreibung                                                      |
-|---------------|--------------------------------------------------------------------|-------------------------------------------------------------------|
-| id            | String                                                             | Die einzigartige ID des Users.                                    |
-| first_name    | String                                                             | Der Vorname des Users.                                            |
-| last_name     | String                                                             | Der Nachname des Users.                                           |
-| avatar        | String                                                             | Der Avatar des Users.                                             |
-| type          | String                                                             | Der Typ des Users. Möglicher Types: `STUDENT`, `TEACHER`, `ADMIN` |
-| classes       | Array<[Class](https://github.com/Academi-fy/backend/wiki/Class)>   | Die Klassen, die dem User zugeordnet sind.                        |
-| extra_courses | Array<[Course](https://github.com/Academi-fy/backend/wiki/Course)> | Die Kurse, die dem User zusätzlich zugeordnet sind.               |
+| Attribut        | Type                                                               | Beschreibung                                                      |
+|-----------------|--------------------------------------------------------------------|-------------------------------------------------------------------|
+| `id`            | String                                                             | Die einzigartige ID des Users.                                    |
+| `first_name`    | String                                                             | Der Vorname des Users.                                            |
+| `last_name`     | String                                                             | Der Nachname des Users.                                           |
+| `avatar`        | String                                                             | Der Avatar des Users.                                             |
+| `type`          | String                                                             | Der Typ des Users. Möglicher Types: `STUDENT`, `TEACHER`, `ADMIN` |
+| `classes`       | Array<[Class](https://github.com/Academi-fy/backend/wiki/Class)>   | Die Klassen, die dem User zugeordnet sind.                        |
+| `extra_courses` | Array<[Course](https://github.com/Academi-fy/backend/wiki/Course)> | Die Kurse, die dem User zusätzlich zugeordnet sind.               |
 
 #### Besonderheiten
 
@@ -146,3 +146,5 @@ DELETE /api/users/:id
     timestamps: true
 }
 ```
+
+<sub>© Copyright: Daniel Dopatka, Linus Bung (2023)</sub>

@@ -26,7 +26,7 @@ const { Schema, Types: { ObjectId } } = mongoose;
  * @param {String} tickets.ticketDetails.description - The description of the ticket.
  * @param {Number} tickets.ticketDetails.amount - The amount of the ticket.
  * @param {Array<ObjectId>} tickets.sold - The tickets that have been sold.
- * @param {String} state - The state of the event. Valid states are: 'SUGGESTED', 'REJECTED', 'ACCEPTED'.
+ * @param {String} state - The state of the event. Valid states are: 'SUGGESTED', 'REJECTED', 'APPROVED', 'EDIT_SUGGESTED', 'EDIT_REJECTED', 'EDIT_APPROVED', 'DELETE_SUGGESTED', 'DELETE_REJECTED', 'DELETE_APPROVED'
  * @param {Date} createdAt - The date the event was created.
  * @param {Date} updatedAt - The date the event was last updated.
  * @return {Schema} The schema for an event.
@@ -105,8 +105,15 @@ export default new Schema(
         },
         state: {
             type: String,
-            required: true
-        }
+            required: true,
+            default: "SUGGESTED"
+        },
+        editHistory: [
+            {
+                type: Object,
+                required: false
+            }
+        ]
     },
     {
         timestamps: true,

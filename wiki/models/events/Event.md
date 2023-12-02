@@ -47,22 +47,26 @@ new Event(
     /*startDate*/ 1690588750679,
     /*endDate*/ 1700588810679,
     /*information*/ [ {...} ],
-    /*tickets*/ [ {...} ],
+    /*tickets*/ [ {...} ], 
+    /*state*/ "SUGGESTED",
+    /*editHistory*/ [ {...} ]
 )
 ```
 
-| Attribut    | Type                                                                                   | Beschreibung                                                     |
-|-------------|----------------------------------------------------------------------------------------|------------------------------------------------------------------|
-| id          | String                                                                                 | Die einzigartige ID des Events.                                  |
-| title       | String                                                                                 | Der Titel des Events.                                            |
-| description | String                                                                                 | Die Beschreibung des Events.                                     |
-| location    | String                                                                                 | Der Ort des Events.                                              |
-| host        | String                                                                                 | Der Host des Events.                                             |
-| clubs       | Array<[Club](https://github.com/Academi-fy/backend/wiki/Club)>                         | Die Clubs, die dem Event zugeordnet sind.                        |
-| startDate   | Number                                                                                 | Das Startdatum des Events. Angegeben in Millisekunden seit 1970. |
-| endDate     | Number                                                                                 | Das Enddatum des Events. Angegeben in Millisekunden seit 1970.   |
-| information | Array<[EventInformation](https://github.com/Academi-fy/backend/wiki/EventInformation)> | Die Informationen, die dem Event zugeordnet sind.                |
-| tickets     | Array<[EventTicket](https://github.com/Academi-fy/backend/wiki/EventTicket)>           | Die Tickets, die dem Event zugeordnet sind.                      |
+| Attribut      | Type                                                                                   | Beschreibung                                                                                                                           |
+|---------------|----------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------|
+| `id`          | String                                                                                 | Die einzigartige ID des Events.                                                                                                        |
+| `title`       | String                                                                                 | Der Titel des Events.                                                                                                                  |
+| `description` | String                                                                                 | Die Beschreibung des Events.                                                                                                           |
+| `location`    | String                                                                                 | Der Ort des Events.                                                                                                                    |
+| `host`        | String                                                                                 | Der Host des Events.                                                                                                                   |
+| `clubs`       | Array<[Club](https://github.com/Academi-fy/backend/wiki/Club)>                         | Die Clubs, die dem Event zugeordnet sind.                                                                                              |
+| `startDate`   | Number                                                                                 | Das Startdatum des Events. Angegeben in Millisekunden seit 1970.                                                                       |
+| `endDate`     | Number                                                                                 | Das Enddatum des Events. Angegeben in Millisekunden seit 1970.                                                                         |
+| `information` | Array<[EventInformation](https://github.com/Academi-fy/backend/wiki/EventInformation)> | Die Informationen, die dem Event zugeordnet sind.                                                                                      |
+| `tickets`     | Array<[EventTicket](https://github.com/Academi-fy/backend/wiki/EventTicket)>           | Die Tickets, die dem Event zugeordnet sind.                                                                                            |
+| `state`       | String                                                                                 | Der Zustand in der Genehmigung. Möglich: `SUGGESTED`, `REJECTED`, `APPROVED`, `DELETE_SUGGESTED`, `DELETE_REJECTED`, `DELETE_ACCEPTED` |
+| `editHistory` | Array<Event>                                                                           | Vergangene Bearbeitungen des Events.                                                                                                   |
 
 #### Besonderheiten
 
@@ -115,82 +119,88 @@ Generiert über [mongoose](https://mongoosejs.com/docs/guide.html) [npm package]
 ```javascript
 {
 
-    title: {
-        type: String,
-        required: true
-    },
-    description: {
-        type: String,
-        required: true
-    },
-    location: {
-        type: String,
-        required: true
-    },
-    host: {
-        type: String,
-        required: true
-    },
-    clubs: [
-        {
-            type: ObjectId,
-            ref: 'Club'
-        }
-    ],
-    startDate: {
-        type: Number,
-        required: true
-    },
-    endDate: {
-        type: Number,
-        required: true
-    },
-    information: [
-        {
-            title: {
-                type: String,
-                required: true
-            },
-            items: [
-                {
-                    emoji: {
-                        type: String,
-                        required: true
-                    },
-                    description: {
-                        type: String,
-                        required: true
-                    }
-                }
-            ]
-        }
-    ],
-    tickets: {
-        ticketDetails: {
-            price: {
-                type: Number,
-                required: true
-            },
-            description: {
-                type: String,
-                required: true
-            },
-            amount: {
-                type: Number,
-                required: true
-            },
-        },
-        sold: [
-            {
-                type: ObjectId,
-                ref: 'EventTicket'
-            }
-        ]
+  title: {
+    type: String,
+            required: true
+  },
+  description: {
+    type: String,
+            required: true
+  },
+  location: {
+    type: String,
+            required: true
+  },
+  host: {
+    type: String,
+            required: true
+  },
+  clubs: [
+    {
+      type: ObjectId,
+      ref: 'Club'
     }
+  ],
+          startDate: {
+    type: Number,
+            required: true
+  },
+  endDate: {
+    type: Number,
+            required: true
+  },
+  information: [
+    {
+      title: {
+        type: String
+      },
+      items: [
+        {
+          emoji: {
+            type: String
+          },
+          description: {
+            type: String
+          }
+        }
+      ],
+      type: Array,
+      required: false
+    },
+
+  ],
+          tickets: {
+    ticketDetails: {
+      price: {
+        type: Number
+      },
+      description: {
+        type: String
+      },
+      amount: {
+        type: Number
+      }
+    },
+    sold: [
+      {
+        type: ObjectId,
+        ref: 'EventTicket'
+      }
+    ]
+  },
+  state: {
+    type: String,
+            required: true,
+  default: "SUGGESTED"
+  },
+  editHistory: [
+    {
+      type: Object,
+      required: false
+    }
+  ]
 },
 {
-    timestamps: true,
+  timestamps: true
 }
 ```
-
-<sub>© Copyright: Daniel Dopatka, Linus Bung (2023)</sub>

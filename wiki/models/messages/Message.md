@@ -20,21 +20,21 @@ Der Message-Cache wird alle **2 Minuten** aktualisiert sowie:
 
 #### Basic Operations
 
-| Operation                 | Permission | [Benutzer](https://github.com/Academi-fy/backend/wiki/User) | [Lehrer](https://github.com/Academi-fy/backend/wiki/User)<sup>1</sup> | [Admin](https://github.com/Academi-fy/backend/wiki/User) |
-|---------------------------|------------|:-----------------------------------------------------------:|:---------------------------------------------------------------------:|:--------------------------------------------------------:|
-| Nachricht SCHICKEN        | 🟢         |                             🟢                              |                                  🟢                                   |                            🟢                            |
-| eigene Nachricht LÖSCHEN  | 🟢         |                             🟢                              |                                  🟢                                   |                            🟢                            |
-| andere Nachricht LÖSCHEN  | 🔴         |                             🟢                              |                                  🟢                                   |                            🟢                            |
-| Reaktion HINZUFÜGEN       | 🟢         |                             🟢                              |                                  🟢                                   |                            🟢                            |
-| eigene Reaktion ENTFERNEN | 🟢         |                             🟢                              |                                  🟢                                   |                            🟢                            |
-| andere Reaktion ENTFERNEN | 🔴         |                             🟢                              |                                  🟢                                   |                            🟢                            |
-| Nachricht ANTWORTEN       | 🟢         |                             🟢                              |                                  🟢                                   |                            🟢                            |
+| Operation                 | Permission                    | [Benutzer](https://github.com/Academi-fy/backend/wiki/User) | [Lehrer](https://github.com/Academi-fy/backend/wiki/User)<sup>1</sup> | [Admin](https://github.com/Academi-fy/backend/wiki/User) |
+|---------------------------|-------------------------------|:-----------------------------------------------------------:|:---------------------------------------------------------------------:|:--------------------------------------------------------:|
+| Nachricht SCHICKEN        | `MESSAGE_SEND`                |                             🟢                              |                                  🟢                                   |                            🟢                            |
+| eigene Nachricht LÖSCHEN  | `MESSAGE_DELETE_OWN`          |                             🟢                              |                                  🟢                                   |                            🟢                            |
+| andere Nachricht LÖSCHEN  | `MESSAGE_DELETE`              |                             🔴                              |                                  🟢                                   |                            🟢                            |
+| Reaktion HINZUFÜGEN       | `MESSAGE_REACTION_ADD`        |                             🟢                              |                                  🟢                                   |                            🟢                            |
+| eigene Reaktion ENTFERNEN | `MESSAGE_REACTION_DELETE_OWN` |                             🟢                              |                                  🟢                                   |                            🟢                            |
+| andere Reaktion ENTFERNEN | `MESSAGE_REACTION_DELETE`     |                             🔴                              |                                  🟢                                   |                            🟢                            |
+| Nachricht ANTWORTEN       | `MESSAGE_REPLY`               |                             🟢                              |                                  🟢                                   |                            🟢                            |
 
 #### Nachricht verändern
 
-| Operation                | Permission | [Benutzer](https://github.com/Academi-fy/backend/wiki/User) | [Lehrer](https://github.com/Academi-fy/backend/wiki/User)<sup>1</sup> | [Admin](https://github.com/Academi-fy/backend/wiki/User) |
-|--------------------------|------------|:-----------------------------------------------------------:|:---------------------------------------------------------------------:|:--------------------------------------------------------:|
-| Nachricht EDITIEREN      | 🟢         |                             🟢                              |                                  🟢                                   |                            🟢                            |
+| Operation                | Permission     | [Benutzer](https://github.com/Academi-fy/backend/wiki/User) | [Lehrer](https://github.com/Academi-fy/backend/wiki/User)<sup>1</sup> | [Admin](https://github.com/Academi-fy/backend/wiki/User) |
+|--------------------------|----------------|:-----------------------------------------------------------:|:---------------------------------------------------------------------:|:--------------------------------------------------------:|
+| Nachricht EDITIEREN      | `MESSAGE_EDIT` |                             🟢                              |                                  🟢                                   |                            🟢                            |
 
 ## Attribute
 
@@ -48,21 +48,21 @@ new Message(
     /*content*/ [{...}],
     /*reactions*/ [ {...} ],
     /*answer*/ {...},
-    /*edits*/ [ {...} ],
+    /*editHistory*/ [ {...} ],
     /*date*/ 1700835015126
 )
 ```
 
-| Attribut  | Typ                                                                                 | Beschreibung                                                                                       |
-|-----------|-------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------|
-| id        | String                                                                              | Die ID der Nachricht.                                                                              |
-| chat      | [Chat](https://github.com/Academi-fy/backend/wiki/Chat)                             | Der Chat, in dem die Nachricht gesendet wurde.                                                     |
-| author    | [User](https://github.com/Academi-fy/backend/wiki/User)                             | Der Autor der Nachricht.                                                                           |
-| content   | Array<[MessageContent](https://github.com/Academi-fy/backend/wiki/MessageContent)>  | Der Inhalt der Nachricht.                                                                          |
-| reactions | Array<[MessageReaction](https://github.com/Academi-fy/backend/wiki/MessageReaction) | Die Reaktionen auf die Nachricht.                                                                  |
-| answer    | [Message](https://github.com/Academi-fy/backend/wiki/Message)                       | Die Nachricht, auf die geantwortet wurde.                                                          |
-| edits     | Array<[EditedMessage](https://github.com/Academi-fy/backend/wiki/EditedMessage)>    | Die Bearbeitungen der Nachricht.                                                                   |
-| date      | Number                                                                              | Das Datum, an dem die Nachricht gesendet wurde. Angegeben in Millisekunden seit 1970 (JS Standard) |
+| Attribut    | Typ                                                                                 | Beschreibung                                                                                       |
+|-------------|-------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------|
+| id          | String                                                                              | Die ID der Nachricht.                                                                              |
+| chat        | [Chat](https://github.com/Academi-fy/backend/wiki/Chat)                             | Der Chat, in dem die Nachricht gesendet wurde.                                                     |
+| author      | [User](https://github.com/Academi-fy/backend/wiki/User)                             | Der Autor der Nachricht.                                                                           |
+| content     | Array<[MessageContent](https://github.com/Academi-fy/backend/wiki/MessageContent)>  | Der Inhalt der Nachricht.                                                                          |
+| reactions   | Array<[MessageReaction](https://github.com/Academi-fy/backend/wiki/MessageReaction) | Die Reaktionen auf die Nachricht.                                                                  |
+| answer      | [Message](https://github.com/Academi-fy/backend/wiki/Message)                       | Die Nachricht, auf die geantwortet wurde.                                                          |
+| editHistory | Array<Message>                                                                      | Vergangene Bearbeitungen der Nachricht.                                                            |
+| date        | Number                                                                              | Das Datum, an dem die Nachricht gesendet wurde. Angegeben in Millisekunden seit 1970 (JS Standard) |
 
 ### Besonderheiten
 
@@ -147,43 +147,45 @@ Generiert über [mongoose](https://mongoosejs.com/docs/guide.html) [npm package]
 ```javascript
 {
 
-    chat: {
-        type: ObjectId,
-        ref: 'Chat'
-    },
-    author: {
-        type: ObjectId,
-        ref: 'User'
-    },
-    content: {
-        type: Array,
+  chat: {
+    type: ObjectId,
+            ref: 'Chat'
+  },
+  author: {
+    type: ObjectId,
+            ref: 'User'
+  },
+  content: {
+    type: Array,
+            required: true,
+  default: ""
+  },
+  reactions: [
+    {
+      emoji: {
+        type: Object,
+        required: true
+      },
+      count: {
+        type: Number,
         required: true,
-        default: ""
-    },
-    reactions: [
-        {
-            emoji: {
-                type: Object,
-                required: true
-            },
-            count: {
-                type: Number,
-                required: true,
-                default: 0
-            },
-        }
-    ],
-    answer: {
-        type: ObjectId,
-        ref: 'Message'
-    },
-    edits: {
-        type: Array,
-        required: true,
-        default: []
+        default: 0
+      },
     }
+  ],
+          answer: {
+    type: ObjectId,
+            ref: 'Message'
+  },
+  editHistory: {
+    type: Array,
+            required: true,
+  default: []
+  }
 },
 {
-    timestamps: true
+  timestamps: true
 }
 ```
+
+<sub>© Copyright: Daniel Dopatka, Linus Bung (2023)</sub>

@@ -23,31 +23,18 @@ export default class Grade {
 
     /**
      * @constructor Create a Grade.
-     * @param {String} id - The id of the grade.
      * @param {Number} level - The level of the grade.
      * @param {Array<String>} classes - The ids of the classes of the grade.
      */
     constructor(
-        id,
         level,
         classes
     ) {
-        this.id = id;
         this.level = level;
         this.classes = classes;
 
-        validateNotEmpty('Grade id', id);
         validateNumber('Grade level', level);
         validateArray('Grade classes', classes);
-    }
-
-    get _id() {
-        return this.id;
-    }
-
-    set _id(value) {
-        validateNotEmpty('Grade id', value);
-        this.id = value;
     }
 
     get _level() {

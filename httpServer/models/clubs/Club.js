@@ -29,6 +29,7 @@ export default class Club {
      * @param {Chat} chat - The chat of the club.
      * @param {Array<Event>} events - The events of the club.
      * @param {String} state - The state of the club. Valid states are: 'SUGGESTED', 'REJECTED', 'ACCEPTED'.
+     * @param {Array<Club>} editHistory - The edit history of the club.
      */
     constructor(
         id,
@@ -38,7 +39,8 @@ export default class Club {
         members,
         chat,
         events,
-        state
+        state,
+        editHistory
     ) {
         this.id = id;
         this.name = name;
@@ -48,6 +50,7 @@ export default class Club {
         this.chat = chat;
         this.events = events;
         this.state = state;
+        this.editHistory = editHistory;
 
         validateNotEmpty('Club id', this.id);
         validateNotEmpty('Club name', this.name);
@@ -57,6 +60,7 @@ export default class Club {
         validateObject('Club chat', this.chat);
         validateArray('Club events', this.events);
         validateNotEmpty('Club state', this.state);
+        validateArray('Club edit history', this.editHistory);
     }
 
     get _id() {
@@ -130,6 +134,15 @@ export default class Club {
         validateNotEmpty('Club state', value);
         if(!['SUGGESTED', 'REJECTED', 'ACCEPTED'].includes(value)) throw new Error(`Invalid club state: ${ value }`);
         this.state = value;
+    }
+
+    get _editHistory() {
+        return this.editHistory;
+    }
+
+    set _editHistory(value) {
+        validateArray('Club edit history', value);
+        this.editHistory = value;
     }
 
     /**

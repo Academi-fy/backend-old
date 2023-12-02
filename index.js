@@ -8,10 +8,11 @@ import mongoose from "mongoose";
 import Club from "./httpServer/models/clubs/Club.js";
 
 import { initializeSchemas } from "./mongoDb/initializeSchemas.js";
+import config from "./config.js";
 
 dotenv.config();
 
-const mongoPassword = process.env.MONGODB_PASSWORD;
+const mongoPassword = config.MONGODB_PASSWORD;
 const mongoURI = `mongodb+srv://admin:${ mongoPassword }@rotteck-messenger.fejn8su.mongodb.net/?retryWrites=true&w=majority`;
 await mongoose.connect(mongoURI,
     {

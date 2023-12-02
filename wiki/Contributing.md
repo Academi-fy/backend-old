@@ -56,5 +56,3 @@ Please follow the coding standards outlined in the project's `README.md` and in 
 ## License
 
 By contributing, you agree that your contributions will be licensed under its MIT License.
-
-<sub>© Copyright: Daniel Dopatka, Linus Bung (2023)</sub>

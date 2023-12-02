@@ -43,6 +43,7 @@ export default class Event {
      * @param {Array<EventInformation>} information - The information of the event.
      * @param {Array<EventTicket>} tickets - The tickets of the event.
      * @param {String} state - The state of the event. Valid states are: 'SUGGESTED', 'REJECTED', 'ACCEPTED'.
+     * @param {Array<Event>} editHistory - The edit history of the event.
      */
     constructor(
         id,
@@ -55,7 +56,8 @@ export default class Event {
         endDate,
         information,
         tickets,
-        state
+        state,
+        editHistory
     ) {
 
         this.id = id;
@@ -69,6 +71,7 @@ export default class Event {
         this.information = information;
         this.tickets = tickets;
         this.state = state;
+        this.editHistory = editHistory;
 
         validateNotEmpty('Event id', id);
         validateNotEmpty('Event title', title);
@@ -80,6 +83,8 @@ export default class Event {
         validateNumber('Event end date', endDate);
         validateArray('Event information', information);
         validateArray('Event tickets', tickets);
+        validateNotEmpty('Event state', state);
+        validateArray('Event edit history', editHistory);
     }
 
     get _title() {
@@ -169,6 +174,15 @@ export default class Event {
 
     set _state(value) {
         this.state = value;
+    }
+
+    get _editHistory() {
+        return this.editHistory;
+    }
+
+    set _editHistory(value) {
+        validateArray('Event edit history', value);
+        this.editHistory = value;
     }
 
     /**

@@ -52,5 +52,3 @@ requirements: [
     }
 ]
 ```
-
-<sub>© Copyright: Daniel Dopatka, Linus Bung (2023)</sub>

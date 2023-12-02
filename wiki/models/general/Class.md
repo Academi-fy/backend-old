@@ -1,6 +1,6 @@
 Klassen entsprechen den tatsächlichen Schulklassen. \
 Sie beinhalten eine Liste von [Schülern](https://github.com/Academi-fy/backend/wiki/User) sowie [Lehrern](https://github.com/Academi-fy/backend/wiki/User) und den dazu gehörigen [Kursen](https://github.com/Academi-fy/backend/wiki/Course). \
-Klassen werden Kurse aus der [WebUntis API](https://help.untis.at/hc/de/articles/4886785534354-API-documentation-for-integration-partners) manuell zugewiesen. \
+Klassen werden [Kursen](https://github.com/Academi-fy/backend/wiki/Course) aus der [WebUntis API](https://help.untis.at/hc/de/articles/4886785534354-API-documentation-for-integration-partners) manuell zugewiesen. \
 
 ## Klassen-Objekt
 
@@ -129,5 +129,3 @@ Generiert über [mongoose](https://mongoosejs.com/docs/guide.html) [npm package]
     timestamps: true
 }
 ```
-
-<sub>© Copyright: Daniel Dopatka, Linus Bung (2023)</sub>

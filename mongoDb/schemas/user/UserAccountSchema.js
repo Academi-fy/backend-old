@@ -5,7 +5,7 @@
  */
 import mongoose from 'mongoose';
 
-const { Schema } = mongoose;
+const { Schema, Types: { ObjectId } } = mongoose;
 
 /**
  * @description The schema for a users account.
@@ -21,6 +21,14 @@ const { Schema } = mongoose;
 export default new Schema(
     {
 
+        id: {
+            type: String,
+            required: true
+        },
+        user: {
+            type: ObjectId,
+            ref: 'User'
+        },
         username: {
             type: String,
             required: true
@@ -29,18 +37,18 @@ export default new Schema(
             type: String,
             required: true
         },
-        settings: [
+        settings: {
+            type: Object,
+            required: true
+        },
+        permissions: [
             {
-                name: {
-                    type: String,
-                    required: true
-                },
-                value: {
-                    type: String,
-                    required: true
-                }
+                type: String
             }
         ]
 
+    },
+    {
+        timestamps: true
     }
 );

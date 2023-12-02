@@ -6,7 +6,7 @@
 import cache from "../../cache.js";
 import BlackboardSchema from "../../../mongoDb/schemas/general/BlackboardSchema.js";
 import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../../mongoDb/collectionAccess.js";
-import { validateNotEmpty, verifyInCache } from "../propertyValidation.js";
+import { validateNotEmpty, validateNumber, verifyInCache } from "../propertyValidation.js";
 import { findByRule } from "../findByRule.js";
 import RetrievalError from "../../errors/RetrievalError.js";
 import DatabaseError from "../../errors/DatabaseError.js";
@@ -21,6 +21,7 @@ const expirationTime = 10 * 60 * 1000;
  * @param {User} author - The author of the blackboard.
  * @param {String} coverImage - The cover image of the blackboard.
  * @param {String} text - The text of the blackboard.
+ * @param {Number} date - The date of the blackboard.
  * */
 export default class Blackboard {
 
@@ -31,25 +32,29 @@ export default class Blackboard {
      * @param {String} author - The id of the author of the blackboard.
      * @param {String} coverImage - The cover image of the blackboard.
      * @param {String} text - The text of the blackboard.
+     * @param {Number} date - The date of the blackboard.
      */
     constructor(
         id,
         title,
         author,
         coverImage,
-        text
+        text,
+        date
     ) {
         this.id = id;
         this.title = title;
         this.author = author;
         this.coverImage = coverImage;
         this.text = text;
+        this.date = date;
 
         validateNotEmpty('Blackboard id', id);
         validateNotEmpty('Blackboard title', title);
         validateNotEmpty('Blackboard author', author);
         validateNotEmpty('Blackboard cover image', coverImage);
         validateNotEmpty('Blackboard text', text);
+        validateNumber('Blackboard date', date);
     }
 
     get _id() {
@@ -95,6 +100,15 @@ export default class Blackboard {
     set _text(value) {
         validateNotEmpty('Blackboard text', value);
         this.text = value;
+    }
+
+    get _date() {
+        return this.date;
+    }
+
+    set _date(value) {
+        validateNumber('Blackboard date', value);
+        this.date = value;
     }
 
     /**

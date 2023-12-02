@@ -48,13 +48,6 @@
 - [MessageContent](https://github.com/Academi-fy/backend/wiki/MessageContent)
 - [MessageReaction](https://github.com/Academi-fy/backend/wiki/MessageReaction)
 
-#### Content Types
-- [FileContent](https://github.com/Academi-fy/backend/wiki/FileContent)
-- [ImageContent](https://github.com/Academi-fy/backend/wiki/ImageContent)
-- [PollContent](https://github.com/Academi-fy/backend/wiki/PollContent)
-- [TextContent](https://github.com/Academi-fy/backend/wiki/TextContent)
-- [VideoContent](https://github.com/Academi-fy/backend/wiki/VideoContent)
-
 ### Users
 - [User](https://github.com/Academi-fy/backend/wiki/User)
 

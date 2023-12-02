@@ -58,25 +58,27 @@ Attribute des Club-Objekts:
 new Club(
     /*id:*/ "507f191e810c19729de860ea",
     /*name:*/ "Bienen AG",
-    /*details:*/ { ... },
+    /*details:*/ {...},
     /*avatar:*/ "https://link.to/avatar.png",
-    /*events:*/ [ { ... } ],
-    /*members:*/ [ { ... } ],
-    /*leaders:*/ [ { ... } ],
-    /*state:*/ "APPROVED"
+    /*events:*/ [ {...} ],
+    /*members:*/ [ {...} ],
+    /*leaders:*/ [ {...} ],
+    /*state:*/ "APPROVED",
+    /*editHistory:*/ [ {...} ]
 )
 ```
 
-| Attribut   | Type                                                                  | Beschreibung                                                                  |
-|------------|-----------------------------------------------------------------------|-------------------------------------------------------------------------------|
-| `id`       | String                                                                | Der einzigartige Identifier für den Club.                                     |
-| `name`     | String                                                                | Name des Clubs.                                                               |
-| `details`  | [ClubDetails](https://github.com/Academi-fy/backend/wiki/ClubDetails) | Details des Clubs.                                                            |
-| `avatar`   | String                                                                | Link zu Club-Avatar                                                           |
-| `events`   | Array<[Event](https://github.com/Academi-fy/backend/wiki/Event)>      | [Events](https://github.com/Academi-fy/backend/wiki/Event) des Clubs.         |
-| `members`  | Array<[User](https://github.com/Academi-fy/backend/wiki/User)>        | [Mitglieder](https://github.com/Academi-fy/backend/wiki/User) des Clubs.      |
-| `leaders`  | Array<[User](https://github.com/Academi-fy/backend/wiki/User)>        | [Leiter](https://github.com/Academi-fy/backend/wiki/User) des Clubs.          |
-| `approved` | String                                                                | Ob der Club genehmigt wurde. Möglich sind: `SUGGESTED`, `REJECTED`,`ACCEPTED` |
+| Attribut      | Type                                                                  | Beschreibung                                                                                                                             |
+|---------------|-----------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------|
+| `id`          | String                                                                | Der einzigartige Identifier für den Club.                                                                                                |
+| `name`        | String                                                                | Name des Clubs.                                                                                                                          |
+| `details`     | [ClubDetails](https://github.com/Academi-fy/backend/wiki/ClubDetails) | Details des Clubs.                                                                                                                       |
+| `avatar`      | String                                                                | Link zu Club-Avatar                                                                                                                      |
+| `events`      | Array<[Event](https://github.com/Academi-fy/backend/wiki/Event)>      | [Events](https://github.com/Academi-fy/backend/wiki/Event) des Clubs.                                                                    |
+| `members`     | Array<[User](https://github.com/Academi-fy/backend/wiki/User)>        | [Mitglieder](https://github.com/Academi-fy/backend/wiki/User) des Clubs.                                                                 |
+| `leaders`     | Array<[User](https://github.com/Academi-fy/backend/wiki/User)>        | [Leiter](https://github.com/Academi-fy/backend/wiki/User) des Clubs.                                                                     |
+| `state`       | String                                                                | Ob der Club genehmigt wurde. Möglich sind: `SUGGESTED`, `REJECTED`, `APPROVED`, `DELETE_SUGGESTED`, `DELETE_REJECTED`, `DELETE_ACCEPTED` |
+| `editHistory` | Array<Club>                                                           | Vergangene Bearbeitungen des Clubs.                                                                                                      |
 
 #### Besonderheiten
 
@@ -163,19 +165,16 @@ Generiert über [mongoose](https://mongoosejs.com/docs/guide.html) [npm package]
         requirements: [
             {
                 emoji: {
-                    type: String,
-                    required: true
+                    type: String
                 },
                 description: {
-                    type: String,
-                    required: true
+                    type: String
                 }
             }
         ],
-        events: [
+        tags: [
             {
-                type: ObjectId,
-                ref: 'Event'
+                type: String
             }
         ]
 
@@ -195,12 +194,26 @@ Generiert über [mongoose](https://mongoosejs.com/docs/guide.html) [npm package]
     chat: {
         type: ObjectId,
         ref: 'Chat'
-    }
-
+    },
+    events: [
+        {
+            type: ObjectId,
+            ref: 'Event'
+        }
+    ],
+    state: {
+        type: String,
+        required: true,
+        default: 'SUGGESTED'
+    },
+    editHistory: [
+        {
+            type: Object,
+            required: false
+        }
+    ]
 },
 {
     timestamps: true
 }
 ```
-
-<sub>© Copyright: Daniel Dopatka, Linus Bung (2023)</sub>
