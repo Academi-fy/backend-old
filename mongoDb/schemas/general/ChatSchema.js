@@ -21,7 +21,6 @@ const { Schema, Types: { ObjectId } } = mongoose;
  */
 export default new Schema(
     {
-
         type: {
             type: String,
             required: true

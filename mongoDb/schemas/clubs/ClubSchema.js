@@ -22,7 +22,10 @@ const { Schema, Types: { ObjectId } } = mongoose;
  * @param {Array<ObjectId>} leaders - The leaders of the club.
  * @param {Array<ObjectId>} members - The members of the club.
  * @param {ObjectId} chat - The chat of the club.
- * @param {String} state - The state of the club. Valid states are: 'SUGGESTED', 'REJECTED', 'APPROVED', 'EDIT_SUGGESTED', 'EDIT_REJECTED', 'EDIT_APPROVED', 'DELETE_SUGGESTED', 'DELETE_REJECTED', 'DELETE_APPROVED'
+ * @param {String} state - The state of the club. Valid states are:
+ * 'SUGGESTED', 'REJECTED', 'APPROVED',
+ * 'EDIT_SUGGESTED', 'EDIT_REJECTED', 'EDIT_APPROVED',
+ * 'DELETE_SUGGESTED', 'DELETE_REJECTED', 'DELETE_APPROVED'
  * @param {Date} createdAt - The date the club was created.
  * @param {Date} updatedAt - The date the club was last updated.
  * @return {Schema} The schema for a club.
@@ -30,11 +33,6 @@ const { Schema, Types: { ObjectId } } = mongoose;
 
 export default new Schema(
     {
-        id: {
-            type: ObjectId,
-            unique: true,
-            required: true
-        },
         name: {
             type: String,
             required: true,

@@ -21,12 +21,12 @@ export default {
     chat: yup.string().required(),
     author: yup.string().required(),
     content: yup.array().of(
-        yup.object().shape(YupContentTypeSchema)
+        yup.object().shape(/*YupContentTypeSchema*/)
     ).required(),
     reactions: yup.array().of(
-        yup.object().shape(YupMessageReaction)
+        yup.object().shape(/*YupMessageReaction*/)
     ).required(),
     edits: yup.array().of(
-        yup.object().shape(YupEditedMessage)
+        yup.object().shape(/*YupEditedMessage*/)
     ).required()
 }

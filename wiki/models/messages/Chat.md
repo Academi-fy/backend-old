@@ -38,28 +38,28 @@ Der Chat-Cache wird alle **2 Minuten** aktualisiert sowie:
 ## Attribute
 
 ```javascript
-new Chat(
-    /*id*/ "507f191e810c19729de860ea",
-    /*type*/ 'GROUP',
-    /*targets*/ [ {...} ],
-    /*courses*/ [ {...} ],
-    /*clubs*/ [ {...} ],
-    /*name*/ "Klasse 10a",
-    /*avatar*/ "http://example.com/avatar.png",
-    /*messages*/ [ {...} ],
-)
+Chat {
+    _id: "507f191e810c19729de860ea",
+    type: 'GROUP',
+    targets: [ {...} ],
+    courses: [ {...} ],
+    clubs: [ {...} ],
+    name: "Klasse 10a",
+    avatar: "http://example.com/avatar.png",
+    messages: [ {...} ]
+}
 ```
 
-| Attribut | Type                                                                 | Beschreibung                                                                                                                                                                                      |
-|----------|----------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| id       | String                                                               | Die einzigartige ID des Chats.                                                                                                                                                                    |
-| type     | String                                                               | Der Typ des Chats. Mögliche Types: `PRIVATE`, `GROUP`, `COURSE`, `CLUB`. Für die eigentliche Funktion des Chats ist der type irrelevant. Er kann nur zum Filtern bzw. Sortieren verwendet werden. |
-| targets  | Array<[User](https://github.com/Academi-fy/backend/wiki/User)>       | Liste mit den [Usern](https://github.com/Academi-fy/backend/wiki/User) des Chats.                                                                                                                 |
-| courses  | Array<[Course](https://github.com/Academi-fy/backend/wiki/Course)>   | Liste mit den [Kursen](https://github.com/Academi-fy/backend/wiki/Course) des Chats.                                                                                                              |
-| clubs    | Array<[Club](https://github.com/Academi-fy/backend/wiki/Club)>       | Liste mit den [Clubs](https://github.com/Academi-fy/backend/wiki/Club) des Chats.                                                                                                                 |
-| name     | String                                                               | Der Name des Chats.                                                                                                                                                                               |
-| avatar   | String                                                               | Der Avatar des Chats.                                                                                                                                                                             |
-| messages | Array<[Message](https://github.com/Academi-fy/backend/wiki/Message)> | Liste mit den Nachrichten des Chats.                                                                                                                                                              |
+| Attribut   | Type                                                                 | Beschreibung                                                                                                                                                                                      |
+|------------|----------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `_id`      | String                                                               | Die einzigartige ID des Chats.                                                                                                                                                                    |
+| `type`     | String                                                               | Der Typ des Chats. Mögliche Types: `PRIVATE`, `GROUP`, `COURSE`, `CLUB`. Für die eigentliche Funktion des Chats ist der type irrelevant. Er kann nur zum Filtern bzw. Sortieren verwendet werden. |
+| `targets`  | Array<[User](https://github.com/Academi-fy/backend/wiki/User)>       | Liste mit den [Usern](https://github.com/Academi-fy/backend/wiki/User) des Chats.                                                                                                                 |
+| `courses`  | Array<[Course](https://github.com/Academi-fy/backend/wiki/Course)>   | Liste mit den [Kursen](https://github.com/Academi-fy/backend/wiki/Course) des Chats.                                                                                                              |
+| `clubs`    | Array<[Club](https://github.com/Academi-fy/backend/wiki/Club)>       | Liste mit den [Clubs](https://github.com/Academi-fy/backend/wiki/Club) des Chats.                                                                                                                 |
+| `name`     | String                                                               | Der Name des Chats.                                                                                                                                                                               |
+| `avatar`   | String                                                               | Der Avatar des Chats.                                                                                                                                                                             |
+| `messages` | Array<[Message](https://github.com/Academi-fy/backend/wiki/Message)> | Liste mit den Nachrichten des Chats.                                                                                                                                                              |
 
 #### Besonderheiten
 
@@ -120,38 +120,39 @@ Generiert über [mongoose](https://mongoosejs.com/docs/guide.html) [npm package]
 
 ```javascript
 {
-
-    chat: {
-        type: ObjectId,
-        ref: 'Chat'
+    type: {
+        type: String,
+        required: true
     },
-    author: {
-        type: ObjectId,
-        ref: 'User'
-    },
-    content: {
-        type: Array,
-        required: true,
-        default: ""
-    },
-    reactions: [
+    targets: [
         {
-            emoji: {
-                type: Object,
-                required: true
-            },
-            count: {
-                type: Number,
-                required: true,
-                default: 0
-            },
+            type: ObjectId,
+            ref: 'User'
         }
     ],
-    edits: {
-        type: Array,
+    courses: [
+        {
+            type: ObjectId,
+            ref: 'Course'
+        }
+    ],
+    clubs: [
+        {
+            type: ObjectId,
+            ref: 'Club'
+        }
+    ],
+    name: {
+        type: String,
         required: true,
-        default: []
+        default: 'Neuer Chat'
+    },
+    avatar: {
+        type: String,
+        required: true,
+        default: 'https://media.istockphoto.com/id/1147544807/de/vektor/miniaturbild-vektorgrafik.jpg?s=612x612&w=0&k=20&c=IIK_u_RTeRFyL6kB1EMzBufT4H7MYT3g04sz903fXAk='
     }
+
 },
 {
     timestamps: true

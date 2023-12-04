@@ -17,7 +17,7 @@ const expirationTime = 3 * 60 * 1000;
 
 /**
  * @description Class representing a User.
- * @param {String} id - The id of the users.
+ * @param {String} _id - The id of the users.
  * @param {String} first_name - The first name of the users.
  * @param {String} last_name - The last name of the users.
  * @param {String} avatar - The avatar URL of the users.
@@ -29,7 +29,6 @@ export default class User {
 
     /**
      * User constructor
-     * @param {String} id - The id of the users.
      * @param {String} first_name - The first name of the users.
      * @param {String} last_name - The last name of the users.
      * @param {String} avatar - The avatar URL of the users.
@@ -38,7 +37,6 @@ export default class User {
      * @param {Array<String>} extra_courses - The ids of the extra courses of the users.
      */
     constructor(
-        id,
         first_name,
         last_name,
         avatar,
@@ -46,32 +44,12 @@ export default class User {
         classes,
         extra_courses
     ) {
-
-        this.id = id;
         this.first_name = first_name;
         this.last_name = last_name;
         this.avatar = avatar;
         this.type = type;
         this.classes = classes;
         this.extra_courses = extra_courses;
-
-        validateNotEmpty('User id', id);
-        validateNotEmpty('User first name', first_name);
-        validateNotEmpty('User last name', last_name);
-        validateNotEmpty('User avatar', avatar);
-        validateNotEmpty('User type', type);
-        validateArray('User classes', classes);
-        validateArray('User extra courses', extra_courses);
-
-    }
-
-    get _id() {
-        return this.id;
-    }
-
-    set _id(value) {
-        validateNotEmpty('users id', value);
-        this.id = value;
     }
 
     get _first_name() {
@@ -140,19 +118,8 @@ export default class User {
 
         const users = [];
         for (let user of usersFromDb) {
-
-            user = this.populateUser(user)
-
             users.push(
-                new User(
-                    user.id,
-                    user.first_name,
-                    user.last_name,
-                    user.avatar,
-                    user.type,
-                    user.classes,
-                    user.extra_courses
-                )
+                await this.populateUser(user)
             );
         }
 
@@ -187,17 +154,6 @@ export default class User {
 
         let user = users.find(user => user.id === userId);
         if (!user) throw new Error(`User with id ${ userId } not found`);
-
-        user = this.populateUser(user);
-        user = new User(
-            user.id,
-            user.first_name,
-            user.last_name,
-            user.avatar,
-            user.type,
-            user.classes,
-            user.extra_courses
-        );
 
         return user;
 
@@ -236,19 +192,8 @@ export default class User {
         let insertedUser = await createDocument(UserSchema, { ...user, id: new mongoose.Types.ObjectId() });
         if (!insertedUser) throw new DatabaseError(`Failed to create user:\n${ user }`);
 
-        insertedUser = this.populateUser(insertedUser);
-        insertedUser = new User(
-            insertedUser.id,
-            insertedUser.first_name,
-            insertedUser.last_name,
-            insertedUser.avatar,
-            insertedUser.type,
-            insertedUser.classes,
-            insertedUser.extra_courses
-        )
-
         users.push(
-            insertedUser
+            await this.populateUser(insertedUser)
         );
         cache.put(`users`, users, expirationTime);
 
@@ -275,16 +220,7 @@ export default class User {
         let updatedUser = await updateDocument(UserSchema, userId, { ...updateUser, id: userId });
         if (!updatedUser) throw new DatabaseError(`Failed to update user:\n${ JSON.stringify(updateUser, null, 2) }`);
 
-        updatedUser = this.populateUser(updatedUser);
-        updatedUser = new User(
-            updatedUser.id,
-            updatedUser.first_name,
-            updatedUser.last_name,
-            updatedUser.avatar,
-            updatedUser.type,
-            updatedUser.classes,
-            updatedUser.extra_courses
-        )
+        updatedUser = await this.populateUser(updatedUser);
 
         users.splice(users.findIndex(user => user.id === userId), 1, updatedUser);
         cache.put('users', users, expirationTime);
@@ -333,12 +269,50 @@ export default class User {
     /**
      * Populate a users
      * @param {Object} user - The users to populate
-     * @returns {User} The populated users
+     * @returns {Promise<User>} The populated users
      */
-    static populateUser(user) {
-        return user
-        // .populate('classes')
-        // .populate('extra_courses');
+    static async populateUser(user) {
+
+        try {
+
+            user = await user
+                            .populate([
+                                {
+                                    path: 'classes',
+                                    populate: [
+                                        { path: 'grade' },
+                                        { path: 'courses' },
+                                        { path: 'members' }
+                                    ]
+                                },
+                                {
+                                    path: 'extra_courses',
+                                    populate: [
+                                        { path: 'members' },
+                                        { path: 'classes' },
+                                        { path: 'teacher' },
+                                        { path: 'subject' },
+                                        { path: 'chat' }
+                                    ]
+                                },
+                            ]);
+
+            const populatedUser = new User(
+                user.first_name,
+                user.last_name,
+                user.avatar,
+                user.type,
+                user.classes,
+                user.extra_courses
+            );
+            populatedUser.id = user._id;
+
+            return populatedUser;
+
+        } catch (error) {
+            throw new DatabaseError(`Failed to populate user:\n${ user }\n${ error }`);
+        }
+
     }
 
 }

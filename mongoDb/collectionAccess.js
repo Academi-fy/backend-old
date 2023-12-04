@@ -13,7 +13,8 @@ import { getModel } from "./initializeSchemas.js";
  * */
 export async function createDocument(model, document) {
     model = getModel(model);
-    return await model.create(document);
+    await model.create(document);
+    return model.findById(document._id);
 }
 
 /**
@@ -24,7 +25,9 @@ export async function createDocument(model, document) {
  * @return {Promise<any>} The updated document.
  * */
 export async function updateDocument(model, oldDocumentId, newDocument) {
-    return await model.findOneAndUpdate({ id: oldDocumentId }, newDocument, { new: true });
+    await model.findOneAndUpdate({ id: oldDocumentId }, newDocument, { new: true });
+    return model.findById(oldDocumentId);
+
 }
 
 /**

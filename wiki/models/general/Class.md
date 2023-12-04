@@ -34,22 +34,22 @@ Der Klassen-Cache wird alle **5 Minuten** aktualisiert sowie:
 ## Attribute
 
 ```javascript
-new Class(
-    /*id*/ "507f191e810c19729de860ea",
-    /*grade*/ {...},
-    /*courses*/ [ {...} ],
-    /*members*/ [ {...} ],
-    /*specified_grade*/ "a"
-)
+Class {
+    _id: "507f191e810c19729de860ea",
+    grade: {...},
+    courses: [ {...} ],
+    members: [ {...} ],
+    specified_grade: "a"
+}
 ```
 
-| Attribut        | Type                                                               | Beschreibung                                                                                  |
-|-----------------|--------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
-| id              | String                                                             | Die einzigartige ID der Klasse.                                                               |
-| grade           | [Grade](https://github.com/Academi-fy/backend/wiki/Grade)          | Die Stufe der Klasse.                                                                         |
-| courses         | Array<[Course](https://github.com/Academi-fy/backend/wiki/Course)> | Liste mit den Kursen der Klasse.                                                              |
-| members         | Array<[User](https://github.com/Academi-fy/backend/wiki/User)>     | Liste mit den Mitgliedern der Klasse.                                                         |
-| specified_grade | String                                                             | Der Klassen-Zusatz. Möglich: `a` `b` `c` `d` `e`. Außerdem `A` + `Abijahrgang` für Kursstufen |
+| Attribut          | Type                                                               | Beschreibung                                                                                  |
+|-------------------|--------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
+| `_id`             | String                                                             | Die einzigartige ID der Klasse.                                                               |
+| `grade`           | [Grade](https://github.com/Academi-fy/backend/wiki/Grade)          | Die Stufe der Klasse.                                                                         |
+| `courses`         | Array<[Course](https://github.com/Academi-fy/backend/wiki/Course)> | Liste mit den Kursen der Klasse.                                                              |
+| `members`         | Array<[User](https://github.com/Academi-fy/backend/wiki/User)>     | Liste mit den Mitgliedern der Klasse.                                                         |
+| `specified_grade` | String                                                             | Der Klassen-Zusatz. Möglich: `a` `b` `c` `d` `e`. Außerdem `A` + `Abijahrgang` für Kursstufen |
 
 #### Besonderheiten
 

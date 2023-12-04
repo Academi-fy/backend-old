@@ -16,7 +16,7 @@ const expirationTime = 10 * 60 * 1000;
 
 /**
  * @description Class representing a Subject.
- * @param {String} id - The id of the subject.
+ * @param {String} _id - The id of the subject.
  * @param {String} type - The type of the subject.
  * @param {Array<Course>} courses - The courses of the subject.
  */
@@ -24,26 +24,17 @@ export default class Subject {
 
     /**
      * Create a subject.
-     * @param {String} id - The id of the subject.
      * @param {String} type - The type of the subject.
+     * @param {String} shortName - The short name of the subject.
      * @param {Array<String>} courses - The ids of the courses of the subject.
      */
     constructor(
-        id,
         type,
+        shortName,
         courses
     ) {
         this.type = type;
         this.courses = courses;
-    }
-
-    get _id() {
-        return this.id;
-    }
-
-    set _id(value) {
-        validateNotEmpty('Subject id', value);
-        this.id = value;
     }
 
     get _type() {
@@ -53,6 +44,15 @@ export default class Subject {
     set _type(value) {
         validateNotEmpty('Subject type', value);
         this.type = value;
+    }
+
+    get _shortName() {
+        return this.shortName;
+    }
+
+    set _shortName(value) {
+        validateNotEmpty('Subject shortName', value);
+        this.shortName = value;
     }
 
     get _courses() {
@@ -74,6 +74,7 @@ export default class Subject {
         const subjectsFromDb = await getAllDocuments(SubjectSchema);
 
         //TODO update subjects with populate
+        let subjects = subjectsFromDb;
 
         cache.put('subjects', subjects, expirationTime);
         return subjects;
@@ -88,7 +89,7 @@ export default class Subject {
 
         const cacheResults = cache.get("subjects");
 
-        if (!cacheResults) {
+        if (cacheResults) {
             return cacheResults;
         }
         else return await this.updateSubjectCache();
@@ -143,7 +144,7 @@ export default class Subject {
         if (!insertedSubject) throw new DatabaseError(`Failed to create subject:\n${ subject }`);
 
         subjects.push(
-            this.populateSubject(insertedSubject)
+            await this.populateSubject(insertedSubject)
         );
         cache.put('subjects', subjects, expirationTime);
 
@@ -169,7 +170,7 @@ export default class Subject {
         let updatedSubject = await updateDocument(SubjectSchema, subjectId, subject);
         if (!updatedSubject) throw new DatabaseError(`Failed to update subject:\n${ subject }`);
 
-        updatedSubject = this.populateSubject(updatedSubject);
+        updatedSubject = await this.populateSubject(updatedSubject);
 
         subjects.splice(subjects.findIndex(subject => subject._id === subjectId), 1, updatedSubject);
         cache.put('subjects', subjects, expirationTime);
@@ -220,11 +221,38 @@ export default class Subject {
     /**
      * Populate a subject.
      * @param {Object} subject - The subject.
-     * @return {Subject} The populated subject.
+     * @return {Promise<Subject>} The populated subject.
      */
-    static populateSubject(subject) {
-        return subject
-            .populate('courses')
+    static async populateSubject(subject) {
+
+        try {
+
+            subject = await subject
+                                .populate([
+                                    {
+                                        path: 'courses',
+                                        populate: [
+                                            { path: 'members' },
+                                            { path: 'classes' },
+                                            { path: 'teacher' },
+                                            { path: 'subject' },
+                                            { path: 'chat' },
+                                        ]
+                                    }
+                                ]);
+
+            const populatedSubject = new Subject(
+                subject.type,
+                subject.shortName,
+                subject.courses
+            );
+            populatedSubject._id = subject._id;
+
+            return populatedSubject;
+
+        } catch (error) {
+            throw new DatabaseError(`Failed to populate subject:\n${ subject }\n${ error }`);
+        }
     }
 
 }

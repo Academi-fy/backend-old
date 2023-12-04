@@ -39,7 +39,6 @@
 
 ### Messages
 - [Chat](https://github.com/Academi-fy/backend/wiki/Chat)
-- [EditedMessage](https://github.com/Academi-fy/backend/wiki/EditedMessage)
 - [Message](https://github.com/Academi-fy/backend/wiki/Message)
 - [Poll](https://github.com/Academi-fy/backend/wiki/Poll)
 - [PollAnswer](https://github.com/Academi-fy/backend/wiki/PollAnswer)

@@ -41,28 +41,28 @@ Der Message-Cache wird alle **2 Minuten** aktualisiert sowie:
 Attribute des Message-Objekts:
 
 ```javascript
-new Message(
-    /*id*/ "507f191e810c19729de860ea",
-    /*chat*/ {...},
-    /*author*/ {...},
-    /*content*/ [{...}],
-    /*reactions*/ [ {...} ],
-    /*answer*/ {...},
-    /*editHistory*/ [ {...} ],
-    /*date*/ 1700835015126
-)
+Message {
+    _id: "507f191e810c19729de860ea",
+    chat: {...},
+    author: {...},
+    content: [{...}],
+    reactions: [ {...} ],
+    answer: {...},
+    editHistory: [ {...} ],
+    date: 1700835015126
+}
 ```
 
-| Attribut    | Typ                                                                                 | Beschreibung                                                                                       |
-|-------------|-------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------|
-| id          | String                                                                              | Die ID der Nachricht.                                                                              |
-| chat        | [Chat](https://github.com/Academi-fy/backend/wiki/Chat)                             | Der Chat, in dem die Nachricht gesendet wurde.                                                     |
-| author      | [User](https://github.com/Academi-fy/backend/wiki/User)                             | Der Autor der Nachricht.                                                                           |
-| content     | Array<[MessageContent](https://github.com/Academi-fy/backend/wiki/MessageContent)>  | Der Inhalt der Nachricht.                                                                          |
-| reactions   | Array<[MessageReaction](https://github.com/Academi-fy/backend/wiki/MessageReaction) | Die Reaktionen auf die Nachricht.                                                                  |
-| answer      | [Message](https://github.com/Academi-fy/backend/wiki/Message)                       | Die Nachricht, auf die geantwortet wurde.                                                          |
-| editHistory | Array<Message>                                                                      | Vergangene Bearbeitungen der Nachricht.                                                            |
-| date        | Number                                                                              | Das Datum, an dem die Nachricht gesendet wurde. Angegeben in Millisekunden seit 1970 (JS Standard) |
+| Attribut      | Typ                                                                                 | Beschreibung                                                                                       |
+|---------------|-------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------|
+| `_id`         | String                                                                              | Die ID der Nachricht.                                                                              |
+| `chat`        | [Chat](https://github.com/Academi-fy/backend/wiki/Chat)                             | Der Chat, in dem die Nachricht gesendet wurde.                                                     |
+| `author`      | [User](https://github.com/Academi-fy/backend/wiki/User)                             | Der Autor der Nachricht.                                                                           |
+| `content`     | Array<[MessageContent](https://github.com/Academi-fy/backend/wiki/MessageContent)>  | Der Inhalt der Nachricht.                                                                          |
+| `reactions`   | Array<[MessageReaction](https://github.com/Academi-fy/backend/wiki/MessageReaction) | Die Reaktionen auf die Nachricht.                                                                  |
+| `answer`      | [Message](https://github.com/Academi-fy/backend/wiki/Message)                       | Die Nachricht, auf die geantwortet wurde.                                                          |
+| `editHistory` | Array<Message>                                                                      | Vergangene Bearbeitungen der Nachricht.                                                            |
+| `date`        | Number                                                                              | Das Datum, an dem die Nachricht gesendet wurde. Angegeben in Millisekunden seit 1970 (JS Standard) |
 
 ### Besonderheiten
 

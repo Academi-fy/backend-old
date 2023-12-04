@@ -16,7 +16,7 @@ const expirationTime = 10 * 60 * 1000;
 
 /**
  * @description Class representing a blackboard.
- * @param {String} id - The id of the blackboard.
+ * @param {String} _id - The id of the blackboard.
  * @param {String} title - The title of the blackboard.
  * @param {User} author - The author of the blackboard.
  * @param {String} coverImage - The cover image of the blackboard.
@@ -29,7 +29,6 @@ export default class Blackboard {
 
     /**
      * @description Create a blackboard.
-     * @param {String} id - The id of the blackboard.
      * @param {String} title - The title of the blackboard.
      * @param {String} author - The id of the author of the blackboard.
      * @param {String} coverImage - The cover image of the blackboard.
@@ -39,7 +38,6 @@ export default class Blackboard {
      * @param {String} state - The state of the blackboard. Valid states are: 'SUGGESTED', 'REJECTED', 'APPROVED', 'EDIT_SUGGESTED', 'EDIT_REJECTED', 'EDIT_APPROVED', 'DELETE_SUGGESTED', 'DELETE_REJECTED', 'DELETE_APPROVED'
      */
     constructor(
-        id,
         title,
         author,
         coverImage,
@@ -48,7 +46,6 @@ export default class Blackboard {
         date,
         state
     ) {
-        this.id = id;
         this.title = title;
         this.author = author;
         this.coverImage = coverImage;
@@ -56,24 +53,6 @@ export default class Blackboard {
         this.tags = tags;
         this.date = date;
         this.state = state;
-
-        validateNotEmpty('Blackboard id', id);
-        validateNotEmpty('Blackboard title', title);
-        validateNotEmpty('Blackboard author', author);
-        validateNotEmpty('Blackboard cover image', coverImage);
-        validateNotEmpty('Blackboard text', text);
-        validateArray('Blackboard tags', tags);
-        validateNumber('Blackboard date', date);
-        validateNotEmpty('Blackboard state', state);
-    }
-
-    get _id() {
-        return this.id;
-    }
-
-    set _id(value) {
-        validateNotEmpty('Blackboard id', value);
-        this.id = value;
     }
 
     get _title() {
@@ -151,7 +130,7 @@ export default class Blackboard {
         const blackboards = [];
         for (const blackboard of blackboardsFromDb) {
             blackboards.push(
-                this.populateBlackboard(blackboard)
+                await this.populateBlackboard(blackboard)
             );
         }
 
@@ -222,7 +201,7 @@ export default class Blackboard {
         if (!insertedBlackboard) throw new DatabaseError(`Failed to create blackboard:\n${ blackboard }`);
 
         blackboards.push(
-            this.populateBlackboard(insertedBlackboard)
+            await this.populateBlackboard(insertedBlackboard)
         );
         cache.put('blackboards', blackboards, expirationTime);
 
@@ -249,7 +228,7 @@ export default class Blackboard {
         let updatedBlackboard = await updateDocument(BlackboardSchema, blackboardId, updateBlackboard);
         if (!updatedBlackboard) throw new DatabaseError(`Failed to update blackboard:\n${ updateBlackboard }`);
 
-        updatedBlackboard = this.populateBlackboard(updatedBlackboard);
+        updatedBlackboard = await this.populateBlackboard(updatedBlackboard);
 
         blackboards.splice(blackboards.findIndex(blackboard => blackboard._id.toString() === blackboardId), 1, updatedBlackboard);
         cache.put('blackboards', blackboards, expirationTime);
@@ -303,9 +282,38 @@ export default class Blackboard {
      * @param {Object} blackboard - The blackboard to populate.
      * @return {Blackboard} The populated blackboard.
      */
-    static populateBlackboard(blackboard) {
-        return blackboard
-            .populate('author');
+    static async populateBlackboard(blackboard) {
+
+        try {
+
+            blackboard = await blackboard
+                                    .populate([
+                                        {
+                                            path: 'author',
+                                            populate: [
+                                                { path: 'classes' },
+                                                { path: 'extra_courses' },
+                                            ]
+                                        }
+                                    ]);
+
+            const populatedBlackboard = new Blackboard(
+                blackboard.title,
+                blackboard.author,
+                blackboard.coverImage,
+                blackboard.text,
+                blackboard.tags,
+                blackboard.date,
+                blackboard.state
+            );
+            populatedBlackboard._id = blackboard._id;
+
+            return populatedBlackboard;
+
+        } catch (error) {
+            throw new DatabaseError(`Failed to populate blackboard:\n${ blackboard }\n${ error }`);
+        }
+
     }
 
 }

@@ -38,24 +38,24 @@ Der Kurs-Cache wird alle **5 Minuten** aktualisiert sowie:
 ## Attribute
 
 ```javascript
-new Course(
-    /*id*/ "507f191e810c19729de860ea",
-    /*members*/ [ {...} ],
-    /*classes*/ [ {...} ],
-    /*teacher*/ {...},
-    /*chat*/ {...},
-    /*subject*/ {...}
-)
+Course {
+    _id: "507f191e810c19729de860ea",
+    members: [ {...} ],
+    classes: [ {...} ],
+    teacher: {...},
+    chat: {...},
+    subject: {...}
+}
 ```
 
-| Attribut | Type                                                             | Beschreibung                       |
-|----------|------------------------------------------------------------------|------------------------------------|
-| id       | String                                                           | Die einzigartige ID des Kurses.    |
-| members  | Array<[User](https://github.com/Academi-fy/backend/wiki/User)>   | Liste mit den Schülern des Kurses. |
-| classes  | Array<[Class](https://github.com/Academi-fy/backend/wiki/Class)> | Liste mit den Klassen des Kurses.  |
-| teacher  | [User](https://github.com/Academi-fy/backend/wiki/User)          | Der Lehrer des Kurses.             |
-| chat     | [Chat](https://github.com/Academi-fy/backend/wiki/Chat)          | Der Chat des Kurses.               |
-| subject  | [Subject](https://github.com/Academi-fy/backend/wiki/Subject)    | Das Fach des Kurses.               |
+| Attribut  | Type                                                             | Beschreibung                       |
+|-----------|------------------------------------------------------------------|------------------------------------|
+| `_id`     | String                                                           | Die einzigartige ID des Kurses.    |
+| `members` | Array<[User](https://github.com/Academi-fy/backend/wiki/User)>   | Liste mit den Schülern des Kurses. |
+| `classes` | Array<[Class](https://github.com/Academi-fy/backend/wiki/Class)> | Liste mit den Klassen des Kurses.  |
+| `teacher` | [User](https://github.com/Academi-fy/backend/wiki/User)          | Der Lehrer des Kurses.             |
+| `chat`    | [Chat](https://github.com/Academi-fy/backend/wiki/Chat)          | Der Chat des Kurses.               |
+| `subject` | [Subject](https://github.com/Academi-fy/backend/wiki/Subject)    | Das Fach des Kurses.               |
 
 #### Besonderheiten
 

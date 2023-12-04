@@ -20,6 +20,12 @@ export default new Schema(
 
         type: {
             type: String,
+            unique: true,
+            required: true
+        },
+        shortName: {
+            type: String,
+            unique: true,
             required: true
         },
         courses: [

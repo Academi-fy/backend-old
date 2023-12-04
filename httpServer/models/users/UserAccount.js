@@ -12,68 +12,50 @@ import {
 } from "../../../mongoDb/collectionAccess.js";
 import UserAccountSchema from "../../../mongoDb/schemas/user/UserAccountSchema.js";
 import { validateArray, validateNotEmpty, validateObject } from "../propertyValidation.js";
-import AccountSettings from "./UserAccountSettings.js";
 import DatabaseError from "../../errors/DatabaseError.js";
+import UserAccountPermissions from "./UserAccountPermissions.js";
 
 /**
  * @description The model for a users account.
- * @param {String} id - The id of the users account.
+ * @param {String} _id - The id of the users account.
  * @param {String} user - The id of the user of the users account.
  * @param {String} username - The username of the users.
  * @param {String} password - The password of the users.
  * @param {Array<String>} settings - The settings of the users.
+ * @param {Array<String>} permissions - The permissions of the users.
  * */
 export default class UserAccount {
 
     /**
      * @description The constructor for a users account.
-     * @param {String} id - The id of the users account.
-     * @param {User} user - The users of the users account.
+     * @param {String} user - The id of the user that the account belongs to.
      * @param {String} username - The username of the users.
      * @param {String} password - The password of the users.
      * @param {Array<String>} settings - The settings of the users.
      * @param {Array<String>} permissions - The permissions of the users.
      */
     constructor(
-        id,
         user,
         username,
         password,
         settings,
         permissions
     ) {
-        this.id = id;
         this.user = user;
         this.username = username;
         this.password = password;
         this.settings = settings;
         this.permissions = permissions;
 
-        validateNotEmpty('User account id', id);
-        validateObject('User account user', user);
-        validateNotEmpty('User account username', username);
-        validateNotEmpty('User account password', password);
-        validateArray('User account settings', settings);
-        validateArray('User account permissions', permissions);
-
         for (let perm of permissions) {
 
             if (typeof perm !== 'string') throw new Error(`User account permissions must be of type string:\n${ perm }`);
 
-            const allPerms = Object.keys(AccountSettings);
+            const allPerms = Object.keys(UserAccountPermissions);
             if (!allPerms.includes(perm)) throw new Error(`User account permission does not exist:\n${ perm }`);
 
         }
 
-    }
-
-    get _id() {
-        return this.id;
-    }
-
-    set _id(value) {
-        validateNotEmpty('User account id', value);
-        this.id = value;
     }
 
     get _user() {
@@ -81,7 +63,7 @@ export default class UserAccount {
     }
 
     set _user(value) {
-        validateObject('User account user', value);
+        validateNotEmpty('User account user', value);
         this.user = value;
     }
 
@@ -137,7 +119,8 @@ export default class UserAccount {
      * @return {Promise<Object>} The users account.
      * */
     static async getUserAccountById(id) {
-        return await getDocument('userAccounts', id);
+        const document = await getDocument(UserAccountSchema, id);
+        return await this.populateUserAccount(document);
     }
 
     /**
@@ -146,9 +129,11 @@ export default class UserAccount {
      * @return {Promise<UserAccount>} The users account.
      */
     static async getUserAccountByUsername(username) {
-        return await getDocumentByRule(UserAccountSchema, {
+        const document = await getDocumentByRule(UserAccountSchema, {
             username: username
         });
+
+        return await this.populateUserAccount(document);
     }
 
     /**
@@ -157,11 +142,13 @@ export default class UserAccount {
      * @return {Promise<UserAccount>} The users account.
      */
     static async getUserAccountByUser(user) {
-        return await getDocumentByRule(UserAccountSchema, {
+        const document = await getDocumentByRule(UserAccountSchema, {
             user: {
                 id: user._id
             }
         });
+
+        return await this.populateUserAccount(document);
     }
 
     /**
@@ -175,7 +162,7 @@ export default class UserAccount {
         const insertedUserAccount = await createDocument(UserAccountSchema, userAccount);
         if (!insertedUserAccount) throw new DatabaseError(`Failed to create user account:\n${ userAccount }`);
 
-        return insertedUserAccount;
+        return await this.populateUserAccount(insertedUserAccount);
     }
 
     /**
@@ -189,7 +176,7 @@ export default class UserAccount {
         const updatedUserAccount = await updateDocument(UserAccountSchema, userAccount._id, userAccount);
         if (!updatedUserAccount) throw new DatabaseError(`Failed to update user account:\n${ userAccount }`);
 
-        return this.populateUserAccount(updatedUserAccount);
+        return await this.populateUserAccount(updatedUserAccount);
 
     }
 
@@ -210,11 +197,39 @@ export default class UserAccount {
     /**
      * @description Populate a users account.
      * @param {Object} userAccount - The users account to populate.
-     * @return {UserAccount} The populated users account.
+     * @return {Promise<UserAccount>} The populated users account.
      */
-    static populateUserAccount(userAccount) {
-        return userAccount
-            .populate('user');
+    static async populateUserAccount(userAccount) {
+
+        try {
+
+            userAccount = await userAccount
+                                    .populate([
+                                        {
+                                            path: 'user',
+                                            populate: [
+                                                { path: 'classes' },
+                                                { path: 'extra_courses' }
+                                            ]
+                                        }
+                                    ]);
+
+            const populatedUserAccount = new UserAccount(
+                userAccount.user,
+                userAccount.username,
+                userAccount.password,
+                userAccount.settings,
+                userAccount.permissions
+            );
+            populatedUserAccount._id = userAccount._id;
+
+            return populatedUserAccount;
+
+        }
+        catch (error) {
+            throw new DatabaseError(`Failed to populate user account with id '${ userAccount._id }:'\n${ error }`);
+        }
+
     }
 
     hasPermission(permission) {

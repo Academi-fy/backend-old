@@ -31,21 +31,21 @@ Der Blackboard-Cache wird alle **10 Minuten** aktualisiert sowie:
 ## Attribute
 
 ```javascript
-new Blackboard(
-    /*id*/ "616f6c6c6f7765646e657773",
-    /*title*/ "Titel",
-    /*author*/ {...},
-    /*coverImage*/ "https://example.com/image.png",
-    /*text*/ "Text",
-    /*tags*/ [ 'tag1', 'tag2' ],
-    /*date*/ 1701475668245,
-    /*state*/ 'SUGGESTED'
-)
+Blackboard {
+    _id: "616f6c6c6f7765646e657773",
+    title: "Titel",
+    author: {...},
+    coverImage: "https://example.com/image.png",
+    text: "Text",
+    tags: [ 'tag1', 'tag2' ],
+    date: 1701475668245,
+    state: 'SUGGESTED'
+}
 ```
 
 | Attribut     | Typ                                                     | Beschreibung                                                                                                                                                                               |
 |--------------|---------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `id`         | String                                                  | Die ID des Blackboards.                                                                                                                                                                    |
+| `_id`        | String                                                  | Die ID des Blackboards.                                                                                                                                                                    |
 | `title`      | String                                                  | Der Titel des Blackboards.                                                                                                                                                                 |
 | `author`     | [User](https://github.com/Academi-fy/backend/wiki/User) | Der Autor des Blackboards.                                                                                                                                                                 |
 | `coverImage` | String                                                  | Der Link zum Coverbild des Blackboards.                                                                                                                                                    |

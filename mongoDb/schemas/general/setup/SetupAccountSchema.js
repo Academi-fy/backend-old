@@ -19,11 +19,6 @@ const { Schema, Types: { ObjectId } } = mongoose;
 export default new Schema(
     {
 
-        id: {
-            type: Number,
-            required: true,
-            unique: true
-        },
         schoolName: {
             type: String,
             required: true

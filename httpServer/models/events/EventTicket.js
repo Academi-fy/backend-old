@@ -16,7 +16,7 @@ const expirationTime = 15 * 60 * 1000;
 
 /**
  * @description The class for an event ticket.
- * @param {String} id - The id of the event ticket.
+ * @param {String} _id - The id of the event ticket.
  * @param {Event} event - The id of the event of the ticket.
  * @param {User} buyer - The id of the buyer of the ticket.
  * @param {Number} price - The price of the ticket.
@@ -26,39 +26,21 @@ export default class EventTicket {
 
     /**
      * @description The constructor for an event ticket.
-     * @param {String} id - The id of the event ticket.
      * @param {String} event - The id of the event of the ticket.
      * @param {String} buyer - The id of the buyer of the ticket.
      * @param {Number} price - The price of the ticket.
      * @param {Number} saleDate - The date the ticket was sold.
      */
     constructor(
-        id,
         event,
         buyer,
         price,
         saleDate
     ) {
-        this.id = id;
         this.event = event;
         this.buyer = buyer;
         this.price = price;
         this.saleDate = saleDate;
-
-        validateNotEmpty('Event ticket id', id);
-        validateObject('Event ticket event', event);
-        validateObject('Event ticket buyer', buyer);
-        validateNumber('Event ticket price', price);
-        validateNumber('Event ticket sale date', saleDate);
-    }
-
-    get _id() {
-        return this.id;
-    }
-
-    set _id(value) {
-        validateNotEmpty('id', value)
-        this.id = value;
     }
 
     get _event() {
@@ -109,7 +91,7 @@ export default class EventTicket {
         let eventTickets = [];
         for (const eventTicket in eventTicketsFromDb) {
             eventTickets.push(
-                this.populateEvent(eventTicket)
+                await this.populateEvent(eventTicket)
             );
         }
 
@@ -181,7 +163,7 @@ export default class EventTicket {
         if (!insertedEventTicket) throw new DatabaseError(`Failed to create event ticket:\n${ eventTicket }`);
 
         eventTickets.push(
-            this.populateEvent(insertedEventTicket)
+            await this.populateEvent(insertedEventTicket)
         );
         cache.put('eventTickets', eventTickets, expirationTime);
 
@@ -207,7 +189,7 @@ export default class EventTicket {
         let updatedEventTicket = await updateDocument(EventTicketSchema, eventTicket._id, eventTicket);
         if (!updatedEventTicket) throw new DatabaseError(`Failed to update event ticket:\n${ eventTicket }`);
 
-        updatedEventTicket = this.populateEvent(updatedEventTicket);
+        updatedEventTicket = await this.populateEvent(updatedEventTicket);
 
         eventTickets.splice(eventTickets.indexOf(eventTicket), 1, updatedEventTicket);
         cache.put('eventTickets', eventTickets, expirationTime);
@@ -257,12 +239,34 @@ export default class EventTicket {
     /**
      * @description Populates the event ticket.
      * @param {Object} eventTicket - The event ticket to populate.
-     * @returns {EventTicket} - The populated event ticket.
+     * @returns {Promise<EventTicket>} - The populated event ticket.
      */
-    static populateEvent(eventTicket) {
-        return eventTicket
-            .populate('event')
-            .populate('buyer');
+    static async populateEvent(eventTicket) {
+
+        try {
+
+            eventTicket = await eventTicket
+                                    .populate([
+                                        {
+                                            path: 'event',
+                                            populate: [
+                                                { path: 'clubs' },
+                                                { path: 'tickets' }
+                                            ]
+                                        },
+                                        {
+                                            path: 'buyer',
+                                            populate: [
+                                                { path: 'classes' },
+                                                { path: 'extra_courses' }
+                                            ]
+                                        }
+                                    ]);
+
+        } catch (error) {
+            throw new DatabaseError(`Failed to populate event ticket:\n${ eventTicket }\n${ error }`);
+        }
+
     }
 
 }

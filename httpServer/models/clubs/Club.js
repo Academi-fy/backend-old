@@ -17,22 +17,38 @@ import { getModel } from "../../../mongoDb/initializeSchemas.js";
 // Cache expiration time in milliseconds
 const expirationTime = 5 * 60 * 1000;
 
+/**
+ * @description Class representing a Club
+ * @param {String} _id - The id of the club.
+ * @param {String} name - The name of the club.
+ * @param {ClubDetails} details - The details of the club.
+ * @param {Array<User>} leaders - The leaders of the club.
+ * @param {Array<User>} members - The members of the club.
+ * @param {Chat} chat - The chat of the club.
+ * @param {Array<Event>} events - The events of the club.
+ * @param {String} state - The state of the club. Valid states are:
+     * 'SUGGESTED', 'REJECTED', 'APPROVED',
+     * 'EDIT_SUGGESTED', 'EDIT_REJECTED', 'EDIT_APPROVED',
+     * 'DELETE_SUGGESTED', 'DELETE_REJECTED', 'DELETE_APPROVED'
+ * @param {Array<Club>} editHistory - The edit history of the club.
+ */
 export default class Club {
 
     /**
      * @description Create a club.
-     * @param {String} id - The id of the club.
      * @param {String} name - The name of the club.
      * @param {ClubDetails} details - The details of the club.
-     * @param {Array<User>} leaders - The leaders of the club.
-     * @param {Array<User>} members - The members of the club.
-     * @param {Chat} chat - The chat of the club.
-     * @param {Array<Event>} events - The events of the club.
-     * @param {String} state - The state of the club. Valid states are: 'SUGGESTED', 'REJECTED', 'ACCEPTED'.
+     * @param {Array<String>} leaders - The ids of the leaders of the club.
+     * @param {Array<String>} members - The ids of the members of the club.
+     * @param {String} chat - The id of the chat of the club.
+     * @param {Array<String>} events - The ids of the events of the club.
+     * @param {String} state - The state of the club. Valid states are:
+         * 'SUGGESTED', 'REJECTED', 'APPROVED',
+         * 'EDIT_SUGGESTED', 'EDIT_REJECTED', 'EDIT_APPROVED',
+         * 'DELETE_SUGGESTED', 'DELETE_REJECTED', 'DELETE_APPROVED'
      * @param {Array<Club>} editHistory - The edit history of the club.
      */
     constructor(
-        id,
         name,
         details,
         leaders,
@@ -42,7 +58,6 @@ export default class Club {
         state,
         editHistory
     ) {
-        this.id = id;
         this.name = name;
         this.details = details;
         this.leaders = leaders;
@@ -51,25 +66,6 @@ export default class Club {
         this.events = events;
         this.state = state;
         this.editHistory = editHistory;
-
-        validateNotEmpty('Club id', this.id);
-        validateNotEmpty('Club name', this.name);
-        validateObject('Club details', this.details);
-        validateArray('Club leaders', this.leaders);
-        validateArray('Club members', this.members);
-        validateObject('Club chat', this.chat);
-        validateArray('Club events', this.events);
-        validateNotEmpty('Club state', this.state);
-        validateArray('Club edit history', this.editHistory);
-    }
-
-    get _id() {
-        return this.id;
-    }
-
-    set _id(value) {
-        validateNotEmpty('Club id', value);
-        this.id = value;
     }
 
     get _name() {
@@ -132,7 +128,7 @@ export default class Club {
 
     set _state(value) {
         validateNotEmpty('Club state', value);
-        if(!['SUGGESTED', 'REJECTED', 'ACCEPTED'].includes(value)) throw new Error(`Invalid club state: ${ value }`);
+        if(!['SUGGESTED', 'REJECTED', 'APPROVED'].includes(value)) throw new Error(`Invalid club state: ${ value }`);
         this.state = value;
     }
 
@@ -312,24 +308,59 @@ export default class Club {
     /**
      * @description Populate a club.
      * @param {Object} club - The club to populate.
-     * @return {Club} The populated club.
+     * @return {Promise<Club>} The populated club.
      */
     static async populateClub(club) {
-        try {
-            club = await getModel(ClubSchema).findOne({ id: club.id })
-                .populate(['leaders', 'members', 'chat', 'events'])
-                .exec();
 
-            return new Club(
-                club.id,
+        try {
+
+            club = await club
+                            .populate([
+                                {
+                                    path: 'leaders',
+                                    populate: [
+                                        { path: 'classes' },
+                                        { path: 'extra_courses' },
+                                    ]
+                                },
+                                {
+                                    path: 'members',
+                                    populate: [
+                                        { path: 'classes' },
+                                        { path: 'extra_courses' },
+                                    ]
+                                },
+                                {
+                                    path: 'chat',
+                                    populate: [
+                                        { path: 'targets' },
+                                        { path: 'courses' },
+                                        { path: 'clubs' }
+                                    ]
+                                },
+                                {
+                                    path: 'events',
+                                    populate: [
+                                        { path: 'clubs' },
+                                        { path: 'tickets' }
+                                    ]
+                                },
+                            ]);
+
+            const populatedClub = new Club(
                 club.name,
                 club.details,
                 club.leaders,
                 club.members,
                 club.chat,
                 club.events,
-                club.state
+                club.state,
+                club.editHistory
             );
+            populatedClub._id = club._id;
+
+            return populatedClub;
+
         } catch (error) {
             throw new DatabaseError(`Failed to populate club:\n${ club }\n${ error }`);
         }

@@ -17,7 +17,7 @@ const expirationTime = 5 * 60 * 1000;
 
 /**
  * @description Class representing a school class.
- * @param {String} id - The id of the class.
+ * @param {String} _id - The id of the class.
  * @param {Grade} grade - The grade of the class.
  * @param {Array<Course>} courses - The courses of the class.
  * @param {Array<User>} members - The members of the class.
@@ -27,39 +27,21 @@ export default class Class {
 
     /**
      * @description Create a class.
-     * @param {String} id - The id of the class.
      * @param {String} grade - The id of the grade of the class.
      * @param {Array<String>} courses - The ids of the courses of the class.
      * @param {Array<String>} members - The ids of the members of the class.
      * @param {String} specified_grade - The specified grade of the class.
      */
     constructor(
-        id,
         grade,
         courses,
         members,
         specified_grade
     ) {
-        this.id = id;
         this.grade = grade;
         this.courses = courses;
         this.members = members;
         this.specified_grade = specified_grade;
-
-        validateNotEmpty('Class id', id);
-        validateNotEmpty('Class grade', grade);
-        validateArray('Class courses', courses);
-        validateArray('Class members', members);
-        validateNotEmpty('Class specified grade', specified_grade);
-    }
-
-    get _id() {
-        return this.id;
-    }
-
-    set _id(value) {
-        validateNotEmpty('Class id', value);
-        this.id = value;
     }
 
     get _grade() {
@@ -110,7 +92,7 @@ export default class Class {
         const classes = [];
         for (const class_ of classesFromDb) {
             classes.push(
-                this.populateClass(class_)
+                await this.populateClass(class_)
             )
         }
 
@@ -183,7 +165,7 @@ export default class Class {
         if (!insertedClass) throw new DatabaseError(`Failed to create class:\n${ class_ }`);
 
         classes.push(
-            this.populateClass(insertedClass)
+            await this.populateClass(insertedClass)
         );
         cache.put('classes', classes, expirationTime);
 
@@ -210,7 +192,7 @@ export default class Class {
         let updatedClass = await updateDocument(ClassSchema, classId, updateClass);
         if (!updatedClass) throw new DatabaseError(`Failed to update class:\n${ updateClass }`);
 
-        updatedClass = this.populateClass(updatedClass);
+        updatedClass = await this.populateClass(updatedClass);
 
         classes.splice(classes.findIndex(class_ => class_._id === classId), 1, updatedClass);
         cache.put('classes', classes, expirationTime);
@@ -261,11 +243,52 @@ export default class Class {
      * @param {Object} class_ - The class to populate.
      * @return {Class} The populated class.
      * */
-    static populateClass(class_) {
-        return class_
-            .populate('grade')
-            .populate('courses')
-            .populate('members');
+    static async populateClass(class_) {
+
+        try {
+
+            class_ = await class_
+                            .populate([
+                                {
+                                    path: 'grade',
+                                    populate: [
+                                        { path: 'classes' }
+                                    ]
+                                },
+                                {
+                                    path: 'course',
+                                    populate: [
+                                        { path: 'members' },
+                                        { path: 'classes' },
+                                        { path: 'teacher' },
+                                        { path: 'chat' },
+                                        { path: 'subject' },
+                                    ]
+                                },
+                                {
+                                    path: 'members',
+                                    populate: [
+                                        { path: 'classes' },
+                                        { path: 'extra_courses' }
+                                    ]
+                                },
+                            ]);
+
+            const populatedClass = new Class(
+                class_.grade,
+                class_.courses,
+                class_.members,
+                class_.specified_grade
+            );
+            populatedClass._id = class_._id;
+
+            return populatedClass;
+
+        }
+        catch (error) {
+            throw new DatabaseError(`Failed to populate event:\n${ class_ }\n${ error }`);
+        }
+
     }
 
 }

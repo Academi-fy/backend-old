@@ -15,7 +15,7 @@ const { Schema, Types: { ObjectId } } = mongoose;
  * @param {String} text - The text of the blackboard.
  * @param {Array<String>} tags - The tags of the blackboard.
  * @param {Number} expirationDate - The date when the blackboard expires.
- * @param {String} state - The state of the blackboard. Valid states are: 'SUGGESTED', 'REJECTED', 'APPROVED', 'EDIT_SUGGESTED', 'EDIT_REJECTED', 'EDIT_APPROVED', 'DELETE_SUGGESTED', 'DELETE_REJECTED', 'DELETE_APPROVED'
+ * @param {String} state - The state of the blackboard. Valid states are: 'SUGGESTED', 'APPROVED', 'APPROVED', 'EDIT_SUGGESTED', 'EDIT_APPROVED', 'EDIT_APPROVED', 'DELETE_SUGGESTED', 'DELETE_APPROVED', 'DELETE_APPROVED'
  * @param {Date} createdAt - The date the ticket was created.
  * @param {Date} updatedAt - The date the ticket was last updated.
  * @return {Schema} The schema for a blackboard.

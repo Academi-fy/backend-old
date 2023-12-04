@@ -25,12 +25,13 @@ const expirationTime = 2 * 60 * 1000;
 
 /**
  * @description Class representing a Message.
- * @param {String} id - The id of the message.
- * @param {Chat} chat - The chat that the message belongs to.
- * @param {User} author - The author of the message.
+ * @param {String} _id - The id of the message.
+ * @param {Chat} chat - The id of the chat that the message belongs to.
+ * @param {User} author - The id of the author of the message.
  * @param {Array<FileContent | ImageContent | PollContent | TextContent | VideoContent>} content - The content of the message.
  * @param {Array<MessageReaction>} reactions - The reactions to the message.
- * @param {Array<EditedMessage>} editHistory - The editHistory made to the message.
+ * @param {Message | null} answer - The message that this message is an answer to.
+ * @param {Array<Message>} editHistory - The editHistory made to the message.
  * @param {Number} date - The date the message was created.
  */
 export default class Message {
@@ -38,17 +39,15 @@ export default class Message {
 
     /**
      * @description Create a message.
-     * @param {String} id - The id of the message.
      * @param {String} chat - The id of the chat that the message belongs to.
      * @param {String} author - The id of the author of the message.
      * @param {Array<FileContent | ImageContent | PollContent | TextContent | VideoContent>} content - The content of the message.
      * @param {Array<MessageReaction>} reactions - The reactions to the message.
-     * @param {Message} answer - The message that this message is an answer to.
+     * @param {String | null} answer - The id of the message that this message is an answer to.
      * @param {Array<Message>} editHistory - The editHistory made to the message.
      * @param {Number} date - The date the message was created.
      */
     constructor(
-        id,
         chat,
         author,
         content,
@@ -57,7 +56,6 @@ export default class Message {
         editHistory,
         date
     ) {
-        this.id = id;
         this.chat = chat;
         this.author = author;
         this.content = content;
@@ -65,14 +63,6 @@ export default class Message {
         this.answer = answer;
         this.editHistory = editHistory;
         this.date = date;
-
-        validateNotEmpty('Message id', id);
-        validateObject('Message chat', chat);
-        validateObject('Message author', author);
-        validateObject('Message content', content);
-        validateArray('Message reactions', reactions);
-        validateArray('Message editHistory', editHistory);
-        validateNumber('Message date', date);
     }
 
     get _chat() {
@@ -80,7 +70,7 @@ export default class Message {
     }
 
     set _chat(value) {
-        validateObject('Message chat', value);
+        validateNotEmpty('Message chat', value);
         this.chat = value;
     }
 
@@ -89,7 +79,7 @@ export default class Message {
     }
 
     set _author(value) {
-        validateObject('Message author', value);
+        validateNotEmpty('Message author', value);
         this.author = value;
     }
 
@@ -150,7 +140,7 @@ export default class Message {
         const messages = [];
         for (const message of messagesFromDb) {
             messages.push(
-                this.populateMessage(message)
+                await this.populateMessage(message)
             );
         }
 
@@ -167,7 +157,7 @@ export default class Message {
 
         const cacheResults = cache.get("messages");
 
-        if (!cacheResults) {
+        if (cacheResults) {
             return cacheResults;
         }
         else return await this.updateMessageCache();
@@ -223,7 +213,7 @@ export default class Message {
         if (!insertedMessage) throw new DatabaseError(`Failed to create message:\n${ message }`);
 
         messages.push(
-            this.populateMessage(insertedMessage)
+            await this.populateMessage(insertedMessage)
         );
         cache.put('messages', messages, expirationTime);
 
@@ -251,7 +241,7 @@ export default class Message {
         let updatedMessage = await updateDocument(MessageSchema, messageId, updateMessage);
         if (!updatedMessage) throw new DatabaseError(`Failed to update message:\n${ updateMessage }`);
 
-        updatedMessage = this.populateMessage(updatedMessage);
+        updatedMessage = await this.populateMessage(updatedMessage);
 
         messages.splice(messages.findIndex(message => message._id === messageId), 1, updatedMessage);
         cache.put('messages', messages, expirationTime);
@@ -303,12 +293,57 @@ export default class Message {
     /**
      * @description Populate a message.
      * @param {Object} message - The message to populate.
-     * @return {Message} The populated message.
+     * @return {Promise<Message>} The populated message.
      * */
-    static populateMessage(message) {
-        return message
-            .populate('chat')
-            .populate('author');
+    static async populateMessage(message) {
+
+        try {
+
+            message = await message
+                                .populate([
+                                    {
+                                        path: 'chat',
+                                        populate: [
+                                            { path: 'targets' },
+                                            { path: 'courses' },
+                                            { path: 'clubs' },
+                                            { path: 'messages' }
+                                        ]
+                                    },
+                                    {
+                                        path: 'author',
+                                        populate: [
+                                            { path: 'classes' },
+                                            { path: 'extra_courses' }
+                                        ]
+                                    },
+                                    {
+                                        path: 'answer',
+                                        populate: [
+                                            { path: 'chat' },
+                                            { path: 'author' },
+                                            { path: 'answer' }
+                                        ]
+                                    }
+                                ]);
+
+            const populatedMessage = new Message(
+                message.chat,
+                message.author,
+                message.content,
+                message.reactions,
+                message.answer,
+                message.editHistory,
+                message.date
+            );
+            populatedMessage._id = message._id;
+
+            return populatedMessage;
+
+        } catch (error) {
+            throw new DatabaseError(`Failed to populate message:\n${ message }\n${ error }`);
+        }
+
     }
 
 }

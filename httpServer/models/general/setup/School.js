@@ -18,7 +18,7 @@ import RetrievalError from "../../../errors/RetrievalError.js";
 
 /**
  * @description Class representing a school.
- * @param {String} id - The id of the school.
+ * @param {String} _id - The id of the school.
  * @param {String} name - The name of the school.
  * @param {Array<Grade>} grades - The grades in the school.
  * @param {Array<Course>} courses - The courses in the school.
@@ -34,7 +34,6 @@ export default class School {
 
     /**
      * @description Create a school.
-     * @param {String} id - The id of the school.
      * @param {String} name - The name of the school.
      * @param {Array<String>} grades - The ids of the grades in the school.
      * @param {Array<String>} courses - The ids of the courses in the school.
@@ -47,7 +46,6 @@ export default class School {
      * @param {Array<String>} blackboards - The ids of the blackboards in the school.
      * */
     constructor(
-        id,
         name,
         grades,
         courses,
@@ -59,7 +57,6 @@ export default class School {
         events,
         blackboards
     ) {
-        this.id = id;
         this.name = name;
         this.grades = grades;
         this.courses = courses;
@@ -70,27 +67,6 @@ export default class School {
         this.clubs = clubs;
         this.events = events;
         this.blackboards = blackboards;
-
-        validateNotEmpty('School id', id);
-        validateNotEmpty('School name', name);
-        validateArray('School grades', grades);
-        validateArray('School courses', courses);
-        validateArray('School members', members);
-        validateArray('School classes', classes);
-        validateArray('School messages', messages);
-        validateArray('School subjects', subjects);
-        validateArray('School clubs', clubs);
-        validateArray('School events', events);
-        validateArray('School blackboards', blackboards);
-    }
-
-    get _id() {
-        return this.id;
-    }
-
-    set _id(value) {
-        validateNotEmpty('School id', value);
-        this.id = value;
     }
 
     get _name() {
@@ -237,7 +213,7 @@ export default class School {
         const insertedSchool = await createDocument(SchoolSchema, school);
         if (!insertedSchool) throw new DatabaseError(`Failed to create school:\n${ school }`);
 
-        return this.populateSchool(insertedSchool);
+        return await this.populateSchool(insertedSchool);
 
     }
 
@@ -252,7 +228,7 @@ export default class School {
         const updatedSchool = await updateDocument(SchoolSchema, schoolId, updateSchool);
         if (!updatedSchool) throw new DatabaseError(`Failed to update school:\n${ updatedSchool }`);
 
-        return this.populateSchool(updatedSchool);
+        return await this.populateSchool(updatedSchool);
 
     }
 
@@ -272,20 +248,102 @@ export default class School {
     /**
      * @description Populate a school.
      * @param {Object} school - The school to populate.
-     * @return {School} The populated school.
+     * @return {Promise<School>} The populated school.
      */
-    static populateSchool(school) {
-        //TODO populate
-        return school
-            .populate('grades')
-            .populate('courses')
-            .populate('members')
-            .populate('classes')
-            .populate('messages')
-            .populate('subjects')
-            .populate('clubs')
-            .populate('events')
-            .populate('blackboards');
+    static async populateSchool(school) {
+
+        try {
+
+            school = await school
+                .populate([
+                    {
+                        path: 'grades',
+                        populate: [
+                            { path: 'classes' }
+                        ]
+                    },
+                    {
+                        path: 'courses',
+                        populate: [
+                            { path: 'members' },
+                            { path: 'classes' },
+                            { path: 'teacher' },
+                            { path: 'chat' },
+                            { path: 'subject' }
+                        ]
+                    },
+                    {
+                        path: 'members',
+                        populate: [
+                            { path: 'classes' },
+                            { path: 'extra_courses' }
+                        ]
+                    },
+                    {
+                        path: 'classes',
+                        populate: [
+                            { path: 'grade' },
+                            { path: 'courses' },
+                            { path: 'members' }
+                        ]
+                    },
+                    {
+                        path: 'messages',
+                        populate: [
+                            { path: 'author' },
+                            { path: 'answer' }
+                        ]
+                    },
+                    {
+                        path: 'subjects',
+                        populate: [
+                            { path: 'courses' }
+                        ]
+                    },
+                    {
+                        path: 'clubs',
+                        populate: [
+                            { path: 'leaders' },
+                            { path: 'members' },
+                            { path: 'chat' },
+                            { path: 'events' }
+                        ]
+                    },
+                    {
+                        path: 'events',
+                        populate: [
+                            { path: 'clubs' },
+                            { path: 'tickets' }
+                        ]
+                    },
+                    {
+                        path: 'blackboards',
+                        populate: [
+                            { path: 'author' }
+                        ]
+                    },
+                ]);
+
+            const populatedSchool = new School(
+                school.name,
+                school.grades,
+                school.courses,
+                school.members,
+                school.classes,
+                school.messages,
+                school.subjects,
+                school.clubs,
+                school.events,
+                school.blackboards
+            );
+            populatedSchool._id = school._id;
+
+            return populatedSchool;
+
+        } catch (error) {
+            throw new DatabaseError(`Failed to populate school:\n${ school }\n${ error }`);
+        }
+
     }
 
 }

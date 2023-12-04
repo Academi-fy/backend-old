@@ -17,7 +17,7 @@ const expirationTime = 2 * 60 * 1000;
 
 /**
  * @description Class representing a Chat.
- * @param {String} id - The id of the chat.
+ * @param {String} _id - The id of the chat.
  * @param {String} type - The type of the chat. Valid types are: 'PRIVATE', 'GROUP', 'COURSE', 'CLUB'.
  * @param {Array<User>} targets - The targets of the chat.
  * @param {Array<Course>} courses - The courses related to the chat.
@@ -30,7 +30,6 @@ export default class Chat {
 
     /**
      * Create a chat.
-     * @param {String} id - The id of the chat.
      * @param {String} type - The type of the chat. Valid types are: 'PRIVATE', 'GROUP', 'COURSE', 'CLUB'.
      * @param {Array<String>} targets - The ids of the targets of the chat.
      * @param {Array<String>} courses - The ids of the courses related to the chat.
@@ -40,7 +39,6 @@ export default class Chat {
      * @param {Array<String>} messages - The ids of the messages in the chat.
      */
     constructor(
-        id,
         type,
         targets,
         courses,
@@ -49,7 +47,6 @@ export default class Chat {
         avatar,
         messages
     ) {
-        this.id = id;
         this.type = type;
         this.targets = targets;
         this.courses = courses;
@@ -57,15 +54,6 @@ export default class Chat {
         this.name = name;
         this.avatar = avatar;
         this.messages = messages;
-
-        validateNotEmpty('Chat id', id);
-        validateNotEmpty('Chat type', type);
-        validateArray('Chat targets', targets);
-        validateArray('Chat courses', courses);
-        validateArray('Chat clubs', clubs);
-        validateNotEmpty('Chat name', name);
-        validateNotEmpty('Chat avatar', avatar);
-        validateArray('Chat messages', messages);
     }
 
     get _type() {
@@ -144,7 +132,7 @@ export default class Chat {
         const chats = [];
         for (const chat of chatsFromDb) {
             chats.push(
-                this.populateChat(chat)
+                await this.populateChat(chat)
             );
         }
 
@@ -217,7 +205,7 @@ export default class Chat {
         if (!insertedChat) throw new DatabaseError(`Failed to create chat:\n${ chat }`);
 
         chats.push(
-            this.populateChat(insertedChat)
+            await this.populateChat(insertedChat)
         );
         cache.put('chats', chats, expirationTime);
 
@@ -244,7 +232,7 @@ export default class Chat {
         let updatedChat = await updateDocument(ChatSchema, chatId, updateChat);
         if (!updatedChat) throw new DatabaseError(`Failed to update chat:\n${ updateChat }`);
 
-        updatedChat = this.populateChat(updatedChat);
+        updatedChat = await this.populateChat(updatedChat);
 
         chats.splice(chats.findIndex(chat => chat._id === chatId), 1, updatedChat);
         cache.put('chats', chats, expirationTime);
@@ -295,14 +283,67 @@ export default class Chat {
     /**
      * @description Populate a chat.
      * @param {Object} chat - The chat to populate.
-     * @return {Chat} The populated chat.
+     * @return {Promise<Chat>} The populated chat.
      * */
-    static populateChat(chat) {
-        return chat
-            .populate('messages')
-            .populate('targets')
-            .populate('courses')
-            .populate('clubs');
+    static async populateChat(chat) {
+
+        try {
+
+            chat = await chat
+                            .populate([
+                                {
+                                    path: 'targets',
+                                    populate: [
+                                        { path: 'classes' },
+                                        { path: 'extra_courses' }
+                                    ]
+                                },
+                                {
+                                    path: 'courses',
+                                    populate: [
+                                        { path: 'members' },
+                                        { path: 'classes' },
+                                        { path: 'teacher' },
+                                        { path: 'subject' },
+                                        { path: 'chat' }
+                                    ]
+                                },
+                                {
+                                    path: 'clubs',
+                                    populate: [
+                                        { path: 'leaders' },
+                                        { path: 'members' },
+                                        { path: 'chat' },
+                                        { path: 'events' },
+                                    ]
+                                },
+                                {
+                                    path: 'messages',
+                                    populate: [
+                                        { path: 'chat' },
+                                        { path: 'author' },
+                                        { path: 'answer' }
+                                    ]
+                                },
+                            ]);
+
+            const populatedChat = new Chat(
+                chat.type,
+                chat.targets,
+                chat.courses,
+                chat.clubs,
+                chat.name,
+                chat.avatar,
+                chat.messages
+            );
+            populatedChat._id = chat._id;
+
+            return populatedChat;
+
+        } catch (error) {
+            throw new DatabaseError(`Failed to populate chat:\n${ chat }\n${ error }`);
+        }
+
     }
 
 }

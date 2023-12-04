@@ -23,27 +23,27 @@ Der Grade-Cache wird alle **10 Minuten** aktualisiert sowie:
 
 ### Grades verändern
 
-| Operation  | Permission           | [Benutzer](https://github.com/Academi-fy/backend/wiki/User) | [Lehrer](https://github.com/Academi-fy/backend/wiki/User) | [Admin](https://github.com/Academi-fy/backend/wiki/User) |
-|------------|----------------------|-------------------------------------------------------------|-----------------------------------------------------------|----------------------------------------------------------|
-| BEARBEITEN | `GRADE_EDIT`         | 🔴                                                          | 🔴                                                        | 🟢                                                       |
-| KLASSE     | `GRADE_CLASS_ADD`    | 🔴                                                          | 🔴                                                        | 🟢                                                       |
-| KLASSE     | `GRADE_CLASS_REMOVE` | 🔴                                                          | 🔴                                                        | 🟢                                                       |
+| Operation                                                             | Permission           | [Benutzer](https://github.com/Academi-fy/backend/wiki/User) | [Lehrer](https://github.com/Academi-fy/backend/wiki/User) | [Admin](https://github.com/Academi-fy/backend/wiki/User) |
+|-----------------------------------------------------------------------|----------------------|-------------------------------------------------------------|-----------------------------------------------------------|----------------------------------------------------------|
+| BEARBEITEN                                                            | `GRADE_EDIT`         | 🔴                                                          | 🔴                                                        | 🟢                                                       |
+| [Klasse](https://github.com/Academi-fy/backend/wiki/Class) hinzufügen | `GRADE_CLASS_ADD`    | 🔴                                                          | 🔴                                                        | 🟢                                                       |
+| [Klasse](https://github.com/Academi-fy/backend/wiki/Class) entfernen  | `GRADE_CLASS_REMOVE` | 🔴                                                          | 🔴                                                        | 🟢                                                       |
 
 ## Attribute
 
 ```javascript
-new Grade(
-    /*id*/ "507f191e810c19729de860ea",
-    /*name*/ 10,
-    /*classes*/ [ {...} ]
-)
+Grade {
+    _id: "507f191e810c19729de860ea",
+    level: 10,
+    classes: [ {...} ]
+}
 ```
 
-| Attribut | Type                                                             | Beschreibung                                               |
-|----------|------------------------------------------------------------------|------------------------------------------------------------|
-| id       | String                                                           | Die einzigartige ID des Grades.                            |
-| level    | Integer                                                          | Der Stufe des Grades. Möglich: `5``6``7``8``9``10``11``12` |
-| classes  | Array<[Class](https://github.com/Academi-fy/backend/wiki/Class)> | Liste mit den Klassen des Grades.                          |
+| Attribut  | Type                                                             | Beschreibung                                               |
+|-----------|------------------------------------------------------------------|------------------------------------------------------------|
+| `_id`     | String                                                           | Die einzigartige ID des Grades.                            |
+| `level`   | Integer                                                          | Der Stufe des Grades. Möglich: `5``6``7``8``9``10``11``12` |
+| `classes` | Array<[Class](https://github.com/Academi-fy/backend/wiki/Class)> | Liste mit den Klassen des Grades.                          |
 
 #### Besonderheiten
 
@@ -75,7 +75,7 @@ GET /api/grades/:id
 Erstellt eine Grade. Die Grade wird in der Datenbank gespeichert und gecacht.
 
 ``` http request
-PUT /api/grades/<class>
+PUT /api/grades/<grade>
 ```
 
 #### Grade löschen
@@ -92,7 +92,6 @@ Generiert über [mongoose](https://mongoosejs.com/docs/guide.html) [npm package]
 
 ```javascript
 {
-
     level: {
         type: Number,
         unique: true,

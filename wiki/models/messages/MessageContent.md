@@ -1,7 +1,11 @@
 Eine [Nachricht](https://github.com/Academi-fy/backend/wiki/Message) besteht auch aus dem MessageContent.
-Dieser beinhaltet den eigentlichen Inhalt der Nachricht, wie z.B. den Text oder ein Bild. \
+Dieser beinhaltet den eigentlichen Inhalt der Nachricht, wie z.B. den Text oder ein Bild. 
 
 ## Content Types
+
+| Attribute | Type   | Description           |
+|-----------|--------|-----------------------|
+| type      | String | Der Typ des Contents. |
 
 ### File
 
@@ -14,7 +18,6 @@ Dieser beinhaltet den eigentlichen Inhalt der Nachricht, wie z.B. den Text oder 
 
 | Attribute | Type   | Description                            |
 |-----------|--------|----------------------------------------|
-| type      | String | Der Typ des Contents.                  |
 | value     | Object | Das File-Objekt. _(noch zu erledigen)_ |
 
 
@@ -29,7 +32,6 @@ Dieser beinhaltet den eigentlichen Inhalt der Nachricht, wie z.B. den Text oder 
 
 | Attribute | Type   | Description                             |
 |-----------|--------|-----------------------------------------|
-| type      | String | Der Typ des Contents.                   |
 | value     | Object | Das Image-Objekt. _(noch zu erledigen)_ |
 
 ### Poll
@@ -43,21 +45,19 @@ Dieser beinhaltet den eigentlichen Inhalt der Nachricht, wie z.B. den Text oder 
 
 | Attribute | Type                                                    | Description           |
 |-----------|---------------------------------------------------------|-----------------------|
-| type      | String                                                  | Der Typ des Contents. |
 | value     | [Poll](https://github.com/Academi-fy/backend/wiki/Poll) | Das Poll-Objekt.      |
 
 ### Text
 
 ```javascript
 {
-    type: "POLL",
+    type: "TEXT",
     value: "Text"
 }
 ```
 
 | Attribute | Type   | Description           |
 |-----------|--------|-----------------------|
-| type      | String | Der Typ des Contents. |
 | value     | String | Der Text.             |
 
 ### Video
@@ -71,7 +71,6 @@ Dieser beinhaltet den eigentlichen Inhalt der Nachricht, wie z.B. den Text oder 
 
 | Attribute | Type   | Description                             |
 |-----------|--------|-----------------------------------------|
-| type      | String | Der Typ des Contents.                   |
 | value     | Object | Das Video-Objekt. _(noch zu erledigen)_ |
 
 <sub>© Copyright: Daniel Dopatka, Linus Bung (2023)</sub>

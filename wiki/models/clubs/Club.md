@@ -55,29 +55,29 @@ Der Club-Cache wird alle **5 Minuten** aktualisiert sowie:
 Attribute des Club-Objekts:
 
 ```javascript
-new Club(
-    /*id:*/ "507f191e810c19729de860ea",
-    /*name:*/ "Bienen AG",
-    /*details:*/ {...},
-    /*avatar:*/ "https://link.to/avatar.png",
-    /*events:*/ [ {...} ],
-    /*members:*/ [ {...} ],
-    /*leaders:*/ [ {...} ],
-    /*state:*/ "APPROVED",
-    /*editHistory:*/ [ {...} ]
-)
+Club {
+    _id: "507f191e810c19729de860ea",
+    name: "Bienen AG",
+    details: {...},
+    avatar: "https://link.to/avatar.png",
+    events: [ {...} ],
+    members: [ {...} ],
+    leaders: [ {...} ],
+    state: "APPROVED",
+    editHistory: [ {...} ]
+}
 ```
 
 | Attribut      | Type                                                                  | Beschreibung                                                                                                                             |
 |---------------|-----------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------|
-| `id`          | String                                                                | Der einzigartige Identifier für den Club.                                                                                                |
+| `_id`         | String                                                                | Der einzigartige Identifier für den Club.                                                                                                |
 | `name`        | String                                                                | Name des Clubs.                                                                                                                          |
 | `details`     | [ClubDetails](https://github.com/Academi-fy/backend/wiki/ClubDetails) | Details des Clubs.                                                                                                                       |
 | `avatar`      | String                                                                | Link zu Club-Avatar                                                                                                                      |
 | `events`      | Array<[Event](https://github.com/Academi-fy/backend/wiki/Event)>      | [Events](https://github.com/Academi-fy/backend/wiki/Event) des Clubs.                                                                    |
 | `members`     | Array<[User](https://github.com/Academi-fy/backend/wiki/User)>        | [Mitglieder](https://github.com/Academi-fy/backend/wiki/User) des Clubs.                                                                 |
 | `leaders`     | Array<[User](https://github.com/Academi-fy/backend/wiki/User)>        | [Leiter](https://github.com/Academi-fy/backend/wiki/User) des Clubs.                                                                     |
-| `state`       | String                                                                | Ob der Club genehmigt wurde. Möglich sind: `SUGGESTED`, `REJECTED`, `APPROVED`, `DELETE_SUGGESTED`, `DELETE_REJECTED`, `DELETE_ACCEPTED` |
+| `state`       | String                                                                | Ob der Club genehmigt wurde. Möglich sind: `SUGGESTED`, `REJECTED`, `APPROVED`, `DELETE_SUGGESTED`, `DELETE_REJECTED`, `DELETE_APPROVED` |
 | `editHistory` | Array<Club>                                                           | Vergangene Bearbeitungen des Clubs.                                                                                                      |
 
 #### Besonderheiten
@@ -128,13 +128,8 @@ DELETE /api/clubs/:id
 
 Generiert über [mongoose](https://mongoosejs.com/docs/guide.html) [npm package]
 
-``` javascript
+```javascript
 {
-    id: {
-        type: ObjectId,
-        unique: true,
-        required: true
-    },
     name: {
         type: String,
         required: true,

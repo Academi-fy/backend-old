@@ -16,7 +16,7 @@ const expirationTime = 5 * 60 * 1000;
 
 /**
  * @description Class representing an Event.
- * @param {String} id - The ID of the event.
+ * @param {String} _id - The id of the event.
  * @param {String} title - The title of the event.
  * @param {String} description - The description of the event.
  * @param {String} location - The location of the event.
@@ -26,27 +26,32 @@ const expirationTime = 5 * 60 * 1000;
  * @param {Number} endDate - The end date of the event.
  * @param {Array<EventInformation>} information - The information of the event.
  * @param {Array<EventTicket>} tickets - The tickets of the event.
- * @param {String} state - The state of the event. Valid states are: 'SUGGESTED', 'REJECTED', 'ACCEPTED'.
+ * @param {String} state - The state of the event. Valid states are:
+ * 'SUGGESTED', 'REJECTED', 'APPROVED',
+ * 'EDIT_SUGGESTED', 'EDIT_REJECTED', 'EDIT_APPROVED',
+ * 'DELETE_SUGGESTED', 'DELETE_REJECTED', 'DELETE_APPROVED'
+ * @param {Array<Event>} editHistory - The edit history of the event.
  * */
 export default class Event {
 
     /**
      * @description Create an event.
-     * @param {String} id - The ID of the event.
      * @param {String} title - The title of the event.
      * @param {String} description - The description of the event.
      * @param {String} location - The location of the event.
      * @param {String} host - The host of the event.
-     * @param {Array<String>} clubs - The clubs of the event.
+     * @param {Array<String>} clubs - The ids of the clubs of the event.
      * @param {Number} startDate - The start date of the event.
      * @param {Number} endDate - The end date of the event.
      * @param {Array<EventInformation>} information - The information of the event.
-     * @param {Array<EventTicket>} tickets - The tickets of the event.
-     * @param {String} state - The state of the event. Valid states are: 'SUGGESTED', 'REJECTED', 'ACCEPTED'.
+     * @param {Array<String>} tickets - The ids of the tickets of the event.
+     * @param {String} state - The state of the event. Valid states are:
+     * 'SUGGESTED', 'REJECTED', 'APPROVED',
+     * 'EDIT_SUGGESTED', 'EDIT_REJECTED', 'EDIT_APPROVED',
+     * 'DELETE_SUGGESTED', 'DELETE_REJECTED', 'DELETE_APPROVED'
      * @param {Array<Event>} editHistory - The edit history of the event.
      */
     constructor(
-        id,
         title,
         description,
         location,
@@ -59,8 +64,6 @@ export default class Event {
         state,
         editHistory
     ) {
-
-        this.id = id;
         this.title = title;
         this.description = description;
         this.location = location;
@@ -72,19 +75,6 @@ export default class Event {
         this.tickets = tickets;
         this.state = state;
         this.editHistory = editHistory;
-
-        validateNotEmpty('Event id', id);
-        validateNotEmpty('Event title', title);
-        validateNotEmpty('Event description', description);
-        validateNotEmpty('Event location', location);
-        validateNotEmpty('Event host', host);
-        validateArray('Event clubs', clubs);
-        validateNumber('Event start date', startDate);
-        validateNumber('Event end date', endDate);
-        validateArray('Event information', information);
-        validateArray('Event tickets', tickets);
-        validateNotEmpty('Event state', state);
-        validateArray('Event edit history', editHistory);
     }
 
     get _title() {
@@ -197,7 +187,7 @@ export default class Event {
         const events = [];
         for (const event of eventsFromDb) {
             events.push(
-                event
+                await this.populateEvent(event)
             )
         }
 
@@ -270,7 +260,7 @@ export default class Event {
         if (!insertedEvent) throw new DatabaseError(`Failed to create event:\n${ event }`);
 
         events.push(
-            insertedEvent
+            await this.populateEvent(insertedEvent)
         );
         cache.put(`events`, events, expirationTime);
 
@@ -299,7 +289,7 @@ export default class Event {
         if (!updatedEvent) throw new DatabaseError(`Failed to update event:\n${ updatedEvent }`);
 
         events.push(
-            updatedEvent
+            await this.populateEvent(updatedEvent)
         );
         cache.put(`events`, events, expirationTime);
 
@@ -343,6 +333,56 @@ export default class Event {
         const cacheResults = cache.get('events').find(eventInCache => eventInCache._id === event._id);
 
         return Boolean(cacheResults);
+
+    }
+
+    /**
+     * @description Populate an Event.
+     * @param {Object} event - The event to populate.
+     * @return {Promise<Event>} The populated event.
+     */
+    static async populateEvent(event) {
+
+        try {
+
+            event = await event
+                            .populate([
+                                {
+                                    path: 'clubs',
+                                    populate: [
+                                        { path: 'members' },
+                                        { path: 'leaders' }
+                                    ]
+                                },
+                                {
+                                    path: 'tickets',
+                                    populate: [
+                                        { path: 'buyer' }
+                                    ]
+                                },
+                            ]);
+
+            const populatedEvent = new Event(
+                event.title,
+                event.description,
+                event.location,
+                event.host,
+                event.clubs,
+                event.startDate,
+                event.endDate,
+                event.information,
+                event.tickets,
+                event.state,
+                event.editHistory
+            );
+            populatedEvent._id = event._id;
+
+            return populatedEvent;
+
+        }
+        catch (error) {
+            throw new DatabaseError(`Failed to populate event:\n${ event }\n${ error }`);
+        }
 
     }
 }

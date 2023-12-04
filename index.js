@@ -5,10 +5,10 @@
  */
 import dotenv from "dotenv";
 import mongoose from "mongoose";
-import Club from "./httpServer/models/clubs/Club.js";
 
 import { initializeSchemas } from "./mongoDb/initializeSchemas.js";
 import config from "./config.js";
+import Course from "./httpServer/models/general/Course.js";
 
 dotenv.config();
 
@@ -23,4 +23,6 @@ await mongoose.connect(mongoURI,
 
 initializeSchemas();
 
-console.log(await Club.getAllClubs())
+
+const courses = await Course.getAllCourses();
+console.log(courses[0])

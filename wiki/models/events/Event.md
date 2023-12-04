@@ -37,36 +37,36 @@ Der Event-Cache wird alle **5 Minuten** aktualisiert sowie:
 ## Attribute
 
 ```javascript
-new Event(
-    /*id*/ "507f191e810c19729de860ea",
-    /*title*/ "Weihnachtskonzert 2023",
-    /*description*/ "Auch in diesem Jahr findet wieder das Weihnachtskonzert statt [...]", // [...] = nur hier gekürzt
-    /*location*/ "Rotteck Aula",
-    /*host*/ "M. Pöll und die Schulband",
-    /*clubs*/ [ {...} ],
-    /*startDate*/ 1690588750679,
-    /*endDate*/ 1700588810679,
-    /*information*/ [ {...} ],
-    /*tickets*/ [ {...} ], 
-    /*state*/ "SUGGESTED",
-    /*editHistory*/ [ {...} ]
-)
+Event {
+    _id: "507f191e810c19729de860ea",
+    title: "Weihnachtskonzert 2023",
+    description: "Auch in diesem Jahr findet wieder das Weihnachtskonzert statt [...]", // [...] = nur hier gekürzt
+    location: "Rotteck Aula",
+    host: "M. Pöll und die Schulband",
+    clubs: [ {...} ],
+    startDate: 1690588750679,
+    endDate: 1700588810679,
+    information: [ {...} ],
+    tickets: [ {...} ],
+    state: "SUGGESTED",
+    editHistory: [ {...} ]
+}
 ```
 
-| Attribut      | Type                                                                                   | Beschreibung                                                                                                                           |
-|---------------|----------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------|
-| `id`          | String                                                                                 | Die einzigartige ID des Events.                                                                                                        |
-| `title`       | String                                                                                 | Der Titel des Events.                                                                                                                  |
-| `description` | String                                                                                 | Die Beschreibung des Events.                                                                                                           |
-| `location`    | String                                                                                 | Der Ort des Events.                                                                                                                    |
-| `host`        | String                                                                                 | Der Host des Events.                                                                                                                   |
-| `clubs`       | Array<[Club](https://github.com/Academi-fy/backend/wiki/Club)>                         | Die Clubs, die dem Event zugeordnet sind.                                                                                              |
-| `startDate`   | Number                                                                                 | Das Startdatum des Events. Angegeben in Millisekunden seit 1970.                                                                       |
-| `endDate`     | Number                                                                                 | Das Enddatum des Events. Angegeben in Millisekunden seit 1970.                                                                         |
-| `information` | Array<[EventInformation](https://github.com/Academi-fy/backend/wiki/EventInformation)> | Die Informationen, die dem Event zugeordnet sind.                                                                                      |
-| `tickets`     | Array<[EventTicket](https://github.com/Academi-fy/backend/wiki/EventTicket)>           | Die Tickets, die dem Event zugeordnet sind.                                                                                            |
-| `state`       | String                                                                                 | Der Zustand in der Genehmigung. Möglich: `SUGGESTED`, `REJECTED`, `APPROVED`, `DELETE_SUGGESTED`, `DELETE_REJECTED`, `DELETE_ACCEPTED` |
-| `editHistory` | Array<Event>                                                                           | Vergangene Bearbeitungen des Events.                                                                                                   |
+| Attribut      | Type                                                                                   | Beschreibung                                                                                                                                                                               |
+|---------------|----------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `_id`         | String                                                                                 | Die einzigartige ID des Events.                                                                                                                                                            |
+| `title`       | String                                                                                 | Der Titel des Events.                                                                                                                                                                      |
+| `description` | String                                                                                 | Die Beschreibung des Events.                                                                                                                                                               |
+| `location`    | String                                                                                 | Der Ort des Events.                                                                                                                                                                        |
+| `host`        | String                                                                                 | Der Host des Events.                                                                                                                                                                       |
+| `clubs`       | Array<[Club](https://github.com/Academi-fy/backend/wiki/Club)>                         | Die Clubs, die dem Event zugeordnet sind.                                                                                                                                                  |
+| `startDate`   | Number                                                                                 | Das Startdatum des Events. Angegeben in Millisekunden seit 1970.                                                                                                                           |
+| `endDate`     | Number                                                                                 | Das Enddatum des Events. Angegeben in Millisekunden seit 1970.                                                                                                                             |
+| `information` | Array<[EventInformation](https://github.com/Academi-fy/backend/wiki/EventInformation)> | Die Informationen, die dem Event zugeordnet sind.                                                                                                                                          |
+| `tickets`     | Array<[EventTicket](https://github.com/Academi-fy/backend/wiki/EventTicket)>           | Die Tickets, die dem Event zugeordnet sind.                                                                                                                                                |
+| `state`       | String                                                                                 | Der Zustand in der Genehmigung. Möglich: `SUGGESTED`, `REJECTED`, `APPROVED`, `EDIT_SUGGESTED`, `EDIT_REJECTED`, `EDIT_APPROVED`, `DELETE_SUGGESTED`, `DELETE_REJECTED`, `DELETE_APPROVED` |
+| `editHistory` | Array<Event>                                                                           | Vergangene Bearbeitungen des Events.                                                                                                                                                       |
 
 #### Besonderheiten
 

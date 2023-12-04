@@ -16,6 +16,7 @@ const expirationTime = 10 * 60 * 1000;
 
 /**
  * Represents a Grade.
+ * @param {String} _id - The id of the grade.
  * @param {Number} level - The level of the grade.
  * @param {Array<Class>} classes - The classes of the grade.
  * */
@@ -32,9 +33,6 @@ export default class Grade {
     ) {
         this.level = level;
         this.classes = classes;
-
-        validateNumber('Grade level', level);
-        validateArray('Grade classes', classes);
     }
 
     get _level() {
@@ -67,7 +65,7 @@ export default class Grade {
         const grades = [];
         for (const grade of gradesFromDb) {
             grades.push(
-                this.populateGrade(grade)
+                await this.populateGrade(grade)
             );
         }
         return grades;
@@ -138,7 +136,7 @@ export default class Grade {
         if (!insertedGrade) throw new DatabaseError(`Failed to create grade:\n${ grade }`);
 
         grades.push(
-            this.populateGrade(insertedGrade)
+            await this.populateGrade(insertedGrade)
         );
         cache.put('grades', grades, expirationTime);
 
@@ -163,7 +161,7 @@ export default class Grade {
         let updatedGrade = await updateDocument(GradeSchema, gradeId, updateGrade);
         if (!updatedGrade) throw new DatabaseError(`Failed to update grade:\n${ updateGrade }`);
 
-        updateGrade = this.populateGrade(updatedGrade);
+        updateGrade = await this.populateGrade(updatedGrade);
 
         grades.splice(grades.findIndex(grade => grade._id === gradeId), 1, updateGrade);
         cache.put('grades', grades, expirationTime);
@@ -216,11 +214,35 @@ export default class Grade {
     /**
      * @description Populate a grade.
      * @param {Object} grade - The grade to populate.
-     * @returns {Grade} The populated grade.
+     * @returns {Promise<Grade>} The populated grade.
      */
-    static populateGrade(grade) {
-        return grade
-            .populate('classes');
+    static async populateGrade(grade) {
+
+        try {
+
+            grade = await grade
+                            .populate([
+                                {
+                                    path: 'classes',
+                                    populate: [
+                                        { path: 'members' },
+                                        { path: 'leaders' }
+                                    ]
+                                }
+                            ]);
+
+            const populatedGrade = new Grade(
+                grade.level,
+                grade.classes
+            );
+            populatedGrade._id = grade._id;
+
+            return populatedGrade;
+
+        } catch (error) {
+            throw new DatabaseError(`Failed to populate event:\n${ grade }\n${ error }`);
+        }
+
     }
 
 }

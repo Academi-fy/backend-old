@@ -17,7 +17,7 @@ const expirationTime = 5 * 60 * 1000;
 
 /**
  * @description Class representing a Course.
- * @param {String} id - The id of the course.
+ * @param {String} _id - The id of the course.
  * @param {Array<User>} members - The members of the course.
  * @param {Array<Class>} classes - The classes in the course.
  * @param {User} teacher - The teacher of the course.
@@ -28,7 +28,6 @@ export default class Course {
 
     /**
      * @description Create a course.
-     * @param {String} id - The id of the course.
      * @param {Array} members - The members of the course.
      * @param {Array<String>} classes - The classes in the course.
      * @param {String} teacher - The id of the teacher of the course.
@@ -36,29 +35,18 @@ export default class Course {
      * @param {String} subject - The id of the subject of the course.
      */
 
-    //TODO: Array<Grade> grades
-
     constructor(
-        id,
         members,
         classes,
         teacher,
         chat,
         subject
     ) {
-        this.id = id;
         this.members = members;
         this.classes = classes;
         this.teacher = teacher;
         this.chat = chat;
         this.subject = subject;
-
-        validateNotEmpty('Course id', id);
-        validateArray('Course members', members);
-        validateArray('Course classes', classes);
-        validateObject('Course teacher', teacher);
-        validateObject('Course chat', chat);
-        validateObject('Course subject', subject);
     }
 
     get _members() {
@@ -118,7 +106,7 @@ export default class Course {
         const courses = [];
         for (const course of coursesFromDb) {
             courses.push(
-                this.populateCourse(course)
+                await this.populateCourse(course)
             );
         }
 
@@ -191,7 +179,7 @@ export default class Course {
         if (!insertedCourse) throw new DatabaseError(`Course could not be created:\n${ course }`);
 
         courses.push(
-            this.populateCourse(insertedCourse)
+            await this.populateCourse(insertedCourse)
         );
         cache.put('courses', courses, expirationTime);
 
@@ -218,7 +206,7 @@ export default class Course {
         let updatedCourse = await updateDocument(CourseSchema, courseId, updateCourse);
         if (!updatedCourse) throw new DatabaseError(`Course could not be updated:\n${ updateCourse }`);
 
-        updatedCourse = this.populateCourse(updatedCourse);
+        updatedCourse = await this.populateCourse(updatedCourse);
 
         courses.splice(courses.findIndex(course => course._id === courseId), 1, updatedCourse);
         cache.put('courses', courses, expirationTime);
@@ -268,28 +256,65 @@ export default class Course {
     /**
      * @description Populate a course.
      * @param {Object} course - The course to populate.
-     * @return {Course} The populated course.
+     * @return {Promise<Course>} The populated course.
      **/
     static async populateCourse(course) {
 
         try {
             course = await course
-                .populate(['members', 'classes', 'teacher', 'chat', 'subject'])
-                .exec();
+                .populate([
+                    {
+                        path: 'members',
+                        populate: [
+                            { path: 'classes' },
+                            { path: 'extra_courses' },
+                        ]
+                    },
+                    {
+                        path: 'classes',
+                        populate: [
+                            { path: 'grade' },
+                            { path: 'courses' },
+                            { path: 'members' },
+                        ]
+                    },
+                    {
+                        path: 'teacher',
+                        populate: [
+                            { path: 'classes' },
+                            { path: 'extra_courses' },
+                        ]
+                    },
+                    {
+                        path: 'subject',
+                        populate: [
+                            { path: 'courses' }
+                        ]
+                    },
+                    {
+                        path: 'chat',
+                        populate: [
+                            { path: 'targets' },
+                            { path: 'courses' },
+                            { path: 'clubs' }
+                        ]
+                    },
+                ]);
 
-            return new Course(
-                course.id,
+            const populatedCourse = new Course(
                 course.members,
                 course.classes,
                 course.teacher,
                 course.chat,
                 course.subject
             );
+            populatedCourse._id = course._id;
+
+            return populatedCourse;
         }
         catch (error) {
             throw new DatabaseError(`Failed to populate course:\n${ course }\n${ error }`);
         }
-
     }
 
 }

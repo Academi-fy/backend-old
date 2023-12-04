@@ -21,10 +21,6 @@ const { Schema, Types: { ObjectId } } = mongoose;
 export default new Schema(
     {
 
-        id: {
-            type: String,
-            required: true
-        },
         user: {
             type: ObjectId,
             ref: 'User'

@@ -10,19 +10,19 @@ Sie werden **NICHT** gecacht. Außerdem können sie nicht manuell erstellt werde
 ## Attribute
 
 ```javascript
-new UserAccount(
-    /*id*/ "507f191e810c19729de860ea",
-    /*user*/ {...},
-    /*username*/ "DopatkaK2A24",
-    /*password (hashed)*/ "$2a$10$Z3J",
-    /*settings*/ {...},
-    /*permissions*/  [...]
-)
+UserAccount {
+    _id: "507f191e810c19729de860ea",
+    user: {...},
+    username: "DopatkaK2A24",
+    password: "$2a$10$Z3J", // hashed
+    settings: {...},
+    permissions:  [...]
+}
 ```
 
 | Attribut      | Type                                                                                             | Beschreibung                                                                             |
 |---------------|--------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------|
-| `id`          | String                                                                                           | Die einzigartige ID des UserAccounts.                                                    |
+| `_id`         | String                                                                                           | Die einzigartige ID des UserAccounts.                                                    |
 | `user`        | [User](https://github.com/Academi-fy/backend/wiki/User)                                          | Der [User](https://github.com/Academi-fy/backend/wiki/User), dem der UserAccount gehört. |
 | `username`    | String                                                                                           | Der Benutzername des UserAccounts.                                                       |
 | `password`    | String                                                                                           | Das Passwort des UserAccounts.                                                           |
@@ -77,26 +77,22 @@ Generiert über [mongoose](https://mongoosejs.com/docs/guide.html) [npm package]
 
 ```javascript
 {
-
-    id: {
-        type: String,
-            required: true
-    },
+        
     user: {
         type: ObjectId,
-            ref: 'User'
+        ref: 'User'
     },
     username: {
         type: String,
-            required: true
+        required: true
     },
     password: {
         type: String,
-            required: true
+        required: true
     },
     settings: {
         type: Object,
-            required: true
+        required: true
     },
     permissions: [
         {

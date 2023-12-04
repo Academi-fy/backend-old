@@ -34,20 +34,20 @@ Der User-Cache wird alle **3 Minuten** aktualisiert sowie:
 ## Attribute
 
 ```javascript
-new User(
-    /*id*/ "507f191e810c19729de860ea",
-    /*first_name*/ "Max",
-    /*last_name*/ "Mustermann",
-    /*avatar*/ "http://example.com/avatar.png",
-    /*type*/ "TEACHER",
-    /*classes*/ [ {...} ],
-    /*extra_courses*/ [ {...} ]
-)
+User {
+    _id: "507f191e810c19729de860ea",
+    first_name: "Max",
+    last_name: "Mustermann",
+    avatar: "http://example.com/avatar.png",
+    type: "TEACHER",
+    classes: [ { ... } ],
+    extra_courses: [ { ... } ]
+}
 ```
 
 | Attribut        | Type                                                               | Beschreibung                                                      |
 |-----------------|--------------------------------------------------------------------|-------------------------------------------------------------------|
-| `id`            | String                                                             | Die einzigartige ID des Users.                                    |
+| `_id`           | String                                                             | Die einzigartige ID des Users.                                    |
 | `first_name`    | String                                                             | Der Vorname des Users.                                            |
 | `last_name`     | String                                                             | Der Nachname des Users.                                           |
 | `avatar`        | String                                                             | Der Avatar des Users.                                             |
@@ -105,12 +105,6 @@ DELETE /api/users/:id
 
 ```javascript
 {
-
-    id: {
-        type: String,
-        unique: true,
-        required: true
-    },
     first_name: {
         type: String,
         required: true
