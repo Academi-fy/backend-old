@@ -23,32 +23,17 @@ Der Club-Cache wird alle **5 Minuten** aktualisiert sowie:
 🟡 = Vorschlag erlaubt,
 🔴 = Nicht erlaubt
 
-#### Basic Operations
-
-| Operation  | Permission     | [Benutzer](https://github.com/Academi-fy/backend/wiki/User) | [Lehrer](https://github.com/Academi-fy/backend/wiki/User)<sup>1</sup> | [Admin](https://github.com/Academi-fy/backend/wiki/User) |
-|------------|----------------|-------------------------------------------------------------|-----------------------------------------------------------------------|----------------------------------------------------------|
-| ERSTELLEN  | `CLUB_CREATE`  | 🟡                                                          | 🟢                                                                    | 🟢                                                       |
-| LÖSCHEN    | `CLUB_DELETE`  | 🔴                                                          | 🟡                                                                    | 🟢                                                       |
-| GENEHMIGEN | `CLUB_APPROVE` | 🔴                                                          | 🔴                                                                    | 🟢                                                       |
-| ABLEHNEN   | `CLUB_REJECT`  | 🔴                                                          | 🔴                                                                    | 🟢                                                       |
-| BEITRETEN  | `CLUB_JOIN`    | 🟢                                                          | 🟢                                                                    | 🟢                                                       |
-| VERLASSEN  | `CLUB_LEAVE`   | 🟢                                                          | 🟢                                                                    | 🟢                                                       |
-
-> <sup>1</sup> [User](https://github.com/Academi-fy/backend/wiki/User) haben, wenn sie die Leiter des Clubs sind, Lehrer-Rechte
-
-#### Club verändern
-
-| Operation                                                                          | Permission                   | [Benutzer](https://github.com/Academi-fy/backend/wiki/User) | [Lehrer](https://github.com/Academi-fy/backend/wiki/User)<sup>1</sup> | [Admin](https://github.com/Academi-fy/backend/wiki/User) |
-|------------------------------------------------------------------------------------|------------------------------|-------------------------------------------------------------|-----------------------------------------------------------------------|----------------------------------------------------------|
-| Name ÄNDERN                                                                        | `CLUB_NAME_CHANGE`           | 🔴                                                          | 🟢                                                                    | 🟢                                                       |
-| [Details](https://github.com/Academi-fy/backend/wiki/ClubDetails) ÄNDERN           | `CLUB_DETAILS_CHANGE`        | 🔴                                                          | 🟢                                                                    | 🟢                                                       |
-| [Event](https://github.com/Academi-fy/backend/wiki/Event) HINZUFÜGEN & ENTFERNEN   | `CLUB_EVENT_ADMIN `          | 🟡                                                          | 🟢                                                                    | 🟢                                                       | 
-| [Leader](https://github.com/Academi-fy/backend/wiki/User) SETZEN & ENTFERNEN       | `CLUB_MEMBER_PROMOTE_DEMOTE` | 🔴                                                          | 🟡<sup>2,3</sup>                                                      | 🟢                                                       |   
-| [Benutzer](https://github.com/Academi-fy/backend/wiki/User) HINZUFÜGEN & ENTFERNEN | `CLUB_MEMBER_ADD_REMOVE`     | 🔴                                                          | 🟢                                                                    | 🟢                                                       |   
-| [Lehrer](https://github.com/Academi-fy/backend/wiki/User) HINZUFÜGEN & ENTFERNEN   | `CLUB_TEACHER_ADD_REMOVE`    | 🔴                                                          | 🔴                                                                    | 🟢                                                       |   
-
-> <sup>2</sup> noch nicht final \
-> <sup>3</sup> mit dem Entfernen des letzten Leaders wird der Club gelöscht
+| Operation                         | Permission                                           | [Benutzer](https://github.com/Academi-fy/backend/wiki/User) | [Lehrer](https://github.com/Academi-fy/backend/wiki/User)<sup>1</sup> | [Admin](https://github.com/Academi-fy/backend/wiki/User) |
+|-----------------------------------|------------------------------------------------------|-------------------------------------------------------------|-----------------------------------------------------------------------|----------------------------------------------------------|
+| erstellen                         | `club.creation.execute` bzw. `club.creation.suggest` | 🟡                                                          | 🟡                                                                    | 🟢                                                       |
+| löschen                           | `club.deletion.execute` bzw. `club.deletion.suggest` | 🔴                                                          | 🟡                                                                    | 🟢                                                       |
+| beitreten                         | `club.join`                                          | 🟢                                                          | 🟢                                                                    | 🟢                                                       |
+| verlassen                         | `club.leave`                                         | 🟢                                                          | 🟢                                                                    | 🟢                                                       |
+| bearbeiten                        | `club.edit.*`                                        | 🟡                                                          | 🟢                                                                    | 🟢                                                       |
+| Connection<sup>2</sup> hinzufügen | `club.connections.*`                                 | 🔴                                                          | 🟢                                                                    | 🟢                                                       |
+> <sup>1</sup> [Benutzer](https://github.com/Academi-fy/backend/wiki/User) haben Lehrer-Permissions, wenn als Leiter im Club eingetragen sind. \
+> <sup>2</sup> Connection entspricht `events`, `members` oder `leaders`
+> Genauere Informationen zu den Berechtigungen: [UserAccountPermissions](https://github.com/Academi-fy/backend/wiki/UserAccountPermissions)
 
 ## Attribute
 

@@ -10,6 +10,7 @@ import { validateArray, validateBoolean, validateNotEmpty } from "../propertyVal
  * @param {String} question - The question of the poll.
  * @param {Boolean} anonymous - Whether the poll is anonymous.
  * @param {Array<PollAnswer>} answers - The answers of the poll.
+ * @param {Number} maxVotesPerUser - The maximum votes a user can make.
  */
 export default class Poll {
 
@@ -18,15 +19,18 @@ export default class Poll {
      * @param {String} question - The question of the poll.
      * @param {Boolean} anonymous - Whether the poll is anonymous.
      * @param {Array<PollAnswer>} answers - The answers of the poll.
+     * @param {Number} maxVotesPerUser - The maximum votes a user can make.
      */
     constructor(
         question,
         anonymous,
-        answers
+        answers,
+        maxVotesPerUser
     ) {
         this.question = question;
         this.anonymous = anonymous;
         this.answers = answers;
+        this.maxVotesPerUser = maxVotesPerUser;
     }
 
     get _question() {
@@ -54,6 +58,15 @@ export default class Poll {
     set _answers(value) {
         validateArray('Poll answers', value);
         this.answers = value;
+    }
+
+    get _maxVotesPerUser() {
+        return this.maxVotesPerUser;
+    }
+
+    set _maxVotesPerUser(value) {
+        validateNotEmpty('Poll maxVotesPerUser', value);
+        this.maxVotesPerUser = value;
     }
 
 }

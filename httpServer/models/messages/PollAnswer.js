@@ -3,34 +3,34 @@
  * @author Daniel Dopatka
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
-import { validateNotEmpty } from "../propertyValidation.js";
+import { validateNotEmpty, validateNumber } from "../propertyValidation.js";
 
 /**
  * @description Class representing a PollAnswer.
  * @param {Number} id - The id of the poll answer. Schema: 1, 2, 3, ...
+ * @param {String} emoji - The emoji representing the answer.
  * @param {String} optionName - The name of the poll answer.
  * @param {Array<User>} voters - The  users that voted for this answer.
- * @param {Number} maxVotesPerUser - The maximum number of votes a users can give to this answer.
  */
 export default class PollAnswer {
 
     /**
      * Create a new PollAnswer
      * @param {Number} id - The id of the poll answer. Schema: 1, 2, 3, ...
+     * @param {String} emoji - The emoji representing the answer.
      * @param {String} optionName - The name of the poll answer.
      * @param {Array<String>} voters - The ids of the users that voted for this answer.
-     * @param {Number} maxVotesPerUser - The maximum number of votes a users can give to this answer.
      */
     constructor(
         id,
+        emoji,
         optionName,
         voters,
-        maxVotesPerUser
     ) {
         this.id = id;
+        this.emoji = emoji;
         this.optionName = optionName;
         this.voters = voters;
-        this.maxVotesPerUser = maxVotesPerUser;
     }
 
     get _id() {
@@ -38,8 +38,17 @@ export default class PollAnswer {
     }
 
     set _id(value) {
-        validateNotEmpty('Poll answer id', value);
+        validateNumber('Poll answer id', value);
         this.id = value;
+    }
+
+    get _emoji() {
+        return this.emoji;
+    }
+
+    set _emoji(value) {
+        validateNotEmpty('Poll answer emoji', value);
+        this.emoji = value;
     }
 
     get _optionName() {
@@ -60,13 +69,12 @@ export default class PollAnswer {
         this.voters = value;
     }
 
-    get _maxVotesPerUser() {
-        return this.maxVotesPerUser;
+    vote(user) {
+        this._voters.push(user);
     }
 
-    set _maxVotesPerUser(value) {
-        validateNotEmpty('Poll answer maxVotesPerUser', value);
-        this.maxVotesPerUser = value;
+    unvote(user) {
+        this._voters.splice(this._voters.indexOf(user), 1);
     }
 
 }
