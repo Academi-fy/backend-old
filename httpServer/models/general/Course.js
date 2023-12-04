@@ -311,8 +311,7 @@ export default class Course {
             populatedCourse._id = course._id;
 
             return populatedCourse;
-        }
-        catch (error) {
+        } catch (error) {
             throw new DatabaseError(`Failed to populate course:\n${ course }\n${ error }`);
         }
     }

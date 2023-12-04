@@ -1,4 +1,3 @@
-import mongoose, { mongo } from "mongoose";
 import { getModel } from "./initializeSchemas.js";
 
 /**

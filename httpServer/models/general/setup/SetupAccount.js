@@ -5,7 +5,8 @@
  */
 import { validateNotEmpty, validateObject } from "../../propertyValidation.js";
 import {
-    createDocument, deleteDocument,
+    createDocument,
+    deleteDocument,
     getDocument,
     getDocumentByRule,
     updateDocument
@@ -134,23 +135,23 @@ export default class SetupAccount {
         try {
 
             setupAccount = await setupAccount
-                                    .populate([
-                                        {
-                                            path: 'school',
-                                            populate: [
-                                                { path: 'grades' },
-                                                { path: 'courses' },
-                                                { path: 'members' },
-                                                { path: 'classes' },
-                                                { path: 'messages' },
-                                                { path: 'subjects' },
-                                                { path: 'clubs' },
-                                                { path: 'events' },
-                                                { path: 'blackboards' },
+                .populate([
+                    {
+                        path: 'school',
+                        populate: [
+                            { path: 'grades' },
+                            { path: 'courses' },
+                            { path: 'members' },
+                            { path: 'classes' },
+                            { path: 'messages' },
+                            { path: 'subjects' },
+                            { path: 'clubs' },
+                            { path: 'events' },
+                            { path: 'blackboards' },
 
-                                            ]
-                                        }
-                                    ]);
+                        ]
+                    }
+                ]);
 
             const populatedSetupAccount = new SetupAccount(
                 setupAccount.schoolName,
@@ -160,8 +161,7 @@ export default class SetupAccount {
 
             return populatedSetupAccount;
 
-        }
-        catch (error) {
+        } catch (error) {
             throw new DatabaseError(`Failed to populate setup account with id '${ setupAccount._id }:'\n${ error }`);
         }
 

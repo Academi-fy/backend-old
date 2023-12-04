@@ -276,26 +276,26 @@ export default class User {
         try {
 
             user = await user
-                            .populate([
-                                {
-                                    path: 'classes',
-                                    populate: [
-                                        { path: 'grade' },
-                                        { path: 'courses' },
-                                        { path: 'members' }
-                                    ]
-                                },
-                                {
-                                    path: 'extra_courses',
-                                    populate: [
-                                        { path: 'members' },
-                                        { path: 'classes' },
-                                        { path: 'teacher' },
-                                        { path: 'subject' },
-                                        { path: 'chat' }
-                                    ]
-                                },
-                            ]);
+                .populate([
+                    {
+                        path: 'classes',
+                        populate: [
+                            { path: 'grade' },
+                            { path: 'courses' },
+                            { path: 'members' }
+                        ]
+                    },
+                    {
+                        path: 'extra_courses',
+                        populate: [
+                            { path: 'members' },
+                            { path: 'classes' },
+                            { path: 'teacher' },
+                            { path: 'subject' },
+                            { path: 'chat' }
+                        ]
+                    },
+                ]);
 
             const populatedUser = new User(
                 user.first_name,

@@ -17,8 +17,6 @@ import { findByRule } from "../findByRule.js";
 import RetrievalError from "../../errors/RetrievalError.js";
 import DatabaseError from "../../errors/DatabaseError.js";
 import CacheError from "../../errors/CacheError.js";
-import yup from "yup";
-import YupMessageSchema from "../../../webSocket/yupSchemas/message/YupMessageSchema.js";
 
 // Time in milliseconds after which the cache will expire
 const expirationTime = 2 * 60 * 1000;
@@ -300,32 +298,32 @@ export default class Message {
         try {
 
             message = await message
-                                .populate([
-                                    {
-                                        path: 'chat',
-                                        populate: [
-                                            { path: 'targets' },
-                                            { path: 'courses' },
-                                            { path: 'clubs' },
-                                            { path: 'messages' }
-                                        ]
-                                    },
-                                    {
-                                        path: 'author',
-                                        populate: [
-                                            { path: 'classes' },
-                                            { path: 'extra_courses' }
-                                        ]
-                                    },
-                                    {
-                                        path: 'answer',
-                                        populate: [
-                                            { path: 'chat' },
-                                            { path: 'author' },
-                                            { path: 'answer' }
-                                        ]
-                                    }
-                                ]);
+                .populate([
+                    {
+                        path: 'chat',
+                        populate: [
+                            { path: 'targets' },
+                            { path: 'courses' },
+                            { path: 'clubs' },
+                            { path: 'messages' }
+                        ]
+                    },
+                    {
+                        path: 'author',
+                        populate: [
+                            { path: 'classes' },
+                            { path: 'extra_courses' }
+                        ]
+                    },
+                    {
+                        path: 'answer',
+                        populate: [
+                            { path: 'chat' },
+                            { path: 'author' },
+                            { path: 'answer' }
+                        ]
+                    }
+                ]);
 
             const populatedMessage = new Message(
                 message.chat,

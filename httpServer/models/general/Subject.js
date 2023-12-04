@@ -228,18 +228,18 @@ export default class Subject {
         try {
 
             subject = await subject
-                                .populate([
-                                    {
-                                        path: 'courses',
-                                        populate: [
-                                            { path: 'members' },
-                                            { path: 'classes' },
-                                            { path: 'teacher' },
-                                            { path: 'subject' },
-                                            { path: 'chat' },
-                                        ]
-                                    }
-                                ]);
+                .populate([
+                    {
+                        path: 'courses',
+                        populate: [
+                            { path: 'members' },
+                            { path: 'classes' },
+                            { path: 'teacher' },
+                            { path: 'subject' },
+                            { path: 'chat' },
+                        ]
+                    }
+                ]);
 
             const populatedSubject = new Subject(
                 subject.type,
