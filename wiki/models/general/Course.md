@@ -1,19 +1,12 @@
-Ein Kurs entspricht einer Versammlung aus [Schülern](https://github.com/Academi-fy/backend/wiki/User), die zusammen
-Unterricht haben. Dabei müssen sie nicht in der gleichen Klasse oder Stufe sein. \
-Einem Kurs können daher mehrere [Klassen](https://github.com/Academi-fy/backend/wiki/Class) zugeordnet werden, aber auch
-einzelne Schüler. \
-Außerdem wird ein zentraler Lehrer für den Kurs festgelegt. Es können trotzdem, genau wie bei Schülern, mehrere Lehrer
-zu einem Kurs hinzugefügt werden. \
-Kurse sind mit [Usern](https://github.com/Academi-fy/backend/wiki/User) am stärksten mit
-der [WebUntis API](https://help.untis.at/hc/de/articles/4886785534354-API-documentation-for-integration-partners)
-verknüpft.
+Ein Kurs entspricht einer Versammlung aus [Schülern](https://github.com/Academi-fy/backend/wiki/User), die zusammen Unterricht haben. Dabei müssen sie nicht in der gleichen Klasse oder Stufe sein. \
+Einem Kurs können daher mehrere [Klassen](https://github.com/Academi-fy/backend/wiki/Class) zugeordnet werden, aber auch einzelne Schüler. \
+Außerdem wird ein zentraler Lehrer für den Kurs festgelegt. Es können trotzdem, genau wie bei Schülern, mehrere Lehrer zu einem Kurs hinzugefügt werden. \
+Kurse sind mit [Usern](https://github.com/Academi-fy/backend/wiki/User) am stärksten mit der [WebUntis API](https://help.untis.at/hc/de/articles/4886785534354-API-documentation-for-integration-partners) verknüpft.
 
 ## Kurs-Objekt
 
-Das Kurs-Objekt ist ein eigenes JSON-Objekt. Die Kurse werden in MongoDB gespeichert und sind über den HTTP Server
-abzurufen, wo sie gecacht werden. \
+Das Kurs-Objekt ist ein eigenes JSON-Objekt. Die Kurse werden in MongoDB gespeichert und sind über den HTTP Server abzurufen, wo sie gecacht werden. \
 Der Kurs-Cache wird alle **5 Minuten** aktualisiert sowie:
-
 - beim Start des HTTP Servers
 - beim Löschen/Erstellen eines Kurses
 - beim Löschen/Erstellen einer Klasse
@@ -26,10 +19,10 @@ Der Kurs-Cache wird alle **5 Minuten** aktualisiert sowie:
 
 ### Basic Operations
 
-| Operation | Permission      | [Benutzer](https://github.com/Academi-fy/backend/wiki/User) | [Lehrer](https://github.com/Academi-fy/backend/wiki/User) | [Admin](https://github.com/Academi-fy/backend/wiki/User) |
-|-----------|-----------------|-------------------------------------------------------------|-----------------------------------------------------------|----------------------------------------------------------|
-| ERSTELLEN | `COURSE_CREATE` | 🔴                                                          | 🔴                                                        | 🟢                                                       |
-| LÖSCHEN   | `COURSE_DELETE` | 🔴                                                          | 🔴                                                        | 🟢                                                       |
+| Operation  | Permission      | [Benutzer](https://github.com/Academi-fy/backend/wiki/User) | [Lehrer](https://github.com/Academi-fy/backend/wiki/User) | [Admin](https://github.com/Academi-fy/backend/wiki/User) |
+|------------|-----------------|-------------------------------------------------------------|-----------------------------------------------------------|----------------------------------------------------------|
+| ERSTELLEN  | `COURSE_CREATE` | 🔴                                                          | 🔴                                                        | 🟢                                                       |
+| LÖSCHEN    | `COURSE_DELETE` | 🔴                                                          | 🔴                                                        | 🟢                                                       |
 
 ### Kurse verändern
 
@@ -45,25 +38,13 @@ Der Kurs-Cache wird alle **5 Minuten** aktualisiert sowie:
 ## Attribute
 
 ```javascript
-Course
-{
+Course {
     _id: "507f191e810c19729de860ea",
-        members
-:
-    [ { ... } ],
-        classes
-:
-    [ { ... } ],
-        teacher
-:
-    {...
-    }
-,
-    chat: {...
-    }
-,
-    subject: {...
-    }
+    members: [ {...} ],
+    classes: [ {...} ],
+    teacher: {...},
+    chat: {...},
+    subject: {...}
 }
 ```
 
@@ -130,39 +111,26 @@ Generiert über [mongoose](https://mongoosejs.com/docs/guide.html) [npm package]
             ref: 'User'
         }
     ],
-        classes
-:
-    [
+    classes: [
         {
             type: ObjectId,
             ref: 'Class'
         }
     ],
-        teacher
-:
-    {
+    teacher: {
         type: ObjectId,
-            ref
-    :
-        'User'
-    }
-,
+        ref: 'User'
+    },
     chat: {
         type: ObjectId,
-            ref
-    :
-        'Chat'
-    }
-,
+        ref: 'Chat'
+    },
     subject: {
         type: ObjectId,
-            ref
-    :
-        'Subject'
+        ref: 'Subject'
     }
 
-}
-,
+},
 {
     timestamps: true
 }

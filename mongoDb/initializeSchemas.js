@@ -16,7 +16,7 @@ import UserAccountSchema from "./schemas/user/UserAccountSchema.js";
 
 export function initializeSchemas() {
 
-    for (const model of getAllModels()) {
+    for(const model of getAllModels()) {
         mongoose.model(model.name, model.schema);
     }
 
@@ -25,7 +25,7 @@ export function initializeSchemas() {
 export function getModel(model) {
 
     model = getAllModels().find(m => m.schema === model);
-    if (!model) {
+    if(!model) {
         throw new Error('Model not found.');
     }
     return mongoose.model(model.name, model.schema);

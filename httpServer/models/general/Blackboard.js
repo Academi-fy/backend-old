@@ -287,15 +287,15 @@ export default class Blackboard {
         try {
 
             blackboard = await blackboard
-                .populate([
-                    {
-                        path: 'author',
-                        populate: [
-                            { path: 'classes' },
-                            { path: 'extra_courses' },
-                        ]
-                    }
-                ]);
+                                    .populate([
+                                        {
+                                            path: 'author',
+                                            populate: [
+                                                { path: 'classes' },
+                                                { path: 'extra_courses' },
+                                            ]
+                                        }
+                                    ]);
 
             const populatedBlackboard = new Blackboard(
                 blackboard.title,
