@@ -1,14 +1,19 @@
-Nachrichten sind die Grundlage für die Kommunikation zwischen [Benutzern](https://github.com/Academi-fy/backend/wiki/User). Sie können in [Chats](https://github.com/Academi-fy/backend/wiki/Chat) gesendet werden. \
+Nachrichten sind die Grundlage für die Kommunikation
+zwischen [Benutzern](https://github.com/Academi-fy/backend/wiki/User). Sie können
+in [Chats](https://github.com/Academi-fy/backend/wiki/Chat) gesendet werden. \
 Si können aus Text, Bild, Video, Datei oder Umfrage bestehen sowie aus einer Kombination aus allen. \
-Nachrichten können auch [Reaktionen](https://github.com/Academi-fy/backend/wiki/MessageReaction), also Emojis, hinzugefügt werden. \
+Nachrichten können auch [Reaktionen](https://github.com/Academi-fy/backend/wiki/MessageReaction), also Emojis,
+hinzugefügt werden. \
 Außerdem kann auf eine andere Nachricht mit einer Nachricht geantwortet werden. \
-Nachrichten sind unabhängig von der [WebUntis API](https://help.untis.at/hc/de/articles/4886785534354-API-documentation-for-integration-partners).
+Nachrichten sind unabhängig von
+der [WebUntis API](https://help.untis.at/hc/de/articles/4886785534354-API-documentation-for-integration-partners).
 
 ## Message-Objekt
 
 Das Message-Objekt ist ein eigenes JSON-Objekt. Die Messages werden in MongoDB gespeichert und sind über den HTTP-Server
 abzurufen, wo sie gecacht werden. \
 Der Message-Cache wird alle **2 Minuten** aktualisiert sowie:
+
 - beim Start des HTTP Servers
 - beim Antworten auf eine Nachricht
 
@@ -32,24 +37,39 @@ Der Message-Cache wird alle **2 Minuten** aktualisiert sowie:
 
 #### Nachricht verändern
 
-| Operation                | Permission     | [Benutzer](https://github.com/Academi-fy/backend/wiki/User) | [Lehrer](https://github.com/Academi-fy/backend/wiki/User)<sup>1</sup> | [Admin](https://github.com/Academi-fy/backend/wiki/User) |
-|--------------------------|----------------|:-----------------------------------------------------------:|:---------------------------------------------------------------------:|:--------------------------------------------------------:|
-| Nachricht EDITIEREN      | `MESSAGE_EDIT` |                             🟢                              |                                  🟢                                   |                            🟢                            |
+| Operation           | Permission     | [Benutzer](https://github.com/Academi-fy/backend/wiki/User) | [Lehrer](https://github.com/Academi-fy/backend/wiki/User)<sup>1</sup> | [Admin](https://github.com/Academi-fy/backend/wiki/User) |
+|---------------------|----------------|:-----------------------------------------------------------:|:---------------------------------------------------------------------:|:--------------------------------------------------------:|
+| Nachricht EDITIEREN | `MESSAGE_EDIT` |                             🟢                              |                                  🟢                                   |                            🟢                            |
 
 ## Attribute
 
 Attribute des Message-Objekts:
 
 ```javascript
-Message {
+Message
+{
     _id: "507f191e810c19729de860ea",
-    chat: {...},
-    author: {...},
-    content: [{...}],
-    reactions: [ {...} ],
-    answer: {...},
-    editHistory: [ {...} ],
-    date: 1700835015126
+        chat
+:
+    {...
+    }
+,
+    author: {...
+    }
+,
+    content: [ { ... } ],
+        reactions
+:
+    [ { ... } ],
+        answer
+:
+    {...
+    }
+,
+    editHistory: [ { ... } ],
+        date
+:
+    1700835015126
 }
 ```
 
@@ -74,35 +94,49 @@ Message {
 > TODO: erst möglich, wenn WebSocket fertig erstellt ist\
 
 grobe Idee:
+
 ```javascript  
 {
     event: "MESSAGE_SEND",
-    payload: {
+        payload
+:
+    {
         sender: {
-            { /*user*/ }
-        },
+            { /*user*/
+            }
+        }
+    ,
         data: {
             id: "",
-            chat: {
-                { /*chat*/ }
-            },
+                chat
+        :
+            {
+                { /*chat*/
+                }
+            }
+        ,
             author: {
-                { /*user*/ }
-            },
+                { /*user*/
+                }
+            }
+        ,
             content: [
                 { /*content*/ }
             ],
-            reactions: [
+                reactions
+        :
+            [
                 { /*reaction*/ }
             ],
-            edits: [
+                edits
+        :
+            [
                 { /*edited message*/ }
             ]
         }
     }
 }
 ```
-
 
 ## Zugriff auf Messages über den HTTP-Server
 
@@ -149,17 +183,27 @@ Generiert über [mongoose](https://mongoosejs.com/docs/guide.html) [npm package]
 
     chat: {
         type: ObjectId,
-        ref: 'Chat'
-    },
+            ref
+    :
+        'Chat'
+    }
+,
     author: {
         type: ObjectId,
-        ref: 'User'
-    },
+            ref
+    :
+        'User'
+    }
+,
     content: {
         type: Array,
-        required: true,
-        default: ""
-    },
+            required
+    :
+        true,
+    default:
+        ""
+    }
+,
     reactions: [
         {
             emoji: {
@@ -173,16 +217,25 @@ Generiert über [mongoose](https://mongoosejs.com/docs/guide.html) [npm package]
             },
         }
     ],
-    answer: {
+        answer
+:
+    {
         type: ObjectId,
-        ref: 'Message'
-    },
+            ref
+    :
+        'Message'
+    }
+,
     editHistory: {
         type: Array,
-        required: true,
-        default: []
+            required
+    :
+        true,
+    default:
+        []
     }
-},
+}
+,
 {
     timestamps: true
 }

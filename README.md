@@ -1,6 +1,7 @@
 # Academi-fy
 
-Academi-fy is a comprehensive school management system built with JavaScript and MongoDB. It provides a robust and scalable solution for managing courses, classes, and users within an educational institution.
+Academi-fy is a comprehensive school management system built with JavaScript and MongoDB. It provides a robust and
+scalable solution for managing courses, classes, and users within an educational institution.
 
 ## Features
 
@@ -22,7 +23,8 @@ Academi-fy is a comprehensive school management system built with JavaScript and
 The project is divided into several directories:
 
 - `mongoDb/schemas/general`: Contains the MongoDB schemas for the different entities in the system.
-- `httpServer/models/general`: Contains the models for the different entities, including methods for CRUD operations and cache management.
+- `httpServer/models/general`: Contains the models for the different entities, including methods for CRUD operations and
+  cache management.
 - `wiki/models/general`: Contains markdown files with detailed descriptions of the different entities.
 
 ## Setup
@@ -44,7 +46,8 @@ The application provides a set of HTTP endpoints for interacting with the system
 - `PUT /api/classes/<class>`: Create or update a class.
 - `DELETE /api/classes/:id`: Delete a class.
 
-For more details on the available endpoints and their usage, refer to the individual markdown files in the `wiki/models/general` directory.
+For more details on the available endpoints and their usage, refer to the individual markdown files in
+the `wiki/models/general` directory.
 
 ## Contributing
 

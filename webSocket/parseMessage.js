@@ -27,8 +27,8 @@ export function parseMessage(message) {
 
     object.payload = yupSchemas[object.event].validateSync(object.payload);
 
-    if(!("sender" in object.payload)) throw new Error("Invalid message: no sender")
-    if(!("data" in object.payload)) throw new Error("Invalid message: no data")
+    if (!("sender" in object.payload)) throw new Error("Invalid message: no sender")
+    if (!("data" in object.payload)) throw new Error("Invalid message: no data")
 
     return object;
 }

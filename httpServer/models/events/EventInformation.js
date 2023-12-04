@@ -24,7 +24,6 @@ export default class EventInformation {
         this.title = title;
         this.descriptionElements = descriptionElements;
 
-        validateNotEmpty('Event information title', title);
         this.validateDescriptionElements(descriptionElements);
     }
 

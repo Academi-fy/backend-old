@@ -6,7 +6,7 @@
 import cache from "../../cache.js";
 import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../../mongoDb/collectionAccess.js";
 import GradeSchema from "../../../mongoDb/schemas/general/GradeSchema.js";
-import { validateArray, validateNotEmpty, validateNumber, verifyInCache } from "../propertyValidation.js";
+import { validateArray, validateNumber, verifyInCache } from "../propertyValidation.js";
 import { findByRule } from "../findByRule.js";
 import RetrievalError from "../../errors/RetrievalError.js";
 import DatabaseError from "../../errors/DatabaseError.js";
@@ -221,15 +221,15 @@ export default class Grade {
         try {
 
             grade = await grade
-                            .populate([
-                                {
-                                    path: 'classes',
-                                    populate: [
-                                        { path: 'members' },
-                                        { path: 'leaders' }
-                                    ]
-                                }
-                            ]);
+                .populate([
+                    {
+                        path: 'classes',
+                        populate: [
+                            { path: 'members' },
+                            { path: 'leaders' }
+                        ]
+                    }
+                ]);
 
             const populatedGrade = new Grade(
                 grade.level,

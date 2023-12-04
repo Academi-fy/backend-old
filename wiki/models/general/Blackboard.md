@@ -1,12 +1,16 @@
 Blackboards sind Nachrichten, die als Broadcast für große Teile der Schule gedacht sind. \
-Sie funktionieren grundlegend wie Artikel, die von jedem geschrieben werden können. Es kann ausgewählt werden, ob ein Blackboard nur für eine bestimmte Klasse oder für alle sichtbar sein soll. \
+Sie funktionieren grundlegend wie Artikel, die von jedem geschrieben werden können. Es kann ausgewählt werden, ob ein
+Blackboard nur für eine bestimmte Klasse oder für alle sichtbar sein soll. \
 Außerdem kann ein Blackboard mit einem Ablaufdatum versehen werden, sodass es nach diesem nicht mehr sichtbar ist. \
-Blackboards sind unabhängig von der [WebUntis API](https://help.untis.at/hc/de/articles/4886785534354-API-documentation-for-integration-partners).
+Blackboards sind unabhängig von
+der [WebUntis API](https://help.untis.at/hc/de/articles/4886785534354-API-documentation-for-integration-partners).
 
 ## Blackboard-Objekt
 
-Das Blackboard-Objekt ist ein eigenes JSON-Objekt. Die Blackboards werden in MongoDB gespeichert und sind über den HTTP Server abzurufen, wo sie gecacht werden. \
+Das Blackboard-Objekt ist ein eigenes JSON-Objekt. Die Blackboards werden in MongoDB gespeichert und sind über den HTTP
+Server abzurufen, wo sie gecacht werden. \
 Der Blackboard-Cache wird alle **10 Minuten** aktualisiert sowie:
+
 - beim Start des HTTP Servers
 
 ## Standard Berechtigungen
@@ -31,15 +35,30 @@ Der Blackboard-Cache wird alle **10 Minuten** aktualisiert sowie:
 ## Attribute
 
 ```javascript
-Blackboard {
+Blackboard
+{
     _id: "616f6c6c6f7765646e657773",
-    title: "Titel",
-    author: {...},
+        title
+:
+    "Titel",
+        author
+:
+    {...
+    }
+,
     coverImage: "https://example.com/image.png",
-    text: "Text",
-    tags: [ 'tag1', 'tag2' ],
-    date: 1701475668245,
-    state: 'SUGGESTED'
+        text
+:
+    "Text",
+        tags
+:
+    [ 'tag1', 'tag2' ],
+        date
+:
+    1701475668245,
+        state
+:
+    'SUGGESTED'
 }
 ```
 
@@ -77,7 +96,8 @@ Ruft ein Blackboard über die ID ab. Die Blackboards werden gecacht und alle 10 
 GET /api/blackboards/:id
 ```
 
-> weitere Möglichkeiten, ein Blackboard abzurufen: [RuleSearching](https://github.com/Academi-fy/backend/wiki/RuleSearching)
+> weitere Möglichkeiten, ein Blackboard
+> abzurufen: [RuleSearching](https://github.com/Academi-fy/backend/wiki/RuleSearching)
 
 #### Blackboard erstellen oder bearbeiten
 
@@ -103,42 +123,64 @@ Generiert über [mongoose](https://mongoosejs.com/docs/guide.html) [npm package]
 {
     title: {
         type: String,
-        required: true
-    },
+            required
+    :
+        true
+    }
+,
     author: {
         type: ObjectId,
-        ref: 'User'
-    },
+            ref
+    :
+        'User'
+    }
+,
     coverImage: {
         type: String,
-        required: true
-    },
+            required
+    :
+        true
+    }
+,
     text: {
         type: String,
-        required: true
-    },
+            required
+    :
+        true
+    }
+,
     tags: [
         {
             type: String,
             required: false
         }
     ],
-    expirationDate: {
+        expirationDate
+:
+    {
         type: Number,
-        required: false
-    },
+            required
+    :
+        false
+    }
+,
     state: {
         type: String,
-        required: true,
-        default: "SUGGESTED"
-    },
+            required
+    :
+        true,
+    default:
+        "SUGGESTED"
+    }
+,
     editHistory: [
         {
             type: Object,
             required: false
         }
     ]
-},
+}
+,
 {
     timestamps: true
 }

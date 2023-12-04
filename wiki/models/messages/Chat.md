@@ -1,14 +1,21 @@
 Chats sind Unterhaltungen zwischen zwei oder mehreren [Usern](https://github.com/Academi-fy/backend/wiki/User). \
-Chats können sowohl zwischen [Schülern](https://github.com/Academi-fy/backend/wiki/User), [Lehrern](https://github.com/Academi-fy/backend/wiki/User) (auch mehreren) stattfinden als auch [Kursen](https://github.com/Academi-fy/backend/wiki/Course) bzw. [AGs](https://github.com/Academi-fy/backend/wiki/Club) zugewiesen werden. \
-Chats sind unabhängig von der [WebUntis API](https://help.untis.at/hc/de/articles/4886785534354-API-documentation-for-integration-partners).
+Chats können sowohl
+zwischen [Schülern](https://github.com/Academi-fy/backend/wiki/User), [Lehrern](https://github.com/Academi-fy/backend/wiki/User) (
+auch mehreren) stattfinden als auch [Kursen](https://github.com/Academi-fy/backend/wiki/Course)
+bzw. [AGs](https://github.com/Academi-fy/backend/wiki/Club) zugewiesen werden. \
+Chats sind unabhängig von
+der [WebUntis API](https://help.untis.at/hc/de/articles/4886785534354-API-documentation-for-integration-partners).
 
 ## Chat-Objekt
 
-Das Chat-Objekt ist ein eigenes JSON-Objekt. Die Chats werde in MongoDB gespeichert und sind über den HTTP Server abzurufen, wo sie gecacht werden. \
+Das Chat-Objekt ist ein eigenes JSON-Objekt. Die Chats werde in MongoDB gespeichert und sind über den HTTP Server
+abzurufen, wo sie gecacht werden. \
 Der Chat-Cache wird alle **2 Minuten** aktualisiert sowie:
+
 - beim Start des HTTP Servers
 - beim Erstellen eines Chats
-- beim Hinzufügen eines [Kurses](https://github.com/Academi-fy/backend/wiki/Course) bzw. einer [AG](https://github.com/Academi-fy/backend/wiki/Club) zu einem Chat
+- beim Hinzufügen eines [Kurses](https://github.com/Academi-fy/backend/wiki/Course) bzw.
+  einer [AG](https://github.com/Academi-fy/backend/wiki/Club) zu einem Chat
 
 ## Standard Berechtigungen
 
@@ -18,11 +25,11 @@ Der Chat-Cache wird alle **2 Minuten** aktualisiert sowie:
 
 ### Basic Operations
 
-| Operation  | Permission      | [Benutzer](https://github.com/Academi-fy/backend/wiki/User) | [Lehrer](https://github.com/Academi-fy/backend/wiki/User) | [Admin](https://github.com/Academi-fy/backend/wiki/User) |
-|------------|-----------------|-------------------------------------------------------------|-----------------------------------------------------------|----------------------------------------------------------|
-| ERSTELLEN  | `CHAT_CREATE`   | 🟢<sup>1</sup>                                              | 🟢                                                        | 🟢                                                       |
-| LÖSCHEN    | `CHAT_DELETE`   | 🔴                                                          | 🔴                                                        | 🟢                                                       |
-| ANSEHEN    | `CHAT_VIEW`     | 🟢                                                          | 🟢                                                        | 🟢                                                       |
+| Operation | Permission    | [Benutzer](https://github.com/Academi-fy/backend/wiki/User) | [Lehrer](https://github.com/Academi-fy/backend/wiki/User) | [Admin](https://github.com/Academi-fy/backend/wiki/User) |
+|-----------|---------------|-------------------------------------------------------------|-----------------------------------------------------------|----------------------------------------------------------|
+| ERSTELLEN | `CHAT_CREATE` | 🟢<sup>1</sup>                                              | 🟢                                                        | 🟢                                                       |
+| LÖSCHEN   | `CHAT_DELETE` | 🔴                                                          | 🔴                                                        | 🟢                                                       |
+| ANSEHEN   | `CHAT_VIEW`   | 🟢                                                          | 🟢                                                        | 🟢                                                       |
 
 > <sup>1</sup> [User](https://github.com/Academi-fy/backend/wiki/User) können nur Chats mit Lehrern erstellen
 
@@ -38,15 +45,30 @@ Der Chat-Cache wird alle **2 Minuten** aktualisiert sowie:
 ## Attribute
 
 ```javascript
-Chat {
+Chat
+{
     _id: "507f191e810c19729de860ea",
-    type: 'GROUP',
-    targets: [ {...} ],
-    courses: [ {...} ],
-    clubs: [ {...} ],
-    name: "Klasse 10a",
-    avatar: "http://example.com/avatar.png",
-    messages: [ {...} ]
+        type
+:
+    'GROUP',
+        targets
+:
+    [ { ... } ],
+        courses
+:
+    [ { ... } ],
+        clubs
+:
+    [ { ... } ],
+        name
+:
+    "Klasse 10a",
+        avatar
+:
+    "http://example.com/avatar.png",
+        messages
+:
+    [ { ... } ]
 }
 ```
 
@@ -67,16 +89,19 @@ Chat {
     - sie werden erst beim Abrufen auf dem HTTP-Server aufgelöst
 
 - `type` ist ein Enum, der in der Datenbank als String gespeichert wird
-  - der type wird geändert, sobald man zwei eine Instanz eines anderen Types hinzufügt wird
-  - beim Hinzufügen anderer Instanzen ändert sich der type wie folgt nach unten:
-    1. `PRIVATE` = Privater Chat
-    2. `COURSE` = Kurschat oder `CLUB` = Clubchat
-    3. `GROUP` = Gruppenchat
+    - der type wird geändert, sobald man zwei eine Instanz eines anderen Types hinzufügt wird
+    - beim Hinzufügen anderer Instanzen ändert sich der type wie folgt nach unten:
+        1. `PRIVATE` = Privater Chat
+        2. `COURSE` = Kurschat oder `CLUB` = Clubchat
+        3. `GROUP` = Gruppenchat
 
 > Beispiele:\
-> `PRIVATE`-Chat wird zum `COURSE`-Chat, wenn ein [Course](https://github.com/Academi-fy/backend/wiki/Course) hinzugefügt wird. \
-> `COURSE`-Chat wird zum `GROUP`-Chat, wenn ein [Club](https://github.com/Academi-fy/backend/wiki/Club) hinzugefügt wird. \
-> `CLUB`-Chat wird zum `GROUP`-Chat, wenn ein [Course](https://github.com/Academi-fy/backend/wiki/Course) hinzugefügt wird.
+> `PRIVATE`-Chat wird zum `COURSE`-Chat, wenn ein [Course](https://github.com/Academi-fy/backend/wiki/Course)
+> hinzugefügt wird. \
+> `COURSE`-Chat wird zum `GROUP`-Chat, wenn ein [Club](https://github.com/Academi-fy/backend/wiki/Club) hinzugefügt
+> wird. \
+> `CLUB`-Chat wird zum `GROUP`-Chat, wenn ein [Course](https://github.com/Academi-fy/backend/wiki/Course) hinzugefügt
+> wird.
 
 ## Zugriff auf Chats über den HTTP Server
 
@@ -122,38 +147,55 @@ Generiert über [mongoose](https://mongoosejs.com/docs/guide.html) [npm package]
 {
     type: {
         type: String,
-        required: true
-    },
+            required
+    :
+        true
+    }
+,
     targets: [
         {
             type: ObjectId,
             ref: 'User'
         }
     ],
-    courses: [
+        courses
+:
+    [
         {
             type: ObjectId,
             ref: 'Course'
         }
     ],
-    clubs: [
+        clubs
+:
+    [
         {
             type: ObjectId,
             ref: 'Club'
         }
     ],
-    name: {
+        name
+:
+    {
         type: String,
-        required: true,
-        default: 'Neuer Chat'
-    },
+            required
+    :
+        true,
+    default:
+        'Neuer Chat'
+    }
+,
     avatar: {
         type: String,
-        required: true,
-        default: 'https://media.istockphoto.com/id/1147544807/de/vektor/miniaturbild-vektorgrafik.jpg?s=612x612&w=0&k=20&c=IIK_u_RTeRFyL6kB1EMzBufT4H7MYT3g04sz903fXAk='
+            required
+    :
+        true,
+    default:
+        'https://media.istockphoto.com/id/1147544807/de/vektor/miniaturbild-vektorgrafik.jpg?s=612x612&w=0&k=20&c=IIK_u_RTeRFyL6kB1EMzBufT4H7MYT3g04sz903fXAk='
     }
 
-},
+}
+,
 {
     timestamps: true
 }

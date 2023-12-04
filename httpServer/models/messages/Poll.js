@@ -24,37 +24,36 @@ export default class Poll {
         anonymous,
         answers
     ) {
-        //TODO: unterstriche weg
-        this._question = question;
-        this._anonymous = anonymous;
-        this._answers = answers;
+        this.question = question;
+        this.anonymous = anonymous;
+        this.answers = answers;
     }
 
-    get question() {
-        return this._question;
+    get _question() {
+        return this.question;
     }
 
-    set question(value) {
+    set _question(value) {
         validateNotEmpty('Poll question', value)
-        this._question = value;
+        this.question = value;
     }
 
-    get anonymous() {
-        return this._anonymous;
+    get _anonymous() {
+        return this.anonymous;
     }
 
-    set anonymous(value) {
+    set _anonymous(value) {
         validateBoolean('Poll anonymous', value)
-        this._anonymous = value;
+        this.anonymous = value;
     }
 
-    get answers() {
-        return this._answers;
+    get _answers() {
+        return this.answers;
     }
 
-    set answers(value) {
+    set _answers(value) {
         validateArray('Poll answers', value);
-        this._answers = value;
+        this.answers = value;
     }
 
 }

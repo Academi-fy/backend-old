@@ -1,11 +1,17 @@
 User sind die eigentlichen Akteure in der App. Sie sind Lehrer sowie Schüler als auch Admins. \
-User können sich in der App über ihre [UserAccounts](https://github.com/Academi-fy/backend/wiki/UserAccounts) anmelden und haben dann Zugriff auf die ihnen zugewiesenen Bereiche. \
-User werden zusammen mit ihren [UserAccounts](https://github.com/Academi-fy/backend/wiki/UserAccounts) bei der Erstanmeldung in der Datenbank anhand der Daten der [WebUntis API](https://help.untis.at/hc/de/articles/4886785534354-API-documentation-for-integration-partners) erstellt.
+User können sich in der App über ihre [UserAccounts](https://github.com/Academi-fy/backend/wiki/UserAccounts) anmelden
+und haben dann Zugriff auf die ihnen zugewiesenen Bereiche. \
+User werden zusammen mit ihren [UserAccounts](https://github.com/Academi-fy/backend/wiki/UserAccounts) bei der
+Erstanmeldung in der Datenbank anhand der Daten
+der [WebUntis API](https://help.untis.at/hc/de/articles/4886785534354-API-documentation-for-integration-partners)
+erstellt.
 
 ## User-Objekt
 
-Das User-Objekt ist ein eigenes JSON-Objekt. Die User werden in MongoDB gespeichert und sind über den HTTP Server abzurufen, wo sie gecacht werden. \
+Das User-Objekt ist ein eigenes JSON-Objekt. Die User werden in MongoDB gespeichert und sind über den HTTP Server
+abzurufen, wo sie gecacht werden. \
 Der User-Cache wird alle **3 Minuten** aktualisiert sowie:
+
 - beim Start des HTTP Servers
 - beim Erstellen/Löschen eines Users
 - beim Erstellen/Löschen eines [UserAccounts](https://github.com/Academi-fy/backend/wiki/UserAccounts)
@@ -34,14 +40,27 @@ Der User-Cache wird alle **3 Minuten** aktualisiert sowie:
 ## Attribute
 
 ```javascript
-User {
+User
+{
     _id: "507f191e810c19729de860ea",
-    first_name: "Max",
-    last_name: "Mustermann",
-    avatar: "http://example.com/avatar.png",
-    type: "TEACHER",
-    classes: [ { ... } ],
-    extra_courses: [ { ... } ]
+        first_name
+:
+    "Max",
+        last_name
+:
+    "Mustermann",
+        avatar
+:
+    "http://example.com/avatar.png",
+        type
+:
+    "TEACHER",
+        classes
+:
+    [ { ... } ],
+        extra_courses
+:
+    [ { ... } ]
 }
 ```
 
@@ -107,35 +126,54 @@ DELETE /api/users/:id
 {
     first_name: {
         type: String,
-        required: true
-    },
+            required
+    :
+        true
+    }
+,
     last_name: {
         type: String,
-        required: true
-    },
+            required
+    :
+        true
+    }
+,
     avatar: {
         type: String,
-        required: true
-    },
+            required
+    :
+        true
+    }
+,
     type: {
         type: String,
-        required: true,
-        enum: [ 'STUDENT', 'TEACHER', 'ADMIN' ]
-    },
+            required
+    :
+        true,
+
+        enum
+
+    :
+        [ 'STUDENT', 'TEACHER', 'ADMIN' ]
+    }
+,
     classes: [
         {
             type: ObjectId,
             ref: 'Class'
         }
     ],
-    extra_courses: [
+        extra_courses
+:
+    [
         {
             type: ObjectId,
             ref: 'Course'
         }
     ]
 
-},
+}
+,
 {
     timestamps: true
 }

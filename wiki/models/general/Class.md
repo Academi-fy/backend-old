@@ -1,11 +1,17 @@
 Klassen entsprechen den tatsächlichen Schulklassen. \
-Sie beinhalten eine Liste von [Schülern](https://github.com/Academi-fy/backend/wiki/User) sowie [Lehrern](https://github.com/Academi-fy/backend/wiki/User) und den dazu gehörigen [Kursen](https://github.com/Academi-fy/backend/wiki/Course). \
-Klassen werden [Kursen](https://github.com/Academi-fy/backend/wiki/Course) aus der [WebUntis API](https://help.untis.at/hc/de/articles/4886785534354-API-documentation-for-integration-partners) manuell zugewiesen. \
+Sie beinhalten eine Liste von [Schülern](https://github.com/Academi-fy/backend/wiki/User)
+sowie [Lehrern](https://github.com/Academi-fy/backend/wiki/User) und den dazu
+gehörigen [Kursen](https://github.com/Academi-fy/backend/wiki/Course). \
+Klassen werden [Kursen](https://github.com/Academi-fy/backend/wiki/Course) aus
+der [WebUntis API](https://help.untis.at/hc/de/articles/4886785534354-API-documentation-for-integration-partners)
+manuell zugewiesen. \
 
 ## Klassen-Objekt
 
-Das Klassen-Objekt ist ein eigenes JSON-Objekt. Die Klassen werden in MongoDB gespeichert und sind über den HTTP Server abzurufen, wo sie gecacht werden. \
+Das Klassen-Objekt ist ein eigenes JSON-Objekt. Die Klassen werden in MongoDB gespeichert und sind über den HTTP Server
+abzurufen, wo sie gecacht werden. \
 Der Klassen-Cache wird alle **5 Minuten** aktualisiert sowie:
+
 - beim Start des HTTP Servers
 - beim Löschen/Erstellen einer Klasse
 
@@ -17,10 +23,10 @@ Der Klassen-Cache wird alle **5 Minuten** aktualisiert sowie:
 
 ### Basic Operations
 
-| Operation  | Permission      | [Benutzer](https://github.com/Academi-fy/backend/wiki/User) | [Lehrer](https://github.com/Academi-fy/backend/wiki/User) | [Admin](https://github.com/Academi-fy/backend/wiki/User) |
-|------------|-----------------|-------------------------------------------------------------|-----------------------------------------------------------|----------------------------------------------------------|
-| ERSTELLEN  | `CLASS_CREATE`  | 🔴                                                          | 🔴                                                        | 🟢                                                       |
-| LÖSCHEN    | `CLASS_DELETE`  | 🔴                                                          | 🔴                                                        | 🟢                                                       |
+| Operation | Permission     | [Benutzer](https://github.com/Academi-fy/backend/wiki/User) | [Lehrer](https://github.com/Academi-fy/backend/wiki/User) | [Admin](https://github.com/Academi-fy/backend/wiki/User) |
+|-----------|----------------|-------------------------------------------------------------|-----------------------------------------------------------|----------------------------------------------------------|
+| ERSTELLEN | `CLASS_CREATE` | 🔴                                                          | 🔴                                                        | 🟢                                                       |
+| LÖSCHEN   | `CLASS_DELETE` | 🔴                                                          | 🔴                                                        | 🟢                                                       |
 
 ### Klassen verändern
 
@@ -34,12 +40,21 @@ Der Klassen-Cache wird alle **5 Minuten** aktualisiert sowie:
 ## Attribute
 
 ```javascript
-Class {
+Class
+{
     _id: "507f191e810c19729de860ea",
-    grade: {...},
-    courses: [ {...} ],
-    members: [ {...} ],
-    specified_grade: "a"
+        grade
+:
+    {...
+    }
+,
+    courses: [ { ... } ],
+        members
+:
+    [ { ... } ],
+        specified_grade
+:
+    "a"
 }
 ```
 
@@ -78,7 +93,8 @@ Ruft eine Klasse über die ID ab. Die Klassen werden gecacht und alle 5 Minuten 
 GET /api/classes/:id
 ```
 
-> weitere Möglichkeiten, eine Klasse abzurufen: [RuleSearching](https://github.com/Academi-fy/backend/wiki/RuleSearching)
+> weitere Möglichkeiten, eine Klasse
+> abzurufen: [RuleSearching](https://github.com/Academi-fy/backend/wiki/RuleSearching)
 
 #### Klasse erstellen oder bearbeiten
 
@@ -105,26 +121,36 @@ Generiert über [mongoose](https://mongoosejs.com/docs/guide.html) [npm package]
 
     grade: {
         type: ObjectId,
-        ref: 'Grade'
-    },
+            ref
+    :
+        'Grade'
+    }
+,
     courses: [
         {
             type: ObjectId,
             ref: 'Course'
         }
     ],
-    members: [
+        members
+:
+    [
         {
             type: ObjectId,
             ref: 'User'
         }
     ],
-    specified_grade: {
+        specified_grade
+:
+    {
         type: String,
-        required: true
+            required
+    :
+        true
     }
 
-},
+}
+,
 {
     timestamps: true
 }
