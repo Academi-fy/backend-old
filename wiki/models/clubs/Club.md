@@ -13,7 +13,6 @@ der [WebUntis API](https://help.untis.at/hc/de/articles/4886785534354-API-docume
 Das Club-Objekt ist ein eigenes JSON-Objekt. Die Clubs werden in MongoDB gespeichert und sind über den HTTP-Server
 abzurufen, wo sie gecacht werden. \
 Der Club-Cache wird alle **5 Minuten** aktualisiert sowie:
-
 - beim Start des HTTP Servers
 - beim Erstellen eines Clubs
 - beim Löschen eines Clubs
@@ -35,8 +34,7 @@ Der Club-Cache wird alle **5 Minuten** aktualisiert sowie:
 | BEITRETEN  | `CLUB_JOIN`    | 🟢                                                          | 🟢                                                                    | 🟢                                                       |
 | VERLASSEN  | `CLUB_LEAVE`   | 🟢                                                          | 🟢                                                                    | 🟢                                                       |
 
-> <sup>1</sup> [User](https://github.com/Academi-fy/backend/wiki/User) haben, wenn sie die Leiter des Clubs sind,
-> Lehrer-Rechte
+> <sup>1</sup> [User](https://github.com/Academi-fy/backend/wiki/User) haben, wenn sie die Leiter des Clubs sind, Lehrer-Rechte
 
 #### Club verändern
 
@@ -57,33 +55,16 @@ Der Club-Cache wird alle **5 Minuten** aktualisiert sowie:
 Attribute des Club-Objekts:
 
 ```javascript
-Club
-{
+Club {
     _id: "507f191e810c19729de860ea",
-        name
-:
-    "Bienen AG",
-        details
-:
-    {...
-    }
-,
+    name: "Bienen AG",
+    details: {...},
     avatar: "https://link.to/avatar.png",
-        events
-:
-    [ { ... } ],
-        members
-:
-    [ { ... } ],
-        leaders
-:
-    [ { ... } ],
-        state
-:
-    "APPROVED",
-        editHistory
-:
-    [ { ... } ]
+    events: [ {...} ],
+    members: [ {...} ],
+    leaders: [ {...} ],
+    state: "APPROVED",
+    editHistory: [ {...} ]
 }
 ```
 
@@ -151,51 +132,31 @@ Generiert über [mongoose](https://mongoosejs.com/docs/guide.html) [npm package]
 {
     name: {
         type: String,
-            required
-    :
-        true,
-    default:
-        'Neue AG'
-    }
-,
+        required: true,
+        default: 'Neue AG'
+    },
     details: {
 
         description: {
             type: String,
-                required
-        :
-            true,
-        default:
-            'AG Beschreibung'
-        }
-    ,
+            required: true,
+            default: 'AG Beschreibung'
+        },
         location: {
             type: String,
-                required
-        :
-            true,
-        default:
-            'AG Ort'
-        }
-    ,
+            required: true,
+            default: 'AG Ort'
+        },
         meetingTime: {
             type: String,
-                required
-        :
-            true,
-        default:
-            '13:00'
-        }
-    ,
+            required: true,
+            default: '13:00'
+        },
         meetingDay: {
             type: String,
-                required
-        :
-            true,
-        default:
-            'Montag'
-        }
-    ,
+            required: true,
+            default: 'Montag'
+        },
         requirements: [
             {
                 emoji: {
@@ -206,64 +167,47 @@ Generiert über [mongoose](https://mongoosejs.com/docs/guide.html) [npm package]
                 }
             }
         ],
-            tags
-    :
-        [
+        tags: [
             {
                 type: String
             }
         ]
 
-    }
-,
+    },
     leaders: [
         {
             type: ObjectId,
             ref: 'User'
         }
     ],
-        members
-:
-    [
+    members: [
         {
             type: ObjectId,
             ref: 'User'
         }
     ],
-        chat
-:
-    {
+    chat: {
         type: ObjectId,
-            ref
-    :
-        'Chat'
-    }
-,
+        ref: 'Chat'
+    },
     events: [
         {
             type: ObjectId,
             ref: 'Event'
         }
     ],
-        state
-:
-    {
+    state: {
         type: String,
-            required
-    :
-        true,
-    default:
-        'SUGGESTED'
-    }
-,
+        required: true,
+        default: 'SUGGESTED'
+    },
     editHistory: [
         {
             type: Object,
             required: false
         }
     ]
-}
-,
+},
 {
     timestamps: true
 }

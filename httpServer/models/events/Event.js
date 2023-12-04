@@ -346,21 +346,21 @@ export default class Event {
         try {
 
             event = await event
-                .populate([
-                    {
-                        path: 'clubs',
-                        populate: [
-                            { path: 'members' },
-                            { path: 'leaders' }
-                        ]
-                    },
-                    {
-                        path: 'tickets',
-                        populate: [
-                            { path: 'buyer' }
-                        ]
-                    },
-                ]);
+                            .populate([
+                                {
+                                    path: 'clubs',
+                                    populate: [
+                                        { path: 'members' },
+                                        { path: 'leaders' }
+                                    ]
+                                },
+                                {
+                                    path: 'tickets',
+                                    populate: [
+                                        { path: 'buyer' }
+                                    ]
+                                },
+                            ]);
 
             const populatedEvent = new Event(
                 event.title,
@@ -379,7 +379,8 @@ export default class Event {
 
             return populatedEvent;
 
-        } catch (error) {
+        }
+        catch (error) {
             throw new DatabaseError(`Failed to populate event:\n${ event }\n${ error }`);
         }
 

@@ -248,31 +248,31 @@ export default class Class {
         try {
 
             class_ = await class_
-                .populate([
-                    {
-                        path: 'grade',
-                        populate: [
-                            { path: 'classes' }
-                        ]
-                    },
-                    {
-                        path: 'course',
-                        populate: [
-                            { path: 'members' },
-                            { path: 'classes' },
-                            { path: 'teacher' },
-                            { path: 'chat' },
-                            { path: 'subject' },
-                        ]
-                    },
-                    {
-                        path: 'members',
-                        populate: [
-                            { path: 'classes' },
-                            { path: 'extra_courses' }
-                        ]
-                    },
-                ]);
+                            .populate([
+                                {
+                                    path: 'grade',
+                                    populate: [
+                                        { path: 'classes' }
+                                    ]
+                                },
+                                {
+                                    path: 'course',
+                                    populate: [
+                                        { path: 'members' },
+                                        { path: 'classes' },
+                                        { path: 'teacher' },
+                                        { path: 'chat' },
+                                        { path: 'subject' },
+                                    ]
+                                },
+                                {
+                                    path: 'members',
+                                    populate: [
+                                        { path: 'classes' },
+                                        { path: 'extra_courses' }
+                                    ]
+                                },
+                            ]);
 
             const populatedClass = new Class(
                 class_.grade,
@@ -284,7 +284,8 @@ export default class Class {
 
             return populatedClass;
 
-        } catch (error) {
+        }
+        catch (error) {
             throw new DatabaseError(`Failed to populate event:\n${ class_ }\n${ error }`);
         }
 

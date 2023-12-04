@@ -10,6 +10,9 @@ import { createDocument, deleteDocument, getAllDocuments, updateDocument } from 
 import { findByRule } from "../findByRule.js";
 import DatabaseError from "../../errors/DatabaseError.js";
 import CacheError from "../../errors/CacheError.js";
+import { populate } from "dotenv";
+import clubSchema from "../../../mongoDb/schemas/clubs/ClubSchema.js";
+import { getModel } from "../../../mongoDb/initializeSchemas.js";
 
 // Cache expiration time in milliseconds
 const expirationTime = 5 * 60 * 1000;
@@ -24,9 +27,9 @@ const expirationTime = 5 * 60 * 1000;
  * @param {Chat} chat - The chat of the club.
  * @param {Array<Event>} events - The events of the club.
  * @param {String} state - The state of the club. Valid states are:
- * 'SUGGESTED', 'REJECTED', 'APPROVED',
- * 'EDIT_SUGGESTED', 'EDIT_REJECTED', 'EDIT_APPROVED',
- * 'DELETE_SUGGESTED', 'DELETE_REJECTED', 'DELETE_APPROVED'
+     * 'SUGGESTED', 'REJECTED', 'APPROVED',
+     * 'EDIT_SUGGESTED', 'EDIT_REJECTED', 'EDIT_APPROVED',
+     * 'DELETE_SUGGESTED', 'DELETE_REJECTED', 'DELETE_APPROVED'
  * @param {Array<Club>} editHistory - The edit history of the club.
  */
 export default class Club {
@@ -40,9 +43,9 @@ export default class Club {
      * @param {String} chat - The id of the chat of the club.
      * @param {Array<String>} events - The ids of the events of the club.
      * @param {String} state - The state of the club. Valid states are:
-     * 'SUGGESTED', 'REJECTED', 'APPROVED',
-     * 'EDIT_SUGGESTED', 'EDIT_REJECTED', 'EDIT_APPROVED',
-     * 'DELETE_SUGGESTED', 'DELETE_REJECTED', 'DELETE_APPROVED'
+         * 'SUGGESTED', 'REJECTED', 'APPROVED',
+         * 'EDIT_SUGGESTED', 'EDIT_REJECTED', 'EDIT_APPROVED',
+         * 'DELETE_SUGGESTED', 'DELETE_REJECTED', 'DELETE_APPROVED'
      * @param {Array<Club>} editHistory - The edit history of the club.
      */
     constructor(
@@ -125,7 +128,7 @@ export default class Club {
 
     set _state(value) {
         validateNotEmpty('Club state', value);
-        if (![ 'SUGGESTED', 'REJECTED', 'APPROVED' ].includes(value)) throw new Error(`Invalid club state: ${ value }`);
+        if(!['SUGGESTED', 'REJECTED', 'APPROVED'].includes(value)) throw new Error(`Invalid club state: ${ value }`);
         this.state = value;
     }
 
@@ -148,7 +151,7 @@ export default class Club {
         const clubsFromDb = await getAllDocuments(ClubSchema);
 
         const clubs = [];
-        for (let club of clubsFromDb) {
+        for(let club of clubsFromDb) {
 
             club = await this.populateClub(club);
             clubs.push(
@@ -222,7 +225,7 @@ export default class Club {
 
         club.chat = club.chat.id;
 
-        let insertedClub = (await createDocument(ClubSchema, club)).populate([ 'leaders', 'members', 'chat', 'events' ]);
+        let insertedClub = (await createDocument(ClubSchema, club)).populate(['leaders', 'members', 'chat', 'events']);
         if (!insertedClub) throw new DatabaseError(`Failed to create club:\n${ insertedClub }`);
 
         insertedClub = await this.populateClub(insertedClub);
@@ -312,37 +315,37 @@ export default class Club {
         try {
 
             club = await club
-                .populate([
-                    {
-                        path: 'leaders',
-                        populate: [
-                            { path: 'classes' },
-                            { path: 'extra_courses' },
-                        ]
-                    },
-                    {
-                        path: 'members',
-                        populate: [
-                            { path: 'classes' },
-                            { path: 'extra_courses' },
-                        ]
-                    },
-                    {
-                        path: 'chat',
-                        populate: [
-                            { path: 'targets' },
-                            { path: 'courses' },
-                            { path: 'clubs' }
-                        ]
-                    },
-                    {
-                        path: 'events',
-                        populate: [
-                            { path: 'clubs' },
-                            { path: 'tickets' }
-                        ]
-                    },
-                ]);
+                            .populate([
+                                {
+                                    path: 'leaders',
+                                    populate: [
+                                        { path: 'classes' },
+                                        { path: 'extra_courses' },
+                                    ]
+                                },
+                                {
+                                    path: 'members',
+                                    populate: [
+                                        { path: 'classes' },
+                                        { path: 'extra_courses' },
+                                    ]
+                                },
+                                {
+                                    path: 'chat',
+                                    populate: [
+                                        { path: 'targets' },
+                                        { path: 'courses' },
+                                        { path: 'clubs' }
+                                    ]
+                                },
+                                {
+                                    path: 'events',
+                                    populate: [
+                                        { path: 'clubs' },
+                                        { path: 'tickets' }
+                                    ]
+                                },
+                            ]);
 
             const populatedClub = new Club(
                 club.name,

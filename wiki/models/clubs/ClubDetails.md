@@ -37,9 +37,9 @@ new ClubDetails(
     /*location*/ "Raum 101",
     /*meetingTime*/ "12:00",
     /*meetingDay*/ "Montag",
-    /*requirements*/ [ { ... } ],
-    /*tags*/ [ { ... } ],
-    /*events*/ [ { ... } ]
+    /*requirements*/ [ {...} ],
+    /*tags*/ [ {...} ],
+    /*events*/ [ {...} ]
 )
 ```
 
@@ -71,40 +71,24 @@ details: {
 
     description: {
         type: String,
-            required
-    :
-        true,
-    default:
-        'AG Beschreibung'
-    }
-,
+        required: true,
+        default: 'AG Beschreibung'
+    },
     location: {
         type: String,
-            required
-    :
-        true,
-    default:
-        'AG Ort'
-    }
-,
+        required: true,
+        default: 'AG Ort'
+    },
     meetingTime: {
         type: String,
-            required
-    :
-        true,
-    default:
-        '13:00'
-    }
-,
+        required: true,
+        default: '13:00'
+    },
     meetingDay: {
         type: String,
-            required
-    :
-        true,
-    default:
-        'Montag'
-    }
-,
+        required: true,
+        default: 'Montag'
+    },
     requirements: [
         {
             emoji: {
@@ -116,15 +100,13 @@ details: {
                 required: true
             }
         }
-    ],
-        tags
-:
-    [
+    ], 
+    tags: [
         {
-            type: String,
-            required: true
+          type: String,
+          required: true
         }
-    ]
+    ] 
     events: [
         {
             type: ObjectId,

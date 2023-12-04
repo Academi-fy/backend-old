@@ -1,15 +1,11 @@
-Ein Event ist eine schulische Veranstaltung bzw. ein schulisches Ereignis, das mit der Schulgemeinschaft geteilt werden
-soll. \
+Ein Event ist eine schulische Veranstaltung bzw. ein schulisches Ereignis, das mit der Schulgemeinschaft geteilt werden soll. \
 Events können einer oder mehreren AGs zugeordnet werden. \
-Events sind unabhängig von
-der [WebUntis API](https://help.untis.at/hc/de/articles/4886785534354-API-documentation-for-integration-partners).
+Events sind unabhängig von der [WebUntis API](https://help.untis.at/hc/de/articles/4886785534354-API-documentation-for-integration-partners).
 
 ## Event-Objekt
 
-Das Event-Objekt ist ein eigenes JSON-Objekt. Die Events werde in MongoDB gespeichert und sind über den HTTP Server
-abzurufen, wo sie gecacht werden. \
+Das Event-Objekt ist ein eigenes JSON-Objekt. Die Events werde in MongoDB gespeichert und sind über den HTTP Server abzurufen, wo sie gecacht werden. \
 Der Event-Cache wird alle **5 Minuten** aktualisiert sowie:
-
 - beim Start des HTTP Servers
 - beim Erstellen eines Events
 
@@ -36,48 +32,24 @@ Der Event-Cache wird alle **5 Minuten** aktualisiert sowie:
 | BEARBEITEN                                                           | `EVENT_EDIT`          | 🟡                                                          | 🟡<sup>🟢1</sup>                                          | 🟢                                                       |
 | [Tickets](https://github.com/Academi-fy/backend/wiki/User) VERWALTEN | `EVENT_TICKET_MANAGE` | 🔴                                                          | 🔴                                                        | 🟢                                                       |
 
-> <sup>1</sup> [Lehrer](https://github.com/Academi-fy/backend/wiki/User) können nur Events erstellen/löschen, die
-> einem [Club](https://github.com/Academi-fy/backend/wiki/Club) zugeordnet sind, die sie leiten.
+> <sup>1</sup> [Lehrer](https://github.com/Academi-fy/backend/wiki/User) können nur Events erstellen/löschen, die einem [Club](https://github.com/Academi-fy/backend/wiki/Club) zugeordnet sind, die sie leiten.
 
 ## Attribute
 
 ```javascript
-Event
-{
+Event {
     _id: "507f191e810c19729de860ea",
-        title
-:
-    "Weihnachtskonzert 2023",
-        description
-:
-    "Auch in diesem Jahr findet wieder das Weihnachtskonzert statt [...]", // [...] = nur hier gekürzt
-        location
-:
-    "Rotteck Aula",
-        host
-:
-    "M. Pöll und die Schulband",
-        clubs
-:
-    [ { ... } ],
-        startDate
-:
-    1690588750679,
-        endDate
-:
-    1700588810679,
-        information
-:
-    [ { ... } ],
-        tickets
-:
-    [ { ... } ],
-        state
-:
-    "SUGGESTED",
-        editHistory
-:
-    [ { ... } ]
+    title: "Weihnachtskonzert 2023",
+    description: "Auch in diesem Jahr findet wieder das Weihnachtskonzert statt [...]", // [...] = nur hier gekürzt
+    location: "Rotteck Aula",
+    host: "M. Pöll und die Schulband",
+    clubs: [ {...} ],
+    startDate: 1690588750679,
+    endDate: 1700588810679,
+    information: [ {...} ],
+    tickets: [ {...} ],
+    state: "SUGGESTED",
+    editHistory: [ {...} ]
 }
 ```
 
@@ -98,12 +70,11 @@ Event
 
 #### Besonderheiten
 
-- Die Attribute `startDate` und `endDate` sind in Millisekunden seit 1970 angegeben. Dies ist der Standard für die
-  Zeitangabe in JavaScript.
-    - sie sind in UTC angegeben
+- Die Attribute `startDate` und `endDate` sind in Millisekunden seit 1970 angegeben. Dies ist der Standard für die Zeitangabe in JavaScript.
+  - sie sind in UTC angegeben
 
 - `clubs` und `tickets` sind MongoDB Referenzen zu den jeweiligen Objekten
-    - sie werden erst beim Abrufen auf dem HTTP-Server aufgelöst
+  - sie werden erst beim Abrufen auf dem HTTP-Server aufgelöst
 
 ## Zugriff auf Events über den HTTP Server
 
@@ -150,54 +121,34 @@ Generiert über [mongoose](https://mongoosejs.com/docs/guide.html) [npm package]
 
     title: {
         type: String,
-            required
-    :
-        true
-    }
-,
+        required: true
+    },
     description: {
         type: String,
-            required
-    :
-        true
-    }
-,
+        required: true
+    },
     location: {
         type: String,
-            required
-    :
-        true
-    }
-,
+        required: true
+    },
     host: {
         type: String,
-            required
-    :
-        true
-    }
-,
+        required: true
+    },
     clubs: [
         {
             type: ObjectId,
             ref: 'Club'
         }
     ],
-        startDate
-:
-    {
+    startDate: {
         type: Number,
-            required
-    :
-        true
-    }
-,
+        required: true
+    },
     endDate: {
         type: Number,
-            required
-    :
-        true
-    }
-,
+        required: true
+    },
     information: [
         {
             title: {
@@ -218,48 +169,37 @@ Generiert über [mongoose](https://mongoosejs.com/docs/guide.html) [npm package]
         },
 
     ],
-        tickets
-:
-    {
+    tickets: {
         ticketDetails: {
             price: {
                 type: Number
-            }
-        ,
+            },
             description: {
                 type: String
-            }
-        ,
+            },
             amount: {
                 type: Number
             }
-        }
-    ,
+        },
         sold: [
             {
                 type: ObjectId,
                 ref: 'EventTicket'
             }
         ]
-    }
-,
+    },
     state: {
         type: String,
-            required
-    :
-        true,
-    default:
-        "SUGGESTED"
-    }
-,
+        required: true,
+        default: "SUGGESTED"
+    },
     editHistory: [
         {
             type: Object,
             required: false
         }
     ]
-}
-,
+},
 {
     timestamps: true
 }

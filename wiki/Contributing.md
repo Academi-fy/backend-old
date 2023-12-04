@@ -1,7 +1,6 @@
 # Contributing to Academi-fy
 
-First off, thank you for considering contributing to Academi-fy. It's people like you that make Academi-fy such a great
-tool.
+First off, thank you for considering contributing to Academi-fy. It's people like you that make Academi-fy such a great tool.
 
 ## Code of Conduct
 
@@ -35,8 +34,7 @@ We use GitHub Issues to track public bugs. Report a bug by opening a new issue.
 
 ### Suggesting Enhancements
 
-If you have a suggestion that doesn't constitute a bug, but would still improve Academi-fy, we use GitHub Issues to keep
-track of all enhancement suggestions.
+If you have a suggestion that doesn't constitute a bug, but would still improve Academi-fy, we use GitHub Issues to keep track of all enhancement suggestions.
 
 ### Your First Code Contribution
 
@@ -53,8 +51,7 @@ For first-time contributors, we suggest you to look for issues labeled `good fir
 
 ## Style Guide
 
-Please follow the coding standards outlined in the project's `README.md` and in the codebase. This includes following
-the naming conventions, commenting your code, and organizing code in a readable and maintainable way.
+Please follow the coding standards outlined in the project's `README.md` and in the codebase. This includes following the naming conventions, commenting your code, and organizing code in a readable and maintainable way.
 
 ## License
 

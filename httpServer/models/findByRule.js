@@ -15,8 +15,7 @@ export function findByRule(list, rule) {
         const nestedKey = Object.keys(ruleValue)[0];
         const nestedValue = ruleValue[nestedKey];
         return list.filter(obj => obj[ruleKey] && obj[ruleKey][nestedKey] === nestedValue);
-    }
-    else {
+    } else {
         return list.filter(obj => obj[ruleKey] === ruleValue);
     }
 }

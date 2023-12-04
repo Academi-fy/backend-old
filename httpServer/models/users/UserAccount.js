@@ -11,7 +11,7 @@ import {
     updateDocument
 } from "../../../mongoDb/collectionAccess.js";
 import UserAccountSchema from "../../../mongoDb/schemas/user/UserAccountSchema.js";
-import { validateArray, validateNotEmpty } from "../propertyValidation.js";
+import { validateArray, validateNotEmpty, validateObject } from "../propertyValidation.js";
 import DatabaseError from "../../errors/DatabaseError.js";
 import UserAccountPermissions from "./UserAccountPermissions.js";
 
@@ -204,15 +204,15 @@ export default class UserAccount {
         try {
 
             userAccount = await userAccount
-                .populate([
-                    {
-                        path: 'user',
-                        populate: [
-                            { path: 'classes' },
-                            { path: 'extra_courses' }
-                        ]
-                    }
-                ]);
+                                    .populate([
+                                        {
+                                            path: 'user',
+                                            populate: [
+                                                { path: 'classes' },
+                                                { path: 'extra_courses' }
+                                            ]
+                                        }
+                                    ]);
 
             const populatedUserAccount = new UserAccount(
                 userAccount.user,
@@ -225,7 +225,8 @@ export default class UserAccount {
 
             return populatedUserAccount;
 
-        } catch (error) {
+        }
+        catch (error) {
             throw new DatabaseError(`Failed to populate user account with id '${ userAccount._id }:'\n${ error }`);
         }
 

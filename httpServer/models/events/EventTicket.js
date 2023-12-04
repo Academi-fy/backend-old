@@ -6,7 +6,7 @@
 import cache from "../../cache.js";
 import EventTicketSchema from "../../../mongoDb/schemas/events/EventTicketSchema.js";
 import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../../mongoDb/collectionAccess.js";
-import { validateNumber, validateObject, verifyInCache } from "../propertyValidation.js";
+import { validateNotEmpty, validateNumber, validateObject, verifyInCache } from "../propertyValidation.js";
 import { findByRule } from "../findByRule.js";
 import RetrievalError from "../../errors/RetrievalError.js";
 import DatabaseError from "../../errors/DatabaseError.js";
@@ -246,22 +246,22 @@ export default class EventTicket {
         try {
 
             eventTicket = await eventTicket
-                .populate([
-                    {
-                        path: 'event',
-                        populate: [
-                            { path: 'clubs' },
-                            { path: 'tickets' }
-                        ]
-                    },
-                    {
-                        path: 'buyer',
-                        populate: [
-                            { path: 'classes' },
-                            { path: 'extra_courses' }
-                        ]
-                    }
-                ]);
+                                    .populate([
+                                        {
+                                            path: 'event',
+                                            populate: [
+                                                { path: 'clubs' },
+                                                { path: 'tickets' }
+                                            ]
+                                        },
+                                        {
+                                            path: 'buyer',
+                                            populate: [
+                                                { path: 'classes' },
+                                                { path: 'extra_courses' }
+                                            ]
+                                        }
+                                    ]);
 
         } catch (error) {
             throw new DatabaseError(`Failed to populate event ticket:\n${ eventTicket }\n${ error }`);

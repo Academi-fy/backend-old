@@ -3,7 +3,7 @@
  * @author Daniel Dopatka
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
-import { validateNotEmpty } from "../propertyValidation.js";
+import { validateArray, validateNotEmpty, validateNumber } from "../propertyValidation.js";
 
 /**
  * @description Class representing a PollAnswer.

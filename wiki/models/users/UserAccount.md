@@ -1,38 +1,22 @@
-UserAccounts enthalten die Daten, die für die Authentifizierung eines Users benötigt werden. Sie werden beim Erstellen
-eines Users automatisch erstellt und können nicht manuell erstellt werden. \
-Bei der ersten Anmeldung gibt der [User](https://github.com/Academi-fy/backend/wiki/User) seine Daten ein und diese
-werden dann in der Datenbank gespeichert. \
-Die Verknüpfung zwischen [User](https://github.com/Academi-fy/backend/wiki/User) und UserAccount wird über die `user_id`
-hergestellt. Darüber erfolgt auch die Verknüpfung
-zur [WebUntis API](https://help.untis.at/hc/de/articles/4886785534354-API-documentation-for-integration-partners).
+UserAccounts enthalten die Daten, die für die Authentifizierung eines Users benötigt werden. Sie werden beim Erstellen eines Users automatisch erstellt und können nicht manuell erstellt werden. \
+Bei der ersten Anmeldung gibt der [User](https://github.com/Academi-fy/backend/wiki/User) seine Daten ein und diese werden dann in der Datenbank gespeichert. \
+Die Verknüpfung zwischen [User](https://github.com/Academi-fy/backend/wiki/User) und UserAccount wird über die `user_id` hergestellt. Darüber erfolgt auch die Verknüpfung zur [WebUntis API](https://help.untis.at/hc/de/articles/4886785534354-API-documentation-for-integration-partners).
 
 ## UserAccount-Objekt
 
-Das UserAccount-Objekt ist ein eigenes JSON-Objekt. Die UserAccounts werden in MongoDB gespeichert und sind über den
-HTTP Server abzurufen. \
+Das UserAccount-Objekt ist ein eigenes JSON-Objekt. Die UserAccounts werden in MongoDB gespeichert und sind über den HTTP Server abzurufen. \
 Sie werden **NICHT** gecacht. Außerdem können sie nicht manuell erstellt werden! \
 
 ## Attribute
 
 ```javascript
-UserAccount
-{
+UserAccount {
     _id: "507f191e810c19729de860ea",
-        user
-:
-    {...
-    }
-,
+    user: {...},
     username: "DopatkaK2A24",
-        password
-:
-    "$2a$10$Z3J", // hashed
-        settings
-:
-    {...
-    }
-,
-    permissions:  [ ... ]
+    password: "$2a$10$Z3J", // hashed
+    settings: {...},
+    permissions:  [...]
 }
 ```
 
@@ -48,7 +32,7 @@ UserAccount
 #### Besonderheiten
 
 - `user` ist eine MongoDB Referenz zum jeweiligen Objekt
-    - er wird erst beim Abrufen auf dem HTTP-Server aufgelöst
+  - er wird erst beim Abrufen auf dem HTTP-Server aufgelöst
 - `password` ist gehasht mit bcrypt
 
 ## Zugriff auf UserAccounts über den HTTP Server
@@ -69,8 +53,7 @@ Ruft einen UserAccount über die ID ab.
 GET /api/accounts/:id
 ```
 
-> weitere Möglichkeiten, einen UserAccounts
-> abzurufen: [RuleSearching](https://github.com/Academi-fy/backend/wiki/RuleSearching)
+> weitere Möglichkeiten, einen UserAccounts abzurufen: [RuleSearching](https://github.com/Academi-fy/backend/wiki/RuleSearching)
 
 #### UserAccount erstellen oder bearbeiten
 
@@ -94,43 +77,30 @@ Generiert über [mongoose](https://mongoosejs.com/docs/guide.html) [npm package]
 
 ```javascript
 {
-
+        
     user: {
         type: ObjectId,
-            ref
-    :
-        'User'
-    }
-,
+        ref: 'User'
+    },
     username: {
         type: String,
-            required
-    :
-        true
-    }
-,
+        required: true
+    },
     password: {
         type: String,
-            required
-    :
-        true
-    }
-,
+        required: true
+    },
     settings: {
         type: Object,
-            required
-    :
-        true
-    }
-,
+        required: true
+    },
     permissions: [
         {
             type: String
         }
     ]
 
-}
-,
+},
 {
     timestamps: true
 }

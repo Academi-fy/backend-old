@@ -1,16 +1,11 @@
 Grades entsprechen Klassenstufen. \
-Sie beinhalten eine Liste von [Klassen](https://github.com/Academi-fy/backend/wiki/Class), die zu der Klassenstufe
-gehören. \
-Grades werden [Klassen](https://github.com/Academi-fy/backend/wiki/Class) aus
-der [WebUntis API](https://help.untis.at/hc/de/articles/4886785534354-API-documentation-for-integration-partners)
-manuell zugewiesen. \
+Sie beinhalten eine Liste von [Klassen](https://github.com/Academi-fy/backend/wiki/Class), die zu der Klassenstufe gehören. \
+Grades werden [Klassen](https://github.com/Academi-fy/backend/wiki/Class) aus der [WebUntis API](https://help.untis.at/hc/de/articles/4886785534354-API-documentation-for-integration-partners) manuell zugewiesen. \
 
 ## Grade-Objekt
 
-Das Grade-Objekt ist ein eigenes JSON-Objekt. Die Grades werden in MongoDB gespeichert und sind über den HTTP Server
-abzurufen, wo sie gecacht werden. \
+Das Grade-Objekt ist ein eigenes JSON-Objekt. Die Grades werden in MongoDB gespeichert und sind über den HTTP Server abzurufen, wo sie gecacht werden. \
 Der Grade-Cache wird alle **10 Minuten** aktualisiert sowie:
-
 - beim Start des HTTP Servers
 
 ## Standard Berechtigungen
@@ -21,10 +16,10 @@ Der Grade-Cache wird alle **10 Minuten** aktualisiert sowie:
 
 ### Basic Operations
 
-| Operation | Permission     | [Benutzer](https://github.com/Academi-fy/backend/wiki/User) | [Lehrer](https://github.com/Academi-fy/backend/wiki/User) | [Admin](https://github.com/Academi-fy/backend/wiki/User) |
-|-----------|----------------|-------------------------------------------------------------|-----------------------------------------------------------|----------------------------------------------------------|
-| ERSTELLEN | `GRADE_CREATE` | 🔴                                                          | 🔴                                                        | 🟢                                                       |
-| LÖSCHEN   | `GRADE_DELETE` | 🔴                                                          | 🔴                                                        | 🟢                                                       |
+| Operation  | Permission      | [Benutzer](https://github.com/Academi-fy/backend/wiki/User) | [Lehrer](https://github.com/Academi-fy/backend/wiki/User) | [Admin](https://github.com/Academi-fy/backend/wiki/User) |
+|------------|-----------------|-------------------------------------------------------------|-----------------------------------------------------------|----------------------------------------------------------|
+| ERSTELLEN  | `GRADE_CREATE`  | 🔴                                                          | 🔴                                                        | 🟢                                                       |
+| LÖSCHEN    | `GRADE_DELETE`  | 🔴                                                          | 🔴                                                        | 🟢                                                       |
 
 ### Grades verändern
 
@@ -37,15 +32,10 @@ Der Grade-Cache wird alle **10 Minuten** aktualisiert sowie:
 ## Attribute
 
 ```javascript
-Grade
-{
+Grade {
     _id: "507f191e810c19729de860ea",
-        level
-:
-    10,
-        classes
-:
-    [ { ... } ]
+    level: 10,
+    classes: [ {...} ]
 }
 ```
 
@@ -104,22 +94,16 @@ Generiert über [mongoose](https://mongoosejs.com/docs/guide.html) [npm package]
 {
     level: {
         type: Number,
-            unique
-    :
-        true,
-            required
-    :
-        true
-    }
-,
+        unique: true,
+        required: true
+    },
     classes: [
         {
             type: ObjectId,
             ref: 'Class'
         }
     ]
-}
-,
+},
 {
     timestamps: true
 }

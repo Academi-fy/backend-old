@@ -1,15 +1,11 @@
 Subjects entsprechen Fächern. \
 Sie beinhalten eine Liste von [Kursen](https://github.com/Academi-fy/backend/wiki/Course), die zu den Fächern gehören. \
-Fächer werden [Kursen](https://github.com/Academi-fy/backend/wiki/Course) aus
-der [WebUntis API](https://help.untis.at/hc/de/articles/4886785534354-API-documentation-for-integration-partners)
-manuell zugewiesen. \
+Fächer werden [Kursen](https://github.com/Academi-fy/backend/wiki/Course) aus der [WebUntis API](https://help.untis.at/hc/de/articles/4886785534354-API-documentation-for-integration-partners) manuell zugewiesen. \
 
 ## Subject-Objekt
 
-Das Subject-Objekt ist ein eigenes JSON-Objekt. Die Subjects werden in MongoDB gespeichert und sind über den HTTP Server
-abzurufen, wo sie gecacht werden. \
+Das Subject-Objekt ist ein eigenes JSON-Objekt. Die Subjects werden in MongoDB gespeichert und sind über den HTTP Server abzurufen, wo sie gecacht werden. \
 Der Subject-Cache wird alle **10 Minuten** aktualisiert sowie:
-
 - beim Start des HTTP Servers
 
 ## Standard Berechtigungen
@@ -36,18 +32,11 @@ Der Subject-Cache wird alle **10 Minuten** aktualisiert sowie:
 ## Attribute
 
 ```javascript
-Subject
-{
+Subject {
     _id: "507f191e810c19729de860ea",
-        name
-:
-    "Deutsch",
-        shortName
-:
-    "D",
-        courses
-:
-    [ { ... } ]
+    name: "Deutsch",
+    shortName: "D",
+    courses: [ {...} ]
 }
 ```
 
@@ -81,8 +70,7 @@ Ruft eine Subjects über die ID ab. Die Subjects werden gecacht und alle 10 Minu
 GET /api/subjects/:id
 ```
 
-> weitere Möglichkeiten, eine Subjects
-> abzurufen: [RuleSearching](https://github.com/Academi-fy/backend/wiki/RuleSearching)
+> weitere Möglichkeiten, eine Subjects abzurufen: [RuleSearching](https://github.com/Academi-fy/backend/wiki/RuleSearching)
 
 #### Subjects erstellen oder bearbeiten
 
@@ -109,32 +97,21 @@ Generiert über [mongoose](https://mongoosejs.com/docs/guide.html) [npm package]
 
     type: {
         type: String,
-            unique
-    :
-        true,
-            required
-    :
-        true
-    }
-,
+        unique: true,
+        required: true
+    },
     shortName: {
         type: String,
-            unique
-    :
-        true,
-            required
-    :
-        true
-    }
-,
+        unique: true,
+        required: true
+    },
     courses: [
         {
             type: ObjectId,
             ref: 'Course'
         }
     ]
-}
-,
+},
 {
     timestamps: true
 }

@@ -290,42 +290,42 @@ export default class Chat {
         try {
 
             chat = await chat
-                .populate([
-                    {
-                        path: 'targets',
-                        populate: [
-                            { path: 'classes' },
-                            { path: 'extra_courses' }
-                        ]
-                    },
-                    {
-                        path: 'courses',
-                        populate: [
-                            { path: 'members' },
-                            { path: 'classes' },
-                            { path: 'teacher' },
-                            { path: 'subject' },
-                            { path: 'chat' }
-                        ]
-                    },
-                    {
-                        path: 'clubs',
-                        populate: [
-                            { path: 'leaders' },
-                            { path: 'members' },
-                            { path: 'chat' },
-                            { path: 'events' },
-                        ]
-                    },
-                    {
-                        path: 'messages',
-                        populate: [
-                            { path: 'chat' },
-                            { path: 'author' },
-                            { path: 'answer' }
-                        ]
-                    },
-                ]);
+                            .populate([
+                                {
+                                    path: 'targets',
+                                    populate: [
+                                        { path: 'classes' },
+                                        { path: 'extra_courses' }
+                                    ]
+                                },
+                                {
+                                    path: 'courses',
+                                    populate: [
+                                        { path: 'members' },
+                                        { path: 'classes' },
+                                        { path: 'teacher' },
+                                        { path: 'subject' },
+                                        { path: 'chat' }
+                                    ]
+                                },
+                                {
+                                    path: 'clubs',
+                                    populate: [
+                                        { path: 'leaders' },
+                                        { path: 'members' },
+                                        { path: 'chat' },
+                                        { path: 'events' },
+                                    ]
+                                },
+                                {
+                                    path: 'messages',
+                                    populate: [
+                                        { path: 'chat' },
+                                        { path: 'author' },
+                                        { path: 'answer' }
+                                    ]
+                                },
+                            ]);
 
             const populatedChat = new Chat(
                 chat.type,
