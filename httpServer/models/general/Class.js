@@ -269,7 +269,7 @@ export default class Class {
                         path: 'members',
                         populate: [
                             { path: 'classes' },
-                            { path: 'extra_courses' }
+                            { path: 'extraCourses' }
                         ]
                     },
                 ]);

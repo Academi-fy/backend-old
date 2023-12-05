@@ -317,14 +317,14 @@ export default class Club {
                         path: 'leaders',
                         populate: [
                             { path: 'classes' },
-                            { path: 'extra_courses' },
+                            { path: 'extraCourses' },
                         ]
                     },
                     {
                         path: 'members',
                         populate: [
                             { path: 'classes' },
-                            { path: 'extra_courses' },
+                            { path: 'extraCourses' },
                         ]
                     },
                     {

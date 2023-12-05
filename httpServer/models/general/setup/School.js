@@ -276,7 +276,7 @@ export default class School {
                         path: 'members',
                         populate: [
                             { path: 'classes' },
-                            { path: 'extra_courses' }
+                            { path: 'extraCourses' }
                         ]
                     },
                     {

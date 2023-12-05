@@ -312,7 +312,7 @@ export default class Message {
                         path: 'author',
                         populate: [
                             { path: 'classes' },
-                            { path: 'extra_courses' }
+                            { path: 'extraCourses' }
                         ]
                     },
                     {

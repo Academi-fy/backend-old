@@ -292,7 +292,7 @@ export default class Blackboard {
                         path: 'author',
                         populate: [
                             { path: 'classes' },
-                            { path: 'extra_courses' },
+                            { path: 'extraCourses' },
                         ]
                     }
                 ]);

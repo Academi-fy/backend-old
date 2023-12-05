@@ -209,7 +209,7 @@ export default class UserAccount {
                         path: 'user',
                         populate: [
                             { path: 'classes' },
-                            { path: 'extra_courses' }
+                            { path: 'extraCourses' }
                         ]
                     }
                 ]);

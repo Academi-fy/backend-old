@@ -258,7 +258,7 @@ export default class EventTicket {
                         path: 'buyer',
                         populate: [
                             { path: 'classes' },
-                            { path: 'extra_courses' }
+                            { path: 'extraCourses' }
                         ]
                     }
                 ]);

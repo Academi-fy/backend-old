@@ -295,7 +295,7 @@ export default class Chat {
                         path: 'targets',
                         populate: [
                             { path: 'classes' },
-                            { path: 'extra_courses' }
+                            { path: 'extraCourses' }
                         ]
                     },
                     {
