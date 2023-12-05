@@ -177,7 +177,7 @@ export default class Message {
 
         const messages = await this.getAllMessages();
 
-        const message = messages.find(message => message._id === id);
+        const message = messages.find(msg => msg._id === id);
         if (!message) throw new RetrievalError(`Failed to find message with id: ${ id }`);
 
         return message;

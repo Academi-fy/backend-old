@@ -5,5 +5,7 @@
  */
 import logger from '@xom9ik/logger';
 
+//TODO: start express server
+
 import * as db from './mongoDb/db.js';
 db.connect().then(() => logger.database.trace("Connected."));

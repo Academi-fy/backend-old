@@ -55,6 +55,11 @@ export default new Schema(
             type: Array,
             required: true,
             default: []
+        },
+        date: {
+            type: Number,
+            required: true,
+            default: Date.now()
         }
     },
     {
