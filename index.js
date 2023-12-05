@@ -9,10 +9,13 @@ import mongoose from "mongoose";
 import { initializeSchemas } from "./mongoDb/initializeSchemas.js";
 import config from "./config.js";
 import Course from "./httpServer/models/general/Course.js";
+import ConfigError from "./httpServer/errors/ConfigError.js";
 
 dotenv.config();
 
 const mongoPassword = config.MONGODB_PASSWORD;
+if(!mongoPassword) throw new ConfigError('MONGODB_PASSWORD cannot be accessed from config')
+
 const mongoURI = `mongodb+srv://admin:${ mongoPassword }@rotteck-messenger.fejn8su.mongodb.net/?retryWrites=true&w=majority`;
 await mongoose.connect(mongoURI,
     {

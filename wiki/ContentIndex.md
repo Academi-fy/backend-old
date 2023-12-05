@@ -1,7 +1,10 @@
 # Inhaltsverzeichnis: Backend Server
 
-## [Home](https://github.com/Academi-fy/backend/wiki/)
-## [Inhaltsverzeichnis](https://github.com/Academi-fy/backend/wiki/ContentIndex)
+[Home](https://github.com/Academi-fy/backend/wiki/)
+
+# Documentation
+
+- [Errors](https://github.com/Academi-fy/backend/wiki/Errors)
 
 ## HTTP Server
 - [Caching](https://github.com/Academi-fy/backend/wiki/Caching)
