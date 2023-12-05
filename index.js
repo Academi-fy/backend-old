@@ -6,4 +6,4 @@
 import logger from '@xom9ik/logger';
 
 import * as db from './mongoDb/db.js';
-db.connect().then(r => logger.database.trace("Connected."));
+db.connect().then(() => logger.database.trace("Connected."));

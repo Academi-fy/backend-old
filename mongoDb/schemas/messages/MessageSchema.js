@@ -13,7 +13,7 @@ const { Schema, Types: { ObjectId } } = mongoose;
  * @param {ObjectId} author - The author of the message.
  * @param {Array<FileContent | ImageContent | PollContent | TextContent | VideoContent>} content - The content of the message.
  * @param {Array<MessageReaction>} reactions - The reactions of the message.
- * @param {Array<EditedMessage>} edits - The edits of the message.
+ * @param {Array<Message>} edits - The edits of the message.
  * @param {Date} createdAt - The date the message was created.
  * @param {Date} updatedAt - The date the message was last updated.
  * @return {Schema} The schema for a message.

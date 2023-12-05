@@ -6,8 +6,17 @@
 import MessageContent from "../MessageContent.js";
 import { validateNotEmpty } from "../../propertyValidation.js";
 
+/**
+ * @description Class representing a text content.
+ * @param {String} type - The type of the content. For text: 'TEXT'
+ * @param {String} value - The text.
+ * */
 export default class TextContent extends MessageContent {
 
+    /**
+     * @description Create a text content.
+     * @param {String} value - The text.
+     * */
     constructor(
         value
     ) {

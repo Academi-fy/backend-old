@@ -6,8 +6,17 @@
 import MessageContent from "../MessageContent.js";
 import { validateNotEmpty } from "../../propertyValidation.js";
 
+/**
+ * @description Class representing a video content.
+ * @param {String} type - The type of the content. For video: 'VIDEO'
+ * @param {String} value - The link to the video.
+ * */
 export default class VideoContent extends MessageContent {
 
+    /**
+     * @description Create a video content.
+     * @param {String} value - The link to the video.
+     * */
     constructor(
         value
     ) {

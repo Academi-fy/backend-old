@@ -62,7 +62,7 @@ die [Mitglieder](https://github.com/Academi-fy/backend/wiki/User) des Clubs sich
 Ein Club kann mehrere [Mitglieder](https://github.com/Academi-fy/backend/wiki/User) haben.
 Ein [Mitglied](https://github.com/Academi-fy/backend/wiki/User) kann in mehreren Clubs sein.
 Ein Club kann mehrere [Events](https://github.com/Academi-fy/backend/wiki/Event) haben. \
-Jeder Club hat einen oder mehrere [Leiter](https://github.com/Academi-fy/backend/wiki/User).\
+Jeder Club hat einen oder mehrere [Leiter](https://github.com/Academi-fy/backend/wiki/User).
 
 #### Club Setup
 - [ClubDetails](https://github.com/Academi-fy/backend/wiki/ClubDetails)

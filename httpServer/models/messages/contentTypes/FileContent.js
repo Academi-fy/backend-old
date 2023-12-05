@@ -6,8 +6,17 @@
 import MessageContent from "../MessageContent.js";
 import { validateNotEmpty } from "../../propertyValidation.js";
 
+/**
+ * @description Class representing a file content.
+ * @param {String} type - The type of the content. For file: 'FILE'
+ * @param {String} value - The link to the file.
+ * */
 export default class FileContent extends MessageContent {
 
+    /**
+     * @description Create a file content.
+     * @param {String} value - The link to the file.
+     * */
     constructor(
         value
     ) {

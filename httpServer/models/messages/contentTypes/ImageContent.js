@@ -6,8 +6,17 @@
 import MessageContent from "../MessageContent.js";
 import { validateNotEmpty } from "../../propertyValidation.js";
 
+/**
+ * @description Class representing an image content.
+ * @param {String} type - The type of the content. For image: 'IMAGE'
+ * @param {String} value - The link to the image.
+ * */
 export default class ImageContent extends MessageContent {
 
+    /**
+     * @description Create a file content.
+     * @param {String} value - The link to the file.
+     * */
     constructor(
         value
     ) {
