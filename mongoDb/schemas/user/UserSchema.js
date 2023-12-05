@@ -9,22 +9,23 @@ const { Schema, Types: { ObjectId } } = mongoose;
 
 /**
  * @description The schema for a users.
- * @param {String} first_name - The first name of the users.
- * @param {String} last_name - The last name of the users.
+ * @param {String} firstName - The first name of the users.
+ * @param {String} lastName - The last name of the users.
  * @param {String} avatar - The avatar of the users.
  * @param {String} type - The type of the users. Can be 'STUDENT', 'TEACHER', or 'ADMIN'.
- * @param {Array<ObjectId>} classes - The classes of the users.
+ * @param {Array<ObjectId>} classes - The classes of the user.
+ * @param {Array<ObjectId>} extraCourses - The extra courses of the user.
  * @param {Date} createdAt - The date the ticket was created.
  * @param {Date} updatedAt - The date the ticket was last updated.
  * @return {Schema} The schema for a users.
  */
 export default new Schema(
     {
-        first_name: {
+        firstName: {
             type: String,
             required: true
         },
-        last_name: {
+        lastName: {
             type: String,
             required: true
         },
@@ -43,7 +44,7 @@ export default new Schema(
                 ref: 'Class'
             }
         ],
-        extra_courses: [
+        extraCourses: [
             {
                 type: ObjectId,
                 ref: 'Course'

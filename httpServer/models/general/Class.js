@@ -21,7 +21,7 @@ const expirationTime = 5 * 60 * 1000;
  * @param {Grade} grade - The grade of the class.
  * @param {Array<Course>} courses - The courses of the class.
  * @param {Array<User>} members - The members of the class.
- * @param {String} specified_grade - The specified grade of the class.
+ * @param {String} specifiedGrade - The specified grade of the class.
  */
 export default class Class {
 
@@ -30,18 +30,18 @@ export default class Class {
      * @param {String} grade - The id of the grade of the class.
      * @param {Array<String>} courses - The ids of the courses of the class.
      * @param {Array<String>} members - The ids of the members of the class.
-     * @param {String} specified_grade - The specified grade of the class.
+     * @param {String} specifiedGrade - The specified grade of the class.
      */
     constructor(
         grade,
         courses,
         members,
-        specified_grade
+        specifiedGrade
     ) {
         this.grade = grade;
         this.courses = courses;
         this.members = members;
-        this.specified_grade = specified_grade;
+        this.specifiedGrade = specifiedGrade;
     }
 
     get _grade() {
@@ -71,13 +71,13 @@ export default class Class {
         this.members = value;
     }
 
-    get _specified_grade() {
-        return this.specified_grade;
+    get _specifiedGrade() {
+        return this.specifiedGrade;
     }
 
-    set _specified_grade(value) {
+    set _specifiedGrade(value) {
         validateNotEmpty('Class specified grade', value);
-        this.specified_grade = value;
+        this.specifiedGrade = value;
     }
 
     /**
@@ -278,7 +278,7 @@ export default class Class {
                 class_.grade,
                 class_.courses,
                 class_.members,
-                class_.specified_grade
+                class_.specifiedGrade
             );
             populatedClass._id = class_._id;
 

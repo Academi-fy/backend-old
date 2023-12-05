@@ -12,7 +12,7 @@ const { Schema, Types: { ObjectId } } = mongoose;
  * @param {ObjectId} grade - The grade of the class.
  * @param {Array<ObjectId>} courses - The courses of the class.
  * @param {Array<ObjectId>} members - The members of the class.
- * @param {String} specified_grade - The specified grade of the class.
+ * @param {String} specifiedGrade - The specified grade of the class.
  * @param {Date} createdAt - The date the class was created.
  * @param {Date} updatedAt - The date the class was last updated.
  * @return {Schema} The schema for a class.
@@ -36,7 +36,7 @@ export default new Schema(
                 ref: 'User'
             }
         ],
-        specified_grade: {
+        specifiedGrade: {
             type: String,
             required: true
         }

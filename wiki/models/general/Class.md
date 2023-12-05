@@ -39,24 +39,24 @@ Class {
     grade: {...},
     courses: [ {...} ],
     members: [ {...} ],
-    specified_grade: "a"
+    specifiedGrade: "a"
 }
 ```
 
-| Attribut          | Type                                                               | Beschreibung                                                                                  |
-|-------------------|--------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
-| `_id`             | String                                                             | Die einzigartige ID der Klasse.                                                               |
-| `grade`           | [Grade](https://github.com/Academi-fy/backend/wiki/Grade)          | Die Stufe der Klasse.                                                                         |
-| `courses`         | Array<[Course](https://github.com/Academi-fy/backend/wiki/Course)> | Liste mit den Kursen der Klasse.                                                              |
-| `members`         | Array<[User](https://github.com/Academi-fy/backend/wiki/User)>     | Liste mit den Mitgliedern der Klasse.                                                         |
-| `specified_grade` | String                                                             | Der Klassen-Zusatz. Möglich: `a` `b` `c` `d` `e`. Außerdem `A` + `Abijahrgang` für Kursstufen |
+| Attribut         | Type                                                               | Beschreibung                                                                                  |
+|------------------|--------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
+| `_id`            | String                                                             | Die einzigartige ID der Klasse.                                                               |
+| `grade`          | [Grade](https://github.com/Academi-fy/backend/wiki/Grade)          | Die Stufe der Klasse.                                                                         |
+| `courses`        | Array<[Course](https://github.com/Academi-fy/backend/wiki/Course)> | Liste mit den Kursen der Klasse.                                                              |
+| `members`        | Array<[User](https://github.com/Academi-fy/backend/wiki/User)>     | Liste mit den Mitgliedern der Klasse.                                                         |
+| `specifiedGrade` | String                                                             | Der Klassen-Zusatz. Möglich: `a` `b` `c` `d` `e`. Außerdem `A` + `Abijahrgang` für Kursstufen |
 
 #### Besonderheiten
 
 - `grade`, `courses` und `members` sind MongoDB Referenzen zu den jeweiligen Objekten
     - sie werden erst beim Abrufen auf dem HTTP-Server aufgelöst
 
-- `specified_grade` ist ein String, der die Klasse genauer beschreibt
+- `specifiedGrade` ist ein String, der die Klasse genauer beschreibt
     - z.B. für die 10a `a`
     - z.B. für die K1, die im Jahr 2025 ihr Abitur macht `A25`
 
@@ -119,7 +119,7 @@ Generiert über [mongoose](https://mongoosejs.com/docs/guide.html) [npm package]
             ref: 'User'
         }
     ],
-    specified_grade: {
+    specifiedGrade: {
         type: String,
         required: true
     }

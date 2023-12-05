@@ -36,28 +36,28 @@ Der User-Cache wird alle **3 Minuten** aktualisiert sowie:
 ```javascript
 User {
     _id: "507f191e810c19729de860ea",
-    first_name: "Max",
-    last_name: "Mustermann",
+    firstName: "Max",
+    lastName: "Mustermann",
     avatar: "http://example.com/avatar.png",
     type: "TEACHER",
     classes: [ { ... } ],
-    extra_courses: [ { ... } ]
+    extraCourses: [ { ... } ]
 }
 ```
 
-| Attribut        | Type                                                               | Beschreibung                                                      |
-|-----------------|--------------------------------------------------------------------|-------------------------------------------------------------------|
-| `_id`           | String                                                             | Die einzigartige ID des Users.                                    |
-| `first_name`    | String                                                             | Der Vorname des Users.                                            |
-| `last_name`     | String                                                             | Der Nachname des Users.                                           |
-| `avatar`        | String                                                             | Der Avatar des Users.                                             |
-| `type`          | String                                                             | Der Typ des Users. Möglicher Types: `STUDENT`, `TEACHER`, `ADMIN` |
-| `classes`       | Array<[Class](https://github.com/Academi-fy/backend/wiki/Class)>   | Die Klassen, die dem User zugeordnet sind.                        |
-| `extra_courses` | Array<[Course](https://github.com/Academi-fy/backend/wiki/Course)> | Die Kurse, die dem User zusätzlich zugeordnet sind.               |
+| Attribut       | Type                                                               | Beschreibung                                                      |
+|----------------|--------------------------------------------------------------------|-------------------------------------------------------------------|
+| `_id`          | String                                                             | Die einzigartige ID des Users.                                    |
+| `firstName`    | String                                                             | Der Vorname des Users.                                            |
+| `lastName`     | String                                                             | Der Nachname des Users.                                           |
+| `avatar`       | String                                                             | Der Avatar des Users.                                             |
+| `type`         | String                                                             | Der Typ des Users. Möglicher Types: `STUDENT`, `TEACHER`, `ADMIN` |
+| `classes`      | Array<[Class](https://github.com/Academi-fy/backend/wiki/Class)>   | Die Klassen, die dem User zugeordnet sind.                        |
+| `extraCourses` | Array<[Course](https://github.com/Academi-fy/backend/wiki/Course)> | Die Kurse, die dem User zusätzlich zugeordnet sind.               |
 
 #### Besonderheiten
 
-- `classes` und `extra_courses` sind MongoDB Referenzen zu den jeweiligen Objekten
+- `classes` und `extraCourses` sind MongoDB Referenzen zu den jeweiligen Objekten
     - sie werden erst beim Abrufen auf dem HTTP-Server aufgelöst
 
 - `type` ist ein Enum, der in der Datenbank als String gespeichert wird
@@ -105,11 +105,11 @@ DELETE /api/users/:id
 
 ```javascript
 {
-    first_name: {
+    firstName: {
         type: String,
         required: true
     },
-    last_name: {
+    lastName: {
         type: String,
         required: true
     },
@@ -128,7 +128,7 @@ DELETE /api/users/:id
             ref: 'Class'
         }
     ],
-    extra_courses: [
+    extraCourses: [
         {
             type: ObjectId,
             ref: 'Course'

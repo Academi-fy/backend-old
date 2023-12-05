@@ -18,56 +18,56 @@ const expirationTime = 3 * 60 * 1000;
 /**
  * @description Class representing a User.
  * @param {String} _id - The id of the users.
- * @param {String} first_name - The first name of the users.
- * @param {String} last_name - The last name of the users.
+ * @param {String} firstName - The first name of the users.
+ * @param {String} lastName - The last name of the users.
  * @param {String} avatar - The avatar URL of the users.
  * @param {String} type - The type of the users. Valid types are: 'STUDENT', 'TEACHER', 'ADMIN'.
  * @param {Array<Class>} classes - The classes of the users.
- * @param {Array<Course>} extra_courses - The extra courses of the users.
+ * @param {Array<Course>} extraCourses - The extra courses of the users.
  */
 export default class User {
 
     /**
      * User constructor
-     * @param {String} first_name - The first name of the users.
-     * @param {String} last_name - The last name of the users.
+     * @param {String} firstName - The first name of the users.
+     * @param {String} lastName - The last name of the users.
      * @param {String} avatar - The avatar URL of the users.
      * @param {String} type - The type of the users. Valid types are: 'STUDENT', 'TEACHER', 'ADMIN'.
      * @param {Array<String>} classes - The ids of the classes of the users.
-     * @param {Array<String>} extra_courses - The ids of the extra courses of the users.
+     * @param {Array<String>} extraCourses - The ids of the extra courses of the users.
      */
     constructor(
-        first_name,
-        last_name,
+        firstName,
+        lastName,
         avatar,
         type,
         classes,
-        extra_courses
+        extraCourses
     ) {
-        this.first_name = first_name;
-        this.last_name = last_name;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.avatar = avatar;
         this.type = type;
         this.classes = classes;
-        this.extra_courses = extra_courses;
+        this.extraCourses = extraCourses;
     }
 
-    get _first_name() {
-        return this.first_name;
+    get _firstName() {
+        return this.firstName;
     }
 
-    set _first_name(value) {
+    set _firstName(value) {
         validateNotEmpty('users first name', value);
-        this.first_name = value;
+        this.firstName = value;
     }
 
-    get _last_name() {
-        return this.last_name;
+    get _lastName() {
+        return this.lastName;
     }
 
-    set _last_name(value) {
+    set _lastName(value) {
         validateNotEmpty('users last name', value);
-        this.last_name = value;
+        this.lastName = value;
     }
 
     get _avatar() {
@@ -98,13 +98,13 @@ export default class User {
         this.classes = value;
     }
 
-    get _extra_courses() {
-        return this.extra_courses;
+    get _extraCourses() {
+        return this.extraCourses;
     }
 
-    set _extra_courses(value) {
+    set _extraCourses(value) {
         validateArray('users extra courses', value);
-        this.extra_courses = value;
+        this.extraCourses = value;
     }
 
     /**
@@ -286,7 +286,7 @@ export default class User {
                         ]
                     },
                     {
-                        path: 'extra_courses',
+                        path: 'extraCourses',
                         populate: [
                             { path: 'members' },
                             { path: 'classes' },
@@ -298,12 +298,12 @@ export default class User {
                 ]);
 
             const populatedUser = new User(
-                user.first_name,
-                user.last_name,
+                user.firstName,
+                user.lastName,
                 user.avatar,
                 user.type,
                 user.classes,
-                user.extra_courses
+                user.extraCourses
             );
             populatedUser.id = user._id;
 

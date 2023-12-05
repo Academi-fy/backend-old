@@ -1,6 +1,6 @@
 UserAccounts enthalten die Daten, die für die Authentifizierung eines Users benötigt werden. Sie werden beim Erstellen eines Users automatisch erstellt und können nicht manuell erstellt werden. \
 Bei der ersten Anmeldung gibt der [User](https://github.com/Academi-fy/backend/wiki/User) seine Daten ein und diese werden dann in der Datenbank gespeichert. \
-Die Verknüpfung zwischen [User](https://github.com/Academi-fy/backend/wiki/User) und UserAccount wird über die `user_id` hergestellt. Darüber erfolgt auch die Verknüpfung zur [WebUntis API](https://help.untis.at/hc/de/articles/4886785534354-API-documentation-for-integration-partners).
+Die Verknüpfung zwischen [User](https://github.com/Academi-fy/backend/wiki/User) und UserAccount wird über die `user._id` hergestellt. Darüber erfolgt auch die Verknüpfung zur [WebUntis API](https://help.untis.at/hc/de/articles/4886785534354-API-documentation-for-integration-partners).
 
 ## UserAccount-Objekt
 
