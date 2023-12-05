@@ -105,7 +105,7 @@ export default class UserAccount {
 
             if (typeof perm !== 'string') throw new Error(`User account permissions must be of type string:\n${ perm }`);
 
-            const allPerms = Object.keys(AccountSettings);
+            const allPerms = Object.keys(UserAccountPermissions);
             if (!allPerms.includes(perm)) throw new Error(`User account permission does not exist:\n${ perm }`);
 
         }

@@ -135,3 +135,161 @@ Generiert über [mongoose](https://mongoosejs.com/docs/guide.html) [npm package]
     timestamps: true
 }
 ```
+
+## Beispiel Return Value
+
+```javascript
+{
+  "members": [
+    {
+      "_id": "656cf418a7b20d606810c92c",
+      "avatar": "https://mediaim.expedia.com/destination/1/d40ccb81e5bb94b6ec61142d2b1363cf.jpg",
+      "type": "STUDENT",
+      "classes": [],
+      "createdAt": "2023-12-03T21:33:12.819Z",
+      "updatedAt": "2023-12-03T21:33:12.819Z",
+      "__v": 0,
+      "extraCourses": [
+        {
+          "_id": "656cf418a7b20d606810c91e",
+          "members": [
+            "656cf418a7b20d606810c92c"
+          ],
+          "classes": [
+            "656cf418a7b20d606810c923"
+          ],
+          "teacher": "656f0d57a412c83c2695d795",
+          "chat": "656cf418a7b20d606810c91f",
+          "createdAt": "2023-12-03T21:33:13.601Z",
+          "updatedAt": "2023-12-03T21:33:13.601Z",
+          "__v": 0,
+          "subject": "656cf419a7b20d606810c94f"
+        }
+      ],
+      "firstName": "Daniel",
+      "lastName": "Dopatka"
+    }
+  ],
+  "classes": [
+    {
+      "_id": "656cf418a7b20d606810c923",
+      "grade": {
+        "_id": "656cf418a7b20d606810c91c",
+        "level": 5,
+        "classes": [
+          "656cf418a7b20d606810c923"
+        ],
+        "createdAt": "2023-12-03T21:33:13.643Z",
+        "updatedAt": "2023-12-03T21:33:13.643Z",
+        "__v": 0
+      },
+      "courses": [
+        {
+          "_id": "656cf418a7b20d606810c91e",
+          "members": [
+            "656cf418a7b20d606810c92c"
+          ],
+          "classes": [
+            "656cf418a7b20d606810c923"
+          ],
+          "teacher": "656f0d57a412c83c2695d795",
+          "chat": "656cf418a7b20d606810c91f",
+          "createdAt": "2023-12-03T21:33:13.601Z",
+          "updatedAt": "2023-12-03T21:33:13.601Z",
+          "__v": 0,
+          "subject": "656cf419a7b20d606810c94f"
+        }
+      ],
+      "members": [],
+      "createdAt": "2023-12-03T21:33:13.508Z",
+      "updatedAt": "2023-12-03T21:33:13.508Z",
+      "__v": 0,
+      "specifiedGrade": "A"
+    }
+  ],
+  "teacher": {
+    "_id": "656f0d57a412c83c2695d795",
+    "id": "656cf41932b20d606810c467",
+    "avatar": "https://mediaim.expedia.com/destination/1/d40ccb81e5bb94b6ec61142d2b1363cf.jpg",
+    "type": "TEACHER",
+    "classes": [],
+    "createdAt": "2023-12-03T21:33:12.819Z",
+    "updatedAt": "2023-12-03T21:33:12.819Z",
+    "__v": 0,
+    "extraCourses": [
+      {
+        "_id": "656cf418a7b20d606810c91e",
+        "members": [
+          "656cf418a7b20d606810c92c"
+        ],
+        "classes": [
+          "656cf418a7b20d606810c923"
+        ],
+        "teacher": "656f0d57a412c83c2695d795",
+        "chat": "656cf418a7b20d606810c91f",
+        "createdAt": "2023-12-03T21:33:13.601Z",
+        "updatedAt": "2023-12-03T21:33:13.601Z",
+        "__v": 0,
+        "subject": "656cf419a7b20d606810c94f"
+      }
+    ],
+    "firstName": "Linus",
+    "lastName": "Bung"
+  },
+  "chat": {
+    "messages": [],
+    "_id": "656cf418a7b20d606810c91f",
+    "type": "COURSE",
+    "targets": [],
+    "courses": [
+      {
+        "_id": "656cf418a7b20d606810c91e",
+        "members": [
+          "656cf418a7b20d606810c92c"
+        ],
+        "classes": [
+          "656cf418a7b20d606810c923"
+        ],
+        "teacher": "656f0d57a412c83c2695d795",
+        "chat": "656cf418a7b20d606810c91f",
+        "createdAt": "2023-12-03T21:33:13.601Z",
+        "updatedAt": "2023-12-03T21:33:13.601Z",
+        "__v": 0,
+        "subject": "656cf419a7b20d606810c94f"
+      }
+    ],
+    "clubs": [],
+    "name": "Test Chat",
+    "avatar": "https://images.unsplash.com/photo-1503614472-8c93d56e92ce?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxleHBsb3JlLWZlZWR8MXx8fGVufDB8fHx8fA%3D%3D",
+    "createdAt": "2023-12-03T21:33:13.553Z",
+    "updatedAt": "2023-12-03T21:33:13.553Z",
+    "__v": 0
+  },
+  "subject": {
+    "_id": "656cf419a7b20d606810c94f",
+    "type": "Deutsch",
+    "courses": [
+      {
+        "_id": "656cf418a7b20d606810c91e",
+        "members": [
+          "656cf418a7b20d606810c92c"
+        ],
+        "classes": [
+          "656cf418a7b20d606810c923"
+        ],
+        "teacher": "656f0d57a412c83c2695d795",
+        "chat": "656cf418a7b20d606810c91f",
+        "createdAt": "2023-12-03T21:33:13.601Z",
+        "updatedAt": "2023-12-03T21:33:13.601Z",
+        "__v": 0,
+        "subject": "656cf419a7b20d606810c94f"
+      }
+    ],
+    "createdAt": "2023-12-03T21:33:13.690Z",
+    "updatedAt": "2023-12-03T21:33:13.690Z",
+    "__v": 0,
+    "shortName": "D"
+  },
+  "_id": "656cf418a7b20d606810c91e"
+}
+```

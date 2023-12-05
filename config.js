@@ -4,21 +4,26 @@
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
 import dotenv from 'dotenv';
+import ConfigError from "./httpServer/errors/ConfigError.js";
 
 dotenv.config();
 
+/**
+ * @description Ensures an environment variable exists and returns it
+ * @param {String} name - The name of the environment variable
+ * @returns {String} - The value of the environment variable
+ * */
 function ensureEnvVariable(name) {
   const value = process.env[name];
   if (!value) {
-    throw new Error(`Missing environment variable: ${name}`);
+    throw new ConfigError(`Missing environment variable: ${name}`);
   }
   return value;
 }
 
-const MONGODB_PASSWORD = ensureEnvVariable('MONGODB_PASSWORD');
-const WEBSOCKET_PORT = ensureEnvVariable('WEBSOCKET_PORT');
-
 export default {
-  MONGODB_PASSWORD,
-  WEBSOCKET_PORT
+  MONGODB_PASSWORD: ensureEnvVariable('MONGODB_PASSWORD'),
+  WEBSOCKET_PORT: ensureEnvVariable('WEBSOCKET_PORT'),
+  SERVER_HOST: ensureEnvVariable('WEBSOCKET_PORT'),
+  SERVER_PORT: ensureEnvVariable('SERVER_PORT')
 };

@@ -140,7 +140,8 @@ export default class Course {
 
         const courses = await this.getAllCourses();
 
-        const course = courses.find(course => course._id === courseId);
+
+        const course = courses.find(course => course._id.toString() === courseId);
         if (!course) throw new RetrievalError(`Course not found:\n${ courseId }`);
 
         return course;
@@ -175,11 +176,13 @@ export default class Course {
 
         const courses = await this.getAllCourses();
 
-        const insertedCourse = await createDocument(CourseSchema, course);
+        let insertedCourse = await createDocument(CourseSchema, course);
         if (!insertedCourse) throw new DatabaseError(`Course could not be created:\n${ course }`);
 
+        insertedCourse = await this.populateCourse(insertedCourse)
+
         courses.push(
-            await this.populateCourse(insertedCourse)
+            insertedCourse
         );
         cache.put('courses', courses, expirationTime);
 
