@@ -3,29 +3,7 @@
  * @author Daniel Dopatka
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
-import dotenv from "dotenv";
-import mongoose from "mongoose";
+import logger from '@xom9ik/logger';
 
-import { initializeSchemas } from "./mongoDb/initializeSchemas.js";
-import config from "./config.js";
-import Course from "./httpServer/models/general/Course.js";
-import ConfigError from "./httpServer/errors/ConfigError.js";
-
-dotenv.config();
-
-const mongoPassword = config.MONGODB_PASSWORD;
-if(!mongoPassword) throw new ConfigError('MONGODB_PASSWORD cannot be accessed from config')
-
-const mongoURI = `mongodb+srv://admin:${ mongoPassword }@rotteck-messenger.fejn8su.mongodb.net/?retryWrites=true&w=majority`;
-await mongoose.connect(mongoURI,
-    {
-        useNewUrlParser: true,
-        useUnifiedTopology: true
-    }
-).then(() => console.log('MongoDB connected.')).catch(err => console.log(err));
-
-initializeSchemas();
-
-
-const courses = await Course.getAllCourses();
-console.log(courses[0])
+import * as db from './mongoDb/db.js';
+db.connect().then(r => logger.database.trace("Connected."));
