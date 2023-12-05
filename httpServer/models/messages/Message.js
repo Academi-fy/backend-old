@@ -17,6 +17,7 @@ import { findByRule } from "../findByRule.js";
 import RetrievalError from "../../errors/RetrievalError.js";
 import DatabaseError from "../../errors/DatabaseError.js";
 import CacheError from "../../errors/CacheError.js";
+import MessageReaction from "./MessageReaction.js";
 
 // Time in milliseconds after which the cache will expire
 const expirationTime = 2 * 60 * 1000;
@@ -33,7 +34,6 @@ const expirationTime = 2 * 60 * 1000;
  * @param {Number} date - The date the message was created.
  */
 export default class Message {
-
 
     /**
      * @description Create a message.
@@ -96,6 +96,11 @@ export default class Message {
 
     set _reactions(value) {
         validateArray('Message reactions', value);
+
+        for (const reaction of value) {
+            if(!reaction instanceof MessageReaction) throw new TypeError(`Message reactions must be of type MessageReaction`);
+        }
+
         this.reactions = value;
     }
 

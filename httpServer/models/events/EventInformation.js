@@ -8,23 +8,23 @@ import { validateNotEmpty } from "../propertyValidation.js";
 /**
  * @description Class for an event information.
  * @param {String} title - The title of the event information.
- * @param {Array<{ emoji : String, description : String }>} descriptionElements - The description elements of the event information.
+ * @param {Array<{ emoji : String, description : String }>} items - The description elements of the event information.
  * */
 export default class EventInformation {
 
     /**
      * @description The constructor for an event information.
      * @param {String} title - The title of the event information.
-     * @param {Array<{ emoji : String, description : String }>} descriptionElements - The description elements of the event information.
+     * @param {Array<{ emoji : String, description : String }>} items - The description elements of the event information.
      */
     constructor(
         title,
-        descriptionElements
+        items
     ) {
         this.title = title;
-        this.descriptionElements = descriptionElements;
+        this.items = items;
 
-        this.validateDescriptionElements(descriptionElements);
+        this.validateItems(items);
     }
 
     get _title() {
@@ -36,19 +36,19 @@ export default class EventInformation {
         this.title = value;
     }
 
-    get _descriptionElements() {
-        return this.descriptionElements;
+    get _items() {
+        return this.items;
     }
 
-    set _descriptionElements(descriptionElements) {
-        this.validateDescriptionElements(descriptionElements);
-        this.descriptionElements = descriptionElements;
+    set _items(items) {
+        this.validateItems(items);
+        this.items = items;
     }
 
-    validateDescriptionElements(descriptionElements) {
-        descriptionElements.forEach(element => {
+    validateItems(items) {
+        items.forEach(element => {
             if (!element.emoji || !element.description) {
-                throw new Error(`Invalid description element.\n`
+                throw new Error(`Invalid event information item.\n`
                     + `Element: ${ JSON.stringify(element, null, 2) }\n`
                     + `Missing: ${ !element.emoji ? "emoji" : "" }${ !element.emoji && !element.description ? ", " : "" }${ !element.description ? "description" : "" }`);
             }

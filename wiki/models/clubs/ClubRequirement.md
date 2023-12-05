@@ -8,13 +8,13 @@ ClubRequirements sind, genau wie [Clubs](https://github.com/Academi-fy/backend/w
 und [ClubDetails](https://github.com/Academi-fy/backend/wiki/Club), unabhängig von
 der [WebUntis API](https://help.untis.at/hc/de/articles/4886785534354-API-documentation-for-integration-partners).
 
-In der App werden Requirements mit der überschrift "Was solltest du mitbringen?" angezeigt.
+In der App werden Requirements mit der Überschrift "Was solltest du mitbringen?" angezeigt.
 
 ## ClubRequirement-Objekt
 
 Das ClubRequirement-Objekt ist ein Teil
 des [ClubDetails-Objekts](https://github.com/Academi-fy/backend/wiki/ClubDetails).\
-Die ClubRequirements werden im [Club](https://github.com/Academi-fy/backend/wiki/Club) unter `club.details.requirements`
+Die ClubRequirements werden im [Club](https://github.com/Academi-fy/backend/wiki/Club) in einem Array unter `club.details.requirements`
 gespeichert.
 
 ## Attribute
