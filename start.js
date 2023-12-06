@@ -1,26 +1,17 @@
-// Import the child_process module
-import { spawn } from  'child_process';
+import cluster from 'cluster';
 
-// Spawn a new child process for each script
-const socketStart = spawn('node', ['./socketStart.js']);
-const indexStart = spawn('node', ['./indexStart.js']);
+if(cluster.isMaster) {
+    // Create a worker for indexStart.js
+    cluster.fork({ script: './indexStart.js' });
 
-// Log any output from the socketStart script
-socketStart.stdout.on('data', (data) => {
-  console.log(`socketStart output: ${data}`);
-});
+    // Create a worker for socketStart.js
+    cluster.fork({ script: './socketStart.js' });
 
-// Log any errors from the socketStart script
-socketStart.stderr.on('data', (data) => {
-  console.error(`socketStart error: ${data}`);
-});
-
-// Log any output from the indexStart script
-indexStart.stdout.on('data', (data) => {
-  console.log(`indexStart output: ${data}`);
-});
-
-// Log any errors from the indexStart script
-indexStart.stderr.on('data', (data) => {
-  console.error(`indexStart error: ${data}`);
-});
+    cluster.on('exit', (worker, code, signal) => {
+        console.log(`Worker ${worker.process.pid} died with code: ${code}, and signal: ${signal}`);
+        console.log('Starting a new worker');
+        cluster.fork({ script: worker.process.env.script });
+    });
+} else {
+    import(process.env.script).catch(err => console.error(err));
+}
