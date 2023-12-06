@@ -31,8 +31,10 @@ app.use(express.json());
 
 // middleware
 import requestDebugger from "./middleware/requestDebugger.js";
+import cors from 'cors';
 app.use(requestDebugger);
 app.use(express.static('public'));
+app.use(cors());
 
 // routes
 import blackboardRoutes from "./routing/routes/blackboardRoutes.js";
