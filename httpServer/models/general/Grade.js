@@ -225,8 +225,9 @@ export default class Grade {
                     {
                         path: 'classes',
                         populate: [
-                            { path: 'members' },
-                            { path: 'leaders' }
+                            { path: 'grade' },
+                            { path: 'courses' },
+                            { path: 'members' }
                         ]
                     }
                 ]);

@@ -2,7 +2,7 @@ import config from "../config.js";
 import ConfigError from "../httpServer/errors/ConfigError.js";
 import mongoose from "mongoose";
 import { initializeSchemas } from "./initializeSchemas.js";
-import logger from "../logging/logger.js";
+import logger from "../logger.js";
 
 const mongoPassword = config.MONGODB_PASSWORD;
 if(!mongoPassword) throw new ConfigError('MONGODB_PASSWORD cannot be accessed from config')

@@ -6,7 +6,7 @@
 import { validateNotEmpty, validateObject } from "../../propertyValidation.js";
 import {
     createDocument,
-    deleteDocument,
+    deleteDocument, getAllDocuments,
     getDocument,
     getDocumentsByRule,
     updateDocument
@@ -54,6 +54,22 @@ export default class SetupAccount {
     }
 
     /**
+     * @description Get all setup accounts
+     * @return {Promise<Object>} All setup accounts in the database.
+     * */
+    static async getAllSetupAccounts() {
+        const documents = await getAllDocuments(SetupAccountSchema);
+        if (!documents) throw new DatabaseError(`Failed to get setup accounts`);
+
+        const setupAccounts = [];
+        for (const document of documents) {
+            setupAccounts.push(await this.populateSetupAccount(document));
+        }
+
+        return setupAccounts;
+    }
+
+    /**
      * @description Get a setup account by its id.
      * @param {String} id - The id of the setup account.
      * @return {Promise<Object>} The setup account.
@@ -66,18 +82,14 @@ export default class SetupAccount {
     }
 
     /**
-     * @description Get a setup account by its school.
-     * @param {School} school - The setup of the setup account.
+     * @description Get a setup account by a rule.
+     * @param {Object} rule - The rule for the search
      * @return {Promise<SetupAccount>} The setup account.
      */
-    static async getSetupAccountBySchool(school) {
-        const document = await getDocumentsByRule(SetupAccountSchema, {
-            school: {
-                id: school._id
-            }
-        });
+    static async getSetupAccountByRule(rule) {
+        const document = await getDocumentsByRule(SetupAccountSchema, rule);
 
-        if (!document) throw new DatabaseError(`Failed to get setup account with school:\n${ school }`);
+        if (!document) throw new DatabaseError(`Failed to get setup account with rule:\n${ rule }`);
 
         return await this.populateSetupAccount(document);
     }
@@ -98,13 +110,14 @@ export default class SetupAccount {
 
     /**
      * @description Update a setup account.
+     * @param {String} id - The id of the setup account to update.
      * @param {SetupAccount} setupAccount - The setup account to update.
      * @return {Promise<SetupAccount>} The updated setup account.
      * @throws {DatabaseError} When the setup account is not updated.
      */
-    static async updateSetupAccount(setupAccount) {
+    static async updateSetupAccount(id, setupAccount) {
 
-        const updatedSetupAccount = await updateDocument(SetupAccountSchema, setupAccount._id, setupAccount);
+        const updatedSetupAccount = await updateDocument(SetupAccountSchema, id, setupAccount);
         if (!updatedSetupAccount) throw new DatabaseError(`Failed to update setup account:\n${ setupAccount }`);
 
         return await this.populateSetupAccount(updatedSetupAccount);

@@ -1,5 +1,5 @@
 /**
- * @file index.js - Class launching the HTTP server.
+ * @file index.js - Class handling the course routes.
  * @author Daniel Dopatka
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
@@ -10,10 +10,27 @@ const router = express.Router();
 import Course from "../../models/general/Course.js";
 import errors from "../../errors/errors.js";
 import isMissingProperty from "../isMissingProperty.js";
-import UserAccount from "../../models/users/UserAccount.js";
-import logger from "../../../logging/logger.js";
+import logger from "../../../logger.js";
 
+// properties that are required for a course
 const requiredProperties = ['members', 'classes', 'teacher', 'chat', 'subject'];
+
+/**
+ * @description Formats the request body into a course
+ * @param req - The request
+ * @returns {Course} - The formatted course
+ * */
+function bodyToCourse(req){
+
+    return new Course(
+        req.body.course.members,
+        req.body.course.classes,
+        req.body.course.teacher,
+        req.body.course.chat,
+        req.body.course.subject
+    );
+
+}
 
 /**
  * @description Gets all courses existing in the database.
@@ -40,7 +57,7 @@ router.get('/filter',async (req, res) => {
         const filter = req.body.filter;
 
         if(!filter){
-            logger.server.error(`Course query from '${req.ip}' does not contain filter in body`)
+            logger.server.error(`Request #${req.requestId}: Course query from '${req.ip}' does not contain filter in body`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.query.failed,
@@ -66,7 +83,7 @@ router.get('/filter',async (req, res) => {
 });
 
 /**
- * @description Gets all the course matching the id
+ * @description Gets the course matching the id
  * @param req.body.inquirer - The id of the user querying. '1' for setup accounts.
  * @param req.params.id - The id of the course
  * @returns {JSON<Course>} - The course matching the id
@@ -78,7 +95,7 @@ router.get('/:id', async (req, res) => {
         const id = req.params.id;
 
         if(!id){
-            logger.server.error(`Course query from '${req.ip}' does not contain course id in URL`)
+            logger.server.error(`Request #${req.requestId}: Course query from '${req.ip}' does not contain course id in URL`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.query.failed,
@@ -107,23 +124,15 @@ router.get('/:id', async (req, res) => {
  * @description Creates a course
  * @param req.body.inquirer - The id of the user querying. '1' for setup accounts.
  * @param req.body.course - The course to be created
- * @returns {JSON<Course>} - The updated course
+ * @returns {JSON<Course>} - The created course
  * @throws errors.server.document.creation.failed - When the creation failed
  * */
 router.post('/', async (req, res) => {
 
     try {
 
-        const newCourse = new Course(
-            req.body.course.members,
-            req.body.course.classes,
-            req.body.course.teacher,
-            req.body.course.chat,
-            req.body.course.subject);
-        newCourse._id = req.body.course._id;
-
         if (isMissingProperty(req.body.course, requiredProperties)) {
-            logger.server.error(`Course creation from '${req.ip}' does not contain all required properties`)
+            logger.server.error(`Request #${req.requestId}: Course creation from '${req.ip}' does not contain all required properties`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.creation.failed,
@@ -133,8 +142,11 @@ router.post('/', async (req, res) => {
             return;
         }
 
+        const newCourse = bodyToCourse(req);
+        newCourse._id = req.body.course._id.toString();
+
         if(!newCourse){
-            logger.server.error(`Course creation from '${req.ip}' does not contain course in body`)
+            logger.server.error(`Request #${req.requestId}: Course creation from '${req.ip}' does not contain course in body`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.creation.failed,
@@ -145,7 +157,7 @@ router.post('/', async (req, res) => {
         }
 
         if(!newCourse._id){
-            logger.server.error(`Course creation from '${req.ip}' does not contain course id in body`)
+            logger.server.error(`Request #${req.requestId}: Course creation from '${req.ip}' does not contain course id in body`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.creation.failed,
@@ -179,59 +191,66 @@ router.post('/', async (req, res) => {
  * */
 router.put('/:id', async (req, res) => {
 
-    const updatedCourse = new Course(
-        req.body.course.members,
-        req.body.course.classes,
-        req.body.course.teacher,
-        req.body.course.chat,
-        req.body.course.subject);
-    updatedCourse._id = req.body.course._id;
-
-    if (isMissingProperty(req.body.course, requiredProperties)) {
-        logger.server.error(`Course creation from '${req.ip}' does not contain all required properties`)
-        res.status(400).send(
-            {
-                errorCode: errors.server.document.update.failed,
-                errorMessage: "Course missing required properties. See documentation for more information. [https://github.com/Academi-fy/backend/wiki/Course]"
-            }
-        );
-        return;
-    }
-
-    if(req.params.id !== updatedCourse._id){
-        logger.server.error(`Course update from '${req.ip}' with URL '${req.params.id}' does not match course id in body '${updatedCourse._id}'`)
-        res.status(400).send(
-            {
-                errorCode: errors.server.document.update.failed,
-                errorMessage: "Course id in URL does not match course id in body."
-            }
-        );
-        return;
-    }
-
-    if(!updatedCourse._id){
-        logger.server.error(`Course update from '${req.ip}' with URL '${req.params.id}' does not contain course id in body`)
-        res.status(400).send(
-            {
-                errorCode: errors.server.document.update.failed,
-                errorMessage: "Course id missing in body. See documentation for more information. [https://github.com/Academi-fy/backend/wiki/Course]"
-            }
-        );
-        return;
-    }
-
-    if(await Course.getCourseById(updatedCourse._id) === null){
-        logger.server.error(`Course update from '${req.ip}' with URL '${req.params.id}' does not match any course`)
-        res.status(400).send(
-            {
-                errorCode: errors.server.document.update.failed,
-                errorMessage: "Course id in body does not match any course."
-            }
-        );
-        return;
-    }
-
     try {
+
+        if (isMissingProperty(req.body.course, requiredProperties)) {
+            logger.server.error(`Request #${req.requestId}: Course creation from '${req.ip}' does not contain all required properties.`)
+            res.status(400).send(
+                {
+                    errorCode: errors.server.document.update.failed,
+                    errorMessage: "Course missing required properties. See documentation for more information. [https://github.com/Academi-fy/backend/wiki/Course]"
+                }
+            );
+            return;
+        }
+
+        const updatedCourse = bodyToCourse(req);
+        updatedCourse._id = req.body.course._id.toString();
+
+        if(!updatedCourse){
+            logger.server.error(`Request #${req.requestId}: Course update from '${req.ip}' does not contain the full information.`)
+            res.status(400).send(
+                {
+                    errorCode: errors.server.document.update.failed,
+                    errorMessage: "Course missing information. See documentation for more information. [https://github.com/Academi-fy/backend/wiki/Blackboard]"
+                }
+            );
+            return;
+        }
+
+        if(req.params.id !== updatedCourse._id){
+            logger.server.error(`Request #${req.requestId}: Course update from '${req.ip}' with URL '${req.params.id}' does not match course id in body '${updatedCourse._id}'`)
+            res.status(400).send(
+                {
+                    errorCode: errors.server.document.update.failed,
+                    errorMessage: "Course id in URL does not match course id in body."
+                }
+            );
+            return;
+        }
+
+        if(!updatedCourse._id){
+            logger.server.error(`Request #${req.requestId}: Course update from '${req.ip}' with URL '${req.params.id}' does not contain course id in body`)
+            res.status(400).send(
+                {
+                    errorCode: errors.server.document.update.failed,
+                    errorMessage: "Course id missing in body. See documentation for more information. [https://github.com/Academi-fy/backend/wiki/Course]"
+                }
+            );
+            return;
+        }
+
+        if(await Course.getCourseById(updatedCourse._id) === null){
+            logger.server.error(`Request #${req.requestId}: Course update from '${req.ip}' with URL '${req.url}' does not match any course`)
+            res.status(400).send(
+                {
+                    errorCode: errors.server.document.update.failed,
+                    errorMessage: "Course id in body does not match any course."
+                }
+            );
+            return;
+        }
+
         const course = await Course.updateCourse(req.params.id, updatedCourse);
         res.json(course);
     }
@@ -248,7 +267,7 @@ router.put('/:id', async (req, res) => {
 });
 
 /**
- * @description Updates a course matching an id
+ * @description Deletes a course matching an id
  * @param req.params.id - The id of the course to be deleted.
  * @param req.body.inquirer - The id of the user querying. '1' for setup accounts.
  * @returns {JSON<Boolean>} - The state of the deletion
@@ -260,7 +279,7 @@ router.delete('/:id', async (req, res) => {
         const id = req.params.id;
 
         if(!id){
-            logger.server.error(`Course deletion from '${req.ip}' does not contain course id in URL`)
+            logger.server.error(`Request #${ req.requestId }: Course deletion from '${req.ip}' does not contain course id in URL`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.deletion.failed,
@@ -273,7 +292,7 @@ router.delete('/:id', async (req, res) => {
         const deleted = await Course.deleteCourse(id);
 
         if(!deleted){
-            logger.server.error(`Course deletion from '${req.ip}' fore course with id '${id}' could not be completed`)
+            logger.server.error(`Request #${ req.requestId }: Course deletion from '${req.ip}' for course with id '${id}' could not be completed`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.deletion.failed,

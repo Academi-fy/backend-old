@@ -271,7 +271,7 @@ export default class Club {
     /**
      * @description Delete a club.
      * @param {String} clubId - The ID of the club to delete.
-     * @return {Boolean} The state of the deletion.
+     * @return {Promise<Boolean>} The state of the deletion.
      * @throws {DatabaseError} When the club fails to be deleted from the database.
      * @throws {CacheError} When the club fails to be deleted from the cache.
      */

@@ -1,5 +1,5 @@
 import { getModel } from "./initializeSchemas.js";
-import logger from "../logging/logger.js";
+import logger from "../logger.js";
 
 /**
  * @file collectionAccess.js - Class exporting functions to access the database.

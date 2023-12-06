@@ -1,14 +1,14 @@
 import nodemon from 'nodemon';
-import chalk from 'chalk';
-import moment from 'moment';
-import logger from "./logging/logger.js";
+import logger from "./logger.js";
 
 nodemon({
-  script: 'index.js',
+  script: 'httpServer/index.js',
   ext: 'js json'
 });
 
-const hex = 'f5ec42';
+/**
+ * @description Nodemon events:
+ * */
 nodemon
   .on('start', function () {
     logger.server.info(`App started`);

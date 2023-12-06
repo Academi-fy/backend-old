@@ -18,6 +18,7 @@ const expirationTime = 10 * 60 * 1000;
  * @description Class representing a Subject.
  * @param {String} _id - The id of the subject.
  * @param {String} type - The type of the subject.
+ * @param {String} shortName - The short name of the subject.
  * @param {Array<Course>} courses - The courses of the subject.
  */
 export default class Subject {
@@ -73,8 +74,12 @@ export default class Subject {
         cache.del('subjects');
         const subjectsFromDb = await getAllDocuments(SubjectSchema);
 
-        //TODO update subjects with populate
-        let subjects = subjectsFromDb;
+        let subjects = [];
+        for (const subject of subjectsFromDb) {
+            subjects.push(
+                await this.populateSubject(subject)
+            );
+        }
 
         cache.put('subjects', subjects, expirationTime);
         return subjects;

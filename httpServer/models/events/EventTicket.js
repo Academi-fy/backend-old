@@ -177,16 +177,17 @@ export default class EventTicket {
 
     /**
      * @description Update an event ticket.
+     * @param {String} id - The id of the event ticket to update.
      * @param {EventTicket} eventTicket - The event ticket to update.
      * @returns {Promise<EventTicket>} - The updated event ticket.
      * @throws {DatabaseError} - When the event ticket could not be updated.
      * @throws {CacheError} - When the event ticket could not be put in the cache.
      */
-    static async updateEventTicket(eventTicket) {
+    static async updateEventTicket(id, eventTicket) {
 
         const eventTickets = await this.getAllEventTickets();
 
-        let updatedEventTicket = await updateDocument(EventTicketSchema, eventTicket._id, eventTicket);
+        let updatedEventTicket = await updateDocument(EventTicketSchema, id, eventTicket);
         if (!updatedEventTicket) throw new DatabaseError(`Failed to update event ticket:\n${ eventTicket }`);
 
         updatedEventTicket = await this.populateEvent(updatedEventTicket);
@@ -239,7 +240,7 @@ export default class EventTicket {
     /**
      * @description Populates the event ticket.
      * @param {Object} eventTicket - The event ticket to populate.
-     * @returns {Promise<Object>} - The populated event ticket.
+     * @returns {Promise<EventTicket>} - The populated event ticket.
      */
     static async populateEvent(eventTicket) {
 

@@ -3,28 +3,34 @@ import moment from "moment";
 
 /**
  * @description Handles logging.
- * @param {Object<color, name>} name - The name of the log.
+ * @param {Object<color, name>} sender - The name of the log.
  * @param {Object<color, name>} type - The type of the action.
  * @param {String} message - The log message
  * */
-function handleLog(name, type, message) {
-   console.log(`${chalk.white(`${moment().format('YYYY/MM/DD HH:mm:ss.SS')}`)} [${chalk.bold.hex(name.color)(name.name)}] [${chalk.bold.hex(type.color)(type.name)}] ${chalk.white(message)}`);
+function handleLog(sender, type, message) {
+    console.log(`${chalk.white(`${moment().format('YYYY/MM/DD HH:mm:ss.SS')}`)} [${chalk.bold.hex(sender.color)(sender.name)}] [${chalk.bold.hex(type.color)(type.name)}] ${chalk.white(message)}`);
 }
 
+/**
+ * @description Colors for the different log types.
+ * */
 let colors = {
     socket: '#f542ef',
     server: '#42e6f5',
-    database: '#427ef5',
+    database: '#1a99f3',
     client: '#a442f5',
     results: {
-        info: '#60f542',
-        debug: '#42f59c',
+        info: '#42f560',
+        debug: '#b9f542',
         error: '#f57842',
         warning: '#f5b642',
         fatal: '#f54242',
     }
 }
 
+/**
+ * @description Exports for the different log types and senders.
+ * */
 export default {
 
     socket: {

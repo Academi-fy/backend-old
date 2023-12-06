@@ -125,31 +125,15 @@ export default class UserAccount {
 
     /**
      * @description Get a users account by its username.
-     * @param {String} username - The username of the users account.
+     * @param {Object} rule - The username of the users account.
      * @return {Promise<UserAccount>} The users account.
      */
-    static async getUserAccountByUsername(username) {
-        const document = await getDocumentsByRule(UserAccountSchema, {
-            username: username
-        });
+    static async getAllUserAccountsByRule(rule) {
+        const document = await getDocumentsByRule(UserAccountSchema, rule);
 
         return await this.populateUserAccount(document);
     }
 
-    /**
-     * @description Get a users account by its users.
-     * @param {User} user - The users of the users account.
-     * @return {Promise<UserAccount>} The users account.
-     */
-    static async getUserAccountByUser(user) {
-        const document = await getDocumentsByRule(UserAccountSchema, {
-            user: {
-                id: user._id
-            }
-        });
-
-        return await this.populateUserAccount(document);
-    }
 
     /**
      * @description Create a users account.
@@ -167,13 +151,14 @@ export default class UserAccount {
 
     /**
      * @description Update a users account.
+     * @param {String} id - The id of the users account to update.
      * @param {UserAccount} userAccount - The users account to update.
      * @return {Promise<UserAccount>} The updated users account.
      * @throws {DatabaseError} When the users account is not updated.
      */
-    static async updateUserAccount(userAccount) {
+    static async updateUserAccount(id, userAccount) {
 
-        const updatedUserAccount = await updateDocument(UserAccountSchema, userAccount._id, userAccount);
+        const updatedUserAccount = await updateDocument(UserAccountSchema, id, userAccount);
         if (!updatedUserAccount) throw new DatabaseError(`Failed to update user account:\n${ userAccount }`);
 
         return await this.populateUserAccount(updatedUserAccount);

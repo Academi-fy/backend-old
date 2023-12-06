@@ -8,7 +8,7 @@ import { WebSocketServer } from "ws";
 import { parseMessage } from "./parseMessage.js";
 import { handleEvents } from "./eventHandler.js";
 import config from "../config.js";
-import logger from "../logging/logger.js";
+import logger from "../logger.js";
 
 dotenv.config();
 

@@ -5,7 +5,7 @@
  *
  * @description Finds an object in a list by a rule.
  * @param {Array<Object>} list - The list to search.
- * @param {String} rule - The rule to find the object by.
+ * @param {Object} rule - The rule to find the object by.
  * @returns {Array} - The list of object that match the rule.
  * */
 export function findByRule(list, rule) {
