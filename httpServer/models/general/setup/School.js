@@ -8,7 +8,7 @@ import {
     deleteDocument,
     getAllDocuments,
     getDocument,
-    getDocumentByRule,
+    getDocumentsByRule,
     updateDocument
 } from "../../../../mongoDb/collectionAccess.js";
 import SchoolSchema from "../../../../mongoDb/schemas/general/setup/SchoolSchema.js";
@@ -195,7 +195,7 @@ export default class School {
      * */
     static async getSchoolByRule(rule) {
 
-        const school = await getDocumentByRule(SchoolSchema, rule);
+        const school = await getDocumentsByRule(SchoolSchema, rule);
         if (!school) throw new RetrievalError(`Failed to get school matching rule:\n${ rule }`);
 
         //TODO populate
@@ -336,7 +336,7 @@ export default class School {
                 school.events,
                 school.blackboards
             );
-            populatedSchool._id = school._id;
+            populatedSchool._id = school._id.toString();
 
             return populatedSchool;
 

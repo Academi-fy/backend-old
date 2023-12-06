@@ -239,7 +239,7 @@ export default class EventTicket {
     /**
      * @description Populates the event ticket.
      * @param {Object} eventTicket - The event ticket to populate.
-     * @returns {Promise<EventTicket>} - The populated event ticket.
+     * @returns {Promise<Object>} - The populated event ticket.
      */
     static async populateEvent(eventTicket) {
 
@@ -262,6 +262,16 @@ export default class EventTicket {
                         ]
                     }
                 ]);
+
+            eventTicket = new EventTicket(
+                eventTicket.event,
+                eventTicket.buyer,
+                eventTicket.price,
+                eventTicket.saleDate
+            );
+            eventTicket._id = eventTicket._id.toString();
+
+            return eventTicket;
 
         } catch (error) {
             throw new DatabaseError(`Failed to populate event ticket:\n${ eventTicket }\n${ error }`);

@@ -306,7 +306,7 @@ export default class Blackboard {
                 blackboard.date,
                 blackboard.state
             );
-            populatedBlackboard._id = blackboard._id;
+            populatedBlackboard._id = blackboard._id.toString();
 
             return populatedBlackboard;
 

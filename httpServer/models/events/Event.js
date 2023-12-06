@@ -375,7 +375,7 @@ export default class Event {
                 event.state,
                 event.editHistory
             );
-            populatedEvent._id = event._id;
+            populatedEvent._id = event._id.toString();
 
             return populatedEvent;
 

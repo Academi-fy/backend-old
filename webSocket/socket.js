@@ -8,7 +8,7 @@ import { WebSocketServer } from "ws";
 import { parseMessage } from "./parseMessage.js";
 import { handleEvents } from "./eventHandler.js";
 import config from "../config.js";
-import logger from '@xom9ik/logger';
+import logger from "../logging/logger.js";
 
 dotenv.config();
 
@@ -26,7 +26,7 @@ wss.on('connection', ws => {
         try {
             data = parseMessage(message);
         } catch (error) {
-            logger.server.error(`Invalid message: ${ error.message }`);
+            logger.socket.error(`Invalid message: ${ error.message }`);
 
             ws.send(
                 JSON.stringify({
@@ -47,4 +47,4 @@ wss.on('connection', ws => {
 
 });
 
-logger.server.info("WebSocket server running on port 8080")
+logger.socket.info("WebSocket server running on port 8080")

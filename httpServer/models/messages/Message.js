@@ -339,7 +339,7 @@ export default class Message {
                 message.editHistory,
                 message.date
             );
-            populatedMessage._id = message._id;
+            populatedMessage._id = message._id.toString();
 
             return populatedMessage;
 

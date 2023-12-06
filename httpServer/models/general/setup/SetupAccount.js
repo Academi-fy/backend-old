@@ -8,7 +8,7 @@ import {
     createDocument,
     deleteDocument,
     getDocument,
-    getDocumentByRule,
+    getDocumentsByRule,
     updateDocument
 } from "../../../../mongoDb/collectionAccess.js";
 import DatabaseError from "../../../errors/DatabaseError.js";
@@ -71,7 +71,7 @@ export default class SetupAccount {
      * @return {Promise<SetupAccount>} The setup account.
      */
     static async getSetupAccountBySchool(school) {
-        const document = await getDocumentByRule(SetupAccountSchema, {
+        const document = await getDocumentsByRule(SetupAccountSchema, {
             school: {
                 id: school._id
             }
@@ -157,7 +157,7 @@ export default class SetupAccount {
                 setupAccount.schoolName,
                 setupAccount.school
             );
-            populatedSetupAccount._id = setupAccount._id;
+            populatedSetupAccount._id = setupAccount._id.toString();
 
             return populatedSetupAccount;
 

@@ -24,6 +24,6 @@ function ensureEnvVariable(name) {
 export default {
   MONGODB_PASSWORD: ensureEnvVariable('MONGODB_PASSWORD'),
   WEBSOCKET_PORT: ensureEnvVariable('WEBSOCKET_PORT'),
-  SERVER_HOST: ensureEnvVariable('WEBSOCKET_PORT'),
+  SERVER_HOST: ensureEnvVariable('SERVER_HOST'),
   SERVER_PORT: ensureEnvVariable('SERVER_PORT')
 };

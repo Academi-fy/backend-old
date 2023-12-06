@@ -246,7 +246,7 @@ export default class Subject {
                 subject.shortName,
                 subject.courses
             );
-            populatedSubject._id = subject._id;
+            populatedSubject._id = subject._id.toString();
 
             return populatedSubject;
 

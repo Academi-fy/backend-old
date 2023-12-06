@@ -3,7 +3,6 @@
  * @author Daniel Dopatka
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
-import logger from '@xom9ik/logger';
 
 import express from "express";
 const router = express.Router();
@@ -11,21 +10,34 @@ const router = express.Router();
 import Course from "../../models/general/Course.js";
 import errors from "../../errors/errors.js";
 import isMissingProperty from "../isMissingProperty.js";
+import UserAccount from "../../models/users/UserAccount.js";
+import logger from "../../../logging/logger.js";
 
 const requiredProperties = ['members', 'classes', 'teacher', 'chat', 'subject'];
 
+/**
+ * @description Gets all courses existing in the database.
+ * @param req.body.inquirer - The id of the user querying. '1' for setup accounts.
+ * @returns {JSON<Array<Course>>} - The list of all courses existing in the database
+ * */
 router.get('/',async (req, res) => {
 
     const courses = await Course.getAllCourses();
-    logger.server.trace(`Courses queried from '${ req.ip }'`)
     res.json(courses);
 
 });
 
+/**
+ * @description Gets all courses that exist in the database and match a certain filter.
+ * @param req.body.inquirer - The id of the user querying. '1' for setup accounts.
+ * @param req.body.filter - The filter that the courses should match
+ * @returns {JSON<Array<Course>>} - The list of all courses matching the filter
+ * @throws errors.server.document.query.failed - When the query failed
+ * */
 router.get('/filter',async (req, res) => {
 
     try {
-        const filter = req.body;
+        const filter = req.body.filter;
 
         if(!filter){
             logger.server.error(`Course query from '${req.ip}' does not contain filter in body`)
@@ -39,7 +51,6 @@ router.get('/filter',async (req, res) => {
         }
 
         const courses = await Course.getAllCoursesByRule(filter);
-        logger.server.trace(`Courses queried from '${ req.ip }' using filter: \n${filter}`)
         res.json(courses)
     }
     catch (error){
@@ -47,13 +58,20 @@ router.get('/filter',async (req, res) => {
         res.status(400).send(
             {
                 errorCode: errors.server.document.query.failed,
-                errorMessage: error.message
+                errorMessage: error.stack,
             }
         );
     }
 
 });
 
+/**
+ * @description Gets all the course matching the id
+ * @param req.body.inquirer - The id of the user querying. '1' for setup accounts.
+ * @param req.params.id - The id of the course
+ * @returns {JSON<Course>} - The course matching the id
+ * @throws errors.server.document.query.failed - When the query failed
+ * */
 router.get('/:id', async (req, res) => {
 
     try {
@@ -71,7 +89,6 @@ router.get('/:id', async (req, res) => {
         }
 
         const course = await Course.getCourseById(id);
-        logger.server.trace(`Course with id '${id}' queried from '${req.ip}'`)
         res.json(course);
     }
     catch (error){
@@ -79,26 +96,33 @@ router.get('/:id', async (req, res) => {
         res.status(400).send(
             {
                 errorCode: errors.server.document.query.failed,
-                errorMessage: error.message
+                errorMessage: error.stack
             }
         );
     }
 
 });
 
+/**
+ * @description Creates a course
+ * @param req.body.inquirer - The id of the user querying. '1' for setup accounts.
+ * @param req.body.course - The course to be created
+ * @returns {JSON<Course>} - The updated course
+ * @throws errors.server.document.creation.failed - When the creation failed
+ * */
 router.post('/', async (req, res) => {
 
     try {
 
         const newCourse = new Course(
-            req.body.members,
-            req.body.classes,
-            req.body.teacher,
-            req.body.chat,
-            req.body.subject);
-        newCourse._id = req.body._id;
+            req.body.course.members,
+            req.body.course.classes,
+            req.body.course.teacher,
+            req.body.course.chat,
+            req.body.course.subject);
+        newCourse._id = req.body.course._id;
 
-        if (isMissingProperty(req.body, requiredProperties)) {
+        if (isMissingProperty(req.body.course, requiredProperties)) {
             logger.server.error(`Course creation from '${req.ip}' does not contain all required properties`)
             res.status(400).send(
                 {
@@ -132,7 +156,6 @@ router.post('/', async (req, res) => {
         }
 
         const course = await Course.createCourse(newCourse);
-        logger.server.trace(`Course with id '${course._id}' created from '${req.ip}'`)
         res.json(course);
     }
     catch (error){
@@ -140,23 +163,31 @@ router.post('/', async (req, res) => {
         res.status(400).send(
             {
                 errorCode: errors.server.document.creation.failed,
-                errorMessage: error.message
+                errorMessage: error.stack
             }
         );
     }
 });
 
+/**
+ * @description Updates a course matching an id
+ * @param req.params.id - The id of the course to be updated.
+ * @param req.body.inquirer - The id of the user querying. '1' for setup accounts.
+ * @param req.body.course - The course update
+ * @returns {JSON<Course>} - The updated course
+ * @throws errors.server.document.update.failed - When the update failed
+ * */
 router.put('/:id', async (req, res) => {
 
     const updatedCourse = new Course(
-        req.body.members,
-        req.body.classes,
-        req.body.teacher,
-        req.body.chat,
-        req.body.subject);
-    updatedCourse._id = req.body._id;
+        req.body.course.members,
+        req.body.course.classes,
+        req.body.course.teacher,
+        req.body.course.chat,
+        req.body.course.subject);
+    updatedCourse._id = req.body.course._id;
 
-    if (isMissingProperty(req.body, requiredProperties)) {
+    if (isMissingProperty(req.body.course, requiredProperties)) {
         logger.server.error(`Course creation from '${req.ip}' does not contain all required properties`)
         res.status(400).send(
             {
@@ -202,7 +233,6 @@ router.put('/:id', async (req, res) => {
 
     try {
         const course = await Course.updateCourse(req.params.id, updatedCourse);
-        logger.server.trace(`Course with id '${course._id}' updated from '${req.ip}'`)
         res.json(course);
     }
     catch (error){
@@ -210,13 +240,20 @@ router.put('/:id', async (req, res) => {
         res.status(400).send(
             {
                 errorCode: errors.server.document.update.failed,
-                errorMessage: error.message
+                errorMessage: error.stack
             }
         );
     }
 
 });
 
+/**
+ * @description Updates a course matching an id
+ * @param req.params.id - The id of the course to be deleted.
+ * @param req.body.inquirer - The id of the user querying. '1' for setup accounts.
+ * @returns {JSON<Boolean>} - The state of the deletion
+ * @throws errors.server.document.deletion.failed - When the deletion failed
+ * */
 router.delete('/:id', async (req, res) => {
 
     try {
@@ -246,15 +283,14 @@ router.delete('/:id', async (req, res) => {
             return;
         }
 
-        logger.server.trace(`Course with id '${id}' deleted from '${req.ip}'`)
-
+        res.send(deleted);
     }
     catch (error){
         logger.server.error(error);
         res.status(400).send(
             {
                 errorCode: errors.server.document.deletion.failed,
-                errorMessage: error.message
+                errorMessage: error.stack
             }
         );
     }

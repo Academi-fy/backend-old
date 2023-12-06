@@ -159,7 +159,7 @@ export default class Course {
         const courses = await this.getAllCourses();
 
         const matchingCourses = findByRule(courses, rule);
-        if (!matchingCourses) throw new RetrievalError(`Failed to find courses matching rule:\n${ rule }`);
+        if (!matchingCourses) throw new RetrievalError(`Failed to find courses matching rule:\n`, rule);
 
         return matchingCourses;
 
@@ -311,7 +311,7 @@ export default class Course {
                 course.chat,
                 course.subject
             );
-            populatedCourse._id = course._id;
+            populatedCourse._id = course._id.toString();
 
             return populatedCourse;
         } catch (error) {

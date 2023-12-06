@@ -280,7 +280,7 @@ export default class Class {
                 class_.members,
                 class_.specifiedGrade
             );
-            populatedClass._id = class_._id;
+            populatedClass._id = class_._id.toString();
 
             return populatedClass;
 

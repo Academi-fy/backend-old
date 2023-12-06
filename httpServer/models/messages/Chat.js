@@ -336,7 +336,7 @@ export default class Chat {
                 chat.avatar,
                 chat.messages
             );
-            populatedChat._id = chat._id;
+            populatedChat._id = chat._id.toString();
 
             return populatedChat;
 

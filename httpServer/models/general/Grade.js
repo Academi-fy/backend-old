@@ -235,7 +235,7 @@ export default class Grade {
                 grade.level,
                 grade.classes
             );
-            populatedGrade._id = grade._id;
+            populatedGrade._id = grade._id.toString();
 
             return populatedGrade;
 

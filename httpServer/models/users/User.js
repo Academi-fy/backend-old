@@ -305,7 +305,7 @@ export default class User {
                 user.classes,
                 user.extraCourses
             );
-            populatedUser.id = user._id;
+            populatedUser.id = user._id.toString();
 
             return populatedUser;
 

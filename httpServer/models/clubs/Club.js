@@ -354,7 +354,7 @@ export default class Club {
                 club.state,
                 club.editHistory
             );
-            populatedClub._id = club._id;
+            populatedClub._id = club._id.toString();
 
             return populatedClub;
 

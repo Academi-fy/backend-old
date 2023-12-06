@@ -1,4 +1,5 @@
 import { getModel } from "./initializeSchemas.js";
+import logger from "../logging/logger.js";
 
 /**
  * @file collectionAccess.js - Class exporting functions to access the database.
@@ -13,6 +14,7 @@ import { getModel } from "./initializeSchemas.js";
 export async function createDocument(model, document) {
     model = getModel(model);
     await model.create(document);
+    logger.database.trace(`${model.name} created:`, document);
     return model.findById(document._id);
 }
 
@@ -25,8 +27,8 @@ export async function createDocument(model, document) {
  * */
 export async function updateDocument(model, oldDocumentId, newDocument) {
     await model.findOneAndUpdate({ id: oldDocumentId }, newDocument, { new: true });
+    logger.database.trace(`${model.name} updated:`, document);
     return model.findById(oldDocumentId);
-
 }
 
 /**
@@ -38,6 +40,7 @@ export async function updateDocument(model, oldDocumentId, newDocument) {
 export async function deleteDocument(model, id) {
     let deleted = getDocument(model, id);
     await model.deleteOne({ id: id });
+    logger.database.warning(`${model.name} deleted:`, deleted);
     return deleted;
 }
 
@@ -66,7 +69,7 @@ export async function getAllDocuments(model) {
  * @param {Object} model - The model to get the document in.
  * @param {Object} criteria - The searching criteria to get the document by.
  * */
-export async function getDocumentByRule(model, criteria) {
+export async function getDocumentsByRule(model, criteria) {
     model = getModel(model);
     return await model.findOne(criteria);
 }

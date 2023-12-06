@@ -7,7 +7,7 @@ import {
     createDocument,
     deleteDocument,
     getDocument,
-    getDocumentByRule,
+    getDocumentsByRule,
     updateDocument
 } from "../../../mongoDb/collectionAccess.js";
 import UserAccountSchema from "../../../mongoDb/schemas/user/UserAccountSchema.js";
@@ -129,7 +129,7 @@ export default class UserAccount {
      * @return {Promise<UserAccount>} The users account.
      */
     static async getUserAccountByUsername(username) {
-        const document = await getDocumentByRule(UserAccountSchema, {
+        const document = await getDocumentsByRule(UserAccountSchema, {
             username: username
         });
 
@@ -142,7 +142,7 @@ export default class UserAccount {
      * @return {Promise<UserAccount>} The users account.
      */
     static async getUserAccountByUser(user) {
-        const document = await getDocumentByRule(UserAccountSchema, {
+        const document = await getDocumentsByRule(UserAccountSchema, {
             user: {
                 id: user._id
             }
@@ -221,7 +221,7 @@ export default class UserAccount {
                 userAccount.settings,
                 userAccount.permissions
             );
-            populatedUserAccount._id = userAccount._id;
+            populatedUserAccount._id = userAccount._id.toString();
 
             return populatedUserAccount;
 
