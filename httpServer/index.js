@@ -72,3 +72,23 @@ try {
 catch (error) {
   logger.server.fatal(error.stack);
 }
+
+setInterval(() => {
+    try {
+      const memoryUsage = process.memoryUsage();
+      const rss = memoryUsage.rss / (1024 * 1024 * 1024);
+      const heapTotal = memoryUsage.heapTotal / (1024 * 1024 * 1024);
+      const heapUsed = memoryUsage.heapUsed / (1024 * 1024 * 1024);
+      const external = memoryUsage.external / (1024 * 1024 * 1024);
+
+      logger.server.info(`---------[ MEMORY INFO ]---------`);
+      logger.server.info(`RSS memory: ${rss.toFixed(4)} GB`);
+      logger.server.info(`Heap Total memory: ${heapTotal.toFixed(4)} GB`);
+      logger.server.info(`Heap Used memory: ${heapUsed.toFixed(4)} GB`);
+      logger.server.info(`External memory: ${external.toFixed(4)} GB`);
+      logger.server.info(`---------------------------------`);
+    }
+    catch (error) {
+      logger.server.fatal(error.stack);
+    }
+}, 1000 * 60 * 5);
