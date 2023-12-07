@@ -17,17 +17,19 @@ const requiredProperties = ['user', 'username', 'password', 'settings', 'permiss
 
 /**
  * @description Formats the request body into a userAccount
- * @param req - The request
+ * @param body - The request body
  * @returns {UserAccount} - The formatted userAccount
  * */
-function bodyToUserAccount(req){
+function bodyToUserAccount(body){
+
+    const userAccount = body.userAccount;
 
     return new UserAccount(
-        req.body.userAccount.user,
-        req.body.userAccount.username,
-        req.body.userAccount.password,
-        req.body.userAccount.settings,
-        req.body.userAccount.permissions
+        userAccount.user,
+        userAccount.username,
+        userAccount.password,
+        userAccount.settings,
+        userAccount.permissions
     );
 
 }
@@ -146,7 +148,7 @@ router.post('/', async (req, res) => {
             return;
         }
 
-        const newUserAccount = bodyToUserAccount(req);
+        const newUserAccount = bodyToUserAccount(req.body);
         newUserAccount._id = req.body.userAccount._id.toString();
 
         if(!newUserAccount){
@@ -208,7 +210,7 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        const updatedUserAccount = bodyToUserAccount(req);
+        const updatedUserAccount = bodyToUserAccount(req.body);
         updatedUserAccount._id = req.body.userAccount._id.toString();
 
         if(!updatedUserAccount){

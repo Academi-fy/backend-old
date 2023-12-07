@@ -17,17 +17,19 @@ const requiredProperties = ['members', 'classes', 'teacher', 'chat', 'subject'];
 
 /**
  * @description Formats the request body into a course
- * @param req - The request
+ * @param body - The request body
  * @returns {Course} - The formatted course
  * */
-function bodyToCourse(req){
+function bodyToCourse(body){
+
+    const course = body.course;
 
     return new Course(
-        req.body.course.members,
-        req.body.course.classes,
-        req.body.course.teacher,
-        req.body.course.chat,
-        req.body.course.subject
+        course.members,
+        course.classes,
+        course.teacher,
+        course.chat,
+        course.subject
     );
 
 }
@@ -142,7 +144,7 @@ router.post('/', async (req, res) => {
             return;
         }
 
-        const newCourse = bodyToCourse(req);
+        const newCourse = bodyToCourse(req.body);
         newCourse._id = req.body.course._id.toString();
 
         if(!newCourse){
@@ -204,7 +206,7 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        const updatedCourse = bodyToCourse(req);
+        const updatedCourse = bodyToCourse(req.body);
         updatedCourse._id = req.body.course._id.toString();
 
         if(!updatedCourse){

@@ -19,22 +19,24 @@ const requiredProperties = ['name', 'grades', 'courses', 'members',
 
 /**
  * @description Formats the request body into a school
- * @param req - The request
+ * @param body - The request body
  * @returns {School} - The formatted school
  * */
-function bodyToSchool(req){
+function bodyToSchool(body){
+
+    const school = body.school;
 
     return new School(
-        req.body.school.name,
-        req.body.school.grades,
-        req.body.school.courses,
-        req.body.school.members,
-        req.body.school.classes,
-        req.body.school.messages,
-        req.body.school.subjects,
-        req.body.school.clubs,
-        req.body.school.events,
-        req.body.school.blackboards,
+        school.name,
+        school.grades,
+        school.courses,
+        school.members,
+        school.classes,
+        school.messages,
+        school.subjects,
+        school.clubs,
+        school.events,
+        school.blackboards,
     );
 
 }
@@ -149,7 +151,7 @@ router.post('/', async (req, res) => {
             return;
         }
 
-        const newSchool = bodyToSchool(req);
+        const newSchool = bodyToSchool(req.body);
         newSchool._id = req.body.school._id.toString();
 
         if(!newSchool){
@@ -211,7 +213,7 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        const updatedSchool = bodyToSchool(req);
+        const updatedSchool = bodyToSchool(req.body);
         updatedSchool._id = req.body.school._id.toString();
 
         if(!updatedSchool){

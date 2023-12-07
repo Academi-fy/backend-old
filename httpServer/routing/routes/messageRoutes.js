@@ -17,19 +17,21 @@ const requiredProperties = ['chat', 'author', 'content', 'reactions', 'answer', 
 
 /**
  * @description Formats the request body into a message
- * @param req - The request
+ * @param body - The request body
  * @returns {Message} - The formatted message
  * */
-function bodyToMessage(req){
+function bodyToMessage(body){
+
+    const message = body.message;
 
     return new Message(
-        req.body.message.chat,
-        req.body.message.content,
-        req.body.message.author,
-        req.body.message.reactions,
-        req.body.message.answer,
-        req.body.message.editHistory,
-        req.body.message.date
+        message.chat,
+        message.content,
+        message.author,
+        message.reactions,
+        message.answer,
+        message.editHistory,
+        message.date
     );
 
 }
@@ -144,7 +146,7 @@ router.post('/', async (req, res) => {
             return;
         }
 
-        const newMessage = bodyToMessage(req);
+        const newMessage = bodyToMessage(req.body);
         newMessage._id = req.body.message._id.toString();
 
         if(!newMessage){
@@ -206,7 +208,7 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        const updatedMessage = bodyToMessage(req);
+        const updatedMessage = bodyToMessage(req.body);
         updatedMessage._id = req.body.message._id.toString();
 
         if(!updatedMessage){

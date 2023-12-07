@@ -16,20 +16,22 @@ const requiredProperties = ['name', 'details', 'leaders', 'members', 'chat', 'ev
 
 /**
  * @description Formats the request body into a club
- * @param req - The request
+ * @param body - The request body
  * @returns {Club} - The formatted club
  * */
-function bodyToClub(req){
+function bodyToClub(body){
+
+    const club = body.club;
 
     return new Club(
-        req.body.club.name,
-        req.body.club.details,
-        req.body.club.leaders,
-        req.body.club.members,
-        req.body.club.chat,
-        req.body.club.events,
-        req.body.club.state,
-        req.body.club.editHistory
+        club.name,
+        club.details,
+        club.leaders,
+        club.members,
+        club.chat,
+        club.events,
+        club.state,
+        club.editHistory
     );
 
 }
@@ -144,7 +146,7 @@ router.post('/', async (req, res) => {
             return;
         }
 
-        const newClub = bodyToClub(req);
+        const newClub = bodyToClub(req.body);
         newClub._id = req.body.club._id.toString();
 
         if(!newClub){
@@ -206,7 +208,7 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        const updatedClub = bodyToClub(req);
+        const updatedClub = bodyToClub(req.body);
         updatedClub._id = req.body.club._id.toString();
 
         if(!updatedClub){

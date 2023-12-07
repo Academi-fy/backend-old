@@ -17,15 +17,17 @@ const requiredProperties = ['type', 'shortName', 'courses'];
 
 /**
  * @description Formats the request body into a subject
- * @param req - The request
+ * @param body - The request body
  * @returns {Subject} - The formatted subject
  * */
-function bodyToSubject(req){
+function bodyToSubject(body){
+
+    const subject = body.subject;
 
     return new Subject(
-        req.body.subject.type,
-        req.body.subject.shortName,
-        req.body.subject.courses
+        subject.type,
+        subject.shortName,
+        subject.courses
     );
 
 }
@@ -140,7 +142,7 @@ router.post('/', async (req, res) => {
             return;
         }
 
-        const newSubject = bodyToSubject(req);
+        const newSubject = bodyToSubject(req.body);
         newSubject._id = req.body.subject._id.toString();
 
         if(!newSubject){
@@ -202,7 +204,7 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        const updatedSubject = bodyToSubject(req);
+        const updatedSubject = bodyToSubject(req.body);
         updatedSubject._id = req.body.subject._id.toString();
 
         if(!updatedSubject){

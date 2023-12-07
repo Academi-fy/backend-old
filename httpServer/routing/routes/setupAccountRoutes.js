@@ -17,17 +17,16 @@ const requiredProperties = ['members', 'classes', 'teacher', 'chat', 'subject'];
 
 /**
  * @description Formats the request body into a setupAccount
- * @param req - The request
+ * @param body - The request body
  * @returns {SetupAccount} - The formatted setupAccount
  * */
-function bodyToSetupAccount(req){
+function bodyToSetupAccount(body){
+
+    const setupAccount = body.setupAccount;
 
     return new SetupAccount(
-        req.body.setupAccount.members,
-        req.body.setupAccount.classes,
-        req.body.setupAccount.teacher,
-        req.body.setupAccount.chat,
-        req.body.setupAccount.subject
+        setupAccount.schoolName,
+        setupAccount.school,
     );
 
 }
@@ -142,7 +141,7 @@ router.post('/', async (req, res) => {
             return;
         }
 
-        const newSetupAccount = bodyToSetupAccount(req);
+        const newSetupAccount = bodyToSetupAccount(req.body);
         newSetupAccount._id = req.body.setupAccount._id.toString();
 
         if(!newSetupAccount){
@@ -204,7 +203,7 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        const updatedSetupAccount = bodyToSetupAccount(req);
+        const updatedSetupAccount = bodyToSetupAccount(req.body);
         updatedSetupAccount._id = req.body.setupAccount._id.toString();
 
         if(!updatedSetupAccount){

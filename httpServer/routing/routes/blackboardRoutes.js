@@ -16,19 +16,21 @@ const requiredProperties = ['title', 'author', 'coverImage', 'text', 'tags', 'da
 
 /**
  * @description Formats the request body into a blackboard
- * @param req - The request
+ * @param body - The request body
  * @returns {Blackboard} - The formatted blackboard
  * */
-function bodyToBlackboard(req){
+function bodyToBlackboard(body){
+
+    const blackboard = body.blackboard;
 
     return new Blackboard(
-        req.body.blackboard.title,
-        req.body.blackboard.author,
-        req.body.blackboard.coverImage,
-        req.body.blackboard.text,
-        req.body.blackboard.tags,
-        req.body.blackboard.date,
-        req.body.blackboard.state
+        blackboard.title,
+        blackboard.author,
+        blackboard.coverImage,
+        blackboard.text,
+        blackboard.tags,
+        blackboard.date,
+        blackboard.state
     );
 
 }
@@ -143,7 +145,7 @@ router.post('/', async (req, res) => {
             return;
         }
 
-        const newBlackboard = bodyToBlackboard(req);
+        const newBlackboard = bodyToBlackboard(req.body);
         newBlackboard._id = req.body.blackboard._id.toString();
 
         if(!newBlackboard){
@@ -207,7 +209,7 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        const updatedBlackboard = bodyToBlackboard(req);
+        const updatedBlackboard = bodyToBlackboard(req.body);
         updatedBlackboard._id = req.body.blackboard._id.toString();
 
         if (!updatedBlackboard) {

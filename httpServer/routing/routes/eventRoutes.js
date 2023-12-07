@@ -20,23 +20,25 @@ const requiredProperties = ['title', 'description', 'location', 'host',
 
 /**
  * @description Formats the request body into an event
- * @param req - The request
+ * @param body - The request body
  * @returns {Event} - The formatted event
  * */
-function bodyToEvent(req){
+function bodyToEvent(body){
+
+    const event = body.event;
 
     return new Event(
-        req.body.event.title,
-        req.body.event.description,
-        req.body.event.location,
-        req.body.event.host,
-        req.body.event.clubs,
-        req.body.event.startDate,
-        req.body.event.endDate,
-        req.body.event.information,
-        req.body.event.tickets,
-        req.body.event.state,
-        req.body.event.editHistory
+        event.title,
+        event.description,
+        event.location,
+        event.host,
+        event.clubs,
+        event.startDate,
+        event.endDate,
+        event.information,
+        event.tickets,
+        event.state,
+        event.editHistory
     );
 
 }
@@ -151,7 +153,7 @@ router.post('/', async (req, res) => {
             return;
         }
 
-        const newEvent = bodyToEvent(req);
+        const newEvent = bodyToEvent(req.body);
         newEvent._id = req.body.event._id.toString();
 
         if(!newEvent){
@@ -213,7 +215,7 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        const updatedEvent = bodyToEvent(req);
+        const updatedEvent = bodyToEvent(req.body);
         updatedEvent._id = req.body.event._id.toString();
 
         if(!updatedEvent){

@@ -17,16 +17,18 @@ const requiredProperties = ['members', 'classes', 'teacher', 'chat', 'subject'];
 
 /**
  * @description Formats the request body into a blackboard
- * @param req - The request
+ * @param body - The request body
  * @returns {Class} - The formatted blackboard
  * */
-function bodyToClass(req){
+function bodyToClass(body){
+
+    const class_ = body.class;
 
     return new Class(
-        req.body.class.grade,
-        req.body.class.courses,
-        req.body.class.members,
-        req.body.class.specifiedGrade
+        class_.grade,
+        class_.courses,
+        class_.members,
+        class_.specifiedGrade
     );
 
 }
@@ -141,7 +143,7 @@ router.post('/', async (req, res) => {
             return;
         }
 
-        const newClass = bodyToClass(req);
+        const newClass = bodyToClass(req.body);
         newClass._id = req.body.class._id.toString();
 
         if(!newClass){
@@ -203,7 +205,7 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        const updatedClass = bodyToClass(req);
+        const updatedClass = bodyToClass(req.body);
         updatedClass._id = req.body.class._id.toString();
 
         if(!updatedClass){

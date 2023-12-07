@@ -17,19 +17,21 @@ const requiredProperties = ['type', 'targets', 'courses', 'clubs', 'name', 'avat
 
 /**
  * @description Formats the request body into a chat
- * @param req - The request
+ * @param body - The request
  * @returns {Chat} - The formatted chat
  * */
-function bodyToChat(req){
+function bodyToChat(body){
+
+    const chat = body.chat;
 
     return new Chat(
-        req.body.chat.type,
-        req.body.chat.targets,
-        req.body.chat.courses,
-        req.body.chat.clubs,
-        req.body.chat.name,
-        req.body.chat.avatar,
-        req.body.chat.messages
+        chat.type,
+        chat.targets,
+        chat.courses,
+        chat.clubs,
+        chat.name,
+        chat.avatar,
+        chat.messages
     );
 
 }
@@ -144,7 +146,7 @@ router.post('/', async (req, res) => {
             return;
         }
 
-        const newChat = bodyToChat(req);
+        const newChat = bodyToChat(req.body);
         newChat._id = req.body.chat._id.toString();
 
         if(!newChat){
@@ -206,7 +208,7 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        const updatedChat = bodyToChat(req);
+        const updatedChat = bodyToChat(req.body);
         updatedChat._id = req.body.chat._id.toString();
 
         if(!updatedChat){

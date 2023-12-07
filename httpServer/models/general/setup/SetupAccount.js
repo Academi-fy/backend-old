@@ -84,14 +84,18 @@ export default class SetupAccount {
     /**
      * @description Get a setup account by a rule.
      * @param {Object} rule - The rule for the search
-     * @return {Promise<SetupAccount>} The setup account.
+     * @return {Promise<Array<SetupAccount>>} The setup account.
      */
-    static async getSetupAccountByRule(rule) {
-        const document = await getDocumentsByRule(SetupAccountSchema, rule);
+    static async getAllSetupAccountsByRule(rule) {
+        const documents = await getDocumentsByRule(SetupAccountSchema, rule);
+        if (!documents) throw new DatabaseError(`Failed to get setup account with rule:\n${ rule }`);
 
-        if (!document) throw new DatabaseError(`Failed to get setup account with rule:\n${ rule }`);
+        const setupAccounts = [];
+        for (const document of documents) {
+            setupAccounts.push(await this.populateSetupAccount(document));
+        }
 
-        return await this.populateSetupAccount(document);
+        return setupAccounts;
     }
 
     /**

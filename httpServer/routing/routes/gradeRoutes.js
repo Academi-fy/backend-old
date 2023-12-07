@@ -17,14 +17,16 @@ const requiredProperties = ['level', 'classes'];
 
 /**
  * @description Formats the request body into a grade
- * @param req - The request
+ * @param body - The request body
  * @returns {Grade} - The formatted grade
  * */
-function bodyToGrade(req){
+function bodyToGrade(body){
+
+    const grade = body.grade;
 
     return new Grade(
-        req.body.grade.level,
-        req.body.grade.classes
+        grade.level,
+        grade.classes
     );
 
 }
@@ -139,7 +141,7 @@ router.post('/', async (req, res) => {
             return;
         }
 
-        const newGrade = bodyToGrade(req);
+        const newGrade = bodyToGrade(req.body);
         newGrade._id = req.body.grade._id.toString();
 
         if(!newGrade){
@@ -201,7 +203,7 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        const updatedGrade = bodyToGrade(req);
+        const updatedGrade = bodyToGrade(req.body);
         updatedGrade._id = req.body.grade._id.toString();
 
         if(!updatedGrade){

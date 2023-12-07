@@ -17,18 +17,20 @@ const requiredProperties = ['firstName', 'lastName', 'avatar', 'type', 'classes'
 
 /**
  * @description Formats the request body into a user
- * @param req - The request
+ * @param body - The request body
  * @returns {User} - The formatted user
  * */
-function bodyToUser(req){
+function bodyToUser(body){
+
+    const user = body.user;
 
     return new User(
-        req.body.user.members,
-        req.body.user.classes,
-        req.body.user.teacher,
-        req.body.user.chat,
-        req.body.user.subject,
-        req.body.user.subject
+        user.members,
+        user.classes,
+        user.teacher,
+        user.chat,
+        user.subject,
+        user.subject
     );
 
 }
@@ -143,7 +145,7 @@ router.post('/', async (req, res) => {
             return;
         }
 
-        const newUser = bodyToUser(req);
+        const newUser = bodyToUser(req.body);
         newUser._id = req.body.user._id.toString();
 
         if(!newUser){
@@ -205,7 +207,7 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        const updatedUser = bodyToUser(req);
+        const updatedUser = bodyToUser(req.body);
         updatedUser._id = req.body.user._id.toString();
 
         if(!updatedUser){

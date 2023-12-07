@@ -17,16 +17,18 @@ const requiredProperties = ['event', 'buyer', 'price', 'saleDate'];
 
 /**
  * @description Formats the request body into an event ticket
- * @param req - The request
+ * @param body - The request body
  * @returns {EventTicket} - The formatted eventTicket
  * */
-function bodyToEventTicket(req){
+function bodyToEventTicket(body){
+
+    const eventTicket = body.eventTicket;
 
     return new EventTicket(
-        req.body.eventTicket.event,
-        req.body.eventTicket.buyer,
-        req.body.eventTicket.price,
-        req.body.eventTicket.saleDate
+        eventTicket.event,
+        eventTicket.buyer,
+        eventTicket.price,
+        eventTicket.saleDate
     );
 
 }
@@ -141,7 +143,7 @@ router.post('/', async (req, res) => {
             return;
         }
 
-        const newEventTicket = bodyToEventTicket(req);
+        const newEventTicket = bodyToEventTicket(req.body);
         newEventTicket._id = req.body.eventTicket._id.toString();
 
         if(!newEventTicket){
@@ -203,7 +205,7 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        const updatedEventTicket = bodyToEventTicket(req);
+        const updatedEventTicket = bodyToEventTicket(req.body);
         updatedEventTicket._id = req.body.eventTicket._id.toString();
 
         if(!updatedEventTicket){
