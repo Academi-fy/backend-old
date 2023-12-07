@@ -5,6 +5,7 @@
  */
 import dotenv from 'dotenv';
 import ConfigError from "./httpServer/errors/ConfigError.js";
+import logger from "./logger.js";
 
 dotenv.config();
 
@@ -21,9 +22,17 @@ function ensureEnvVariable(name) {
   return value;
 }
 
-export default {
-  MONGODB_PASSWORD: ensureEnvVariable('MONGODB_PASSWORD'),
-  WEBSOCKET_PORT: ensureEnvVariable('WEBSOCKET_PORT'),
-  SERVER_HOST: ensureEnvVariable('SERVER_HOST'),
-  SERVER_PORT: ensureEnvVariable('SERVER_PORT')
-};
+let variables= {};
+try {
+  variables = {
+    MONGODB_PASSWORD: ensureEnvVariable('MONGODB_PASSWORD'),
+    WEBSOCKET_PORT: ensureEnvVariable('WEBSOCKET_PORT'),
+    SERVER_HOST: ensureEnvVariable('SERVER_HOST'),
+    SERVER_PORT: ensureEnvVariable('SERVER_PORT')
+  }
+}
+catch (error){
+  logger.server.fatal(`Missing environment variables \n${error.stack}`)
+}
+
+export default variables;
