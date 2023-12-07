@@ -14,7 +14,7 @@ import logger from "../logger.js";
 export async function createDocument(model, document) {
     model = getModel(model);
     await model.create(document);
-    logger.database.trace(`${model.name} created:`, document);
+    logger.database.debug(`${model.name} created:`, document);
     return model.findById(document._id);
 }
 
@@ -26,8 +26,9 @@ export async function createDocument(model, document) {
  * @return {Promise<any>} The updated document.
  * */
 export async function updateDocument(model, oldDocumentId, newDocument) {
-    await model.findOneAndUpdate({ id: oldDocumentId }, newDocument, { new: true });
-    logger.database.trace(`${model.name} updated:`, document);
+    model = getModel(model);
+    await model.findOneAndUpdate({ _id: oldDocumentId }, newDocument, { new: true });
+    logger.database.debug(`${model.name} updated:`, newDocument);
     return model.findById(oldDocumentId);
 }
 
@@ -38,6 +39,7 @@ export async function updateDocument(model, oldDocumentId, newDocument) {
  * @return {Promise<any>} The deleted document.
  * */
 export async function deleteDocument(model, id) {
+    model = getModel(model);
     let deleted = getDocument(model, id);
     await model.deleteOne({ id: id });
     logger.database.warning(`${model.name} deleted:`, deleted);
@@ -51,6 +53,7 @@ export async function deleteDocument(model, id) {
  * @return {Promise<any>} The document.
  * */
 export async function getDocument(model, id) {
+    model = getModel(model);
     return await model.findOne({ id: id });
 }
 
