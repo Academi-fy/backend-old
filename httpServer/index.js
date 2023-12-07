@@ -27,14 +27,18 @@ app.listen(port, () => {
   logger.server.info(`HTTP Server is running at http://${ host }:${ port }`);
 });
 
-app.use(express.json());
-
 // middleware
 import requestDebugger from "./middleware/requestDebugger.js";
 import cors from 'cors';
-app.use(requestDebugger);
-app.use(express.static('public'));
-app.use(cors());
+try {
+  app.use(requestDebugger);
+  app.use(express.static('public'));
+  app.use(cors());
+  app.use(express.json());
+}
+catch (error){
+  logger.server.fatal(error.stack);
+}
 
 // routes
 import blackboardRoutes from "./routing/routes/blackboardRoutes.js";
@@ -50,16 +54,21 @@ import setupAccountRoutes from "./routing/routes/setupAccountRoutes.js";
 import subjectRoutes from "./routing/routes/subjectRoutes.js";
 import userAccountRoutes from "./routing/routes/userAccountRoutes.js";
 import userRoutes from "./routing/routes/userRoutes.js";
-app.use('/api/blackboards', blackboardRoutes);
-app.use('/api/chats', chatRoutes);
-app.use('/api/classes', classRoutes);
-app.use('/api/clubs', clubRoutes);
-app.use('/api/courses', courseRoutes);
-app.use('/api/events', eventRoutes);
-app.use('/api/event-tickets', eventTicketRoutes);
-app.use('/api/grades', gradeRoutes);
-app.use('/api/messages', messageRoutes);
-app.use('/api/setup-accounts', setupAccountRoutes);
-app.use('/api/subjects', subjectRoutes);
-app.use('/api/user-accounts', userAccountRoutes);
-app.use('/api/users', userRoutes);
+try {
+  app.use('/api/blackboards', blackboardRoutes);
+  app.use('/api/chats', chatRoutes);
+  app.use('/api/classes', classRoutes);
+  app.use('/api/clubs', clubRoutes);
+  app.use('/api/courses', courseRoutes);
+  app.use('/api/events', eventRoutes);
+  app.use('/api/event-tickets', eventTicketRoutes);
+  app.use('/api/grades', gradeRoutes);
+  app.use('/api/messages', messageRoutes);
+  app.use('/api/setup-accounts', setupAccountRoutes);
+  app.use('/api/subjects', subjectRoutes);
+  app.use('/api/user-accounts', userAccountRoutes);
+  app.use('/api/users', userRoutes);
+}
+catch (error) {
+  logger.server.fatal(error.stack);
+}
