@@ -32,7 +32,7 @@ To set up the project, you need to have Node.js and MongoDB installed on your ma
 1. Clone the repository.
 2. Navigate to the project directory.
 3. Run `npm install` to install the dependencies.
-4. Start the MongoDB server.
+4. Create a `.env` file in the project directory and add the required environment variables (see `.env.example`).
 5. Run `npm start` to start the application.
 
 ## Usage
