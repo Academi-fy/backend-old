@@ -72,7 +72,12 @@ export default new Schema(
             ],
             tags: [
                 {
-                    type: String
+                    emoji: {
+                        type: String
+                    },
+                    description: {
+                        type: String
+                    }
                 }
             ]
 

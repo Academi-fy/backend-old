@@ -41,8 +41,12 @@ export default new Schema(
         },
         tags: [
             {
-                type: String,
-                required: false
+                emoji: {
+                    type: String
+                },
+                description: {
+                    type: String
+                }
             }
         ],
         expirationDate: {

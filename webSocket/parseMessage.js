@@ -6,6 +6,7 @@
 import yupSchemas from "./yupSchemas.js";
 import SocketMessageParsingError from "./errors/SocketMessageParsingError.js";
 import socketEvents from "./socketEvents.js";
+import UnknownEventError from "./errors/UnknownEventError.js";
 
 /**
  * @description Parses a message and validates its payload.
@@ -19,7 +20,7 @@ export function parseMessage(message) {
 
     if (!("event" in object)) throw new SocketMessageParsingError("Invalid message: message event is required");
 
-    if(!socketEvents.includes(object.event)) throw new SocketMessageParsingError(`Invalid message: event '${object.event}' does not exist`);
+    if(!socketEvents.includes(object.event)) throw new UnknownEventError(`Invalid message: event '${object.event}' does not exist`);
 
     /**
      * @description The actual data of the event.

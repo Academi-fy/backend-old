@@ -8,7 +8,7 @@ import express from "express";
 const router = express.Router();
 
 import Subject from "../../models/general/Subject.js";
-import errors from "../../errors/errors.js";
+import errors from "../../../errors.js";
 import isMissingProperty from "../isMissingProperty.js";
 import logger from "../../../logger.js";
 

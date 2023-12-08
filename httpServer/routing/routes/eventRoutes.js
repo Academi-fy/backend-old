@@ -9,7 +9,7 @@ const router = express.Router();
 
 import Event from "../../models/events/Event.js";
 
-import errors from "../../errors/errors.js";
+import errors from "../../../errors.js";
 import isMissingProperty from "../isMissingProperty.js";
 import logger from "../../../logger.js";
 

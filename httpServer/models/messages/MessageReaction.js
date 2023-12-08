@@ -19,7 +19,7 @@ export default class MessageReaction {
      */
     constructor(
         emoji,
-        count = 0
+        count
     ) {
         this.emoji = emoji;
         this.count = count;

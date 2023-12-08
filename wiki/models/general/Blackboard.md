@@ -37,22 +37,22 @@ Blackboard {
     author: {...},
     coverImage: "https://example.com/image.png",
     text: "Text",
-    tags: [ 'tag1', 'tag2' ],
+    tags: [ {...} ],
     date: 1701475668245,
     state: 'SUGGESTED'
 }
 ```
 
-| Attribut     | Typ                                                     | Beschreibung                                                                                                                                                                               |
-|--------------|---------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `_id`        | String                                                  | Die ID des Blackboards.                                                                                                                                                                    |
-| `title`      | String                                                  | Der Titel des Blackboards.                                                                                                                                                                 |
-| `author`     | [User](https://github.com/Academi-fy/backend/wiki/User) | Der Autor des Blackboards.                                                                                                                                                                 |
-| `coverImage` | String                                                  | Der Link zum Coverbild des Blackboards.                                                                                                                                                    |
-| `text`       | String                                                  | Der Text des Blackboards.                                                                                                                                                                  |
-| `tags`       | Array<String>                                           | Die Tags des Blackboards                                                                                                                                                                   |
-| `date`       | Number                                                  | Das Datum, an dem das Blackboard erstellt wurde. Angegeben in Millisekunden seit 1970.                                                                                                     |
-| `state`      | String                                                  | Der Zustand in der Genehmigung. Möglich: `SUGGESTED`, `REJECTED`, `APPROVED`, `EDIT_SUGGESTED`, `EDIT_REJECTED`, `EDIT_APPROVED`, `DELETE_SUGGESTED`, `DELETE_REJECTED`, `DELETE_APPROVED` |
+| Attribut     | Typ                                                          | Beschreibung                                                                                                                                                                               |
+|--------------|--------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `_id`        | String                                                       | Die ID des Blackboards.                                                                                                                                                                    |
+| `title`      | String                                                       | Der Titel des Blackboards.                                                                                                                                                                 |
+| `author`     | [User](https://github.com/Academi-fy/backend/wiki/User)      | Der Autor des Blackboards.                                                                                                                                                                 |
+| `coverImage` | String                                                       | Der Link zum Coverbild des Blackboards.                                                                                                                                                    |
+| `text`       | String                                                       | Der Text des Blackboards.                                                                                                                                                                  |
+| `tags`       | Array<[Tag](https://github.com/Academi-fy/backend/wiki/Tag)> | Die Tags des Blackboards                                                                                                                                                                   |
+| `date`       | Number                                                       | Das Datum, an dem das Blackboard erstellt wurde. Angegeben in Millisekunden seit 1970.                                                                                                     |
+| `state`      | String                                                       | Der Zustand in der Genehmigung. Möglich: `SUGGESTED`, `REJECTED`, `APPROVED`, `EDIT_SUGGESTED`, `EDIT_REJECTED`, `EDIT_APPROVED`, `DELETE_SUGGESTED`, `DELETE_REJECTED`, `DELETE_APPROVED` |
 
 #### Besonderheiten
 
@@ -119,8 +119,12 @@ Generiert über [mongoose](https://mongoosejs.com/docs/guide.html) [npm package]
     },
     tags: [
         {
-            type: String,
-            required: false
+            emoji: {
+                type: String
+            },
+            description: {
+                type: String
+            }
         }
     ],
     expirationDate: {

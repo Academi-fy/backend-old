@@ -1,21 +1,36 @@
 /**
- * @file YupMessageSchema.js - Yup schema for validating messages objects.
+ * @file YupMessageSchema.js - Yup schema for validating message objects.
  * @author Daniel Dopatka
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
 import yup from "yup";
-
-//TODO add the other schemas
+import YupMessageContentSchema from "./YupMessageContentSchema.js";
+import YupMessageReactionSchema from "./YupMessageReactionSchema.js";
 
 /**
- * @typedef {Object} Message
- * @property {string} id - The unique identifier of the message. It is required.
- * @property {string} chat - The unique identifier of the chat where the message was sent. It is required.
- * @property {string} author - The unique identifier of the author of the message. It is required.
- * @property {Array.<YupContentTypeSchema>} content - The content of the message. It is an array of YupContentTypeSchema and is required.
- * @property {Array.<YupMessageReaction>} reactions - The reactions to the message. It is an array of YupMessageReaction and is required.
- * @property {Array.<YupEditedMessage>} edits - The edits made to the message. It is an array of YupEditedMessage and is required.
+ * @typedef {Object} YupMessageReactionSchema
+ * @param {String} id - The id of the message
+ * @param {String} chat - The id of the chat that the message belongs to.
+ * @param {String} author - The id of the author of the message.
+ * @param {Array<FileContent | ImageContent | PollContent | TextContent | VideoContent>} content - The content of the message.
+ * @param {Array<MessageReaction>} reactions - The reactions to the message.
+ * @param {String | null} answer - The id of the message that this message is an answer to.
+ * @param {Array<Message>} editHistory - The editHistory made to the message.
+ * @param {Number} date - The date the message was created.
  */
-export default {
-    id: yup.string().required()
-}
+export default yup.object().shape({
+    id: yup.string().required(),
+    chat: yup.string().required(),
+    author: yup.string().required(),
+    content: yup.array().of(
+        YupMessageContentSchema
+    ).required(),
+    reactions: yup.array().of(
+        YupMessageReactionSchema
+    ).required(),
+    answer: yup.string().nullable(),
+    editHistory: yup.array().of(
+        yup.object()
+    ).required(),
+    date: yup.number().required()
+})

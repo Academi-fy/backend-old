@@ -51,7 +51,7 @@ new ClubDetails(
 | `meetingTime`  | String                                                                               | Zeitpunkt des Treffens       |
 | `meetingDay`   | String                                                                               | Tag des Treffens             |
 | `requirements` | Array<[ClubRequirement](https://github.com/Academi-fy/backend/wiki/ClubRequirement)> | Voraussetzungen für den Club |
-| `tags`         | Array<[ClubTag](https://github.com/Academi-fy/backend/wiki/ClubTag)>                 | Tags des Clubs               |
+| `tags`         | Array<[Tag](https://github.com/Academi-fy/backend/wiki/Tag)>                         | Tags des Clubs               |
 | `events`       | Array<[Event](https://github.com/Academi-fy/backend/wiki/ClubRequirement)>           | Events des Clubs             |
 
 #### Besonderheiten
@@ -103,8 +103,13 @@ details: {
     ], 
     tags: [
         {
-          type: String,
-          required: true
+            emoji: {
+                type: String
+            },
+            description: {
+                type: String
+            }
+          
         }
     ] 
     events: [

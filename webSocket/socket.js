@@ -10,6 +10,7 @@ import { handleEvents } from "./eventHandler.js";
 import config from "../config.js";
 import logger from "../logger.js";
 import { nanoid } from "nanoid";
+import errors from "../errors.js";
 
 dotenv.config();
 
@@ -24,7 +25,9 @@ wss.on('connection', (ws, req) => {
     logger.socket.debug(`Connection #${connectionId}: established at: ${new Date().toISOString()}`);
     logger.socket.debug(`Connection #${connectionId}: user-agent: ${req.headers['user-agent']}`);
 
-    // Event listener for incoming messages
+    /**
+     * Event listener for incoming messages
+     * */
     ws.on('message', message => {
 
         const messageId = `msg-${nanoid(16)}`;
@@ -32,10 +35,50 @@ wss.on('connection', (ws, req) => {
 
         let data;
         try {
+            /**
+             * The message is parsed and validated by yup to be processed
+             * */
             data = parseMessage(message);
         } catch (error) {
             logger.socket.error(`Invalid message: \n${ error.stack }`);
 
+            /**
+             * Sends an error message to the client if the message could not be parsed.
+             * */
+            if(error.name === "SocketMessageParsingError") {
+                ws.send(
+                    JSON.stringify({
+                        event: "ERROR",
+                        payload: {
+                            errorCode: errors.socket.messages.parsing.failed.invalidFormBody,
+                            errorMessage: `Invalid message format. \nSee documentation for more information [https://github.com/Academi-fy/backend/wiki/MessageParsing]`,
+                            errorStack: error.stack
+                        }
+                    })
+                );
+                return;
+            }
+
+            /**
+             * Sends an error message to the client if the message could not be parsed due to an unknown event.
+             * */
+            if(error.name === "UnknownEventError") {
+                ws.send(
+                    JSON.stringify({
+                        event: "ERROR",
+                        payload: {
+                            errorCode: errors.socket.messages.parsing.failed.unknownEvent,
+                            errorMessage: `Invalid event type. \nSee documentation for more information [https://github.com/Academi-fy/backend/wiki/SocketEvents]`,
+                            errorStack: error.stack
+                        }
+                    })
+                );
+                return;
+            }
+
+            /**
+             * Sends an error message to the client if the message could not be parsed due to an unknown reason.
+             * */
             ws.send(
                 JSON.stringify({
                     event: "ERROR",
@@ -49,10 +92,10 @@ wss.on('connection', (ws, req) => {
 
             return;
         }
-
         logger.socket.debug(`Message #${messageId} sent event: ${data.event}`)
-
-        // Handle the parsed message
+        /**
+         * Handle the parsed message
+         * */
         handleEvents(ws, data);
     });
 

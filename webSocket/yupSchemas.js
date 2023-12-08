@@ -5,6 +5,7 @@
  */
 import yup from "yup";
 import YupMessageSchema from "./yupSchemas/message/YupMessageSchema.js";
+import YupBlackboardSchema from "nodemon/lib/utils/log.js";
 
 /**
  * @typedef {Object} WebSocketEvents
@@ -20,13 +21,37 @@ import YupMessageSchema from "./yupSchemas/message/YupMessageSchema.js";
 export default {
 
     /**
+     * @description The event that is fired when an error occurs.
+     * @param {Object} sender - The sender of the message.
+     * @param {Object} error - The error of the message.
+     * @param {Number} error.errorCode - The error code of the error.
+     * @param {String} error.errorMessage - The error message of the error.
+     */
+    "ERROR": yup.object().shape({
+        sender: yup.string().required(),
+        error: yup.object().shape({
+            errorCode: yup.number().required(),
+            errorMessage: yup.string().required()
+        })
+    }),
+
+    // BLACKBOARDS
+
+    "BLACKBOARD_CREATE": yup.object().shape({
+        sender: yup.string().required(),
+        data: YupBlackboardSchema.required()
+    }),
+
+    // MESSAGING
+
+    /**
      * @description The event that is fired when a new message is sent.
      * @param {String} sender - The sender of the message.
      * @param {Object} data - The data of the message.
      */
     "MESSAGE_SEND": yup.object().shape({
         sender: yup.string().required(),
-        data: yup.object().shape(YupMessageSchema).required()
+        data: YupMessageSchema.required()
     }),
 
     /**
@@ -40,7 +65,7 @@ export default {
         sender: yup.string().required(),
         data: yup.object().shape({
             oldMessageId: yup.string().required(),
-            newMessage: yup.object().shape(YupMessageSchema).required()
+            newMessage: YupMessageSchema.required()
         }).required()
     }),
 
@@ -131,19 +156,5 @@ export default {
         }).required()
     }),
 
-    /**
-     * @description The event that is fired when an error occurs.
-     * @param {Object} sender - The sender of the message.
-     * @param {Object} error - The error of the message.
-     * @param {Number} error.errorCode - The error code of the error.
-     * @param {String} error.errorMessage - The error message of the error.
-     */
-    "ERROR": yup.object().shape({
-        sender: yup.string().required(),
-        error: yup.object().shape({
-            errorCode: yup.number().required(),
-            errorMessage: yup.string().required()
-        })
-    }),
 
 }

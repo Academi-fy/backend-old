@@ -154,7 +154,12 @@ Generiert über [mongoose](https://mongoosejs.com/docs/guide.html) [npm package]
         ],
         tags: [
             {
-                type: String
+                emoji: {
+                    type: String
+                },
+                description: {
+                    type: String
+                }
             }
         ]
 

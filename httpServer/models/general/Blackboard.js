@@ -21,7 +21,7 @@ const expirationTime = 10 * 60 * 1000;
  * @param {User} author - The author of the blackboard.
  * @param {String} coverImage - The cover image of the blackboard.
  * @param {String} text - The text of the blackboard.
- * @param {Array<String>} tags - The tags of the blackboard.
+ * @param {Array<Tag>} tags - The tags of the blackboard.
  * @param {Number} date - The date of the blackboard.
  * @param {String} state - The state of the blackboard. Valid states are: 'SUGGESTED', 'REJECTED', 'APPROVED', 'EDIT_SUGGESTED', 'EDIT_REJECTED', 'EDIT_APPROVED', 'DELETE_SUGGESTED', 'DELETE_REJECTED', 'DELETE_APPROVED'
  * */
@@ -33,7 +33,7 @@ export default class Blackboard {
      * @param {String} author - The id of the author of the blackboard.
      * @param {String} coverImage - The cover image of the blackboard.
      * @param {String} text - The text of the blackboard.
-     * @param {Array<String>} tags - The tags of the blackboard.
+     * @param {Array<Tag>} tags - The tags of the blackboard.
      * @param {Number} date - The date of the blackboard.
      * @param {String} state - The state of the blackboard. Valid states are: 'SUGGESTED', 'REJECTED', 'APPROVED', 'EDIT_SUGGESTED', 'EDIT_REJECTED', 'EDIT_APPROVED', 'DELETE_SUGGESTED', 'DELETE_REJECTED', 'DELETE_APPROVED'
      */

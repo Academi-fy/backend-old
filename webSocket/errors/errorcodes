@@ -1,7 +1,0 @@
-{
-    errorCode: Number,
-    errorMessage: String
-}
-
-1 = invalid form body: 'event' AND 'payload' are required
-2 = unknown event type

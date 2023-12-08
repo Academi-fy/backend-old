@@ -13,7 +13,7 @@ import { validateArray, validateNotEmpty } from "../propertyValidation.js";
  * @param {String} meetingTime - The meeting time of the club.
  * @param {String} meetingDay - The meeting day of the club.
  * @param {Array<ClubRequirement>} requirements - The requirements of the club.
- * @param {Array<ClubTag>} tags - The tags of the club.
+ * @param {Array<Tag>} tags - The tags of the club.
  * @param {Array<Event>} events - The events of the club.
  */
 export default class ClubDetails {
@@ -26,7 +26,7 @@ export default class ClubDetails {
      * @param {String} meetingTime - The meeting time of the club.
      * @param {String} meetingDay - The meeting day of the club.
      * @param {Array<ClubRequirement>} requirements - The requirements of the club.
-     * @param {Array<ClubTag>} tags - The tags of the club.
+     * @param {Array<Tag>} tags - The tags of the club.
      */
     constructor(
         coverImage,
@@ -88,6 +88,15 @@ export default class ClubDetails {
     set _requirements(value) {
         validateArray('Club requirements', value);
         this.requirements = value;
+    }
+
+    get _tags() {
+        return this.tags;
+    }
+
+    set _tags(value) {
+        validateArray('Club tags', value);
+        this.tags = value;
     }
 
 }

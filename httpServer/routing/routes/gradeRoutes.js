@@ -7,7 +7,7 @@
 import express from "express";
 const router = express.Router();
 
-import errors from "../../errors/errors.js";
+import errors from "../../../errors.js";
 import isMissingProperty from "../isMissingProperty.js";
 import logger from "../../../logger.js";
 import Grade from "../../models/general/Grade.js";

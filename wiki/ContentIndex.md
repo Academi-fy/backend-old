@@ -159,5 +159,6 @@ TODO
 ## WebSocket
 
 - [EventHandling](https://github.com/Academi-fy/backend/wiki/EventHandling)
+- [SocketEvents](https://github.com/Academi-fy/backend/wiki/SocketEvents)
 - [MessageParsing](https://github.com/Academi-fy/backend/wiki/MessageParsing)
 - [Socket](https://github.com/Academi-fy/backend/wiki/Socket)
