@@ -22,7 +22,7 @@ export default {
 
     /**
      * @description The event that is fired when an error occurs.
-     * @param {Object} sender - The sender of the message.
+     * @param {Object} sender - The id of the sender of the message.
      * @param {Object} error - The error of the message.
      * @param {Number} error.errorCode - The error code of the error.
      * @param {String} error.errorMessage - The error message of the error.
@@ -37,16 +37,43 @@ export default {
 
     // BLACKBOARDS
 
+    /**
+     * @description The event that is fired when a new blackboard is created.
+     * @param {String} sender - The id of the sender of the message.
+     * @param {Object} data - The data of the blackboard.
+     * */
     "BLACKBOARD_CREATE": yup.object().shape({
         sender: yup.string().required(),
         data: YupBlackboardSchema.required()
+    }),
+
+    /**
+     * @description The event that is fired when a blackboard is updated.
+     * @param {String} sender - The id of the sender of the message.
+     * @param {Object} data - The data of the updated blackboard.
+     * */
+    "BLACKBOARD_UPDATE": yup.object().shape({
+        sender: yup.string().required(),
+        data: YupBlackboardSchema.required()
+    }),
+
+    /**
+     * @description The event that is fired when a blackboard is deleted.
+     * @param {String} sender - The id of the sender of the message.
+     * @param {Object} data - The id of the blackboard to be deleted.
+     * */
+    "BLACKBOARD_DELETE": yup.object().shape({
+        sender: yup.string().required(),
+        data: yup.object().shape({
+            blackboardId: yup.string().required()
+        }).required()
     }),
 
     // MESSAGING
 
     /**
      * @description The event that is fired when a new message is sent.
-     * @param {String} sender - The sender of the message.
+     * @param {String} sender - The id of the sender of the message.
      * @param {Object} data - The data of the message.
      */
     "MESSAGE_SEND": yup.object().shape({
@@ -56,7 +83,7 @@ export default {
 
     /**
      * @description The event that is fired when a message is edited.
-     * @param {String} sender - The sender of the message.
+     * @param {String} sender - The id of the sender of the message.
      * @param {Object} data - The data of the message.
      * @param {String} data.oldMessageId - The unique identifier of the message.
      * @param {String} data.newMessage - The new message.
@@ -71,7 +98,7 @@ export default {
 
     /**
      * @description The event that is fired when a message is deleted.
-     * @param {String} sender - The sender of the message.
+     * @param {String} sender - The id of the sender of the message.
      * @param {Object} data - The data of the message.
      * @param {String} data.messageId - The unique identifier of the message.
      * @param {String} data.emoji - The emoji of the reaction.
@@ -85,7 +112,7 @@ export default {
 
     /**
      * @description The event that is fired when a reaction is added to a message.
-     * @param {String} sender - The sender of the message.
+     * @param {String} sender - The id of the sender of the message.
      * @param {Object} data - The data of the message.
      * @param {String} data.messageId - The unique identifier of the message.
      * @param {String} data.emoji - The emoji of the reaction.
@@ -100,7 +127,7 @@ export default {
 
     /**
      * @description The event that is fired when a reaction is removed from a message.
-     * @param {String} sender - The sender of the message.
+     * @param {String} sender - The id of the sender of the message.
      * @param {Object} data - The data of the message.
      * @param {String} data.messageId - The unique identifier of the message.
      * @param {String} data.emoji - The emoji of the reaction.
@@ -115,7 +142,7 @@ export default {
 
     /**
      * @description The event that is fired when a users starts or stops typing.
-     * @param {String} sender - The sender of the message.
+     * @param {String} sender - The id of the sender of the message.
      * @param {Object} data - The data of the message.
      * @param {boolean} data.isTyping - Whether the sender is typing or not.
      */
@@ -128,7 +155,7 @@ export default {
 
     /**
      * @description The event that is fired when a users adds a vote in a poll.
-     * @param {String} sender - The sender of the message.
+     * @param {String} sender - The id of the sender of the message.
      * @param {Object} data - The data of the message.
      * @param {String} data.messageId - The unique identifier of the message.
      * @param {String} data.answerId - The unique identifier of the answer.
@@ -143,7 +170,7 @@ export default {
 
     /**
      * @description The event that is fired when a users removes a vote in a poll.
-     * @param {String} sender - The sender of the message.
+     * @param {String} sender - The id of the sender of the message.
      * @param {Object} data - The data of the message.
      * @param {String} data.messageId - The unique identifier of the message.
      * @param {String} data.answerId - The unique identifier of the answer.

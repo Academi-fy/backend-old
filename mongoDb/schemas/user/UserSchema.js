@@ -49,6 +49,12 @@ export default new Schema(
                 type: ObjectId,
                 ref: 'Course'
             }
+        ],
+        blackboards: [
+            {
+                type: ObjectId,
+                ref: 'Blackboard'
+            }
         ]
 
     },

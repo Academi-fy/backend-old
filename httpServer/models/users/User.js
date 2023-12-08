@@ -24,6 +24,7 @@ const expirationTime = 3 * 60 * 1000;
  * @param {String} type - The type of the users. Valid types are: 'STUDENT', 'TEACHER', 'ADMIN'.
  * @param {Array<Class>} classes - The classes of the users.
  * @param {Array<Course>} extraCourses - The extra courses of the users.
+ * @param {Array<Blackboard>} blackboards - The blackboards of the users.
  */
 export default class User {
 
@@ -35,6 +36,7 @@ export default class User {
      * @param {String} type - The type of the users. Valid types are: 'STUDENT', 'TEACHER', 'ADMIN'.
      * @param {Array<String>} classes - The ids of the classes of the users.
      * @param {Array<String>} extraCourses - The ids of the extra courses of the users.
+     * @param {Array<String>} blackboards - The ids of the blackboards of the users.
      */
     constructor(
         firstName,
@@ -42,7 +44,8 @@ export default class User {
         avatar,
         type,
         classes,
-        extraCourses
+        extraCourses,
+        blackboards
     ) {
         this.firstName = firstName;
         this.lastName = lastName;
@@ -50,6 +53,7 @@ export default class User {
         this.type = type;
         this.classes = classes;
         this.extraCourses = extraCourses;
+        this.blackboards = blackboards;
     }
 
     get _firstName() {
@@ -105,6 +109,15 @@ export default class User {
     set _extraCourses(value) {
         validateArray('users extra courses', value);
         this.extraCourses = value;
+    }
+
+    get _blackboards() {
+        return this.blackboards;
+    }
+
+    set _blackboards(value) {
+        validateArray('users blackboards', value);
+        this.blackboards = value;
     }
 
     /**
@@ -295,6 +308,12 @@ export default class User {
                             { path: 'chat' }
                         ]
                     },
+                    {
+                        path: 'blackboards',
+                        populate: [
+                            { path: 'author' }
+                        ]
+                    }
                 ]);
 
             const populatedUser = new User(
@@ -303,7 +322,8 @@ export default class User {
                 user.avatar,
                 user.type,
                 user.classes,
-                user.extraCourses
+                user.extraCourses,
+                user.blackboards
             );
             populatedUser.id = user._id.toString();
 

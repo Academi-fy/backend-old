@@ -41,23 +41,25 @@ User {
     avatar: "http://example.com/avatar.png",
     type: "TEACHER",
     classes: [ { ... } ],
-    extraCourses: [ { ... } ]
+    extraCourses: [ { ... } ],
+    blackboards: [ { ... } ]
 }
 ```
 
-| Attribut       | Type                                                               | Beschreibung                                                      |
-|----------------|--------------------------------------------------------------------|-------------------------------------------------------------------|
-| `_id`          | String                                                             | Die einzigartige ID des Users.                                    |
-| `firstName`    | String                                                             | Der Vorname des Users.                                            |
-| `lastName`     | String                                                             | Der Nachname des Users.                                           |
-| `avatar`       | String                                                             | Der Avatar des Users.                                             |
-| `type`         | String                                                             | Der Typ des Users. Möglicher Types: `STUDENT`, `TEACHER`, `ADMIN` |
-| `classes`      | Array<[Class](https://github.com/Academi-fy/backend/wiki/Class)>   | Die Klassen, die dem User zugeordnet sind.                        |
-| `extraCourses` | Array<[Course](https://github.com/Academi-fy/backend/wiki/Course)> | Die Kurse, die dem User zusätzlich zugeordnet sind.               |
+| Attribut       | Type                                                                       | Beschreibung                                                      |
+|----------------|----------------------------------------------------------------------------|-------------------------------------------------------------------|
+| `_id`          | String                                                                     | Die einzigartige ID des Users.                                    |
+| `firstName`    | String                                                                     | Der Vorname des Users.                                            |
+| `lastName`     | String                                                                     | Der Nachname des Users.                                           |
+| `avatar`       | String                                                                     | Der Avatar des Users.                                             |
+| `type`         | String                                                                     | Der Typ des Users. Möglicher Types: `STUDENT`, `TEACHER`, `ADMIN` |
+| `classes`      | Array<[Class](https://github.com/Academi-fy/backend/wiki/Class)>           | Die Klassen, die dem User zugeordnet sind.                        |
+| `extraCourses` | Array<[Course](https://github.com/Academi-fy/backend/wiki/Course)>         | Die Kurse, die dem User zusätzlich zugeordnet sind.               |
+| `blackboards`  | Array<[Blackboard](https://github.com/Academi-fy/backend/wiki/Blackboard)> | Die Blackboards, die dem User zugeordnet sind.                    |
 
 #### Besonderheiten
 
-- `classes` und `extraCourses` sind MongoDB Referenzen zu den jeweiligen Objekten
+- `classes`, `extraCourses` und blackboards sind MongoDB Referenzen zu den jeweiligen Objekten
     - sie werden erst beim Abrufen auf dem HTTP-Server aufgelöst
 
 - `type` ist ein Enum, der in der Datenbank als String gespeichert wird
@@ -132,6 +134,12 @@ DELETE /api/users/:id
         {
             type: ObjectId,
             ref: 'Course'
+        }
+    ],
+    blackboards: [
+        {
+            type: ObjectId,
+            ref: 'Blackboard'
         }
     ]
 

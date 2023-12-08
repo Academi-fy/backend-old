@@ -30,6 +30,9 @@ export default {
                     unknownEvent: 2
                 }
             }
+        },
+        actions: {
+            insufficientPermission: 99
         }
     }
 
