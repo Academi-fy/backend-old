@@ -11,7 +11,7 @@ import Event from "../../models/events/Event.js";
 
 import errors from "../../../errors.js";
 import isMissingProperty from "../isMissingProperty.js";
-import logger from "../../../logger.js";
+import logger from "../../../tools/logging/logger.js";
 
 // properties that are required for an event
 const requiredProperties = ['title', 'description', 'location', 'host',

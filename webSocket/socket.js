@@ -8,10 +8,10 @@ import { WebSocketServer } from "ws";
 import { parseMessage } from "./parseMessage.js";
 import { handleEvents } from "./eventHandler.js";
 import config from "../config.js";
-import logger from "../logger.js";
+import logger from "../tools/logging/logger.js";
 import { nanoid } from "nanoid";
 import errors from "../errors.js";
-import memoryLogger from "../memoryLogger.js";
+import memoryLogger from "../tools/logging/memoryLogger.js";
 
 dotenv.config();
 

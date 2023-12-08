@@ -9,7 +9,7 @@ const router = express.Router();
 
 import errors from "../../../errors.js";
 import isMissingProperty from "../isMissingProperty.js";
-import logger from "../../../logger.js";
+import logger from "../../../tools/logging/logger.js";
 import Grade from "../../models/general/Grade.js";
 
 // properties that are required for a grade

@@ -5,7 +5,7 @@
  *
  */
 
-import logger from "../logger.js";
+import logger from "../tools/logging/logger.js";
 import errors from "../errors.js";
 
 /**

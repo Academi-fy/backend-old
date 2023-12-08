@@ -1,5 +1,5 @@
 import nodemon from 'nodemon';
-import logger from "./logger.js";
+import logger from "./logging/logger.js";
 
 nodemon({
     script: 'webSocket/socket.js',

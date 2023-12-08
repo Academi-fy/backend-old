@@ -9,7 +9,7 @@
  * */
 import * as db from '../mongoDb/db.js';
 import config from "../config.js";
-import logger from "../logger.js";
+import logger from "../tools/logging/logger.js";
 
 db.connect().then(() => logger.database.info("Connected."));
 
@@ -54,7 +54,7 @@ import setupAccountRoutes from "./routing/routes/setupAccountRoutes.js";
 import subjectRoutes from "./routing/routes/subjectRoutes.js";
 import userAccountRoutes from "./routing/routes/userAccountRoutes.js";
 import userRoutes from "./routing/routes/userRoutes.js";
-import memoryLogger from "../memoryLogger.js";
+import memoryLogger from "../tools/logging/memoryLogger.js";
 try {
     app.use('/api/blackboards', blackboardRoutes);
     app.use('/api/chats', chatRoutes);

@@ -10,7 +10,7 @@ const router = express.Router();
 import Subject from "../../models/general/Subject.js";
 import errors from "../../../errors.js";
 import isMissingProperty from "../isMissingProperty.js";
-import logger from "../../../logger.js";
+import logger from "../../../tools/logging/logger.js";
 
 // properties that are required for a subject
 const requiredProperties = ['type', 'shortName', 'courses'];

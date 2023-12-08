@@ -1,6 +1,6 @@
 import { nanoid, customAlphabet } from 'nanoid';
 import express from "express";
-import logger from "../../logger.js";
+import logger from "../../tools/logging/logger.js";
 
 const app = express();
 

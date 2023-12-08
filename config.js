@@ -5,7 +5,7 @@
  */
 import dotenv from 'dotenv';
 import ConfigError from "./httpServer/errors/ConfigError.js";
-import logger from "./logger.js";
+import logger from "./tools/logging/logger.js";
 
 dotenv.config();
 
