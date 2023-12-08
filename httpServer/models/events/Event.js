@@ -11,6 +11,9 @@ import { findByRule } from "../findByRule.js";
 import RetrievalError from "../../errors/RetrievalError.js";
 import DatabaseError from "../../errors/DatabaseError.js";
 import CacheError from "../../errors/CacheError.js";
+import User from "../users/User.js";
+import EventTicket from "./EventTicket.js";
+import Club from "../clubs/Club.js";
 
 const expirationTime = 5 * 60 * 1000;
 
@@ -31,6 +34,7 @@ const expirationTime = 5 * 60 * 1000;
  * 'EDIT_SUGGESTED', 'EDIT_REJECTED', 'EDIT_APPROVED',
  * 'DELETE_SUGGESTED', 'DELETE_REJECTED', 'DELETE_APPROVED'
  * @param {Array<Event>} editHistory - The edit history of the event.
+ * @param {Array<User>} subscribers - The subscribers of the event.
  * */
 export default class Event {
 
@@ -50,6 +54,7 @@ export default class Event {
      * 'EDIT_SUGGESTED', 'EDIT_REJECTED', 'EDIT_APPROVED',
      * 'DELETE_SUGGESTED', 'DELETE_REJECTED', 'DELETE_APPROVED'
      * @param {Array<Event>} editHistory - The edit history of the event.
+     * @param {Array<String>} subscribers - The ids of the subscribers of the event.
      */
     constructor(
         title,
@@ -62,7 +67,8 @@ export default class Event {
         information,
         tickets,
         state,
-        editHistory
+        editHistory,
+        subscribers
     ) {
         this.title = title;
         this.description = description;
@@ -75,6 +81,7 @@ export default class Event {
         this.tickets = tickets;
         this.state = state;
         this.editHistory = editHistory;
+        this.subscribers = subscribers;
     }
 
     get _title() {
@@ -173,6 +180,15 @@ export default class Event {
     set _editHistory(value) {
         validateArray('Event edit history', value);
         this.editHistory = value;
+    }
+
+    get _subscribers() {
+        return this.subscribers;
+    }
+
+    set _subscribers(value) {
+        validateArray('Event subscribers', value);
+        this.subscribers = value;
     }
 
     /**
@@ -349,16 +365,15 @@ export default class Event {
                 .populate([
                     {
                         path: 'clubs',
-                        populate: [
-                            { path: 'members' },
-                            { path: 'leaders' }
-                        ]
+                        populate: Club.getPopulationPaths()
                     },
                     {
                         path: 'tickets',
-                        populate: [
-                            { path: 'buyer' }
-                        ]
+                        populate: EventTicket.getPopulationPaths()
+                    },
+                    {
+                        path: 'subscribers',
+                        populate: User.getPopulationPaths()
                     },
                 ]);
 
@@ -373,7 +388,8 @@ export default class Event {
                 event.information,
                 event.tickets,
                 event.state,
-                event.editHistory
+                event.editHistory,
+                event.subscribers
             );
             populatedEvent._id = event._id.toString();
 
@@ -383,5 +399,13 @@ export default class Event {
             throw new DatabaseError(`Failed to populate event:\n${ event }\n${ error }`);
         }
 
+    }
+
+    static  getPopulationPaths(){
+        return [
+            { path: 'clubs' },
+            { path: 'tickets' },
+            { path: 'subscribers' }
+        ]
     }
 }

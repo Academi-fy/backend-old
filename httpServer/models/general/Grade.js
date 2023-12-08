@@ -11,6 +11,7 @@ import { findByRule } from "../findByRule.js";
 import RetrievalError from "../../errors/RetrievalError.js";
 import DatabaseError from "../../errors/DatabaseError.js";
 import CacheError from "../../errors/CacheError.js";
+import Class from "./Class.js";
 
 const expirationTime = 10 * 60 * 1000;
 
@@ -224,11 +225,7 @@ export default class Grade {
                 .populate([
                     {
                         path: 'classes',
-                        populate: [
-                            { path: 'grade' },
-                            { path: 'courses' },
-                            { path: 'members' }
-                        ]
+                        populate: Class.getPopulationPaths()
                     }
                 ]);
 
@@ -244,6 +241,12 @@ export default class Grade {
             throw new DatabaseError(`Failed to populate event:\n${ grade }\n${ error }`);
         }
 
+    }
+
+    static getPopulationPaths(){
+        return [
+            { path: 'classes' }
+        ]
     }
 
 }

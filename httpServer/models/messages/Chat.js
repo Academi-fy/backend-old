@@ -11,6 +11,10 @@ import { findByRule } from "../findByRule.js";
 import RetrievalError from "../../errors/RetrievalError.js";
 import DatabaseError from "../../errors/DatabaseError.js";
 import CacheError from "../../errors/CacheError.js";
+import User from "../users/User.js";
+import Course from "../general/Course.js";
+import Club from "../clubs/Club.js";
+import Message from "./Message.js";
 
 // Time in milliseconds after which the cache will expire
 const expirationTime = 2 * 60 * 1000;
@@ -293,37 +297,19 @@ export default class Chat {
                 .populate([
                     {
                         path: 'targets',
-                        populate: [
-                            { path: 'classes' },
-                            { path: 'extraCourses' }
-                        ]
+                        populate: User.getPopulationPaths()
                     },
                     {
                         path: 'courses',
-                        populate: [
-                            { path: 'members' },
-                            { path: 'classes' },
-                            { path: 'teacher' },
-                            { path: 'subject' },
-                            { path: 'chat' }
-                        ]
+                        populate: Course.getPopulationPaths()
                     },
                     {
                         path: 'clubs',
-                        populate: [
-                            { path: 'leaders' },
-                            { path: 'members' },
-                            { path: 'chat' },
-                            { path: 'events' },
-                        ]
+                        populate: Club.getPopulationPaths()
                     },
                     {
                         path: 'messages',
-                        populate: [
-                            { path: 'chat' },
-                            { path: 'author' },
-                            { path: 'answer' }
-                        ]
+                        populate: Message.getPopulationPaths()
                     },
                 ]);
 
@@ -344,6 +330,14 @@ export default class Chat {
             throw new DatabaseError(`Failed to populate chat:\n${ chat }\n${ error }`);
         }
 
+    }
+
+    static  getPopulationPaths(){
+        return [
+            { path: 'targets' },
+            { path: 'courses' },
+            { path: 'clubs' }
+        ]
     }
 
 }

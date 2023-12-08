@@ -11,6 +11,8 @@ import { findByRule } from "../findByRule.js";
 import RetrievalError from "../../errors/RetrievalError.js";
 import DatabaseError from "../../errors/DatabaseError.js";
 import CacheError from "../../errors/CacheError.js";
+import User from "../users/User.js";
+import Event from "./Event.js";
 
 const expirationTime = 15 * 60 * 1000;
 
@@ -250,33 +252,36 @@ export default class EventTicket {
                 .populate([
                     {
                         path: 'event',
-                        populate: [
-                            { path: 'clubs' },
-                            { path: 'tickets' }
-                        ]
+                        populate: Event.getPopulationPaths()
                     },
                     {
                         path: 'buyer',
-                        populate: [
-                            { path: 'classes' },
-                            { path: 'extraCourses' }
-                        ]
+                        populate: User.getPopulationPaths()
                     }
                 ]);
 
-            eventTicket = new EventTicket(
+            const populatedEventTicket = new EventTicket(
                 eventTicket.event,
                 eventTicket.buyer,
                 eventTicket.price,
                 eventTicket.saleDate
             );
-            eventTicket._id = eventTicket._id.toString();
+            populatedEventTicket._id = eventTicket._id.toString();
 
-            return eventTicket;
+            return populatedEventTicket;
 
         } catch (error) {
             throw new DatabaseError(`Failed to populate event ticket:\n${ eventTicket }\n${ error }`);
         }
+
+    }
+
+    static getPopulationPaths(){
+
+        return [
+            { path: 'event' },
+            { path: 'buyer' }
+        ]
 
     }
 

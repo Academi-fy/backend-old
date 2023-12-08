@@ -11,6 +11,10 @@ import { findByRule } from "../findByRule.js";
 import RetrievalError from "../../errors/RetrievalError.js";
 import DatabaseError from "../../errors/DatabaseError.js";
 import CacheError from "../../errors/CacheError.js";
+import User from "../users/User.js";
+import Class from "./Class.js";
+import Subject from "./Subject.js";
+import Chat from "../messages/Chat.js";
 
 // Define the cache expiration time in milliseconds
 const expirationTime = 5 * 60 * 1000;
@@ -268,39 +272,23 @@ export default class Course {
                 .populate([
                     {
                         path: 'members',
-                        populate: [
-                            { path: 'classes' },
-                            { path: 'extraCourses' },
-                        ]
+                        populate: User.getPopulationPaths()
                     },
                     {
                         path: 'classes',
-                        populate: [
-                            { path: 'grade' },
-                            { path: 'courses' },
-                            { path: 'members' },
-                        ]
+                        populate: Class.getPopulationPaths()
                     },
                     {
                         path: 'teacher',
-                        populate: [
-                            { path: 'classes' },
-                            { path: 'extraCourses' },
-                        ]
+                        populate: User.getPopulationPaths()
                     },
                     {
                         path: 'subject',
-                        populate: [
-                            { path: 'courses' }
-                        ]
+                        populate: Subject.getPopulationPaths()
                     },
                     {
                         path: 'chat',
-                        populate: [
-                            { path: 'targets' },
-                            { path: 'courses' },
-                            { path: 'clubs' }
-                        ]
+                        populate: Chat.getPopulationPaths()
                     },
                 ]);
 
@@ -317,6 +305,16 @@ export default class Course {
         } catch (error) {
             throw new DatabaseError(`Failed to populate course:\n${ course }\n${ error }`);
         }
+    }
+
+    static getPopulationPaths(){
+        return [
+            { path: 'members' },
+            { path: 'classes' },
+            { path: 'teacher' },
+            { path: 'chat' },
+            { path: 'subject' },
+        ]
     }
 
 }

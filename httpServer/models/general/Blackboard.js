@@ -11,6 +11,7 @@ import { findByRule } from "../findByRule.js";
 import RetrievalError from "../../errors/RetrievalError.js";
 import DatabaseError from "../../errors/DatabaseError.js";
 import CacheError from "../../errors/CacheError.js";
+import User from "../users/User.js";
 
 const expirationTime = 10 * 60 * 1000;
 
@@ -290,10 +291,7 @@ export default class Blackboard {
                 .populate([
                     {
                         path: 'author',
-                        populate: [
-                            { path: 'classes' },
-                            { path: 'extraCourses' },
-                        ]
+                        populate: User.getPopulationPaths()
                     }
                 ]);
 
@@ -314,6 +312,12 @@ export default class Blackboard {
             throw new DatabaseError(`Failed to populate blackboard:\n${ blackboard }\n${ error }`);
         }
 
+    }
+
+    static getPopulationPaths(){
+        return [
+            { path: 'author' }
+        ]
     }
 
 }

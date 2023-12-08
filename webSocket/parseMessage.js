@@ -3,7 +3,7 @@
  * @author Daniel Dopatka
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
-import yupSchemas from "./yupSchemas.js";
+import yupSchemas from "./yupEvents.js";
 import SocketMessageParsingError from "./errors/SocketMessageParsingError.js";
 import socketEvents from "./socketEvents.js";
 import UnknownEventError from "./errors/UnknownEventError.js";

@@ -11,6 +11,7 @@ import { findByRule } from "../findByRule.js";
 import RetrievalError from "../../errors/RetrievalError.js";
 import DatabaseError from "../../errors/DatabaseError.js";
 import CacheError from "../../errors/CacheError.js";
+import Course from "./Course.js";
 
 const expirationTime = 10 * 60 * 1000;
 
@@ -236,13 +237,7 @@ export default class Subject {
                 .populate([
                     {
                         path: 'courses',
-                        populate: [
-                            { path: 'members' },
-                            { path: 'classes' },
-                            { path: 'teacher' },
-                            { path: 'subject' },
-                            { path: 'chat' },
-                        ]
+                        populate: Course.getPopulationPaths()
                     }
                 ]);
 
@@ -258,6 +253,12 @@ export default class Subject {
         } catch (error) {
             throw new DatabaseError(`Failed to populate subject:\n${ subject }\n${ error }`);
         }
+    }
+
+    static getPopulationPaths(){
+        return [
+            { path: 'courses' }
+        ]
     }
 
 }

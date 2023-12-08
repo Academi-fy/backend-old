@@ -4,7 +4,6 @@
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
 import yup from "yup";
-import YupUserSchema from "./users/YupUserSchema.js";
 import YupTagSchema from "./YupTagSchema.js";
 
 /**
@@ -20,7 +19,7 @@ import YupTagSchema from "./YupTagSchema.js";
  * */
 export default yup.object().shape({
     title: yup.string().required(),
-    author: YupUserSchema.required(),
+    author: yup.string().required(),
     coverImage: yup.string().required(),
     text: yup.string().required(),
     tags: yup.array().of(YupTagSchema).required(),

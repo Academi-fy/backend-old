@@ -12,6 +12,9 @@ import { findByRule } from "../findByRule.js";
 import RetrievalError from "../../errors/RetrievalError.js";
 import DatabaseError from "../../errors/DatabaseError.js";
 import CacheError from "../../errors/CacheError.js";
+import Class from "../general/Class.js";
+import Course from "../general/Course.js";
+import Blackboard from "../general/Blackboard.js";
 
 const expirationTime = 3 * 60 * 1000;
 
@@ -292,27 +295,15 @@ export default class User {
                 .populate([
                     {
                         path: 'classes',
-                        populate: [
-                            { path: 'grade' },
-                            { path: 'courses' },
-                            { path: 'members' }
-                        ]
+                        populate: Class.getPopulationPaths()
                     },
                     {
                         path: 'extraCourses',
-                        populate: [
-                            { path: 'members' },
-                            { path: 'classes' },
-                            { path: 'teacher' },
-                            { path: 'subject' },
-                            { path: 'chat' }
-                        ]
+                        populate: Course.getPopulationPaths()
                     },
                     {
                         path: 'blackboards',
-                        populate: [
-                            { path: 'author' }
-                        ]
+                        populate: Blackboard.getPopulationPaths()
                     }
                 ]);
 
@@ -333,6 +324,14 @@ export default class User {
             throw new DatabaseError(`Failed to populate user:\n${ user }\n${ error }`);
         }
 
+    }
+
+    static  getPopulationPaths(){
+        return [
+            { path: 'classes' },
+            { path: 'extraCourses' },
+            { path: 'blackboards' }
+        ]
     }
 
 }

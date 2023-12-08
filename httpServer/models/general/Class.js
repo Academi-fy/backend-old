@@ -11,6 +11,9 @@ import { findByRule } from "../findByRule.js";
 import RetrievalError from "../../errors/RetrievalError.js";
 import DatabaseError from "../../errors/DatabaseError.js";
 import CacheError from "../../errors/CacheError.js";
+import Grade from "./Grade.js";
+import Course from "./Course.js";
+import User from "../users/User.js";
 
 // Cache expiration time in milliseconds
 const expirationTime = 5 * 60 * 1000;
@@ -251,26 +254,15 @@ export default class Class {
                 .populate([
                     {
                         path: 'grade',
-                        populate: [
-                            { path: 'classes' }
-                        ]
+                        populate: Grade.getPopulationPaths()
                     },
                     {
                         path: 'course',
-                        populate: [
-                            { path: 'members' },
-                            { path: 'classes' },
-                            { path: 'teacher' },
-                            { path: 'chat' },
-                            { path: 'subject' },
-                        ]
+                        populate: Course.getPopulationPaths()
                     },
                     {
                         path: 'members',
-                        populate: [
-                            { path: 'classes' },
-                            { path: 'extraCourses' }
-                        ]
+                        populate: User.getPopulationPaths()
                     },
                 ]);
 
@@ -288,6 +280,14 @@ export default class Class {
             throw new DatabaseError(`Failed to populate event:\n${ class_ }\n${ error }`);
         }
 
+    }
+
+    static getPopulationPaths(){
+        return [
+            { path: 'grade' },
+            { path: 'courses' },
+            { path: 'members' }
+        ]
     }
 
 }

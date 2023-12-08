@@ -13,6 +13,7 @@ import {
 } from "../../../../mongoDb/collectionAccess.js";
 import DatabaseError from "../../../errors/DatabaseError.js";
 import SetupAccountSchema from "../../../../mongoDb/schemas/general/setup/SetupAccountSchema.js";
+import School from "./School.js";
 
 /**
  * @description The setup account model.
@@ -155,18 +156,7 @@ export default class SetupAccount {
                 .populate([
                     {
                         path: 'school',
-                        populate: [
-                            { path: 'grades' },
-                            { path: 'courses' },
-                            { path: 'members' },
-                            { path: 'classes' },
-                            { path: 'messages' },
-                            { path: 'subjects' },
-                            { path: 'clubs' },
-                            { path: 'events' },
-                            { path: 'blackboards' },
-
-                        ]
+                        populate: School.getPopulationPaths()
                     }
                 ]);
 
@@ -182,6 +172,12 @@ export default class SetupAccount {
             throw new DatabaseError(`Failed to populate setup account with id '${ setupAccount._id }:'\n${ error }`);
         }
 
+    }
+
+    static getPopulationPaths(){
+        return [
+            { path: 'school' }
+        ]
     }
 
 }

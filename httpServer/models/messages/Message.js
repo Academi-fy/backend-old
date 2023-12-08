@@ -18,6 +18,8 @@ import RetrievalError from "../../errors/RetrievalError.js";
 import DatabaseError from "../../errors/DatabaseError.js";
 import CacheError from "../../errors/CacheError.js";
 import MessageReaction from "./MessageReaction.js";
+import Chat from "./Chat.js";
+import User from "../users/User.js";
 
 // Time in milliseconds after which the cache will expire
 const expirationTime = 2 * 60 * 1000;
@@ -306,27 +308,15 @@ export default class Message {
                 .populate([
                     {
                         path: 'chat',
-                        populate: [
-                            { path: 'targets' },
-                            { path: 'courses' },
-                            { path: 'clubs' },
-                            { path: 'messages' }
-                        ]
+                        populate: Chat.getPopulationPaths()
                     },
                     {
                         path: 'author',
-                        populate: [
-                            { path: 'classes' },
-                            { path: 'extraCourses' }
-                        ]
+                        populate: User.getPopulationPaths()
                     },
                     {
                         path: 'answer',
-                        populate: [
-                            { path: 'chat' },
-                            { path: 'author' },
-                            { path: 'answer' }
-                        ]
+                        populate: Message.getPopulationPaths()
                     }
                 ]);
 
@@ -347,6 +337,14 @@ export default class Message {
             throw new DatabaseError(`Failed to populate message:\n${ message }\n${ error }`);
         }
 
+    }
+
+    static getPopulationPaths(){
+        return [
+            { path: 'chat' },
+            { path: 'author' },
+            { path: 'answer' }
+        ]
     }
 
 }

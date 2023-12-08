@@ -10,6 +10,9 @@ import { createDocument, deleteDocument, getAllDocuments, updateDocument } from 
 import { findByRule } from "../findByRule.js";
 import DatabaseError from "../../errors/DatabaseError.js";
 import CacheError from "../../errors/CacheError.js";
+import Event from "../events/Event.js";
+import Chat from "../messages/Chat.js";
+import User from "../users/User.js";
 
 // Cache expiration time in milliseconds
 const expirationTime = 5 * 60 * 1000;
@@ -315,32 +318,19 @@ export default class Club {
                 .populate([
                     {
                         path: 'leaders',
-                        populate: [
-                            { path: 'classes' },
-                            { path: 'extraCourses' },
-                        ]
+                        populate: User.getPopulationPaths()
                     },
                     {
                         path: 'members',
-                        populate: [
-                            { path: 'classes' },
-                            { path: 'extraCourses' },
-                        ]
+                        populate: User.getPopulationPaths()
                     },
                     {
                         path: 'chat',
-                        populate: [
-                            { path: 'targets' },
-                            { path: 'courses' },
-                            { path: 'clubs' }
-                        ]
+                        populate: Chat.getPopulationPaths()
                     },
                     {
                         path: 'events',
-                        populate: [
-                            { path: 'clubs' },
-                            { path: 'tickets' }
-                        ]
+                        populate: Event.getPopulationPaths()
                     },
                 ]);
 
@@ -361,6 +351,15 @@ export default class Club {
         } catch (error) {
             throw new DatabaseError(`Failed to populate club:\n${ club }\n${ error }`);
         }
+    }
+
+    static getPopulationPaths(){
+        return [
+            { path: 'leaders' },
+            { path: 'members' },
+            { path: 'chat' },
+            { path: 'events' },
+        ]
     }
 
 }

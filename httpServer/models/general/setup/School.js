@@ -15,6 +15,15 @@ import SchoolSchema from "../../../../mongoDb/schemas/general/setup/SchoolSchema
 import { validateArray, validateNotEmpty } from "../../propertyValidation.js";
 import DatabaseError from "../../../errors/DatabaseError.js";
 import RetrievalError from "../../../errors/RetrievalError.js";
+import Grade from "../Grade.js";
+import Course from "../Course.js";
+import User from "../../users/User.js";
+import Class from "../Class.js";
+import Message from "../../messages/Message.js";
+import Subject from "../Subject.js";
+import Club from "../../clubs/Club.js";
+import Event from "../../events/Event.js";
+import Blackboard from "../Blackboard.js";
 
 /**
  * @description Class representing a school.
@@ -258,69 +267,39 @@ export default class School {
                 .populate([
                     {
                         path: 'grades',
-                        populate: [
-                            { path: 'classes' }
-                        ]
+                        populate: Grade.getPopulationPaths()
                     },
                     {
                         path: 'courses',
-                        populate: [
-                            { path: 'members' },
-                            { path: 'classes' },
-                            { path: 'teacher' },
-                            { path: 'chat' },
-                            { path: 'subject' }
-                        ]
+                        populate: Course.getPopulationPaths()
                     },
                     {
                         path: 'members',
-                        populate: [
-                            { path: 'classes' },
-                            { path: 'extraCourses' }
-                        ]
+                        populate: User.getPopulationPaths()
                     },
                     {
                         path: 'classes',
-                        populate: [
-                            { path: 'grade' },
-                            { path: 'courses' },
-                            { path: 'members' }
-                        ]
+                        populate: Class.getPopulationPaths()
                     },
                     {
                         path: 'messages',
-                        populate: [
-                            { path: 'author' },
-                            { path: 'answer' }
-                        ]
+                        populate: Message.getPopulationPaths()
                     },
                     {
                         path: 'subjects',
-                        populate: [
-                            { path: 'courses' }
-                        ]
+                        populate: Subject.getPopulationPaths()
                     },
                     {
                         path: 'clubs',
-                        populate: [
-                            { path: 'leaders' },
-                            { path: 'members' },
-                            { path: 'chat' },
-                            { path: 'events' }
-                        ]
+                        populate: Club.getPopulationPaths()
                     },
                     {
                         path: 'events',
-                        populate: [
-                            { path: 'clubs' },
-                            { path: 'tickets' }
-                        ]
+                        populate: Event.getPopulationPaths()
                     },
                     {
                         path: 'blackboards',
-                        populate: [
-                            { path: 'author' }
-                        ]
+                        populate: Blackboard.getPopulationPaths()
                     },
                 ]);
 
@@ -344,6 +323,20 @@ export default class School {
             throw new DatabaseError(`Failed to populate school:\n${ school }\n${ error }`);
         }
 
+    }
+
+    static getPopulationPaths(){
+        return [
+            { path: 'grades' },
+            { path: 'courses' },
+            { path: 'members' },
+            { path: 'classes' },
+            { path: 'messages' },
+            { path: 'subjects' },
+            { path: 'clubs' },
+            { path: 'events' },
+            { path: 'blackboards' },
+        ]
     }
 
 }

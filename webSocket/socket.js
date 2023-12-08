@@ -46,6 +46,7 @@ wss.on('connection', (ws, req) => {
              * Sends an error message to the client if the message could not be parsed.
              * */
             if(error.name === "SocketMessageParsingError") {
+                logger.socket.debug(`Message #${messageId} could not be parsed: ${error.stack}`);
                 ws.send(
                     JSON.stringify({
                         event: "ERROR",
@@ -63,6 +64,7 @@ wss.on('connection', (ws, req) => {
              * Sends an error message to the client if the message could not be parsed due to an unknown event.
              * */
             if(error.name === "UnknownEventError") {
+                logger.socket.debug(`Message #${messageId} contains unknown event: ${error.message}`);
                 ws.send(
                     JSON.stringify({
                         event: "ERROR",
@@ -96,7 +98,7 @@ wss.on('connection', (ws, req) => {
         /**
          * Handle the parsed message
          * */
-        handleEvents(ws, data);
+        handleEvents(ws, data, messageId);
     });
 
 });
