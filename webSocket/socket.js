@@ -11,6 +11,7 @@ import config from "../config.js";
 import logger from "../logger.js";
 import { nanoid } from "nanoid";
 import errors from "../errors.js";
+import memoryLogger from "../memoryLogger.js";
 
 dotenv.config();
 
@@ -103,4 +104,6 @@ wss.on('connection', (ws, req) => {
 
 });
 
-logger.socket.info("WebSocket server running on port 8080")
+logger.socket.info(`WebSocket server running at http://localhost:${config.WEBSOCKET_PORT}`);
+
+memoryLogger(logger.socket);

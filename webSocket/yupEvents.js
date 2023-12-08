@@ -9,6 +9,13 @@ import YupBlackboardSchema from "./yupSchemas/YupBlackboardSchema.js";
 import YupEventPingSchema from "./yupSchemas/events/YupEventPingSchema.js";
 import YupEventSchema from "./yupSchemas/events/YupEventSchema.js";
 
+/**
+ * @description The standard format for WebSocket requests
+ * @param {Object} data - The custom data format for the event
+ * @property {String} sender - The sender of the socket message
+ * @property {Object} data - The custom data format for the event
+ * @returns {yup.ObjectSchema} A Yup schema object that validates the standard format for WebSocket requests.
+ * */
 const standardFormat = (data) => {
 
     return yup.object().shape({

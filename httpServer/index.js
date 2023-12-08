@@ -54,6 +54,7 @@ import setupAccountRoutes from "./routing/routes/setupAccountRoutes.js";
 import subjectRoutes from "./routing/routes/subjectRoutes.js";
 import userAccountRoutes from "./routing/routes/userAccountRoutes.js";
 import userRoutes from "./routing/routes/userRoutes.js";
+import memoryLogger from "../memoryLogger.js";
 try {
     app.use('/api/blackboards', blackboardRoutes);
     app.use('/api/chats', chatRoutes);
@@ -73,22 +74,4 @@ catch (error) {
     logger.server.fatal(error.stack);
 }
 
-setInterval(() => {
-    try {
-        const memoryUsage = process.memoryUsage();
-        const rss = memoryUsage.rss / (1024 * 1024 * 1024);
-        const heapTotal = memoryUsage.heapTotal / (1024 * 1024 * 1024);
-        const heapUsed = memoryUsage.heapUsed / (1024 * 1024 * 1024);
-        const external = memoryUsage.external / (1024 * 1024 * 1024);
-
-        logger.server.info(`---------[ MEMORY INFO ]---------`);
-        logger.server.info(`RSS memory: ${rss.toFixed(4)} GB`);
-        logger.server.info(`Heap Total memory: ${heapTotal.toFixed(4)} GB`);
-        logger.server.info(`Heap Used memory: ${heapUsed.toFixed(4)} GB`);
-        logger.server.info(`External memory: ${external.toFixed(4)} GB`);
-        logger.server.info(`---------------------------------`);
-    }
-    catch (error) {
-        logger.server.fatal(error.stack);
-    }
-}, 1000 * 60 * 5);
+memoryLogger(logger.server);
