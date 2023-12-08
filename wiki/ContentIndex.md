@@ -4,12 +4,13 @@
 
 # Documentation
 
-- [Errors](https://github.com/Academi-fy/backend/wiki/Errors)
-
 ## HTTP Server
 - [Caching](https://github.com/Academi-fy/backend/wiki/Caching)
 - [Index](https://github.com/Academi-fy/backend/wiki/Index)
 - [PropertyValidation](https://github.com/Academi-fy/backend/wiki/PropertyValidation)
+- [Errors](https://github.com/Academi-fy/backend/wiki/Errors)
+- [ErrorCodes](https://github.com/Academi-fy/backend/wiki/ErrorCodes)
+- [RuleSearching](https://github.com/Academi-fy/backend/wiki/RuleSearching)
 
 ## Models
 

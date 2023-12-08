@@ -5,7 +5,7 @@ import logger from "../../logger.js";
 const app = express();
 
 const requestDebugger = (req, res, next) => {
-    req.requestId = nanoid(16);
+    req.requestId = `req-${nanoid(16)}`;
 
     logger.server.debug(`Received request #${req.requestId}: ${req.method} ${req.url} from ${req.ip}`);
 

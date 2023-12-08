@@ -4,6 +4,8 @@
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
 import yupSchemas from "./yupSchemas.js";
+import SocketMessageParsingError from "./errors/SocketMessageParsingError.js";
+import socketEvents from "./socketEvents.js";
 
 /**
  * @description Parses a message and validates its payload.
@@ -15,7 +17,9 @@ export function parseMessage(message) {
 
     const object = JSON.parse(message);
 
-    if (!("event" in object)) throw new Error("Invalid message: no event");
+    if (!("event" in object)) throw new SocketMessageParsingError("Invalid message: message event is required");
+
+    if(!socketEvents.includes(object.event)) throw new SocketMessageParsingError(`Invalid message: event '${object.event}' does not exist`);
 
     /**
      * @description The actual data of the event.
@@ -23,12 +27,15 @@ export function parseMessage(message) {
      * @property {String} sender - The sender of the event.
      * @property {Object} data - The data of the event.
      */
-    if (!("payload" in object)) throw new Error("Invalid message: no payload");
+    if (!("payload" in object)) throw new SocketMessageParsingError("Invalid message: payload is required");
+    if (object.payload === null || typeof object.payload !== 'object') {
+        throw new SocketMessageParsingError("Invalid message: payload must be an object");
+    }
+
+    if (!("sender" in object.payload)) throw new SocketMessageParsingError("Invalid message: message sender is required")
+    if (!("data" in object.payload)) throw new SocketMessageParsingError("Invalid message: message data is required")
 
     object.payload = yupSchemas[object.event].validateSync(object.payload);
-
-    if (!("sender" in object.payload)) throw new Error("Invalid message: no sender")
-    if (!("data" in object.payload)) throw new Error("Invalid message: no data")
 
     return object;
 }

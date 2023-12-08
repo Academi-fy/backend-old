@@ -17,16 +17,5 @@ import yup from "yup";
  * @property {Array.<YupEditedMessage>} edits - The edits made to the message. It is an array of YupEditedMessage and is required.
  */
 export default {
-    id: yup.string().required(),
-    chat: yup.string().required(),
-    author: yup.string().required(),
-    content: yup.array().of(
-        yup.object().shape(/*YupContentTypeSchema*/)
-    ).required(),
-    reactions: yup.array().of(
-        yup.object().shape(/*YupMessageReaction*/)
-    ).required(),
-    edits: yup.array().of(
-        yup.object().shape(/*YupEditedMessage*/)
-    ).required()
+    id: yup.string().required()
 }

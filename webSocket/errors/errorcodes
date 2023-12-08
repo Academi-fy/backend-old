@@ -5,5 +5,3 @@
 
 1 = invalid form body: 'event' AND 'payload' are required
 2 = unknown event type
-3 = insufficient permissions for user
-4 = document not found

@@ -27,6 +27,20 @@
         console.log("Verbindung hergestellt");
     });
 
+    setTimeout(() => {
+        ws.send(
+            JSON.stringify({
+                event: "MESSAGE_SEND",
+                payload: {
+                    sender: "sender",
+                    data: {
+                        id: "id"
+                    }
+                }
+            })
+        );
+    }, 1000);
+
     /**
      * Add an event listener for the 'message' event
      * This event is emitted when a message is received from the server

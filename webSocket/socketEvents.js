@@ -1,0 +1,8 @@
+export default [
+    'MESSAGE_SEND',
+    'MESSAGE_EDIT',
+    'MESSAGE_DELETE',
+    'MESSAGE_REACTION_ADD',
+    'MESSAGE_REACTION_REMOVE',
+    'TYPING'
+]

@@ -24,20 +24,20 @@ const app = express();
 const port = config.SERVER_PORT;
 const host = config.SERVER_HOST;
 app.listen(port, () => {
-  logger.server.info(`HTTP Server is running at http://${ host }:${ port }`);
+    logger.server.info(`HTTP Server is running at http://${ host }:${ port }`);
 });
 
 // middleware
 import requestDebugger from "./middleware/requestDebugger.js";
 import cors from 'cors';
 try {
-  app.use(requestDebugger);
-  app.use(express.static('public'));
-  app.use(cors());
-  app.use(express.json());
+    app.use(requestDebugger);
+    app.use(express.static('public'));
+    app.use(cors());
+    app.use(express.json());
 }
 catch (error){
-  logger.server.fatal(error.stack);
+    logger.server.fatal(error.stack);
 }
 
 // routes
@@ -55,40 +55,40 @@ import subjectRoutes from "./routing/routes/subjectRoutes.js";
 import userAccountRoutes from "./routing/routes/userAccountRoutes.js";
 import userRoutes from "./routing/routes/userRoutes.js";
 try {
-  app.use('/api/blackboards', blackboardRoutes);
-  app.use('/api/chats', chatRoutes);
-  app.use('/api/classes', classRoutes);
-  app.use('/api/clubs', clubRoutes);
-  app.use('/api/courses', courseRoutes);
-  app.use('/api/events', eventRoutes);
-  app.use('/api/event-tickets', eventTicketRoutes);
-  app.use('/api/grades', gradeRoutes);
-  app.use('/api/messages', messageRoutes);
-  app.use('/api/setup-accounts', setupAccountRoutes);
-  app.use('/api/subjects', subjectRoutes);
-  app.use('/api/user-accounts', userAccountRoutes);
-  app.use('/api/users', userRoutes);
+    app.use('/api/blackboards', blackboardRoutes);
+    app.use('/api/chats', chatRoutes);
+    app.use('/api/classes', classRoutes);
+    app.use('/api/clubs', clubRoutes);
+    app.use('/api/courses', courseRoutes);
+    app.use('/api/events', eventRoutes);
+    app.use('/api/event-tickets', eventTicketRoutes);
+    app.use('/api/grades', gradeRoutes);
+    app.use('/api/messages', messageRoutes);
+    app.use('/api/setup-accounts', setupAccountRoutes);
+    app.use('/api/subjects', subjectRoutes);
+    app.use('/api/user-accounts', userAccountRoutes);
+    app.use('/api/users', userRoutes);
 }
 catch (error) {
-  logger.server.fatal(error.stack);
+    logger.server.fatal(error.stack);
 }
 
 setInterval(() => {
     try {
-      const memoryUsage = process.memoryUsage();
-      const rss = memoryUsage.rss / (1024 * 1024 * 1024);
-      const heapTotal = memoryUsage.heapTotal / (1024 * 1024 * 1024);
-      const heapUsed = memoryUsage.heapUsed / (1024 * 1024 * 1024);
-      const external = memoryUsage.external / (1024 * 1024 * 1024);
+        const memoryUsage = process.memoryUsage();
+        const rss = memoryUsage.rss / (1024 * 1024 * 1024);
+        const heapTotal = memoryUsage.heapTotal / (1024 * 1024 * 1024);
+        const heapUsed = memoryUsage.heapUsed / (1024 * 1024 * 1024);
+        const external = memoryUsage.external / (1024 * 1024 * 1024);
 
-      logger.server.info(`---------[ MEMORY INFO ]---------`);
-      logger.server.info(`RSS memory: ${rss.toFixed(4)} GB`);
-      logger.server.info(`Heap Total memory: ${heapTotal.toFixed(4)} GB`);
-      logger.server.info(`Heap Used memory: ${heapUsed.toFixed(4)} GB`);
-      logger.server.info(`External memory: ${external.toFixed(4)} GB`);
-      logger.server.info(`---------------------------------`);
+        logger.server.info(`---------[ MEMORY INFO ]---------`);
+        logger.server.info(`RSS memory: ${rss.toFixed(4)} GB`);
+        logger.server.info(`Heap Total memory: ${heapTotal.toFixed(4)} GB`);
+        logger.server.info(`Heap Used memory: ${heapUsed.toFixed(4)} GB`);
+        logger.server.info(`External memory: ${external.toFixed(4)} GB`);
+        logger.server.info(`---------------------------------`);
     }
     catch (error) {
-      logger.server.fatal(error.stack);
+        logger.server.fatal(error.stack);
     }
 }, 1000 * 60 * 5);

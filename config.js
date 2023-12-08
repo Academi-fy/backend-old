@@ -32,7 +32,7 @@ try {
   }
 }
 catch (error){
-  logger.server.fatal(`Missing environment variables \n${error.stack}`)
+  logger.server.fatal(`Missing environment variable: \n${error.stack}`)
 }
 
 export default variables;

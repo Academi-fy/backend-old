@@ -1,3 +1,5 @@
+import logger from "../logger.js";
+
 /**
  * @file eventHandler.js - Handles different types of events that can occur in a WebSocket connection.
  * @author Daniel Dopatka
@@ -33,7 +35,7 @@ export function handleEvents(ws, data) {
             break;
 
         default:
-            console.error(`Unknown event: ${ data.event }`);
+            logger.socket.error(`Unknown event: ${ data.event }`);
             ws.send(
                 JSON.stringify({
                     event: "ERROR",
