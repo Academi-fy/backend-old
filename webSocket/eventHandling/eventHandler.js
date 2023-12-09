@@ -23,25 +23,21 @@ export function handleEvents(ws, data, messageId, date) {
     const event = data.event;
     const payload = data.payload;
 
-    for(const socketEvent in socketEvents){
-
-        if(socketEvent === event){
-            socketEvents[event].handler(ws, data, messageId, date);
-            logger.socket.debug(`Message #${messageId} processed in ${now - date} ms`)
-            break;
-        }
-
+    if(socketEvents[event]){
+        socketEvents[event].handler(ws, data, messageId, date);
+        logger.socket.debug(`Message #${messageId} processed in ${now - date} ms`)
     }
-
-    logger.socket.debug(`Message #${messageId} contains unknown event ${event}`);
-    ws.send(
-        JSON.stringify({
-            event: "ERROR",
-            payload: {
-                errorCode: errors.socket.messages.parsing.failed.unknownEvent,
-                errorMessage: `Invalid event type. \nSee documentation for more information [https://github.com/Academi-fy/backend/wiki/SocketEvents]`
-            }
-        })
-    );
-
+    else {
+        logger.socket.debug(`Message #${messageId} contains unknown event ${event}`);
+        ws.send(
+            JSON.stringify({
+                event: "ERROR",
+                payload: {
+                    errorCode: errors.socket.messages.parsing.failed.unknownEvent,
+                    errorMessage: `Invalid event type. \nSee documentation for more information [https://github.com/Academi-fy/backend/wiki/SocketEvents]`
+                }
+            })
+        );
+    }
+    
 }
