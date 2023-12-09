@@ -4,15 +4,15 @@
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
 import yup from "yup";
-import YupMessageSchema from "./yupSchemas/message/YupMessageSchema.js";
-import YupBlackboardSchema from "./yupSchemas/YupBlackboardSchema.js";
-import YupEventPingSchema from "./yupSchemas/events/YupEventPingSchema.js";
-import YupEventSchema from "./yupSchemas/events/YupEventSchema.js";
+import YupMessageSchema from "../yupSchemas/messages/YupMessageSchema.js";
+import YupBlackboardSchema from "../yupSchemas/YupBlackboardSchema.js";
+import YupEventPingSchema from "../yupSchemas/events/YupEventPingSchema.js";
+import YupEventSchema from "../yupSchemas/events/YupEventSchema.js";
 
 /**
  * @description The standard format for WebSocket requests
  * @param {Object} data - The custom data format for the event
- * @property {String} sender - The sender of the socket message
+ * @property {String} sender - The sender of the socket messages
  * @property {Object} data - The custom data format for the event
  * @returns {yup.ObjectSchema} A Yup schema object that validates the standard format for WebSocket requests.
  * */
@@ -41,7 +41,7 @@ export default {
 
     /**
      * Events are built up like this:
-     * @param {String} sender - The id of the sender of the message.
+     * @param {String} sender - The id of the sender of the messages.
      * @param {Object} data - The data of the updated class.
      * */
 
@@ -254,7 +254,7 @@ export default {
     }),
 
     /**
-     * @description The event that is fired when a reaction is added to a message.
+     * @description The event that is fired when a reaction is added to a messages.
      */
     "MESSAGE_REACTION_ADD": standardFormat({
         messageId: yup.string().required(),
@@ -262,7 +262,7 @@ export default {
     }),
 
     /**
-     * @description The event that is fired when a reaction is removed from a message.
+     * @description The event that is fired when a reaction is removed from a messages.
      */
     "MESSAGE_REACTION_REMOVE": standardFormat({
         messageId: yup.string().required(),

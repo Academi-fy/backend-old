@@ -1,5 +1,5 @@
 /**
- * @file index.js - Class handling the message routes.
+ * @file index.js - Class handling the messages routes.
  * @author Daniel Dopatka
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
@@ -12,13 +12,13 @@ import isMissingProperty from "../isMissingProperty.js";
 import logger from "../../../tools/logging/logger.js";
 import Message from "../../models/messages/Message.js";
 
-// properties that are required for a message
+// properties that are required for a messages
 const requiredProperties = ['chat', 'author', 'content', 'reactions', 'answer', 'editHistory', 'date'];
 
 /**
- * @description Formats the request body into a message
+ * @description Formats the request body into a messages
  * @param body - The request body
- * @returns {Message} - The formatted message
+ * @returns {Message} - The formatted messages
  * */
 function bodyToMessage(body){
 
@@ -87,10 +87,10 @@ router.get('/filter',async (req, res) => {
 });
 
 /**
- * @description Gets the message matching the id
+ * @description Gets the messages matching the id
  * @param req.body.inquirer - The id of the user querying. '1' for setup accounts.
- * @param req.params.id - The id of the message
- * @returns {JSON<Message>} - The message matching the id
+ * @param req.params.id - The id of the messages
+ * @returns {JSON<Message>} - The messages matching the id
  * @throws errors.server.document.query.failed - When the query failed
  * */
 router.get('/:id', async (req, res) => {
@@ -125,10 +125,10 @@ router.get('/:id', async (req, res) => {
 });
 
 /**
- * @description Creates a message
+ * @description Creates a messages
  * @param req.body.inquirer - The id of the user querying. '1' for setup accounts.
- * @param req.body.message - The message to be created
- * @returns {JSON<Message>} - The created message
+ * @param req.body.messages - The messages to be created
+ * @returns {JSON<Message>} - The created messages
  * @throws errors.server.document.creation.failed - When the creation failed
  * */
 router.post('/', async (req, res) => {
@@ -186,11 +186,11 @@ router.post('/', async (req, res) => {
 });
 
 /**
- * @description Updates a message matching an id
- * @param req.params.id - The id of the message to be updated.
+ * @description Updates a messages matching an id
+ * @param req.params.id - The id of the messages to be updated.
  * @param req.body.inquirer - The id of the user querying. '1' for setup accounts.
- * @param req.body.message - The message update
- * @returns {JSON<Message>} - The updated message
+ * @param req.body.messages - The messages update
+ * @returns {JSON<Message>} - The updated messages
  * @throws errors.server.document.update.failed - When the update failed
  * */
 router.put('/:id', async (req, res) => {
@@ -227,7 +227,7 @@ router.put('/:id', async (req, res) => {
             res.status(400).send(
                 {
                     errorCode: errors.server.document.update.failed,
-                    errorMessage: "Message id in URL does not match message id in body."
+                    errorMessage: "Message id in URL does not match messages id in body."
                 }
             );
             return;
@@ -249,7 +249,7 @@ router.put('/:id', async (req, res) => {
             res.status(400).send(
                 {
                     errorCode: errors.server.document.update.failed,
-                    errorMessage: "Message id in body does not match any message."
+                    errorMessage: "Message id in body does not match any messages."
                 }
             );
             return;
@@ -271,8 +271,8 @@ router.put('/:id', async (req, res) => {
 });
 
 /**
- * @description Deletes a message matching an id
- * @param req.params.id - The id of the message to be deleted.
+ * @description Deletes a messages matching an id
+ * @param req.params.id - The id of the messages to be deleted.
  * @param req.body.inquirer - The id of the user querying. '1' for setup accounts.
  * @returns {JSON<Boolean>} - The state of the deletion
  * @throws errors.server.document.deletion.failed - When the deletion failed

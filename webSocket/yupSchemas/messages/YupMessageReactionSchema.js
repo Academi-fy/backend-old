@@ -1,5 +1,5 @@
 /**
- * @file YupMessageReactionSchema.js - Yup schema for validating message reaction objects.
+ * @file YupMessageReactionSchema.js - Yup schema for validating messages reaction objects.
  * @author Daniel Dopatka
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */

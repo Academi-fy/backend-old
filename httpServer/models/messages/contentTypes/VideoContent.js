@@ -1,5 +1,5 @@
 /**
- * @file VideoContent.js - Module for representing a video content of message.
+ * @file VideoContent.js - Module for representing a video content of messages.
  * @author Daniel Dopatka
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */

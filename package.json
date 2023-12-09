@@ -5,7 +5,7 @@
   "main": "httpServer/index.js",
   "type": "module",
   "scripts": {
-    "start": "concurrently \"node indexStart.js\" \"node socketStart.js\""
+    "start": "concurrently \"node tools/indexStart.js\" \"node tools/socketStart.js\""
   },
   "keywords": [],
   "author": "",

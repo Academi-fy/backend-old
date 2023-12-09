@@ -1,24 +1,24 @@
 /**
- * @file parseMessage.js - Parses a message and validates its payload. It is used in webSocket/eventHandler.js.
+ * @file parseMessage.js - Parses a messages and validates its payload. It is used in webSocket/eventHandler.js.
  * @author Daniel Dopatka
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
-import yupSchemas from "./yupEvents.js";
+import yupSchemas from "./eventHandling/yupEvents.js";
 import SocketMessageParsingError from "./errors/SocketMessageParsingError.js";
-import socketEvents from "./socketEvents.js";
+import socketEvents from "./eventHandling/socketEvents.js";
 import UnknownEventError from "./errors/UnknownEventError.js";
 
 /**
- * @description Parses a message and validates its payload.
- * @param {String} message - The message to be parsed.
- * @returns {Object} The parsed message object with validated payload.
- * @throws {Error} Will throw an error if the message does not contain 'event' or 'payload'.
+ * @description Parses a messages and validates its payload.
+ * @param {String} message - The messages to be parsed.
+ * @returns {Object} The parsed messages object with validated payload.
+ * @throws {Error} Will throw an error if the messages does not contain 'event' or 'payload'.
  */
 export function parseMessage(message) {
 
     const object = JSON.parse(message);
 
-    if (!("event" in object)) throw new SocketMessageParsingError("Invalid message: message event is required");
+    if (!("event" in object)) throw new SocketMessageParsingError("Invalid messages: messages event is required");
 
     if(!socketEvents.includes(object.event)) throw new UnknownEventError(`Invalid message: event '${object.event}' does not exist`);
 
@@ -28,13 +28,13 @@ export function parseMessage(message) {
      * @property {String} sender - The sender of the event.
      * @property {Object} data - The data of the event.
      */
-    if (!("payload" in object)) throw new SocketMessageParsingError("Invalid message: payload is required");
+    if (!("payload" in object)) throw new SocketMessageParsingError("Invalid messages: payload is required");
     if (object.payload === null || typeof object.payload !== 'object') {
-        throw new SocketMessageParsingError("Invalid message: payload must be an object");
+        throw new SocketMessageParsingError("Invalid messages: payload must be an object");
     }
 
-    if (!("sender" in object.payload)) throw new SocketMessageParsingError("Invalid message: message sender is required")
-    if (!("data" in object.payload)) throw new SocketMessageParsingError("Invalid message: message data is required")
+    if (!("sender" in object.payload)) throw new SocketMessageParsingError("Invalid messages: messages sender is required")
+    if (!("data" in object.payload)) throw new SocketMessageParsingError("Invalid messages: messages data is required")
 
     object.payload = yupSchemas[object.event].validateSync(object.payload);
 

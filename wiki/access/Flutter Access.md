@@ -35,7 +35,7 @@ const request = {
     event: "SEND_MESSAGE",
     payload: {
         sender: "",  //sender id
-        data: { /*message Objekt*/ }
+        data: { /*messages Objekt*/ }
     }
 }
 

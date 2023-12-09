@@ -1,5 +1,5 @@
 /**
- * @file Message.js - Module for representing a message in a chat.
+ * @file Message.js - Module for representing a messages in a chat.
  * @author Daniel Dopatka
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
@@ -26,26 +26,26 @@ const expirationTime = 2 * 60 * 1000;
 
 /**
  * @description Class representing a Message.
- * @param {String} _id - The id of the message.
- * @param {Chat} chat - The id of the chat that the message belongs to.
- * @param {User} author - The id of the author of the message.
- * @param {Array<FileContent | ImageContent | PollContent | TextContent | VideoContent>} content - The content of the message.
- * @param {Array<MessageReaction>} reactions - The reactions to the message.
- * @param {Message | null} answer - The message that this message is an answer to.
- * @param {Array<Message>} editHistory - The editHistory made to the message.
- * @param {Number} date - The date the message was created.
+ * @param {String} _id - The id of the messages.
+ * @param {Chat} chat - The id of the chat that the messages belongs to.
+ * @param {User} author - The id of the author of the messages.
+ * @param {Array<FileContent | ImageContent | PollContent | TextContent | VideoContent>} content - The content of the messages.
+ * @param {Array<MessageReaction>} reactions - The reactions to the messages.
+ * @param {Message | null} answer - The messages that this messages is an answer to.
+ * @param {Array<Message>} editHistory - The editHistory made to the messages.
+ * @param {Number} date - The date the messages was created.
  */
 export default class Message {
 
     /**
-     * @description Create a message.
-     * @param {String} chat - The id of the chat that the message belongs to.
-     * @param {String} author - The id of the author of the message.
-     * @param {Array<FileContent | ImageContent | PollContent | TextContent | VideoContent>} content - The content of the message.
-     * @param {Array<MessageReaction>} reactions - The reactions to the message.
-     * @param {String | null} answer - The id of the message that this message is an answer to.
-     * @param {Array<Message>} editHistory - The editHistory made to the message.
-     * @param {Number} date - The date the message was created.
+     * @description Create a messages.
+     * @param {String} chat - The id of the chat that the messages belongs to.
+     * @param {String} author - The id of the author of the messages.
+     * @param {Array<FileContent | ImageContent | PollContent | TextContent | VideoContent>} content - The content of the messages.
+     * @param {Array<MessageReaction>} reactions - The reactions to the messages.
+     * @param {String | null} answer - The id of the messages that this messages is an answer to.
+     * @param {Array<Message>} editHistory - The editHistory made to the messages.
+     * @param {Number} date - The date the messages was created.
      */
     constructor(
         chat,
@@ -170,10 +170,10 @@ export default class Message {
     }
 
     /**
-     * @description Get a message by its ID.
-     * @param {String} id - The ID of the message.
-     * @return {Promise<Message>} The message object.
-     * @throws {RetrievalError} If the message is not found.
+     * @description Get a messages by its ID.
+     * @param {String} id - The ID of the messages.
+     * @return {Promise<Message>} The messages object.
+     * @throws {RetrievalError} If the messages is not found.
      */
     static async getMessageById(id) {
 
@@ -204,11 +204,11 @@ export default class Message {
     }
 
     /**
-     * @description Create a new message.
-     * @param {Message} message - The message object.
-     * @return {Promise<Message>} The created message object.
-     * @throws {DatabaseError} When the message is not created.
-     * @throws {CacheError} When the message is not created in the cache.
+     * @description Create a new messages.
+     * @param {Message} message - The messages object.
+     * @return {Promise<Message>} The created messages object.
+     * @throws {DatabaseError} When the messages is not created.
+     * @throws {CacheError} When the messages is not created in the cache.
      */
     static async createMessage(message) {
 
@@ -232,12 +232,12 @@ export default class Message {
     }
 
     /**
-     * @description Update a message.
-     * @param {String} messageId - The ID of the message to update.
-     * @param {Message} updateMessage - The updated message object.
-     * @return {Promise<Message>} The updated message object.
-     * @throws {DatabaseError} When the message is not updated.
-     * @throws {CacheError} When the message is not updated in the cache.
+     * @description Update a messages.
+     * @param {String} messageId - The ID of the messages to update.
+     * @param {Message} updateMessage - The updated messages object.
+     * @return {Promise<Message>} The updated messages object.
+     * @throws {DatabaseError} When the messages is not updated.
+     * @throws {CacheError} When the messages is not updated in the cache.
      */
     static async updateMessages(messageId, updateMessage) {
 
@@ -260,11 +260,11 @@ export default class Message {
     }
 
     /**
-     * Delete a message.
-     * @param {String} messageId - The ID of the message to delete.
+     * Delete a messages.
+     * @param {String} messageId - The ID of the messages to delete.
      * @return {Promise<Boolean>} The status of the deletion.
-     * @throws {DatabaseError} When the message is not deleted.
-     * @throws {CacheError} When the message is not deleted in the cache.
+     * @throws {DatabaseError} When the messages is not deleted.
+     * @throws {CacheError} When the messages is not deleted in the cache.
      */
     static async deleteMessage(messageId) {
 
@@ -284,9 +284,9 @@ export default class Message {
     }
 
     /**
-     * Verify if a message is in the cache.
-     * @param {Message} testMessage - The message to verify.
-     * @return {Boolean} True if the message is in the cache, false otherwise.
+     * Verify if a messages is in the cache.
+     * @param {Message} testMessage - The messages to verify.
+     * @return {Boolean} True if the messages is in the cache, false otherwise.
      */
     static verifyMessageInCache(testMessage) {
 
@@ -296,9 +296,9 @@ export default class Message {
     }
 
     /**
-     * @description Populate a message.
-     * @param {Object} message - The message to populate.
-     * @return {Promise<Message>} The populated message.
+     * @description Populate a messages.
+     * @param {Object} message - The messages to populate.
+     * @return {Promise<Message>} The populated messages.
      * */
     static async populateMessage(message) {
 

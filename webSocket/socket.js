@@ -6,12 +6,14 @@
 import dotenv from "dotenv";
 import { WebSocketServer } from "ws";
 import { parseMessage } from "./parseMessage.js";
-import { handleEvents } from "./eventHandler.js";
+import { handleEvents } from "./eventHandling/eventHandler.js";
 import config from "../config.js";
 import logger from "../tools/logging/logger.js";
 import { nanoid } from "nanoid";
 import errors from "../errors.js";
 import memoryLogger from "../tools/logging/memoryLogger.js";
+import BlackboardCreateEvent from "./eventHandling/handlers/blackboards/BlackboardCreateEvent.js";
+import socketEvents from "./eventHandling/socketEvents.js";
 
 dotenv.config();
 
@@ -37,14 +39,14 @@ wss.on('connection', (ws, req) => {
         let data;
         try {
             /**
-             * The message is parsed and validated by yup to be processed
+             * The messages is parsed and validated by yup to be processed
              * */
             data = parseMessage(message);
         } catch (error) {
             logger.socket.error(`Invalid message: \n${ error.stack }`);
 
             /**
-             * Sends an error message to the client if the message could not be parsed.
+             * Sends an error messages to the client if the messages could not be parsed.
              * */
             if(error.name === "SocketMessageParsingError") {
                 logger.socket.debug(`Message #${messageId} could not be parsed: ${error.stack}`);
@@ -62,7 +64,7 @@ wss.on('connection', (ws, req) => {
             }
 
             /**
-             * Sends an error message to the client if the message could not be parsed due to an unknown event.
+             * Sends an error messages to the client if the messages could not be parsed due to an unknown event.
              * */
             if(error.name === "UnknownEventError") {
                 logger.socket.debug(`Message #${messageId} contains unknown event: ${error.message}`);
@@ -80,7 +82,7 @@ wss.on('connection', (ws, req) => {
             }
 
             /**
-             * Sends an error message to the client if the message could not be parsed due to an unknown reason.
+             * Sends an error messages to the client if the messages could not be parsed due to an unknown reason.
              * */
             ws.send(
                 JSON.stringify({
@@ -97,9 +99,9 @@ wss.on('connection', (ws, req) => {
         }
         logger.socket.debug(`Message #${messageId} sent event: ${data.event}`)
         /**
-         * Handle the parsed message
+         * Handle the parsed messages
          * */
-        handleEvents(ws, data, messageId);
+        handleEvents(ws, data, messageId, Date.now());
     });
 
 });

@@ -96,7 +96,7 @@ grobe Idee:
                 { /*reaction*/ }
             ],
             edits: [
-                { /*edited message*/ }
+                { /*edited messages*/ }
             ]
         }
     }

@@ -1,12 +1,12 @@
 /**
- * @file MessageReaction.js - Module for representing a message reaction in a chat message.
+ * @file MessageReaction.js - Module for representing a messages reaction in a chat messages.
  * @author Daniel Dopatka
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
 import { validateNotEmpty, validateNumber } from "../propertyValidation.js";
 
 /**
- * @description Represents a message reaction.
+ * @description Represents a messages reaction.
  * @param {String} emoji - The emoji used for the reaction.
  * @param {Number} count - The count of the reaction (default is 0)
  */

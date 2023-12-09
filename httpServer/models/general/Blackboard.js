@@ -215,7 +215,7 @@ export default class Blackboard {
     }
 
     /**
-     * Update a message.
+     * Update a messages.
      * @param {String} blackboardId - The ID of the blackboard to update.
      * @param {Blackboard} updateBlackboard - The updated blackboard object.
      * @return {Promise<Blackboard>} The updated blackboard object.
@@ -267,7 +267,7 @@ export default class Blackboard {
 
     /**
      * Verify if a blackboard is in the cache.
-     * @param {Blackboard} testBlackboard - The blackboard to which the message belongs.
+     * @param {Blackboard} testBlackboard - The blackboard to which the messages belongs.
      * @return {Boolean} True if the blackboard is in the cache, false otherwise.
      */
     static verifyBlackboardInCache(testBlackboard) {

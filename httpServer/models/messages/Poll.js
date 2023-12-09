@@ -1,5 +1,5 @@
 /**
- * @file Poll.js - Module for representing a poll in a chat message.
+ * @file Poll.js - Module for representing a poll in a chat messages.
  * @author Daniel Dopatka
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */

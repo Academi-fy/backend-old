@@ -1,5 +1,5 @@
 /**
- * @file PollContent.js - Module for representing a poll content of message.
+ * @file PollContent.js - Module for representing a poll content of messages.
  * @author Daniel Dopatka
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */

@@ -1,5 +1,5 @@
 /**
- * @file FileContent.js - Module for representing a file content of a message.
+ * @file FileContent.js - Module for representing a file content of a messages.
  * @author Daniel Dopatka
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */

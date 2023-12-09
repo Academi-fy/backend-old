@@ -1,5 +1,5 @@
 /**
- * @file Textcontent.js - Module for representing a text content of message.
+ * @file Textcontent.js - Module for representing a text content of messages.
  * @author Daniel Dopatka
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
