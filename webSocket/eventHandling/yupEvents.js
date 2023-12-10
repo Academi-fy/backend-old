@@ -200,7 +200,7 @@ export default {
     /**
      * @description The event that is fired when a user is removed from a course.
      * */
-    "COURSE_USER_REMOVE":standardFormat({
+    "COURSE_USER_REMOVE": standardFormat({
         courseId: yup.string().required(),
         userId: yup.string().required()
     }),

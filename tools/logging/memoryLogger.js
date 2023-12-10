@@ -4,7 +4,7 @@
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
 
-export default function (logger){
+export default function (logger) {
 
     setInterval(() => {
         try {
@@ -15,13 +15,12 @@ export default function (logger){
             const external = memoryUsage.external / (1024 * 1024 * 1024);
 
             logger.info(`---------[ MEMORY INFO ]---------`);
-            logger.info(`RSS memory: ${rss.toFixed(4)} GB`);
-            logger.info(`Heap Total memory: ${heapTotal.toFixed(4)} GB`);
-            logger.info(`Heap Used memory: ${heapUsed.toFixed(4)} GB`);
-            logger.info(`External memory: ${external.toFixed(4)} GB`);
+            logger.info(`RSS memory: ${ rss.toFixed(4) } GB`);
+            logger.info(`Heap Total memory: ${ heapTotal.toFixed(4) } GB`);
+            logger.info(`Heap Used memory: ${ heapUsed.toFixed(4) } GB`);
+            logger.info(`External memory: ${ external.toFixed(4) } GB`);
             logger.info(`---------------------------------`);
-        }
-        catch (error) {
+        } catch (error) {
             logger.fatal(error.stack);
         }
     }, 1000 * 60 * 30);

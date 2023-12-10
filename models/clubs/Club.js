@@ -353,7 +353,7 @@ export default class Club {
         }
     }
 
-    static getPopulationPaths(){
+    static getPopulationPaths() {
         return [
             { path: 'leaders' },
             { path: 'members' },

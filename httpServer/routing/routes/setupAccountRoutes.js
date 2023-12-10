@@ -5,22 +5,22 @@
  */
 
 import express from "express";
-const router = express.Router();
-
 import errors from "../../../errors.js";
 import isMissingProperty from "../isMissingProperty.js";
 import logger from "../../../tools/logging/logger.js";
 import SetupAccount from "../../models/general/setup/SetupAccount.js";
 
+const router = express.Router();
+
 // properties that are required for a setupAccount
-const requiredProperties = ['members', 'classes', 'teacher', 'chat', 'subject'];
+const requiredProperties = [ 'members', 'classes', 'teacher', 'chat', 'subject' ];
 
 /**
  * @description Formats the request body into a setupAccount
  * @param body - The request body
  * @returns {SetupAccount} - The formatted setupAccount
  * */
-function bodyToSetupAccount(body){
+function bodyToSetupAccount(body) {
 
     const setupAccount = body.setupAccount;
 
@@ -36,7 +36,7 @@ function bodyToSetupAccount(body){
  * @param req.body.inquirer - The id of the user querying. '1' for setup accounts.
  * @returns {JSON<Array<SetupAccount>>} - The list of all setupAccounts existing in the database
  * */
-router.get('/',async (req, res) => {
+router.get('/', async (req, res) => {
 
     const setupAccounts = await SetupAccount.getAllSetupAccounts();
     res.json(setupAccounts);
@@ -50,13 +50,13 @@ router.get('/',async (req, res) => {
  * @returns {JSON<Array<SetupAccount>>} - The list of all setupAccounts matching the filter
  * @throws errors.server.document.query.failed - When the query failed
  * */
-router.get('/filter',async (req, res) => {
+router.get('/filter', async (req, res) => {
 
     try {
         const filter = req.body.filter;
 
-        if(!filter){
-            logger.server.error(`Request #${req.requestId}: SetupAccount query from '${req.ip}' does not contain filter in body`)
+        if (!filter) {
+            logger.server.error(`Request #${ req.requestId }: SetupAccount query from '${ req.ip }' does not contain filter in body`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.query.failed,
@@ -68,8 +68,7 @@ router.get('/filter',async (req, res) => {
 
         const setupAccounts = await SetupAccount.getAllSetupAccountsByRule(filter);
         res.json(setupAccounts)
-    }
-    catch (error){
+    } catch (error) {
         logger.server.error(error);
         res.status(400).send(
             {
@@ -93,8 +92,8 @@ router.get('/:id', async (req, res) => {
     try {
         const id = req.params.id;
 
-        if(!id){
-            logger.server.error(`Request #${req.requestId}: SetupAccount query from '${req.ip}' does not contain setup account id in URL`)
+        if (!id) {
+            logger.server.error(`Request #${ req.requestId }: SetupAccount query from '${ req.ip }' does not contain setup account id in URL`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.query.failed,
@@ -106,8 +105,7 @@ router.get('/:id', async (req, res) => {
 
         const setupAccount = await SetupAccount.getSetupAccountById(id);
         res.json(setupAccount);
-    }
-    catch (error){
+    } catch (error) {
         logger.server.error(error);
         res.status(400).send(
             {
@@ -131,7 +129,7 @@ router.post('/', async (req, res) => {
     try {
 
         if (isMissingProperty(req.body.setupAccount, requiredProperties)) {
-            logger.server.error(`Request #${req.requestId}: SetupAccount creation from '${req.ip}' does not contain all required properties`)
+            logger.server.error(`Request #${ req.requestId }: SetupAccount creation from '${ req.ip }' does not contain all required properties`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.creation.failed,
@@ -144,8 +142,8 @@ router.post('/', async (req, res) => {
         const newSetupAccount = bodyToSetupAccount(req.body);
         newSetupAccount._id = req.body.setupAccount._id.toString();
 
-        if(!newSetupAccount){
-            logger.server.error(`Request #${req.requestId}: SetupAccount creation from '${req.ip}' does not contain setup account in body`)
+        if (!newSetupAccount) {
+            logger.server.error(`Request #${ req.requestId }: SetupAccount creation from '${ req.ip }' does not contain setup account in body`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.creation.failed,
@@ -155,8 +153,8 @@ router.post('/', async (req, res) => {
             return;
         }
 
-        if(!newSetupAccount._id){
-            logger.server.error(`Request #${req.requestId}: SetupAccount creation from '${req.ip}' does not contain setup account id in body`)
+        if (!newSetupAccount._id) {
+            logger.server.error(`Request #${ req.requestId }: SetupAccount creation from '${ req.ip }' does not contain setup account id in body`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.creation.failed,
@@ -168,8 +166,7 @@ router.post('/', async (req, res) => {
 
         const setupAccount = await SetupAccount.createSetupAccount(newSetupAccount);
         res.json(setupAccount);
-    }
-    catch (error){
+    } catch (error) {
         logger.server.error(error);
         res.status(400).send(
             {
@@ -193,7 +190,7 @@ router.put('/:id', async (req, res) => {
     try {
 
         if (isMissingProperty(req.body.setupAccount, requiredProperties)) {
-            logger.server.error(`Request #${req.requestId}: SetupAccount creation from '${req.ip}' does not contain all required properties.`)
+            logger.server.error(`Request #${ req.requestId }: SetupAccount creation from '${ req.ip }' does not contain all required properties.`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.update.failed,
@@ -206,8 +203,8 @@ router.put('/:id', async (req, res) => {
         const updatedSetupAccount = bodyToSetupAccount(req.body);
         updatedSetupAccount._id = req.body.setupAccount._id.toString();
 
-        if(!updatedSetupAccount){
-            logger.server.error(`Request #${req.requestId}: SetupAccount update from '${req.ip}' does not contain the full information.`)
+        if (!updatedSetupAccount) {
+            logger.server.error(`Request #${ req.requestId }: SetupAccount update from '${ req.ip }' does not contain the full information.`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.update.failed,
@@ -217,8 +214,8 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        if(req.params.id !== updatedSetupAccount._id){
-            logger.server.error(`Request #${req.requestId}: SetupAccount update from '${req.ip}' with URL '${req.params.id}' does not match setup account id in body '${updatedSetupAccount._id}'`)
+        if (req.params.id !== updatedSetupAccount._id) {
+            logger.server.error(`Request #${ req.requestId }: SetupAccount update from '${ req.ip }' with URL '${ req.params.id }' does not match setup account id in body '${ updatedSetupAccount._id }'`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.update.failed,
@@ -228,8 +225,8 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        if(!updatedSetupAccount._id){
-            logger.server.error(`Request #${req.requestId}: SetupAccount update from '${req.ip}' with URL '${req.params.id}' does not contain setup account id in body`)
+        if (!updatedSetupAccount._id) {
+            logger.server.error(`Request #${ req.requestId }: SetupAccount update from '${ req.ip }' with URL '${ req.params.id }' does not contain setup account id in body`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.update.failed,
@@ -239,8 +236,8 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        if(await SetupAccount.getSetupAccountById(updatedSetupAccount._id) === null){
-            logger.server.error(`Request #${req.requestId}: SetupAccount update from '${req.ip}' with URL '${req.url}' does not match any setup account`)
+        if (await SetupAccount.getSetupAccountById(updatedSetupAccount._id) === null) {
+            logger.server.error(`Request #${ req.requestId }: SetupAccount update from '${ req.ip }' with URL '${ req.url }' does not match any setup account`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.update.failed,
@@ -252,8 +249,7 @@ router.put('/:id', async (req, res) => {
 
         const setupAccount = await SetupAccount.updateSetupAccount(req.params.id, updatedSetupAccount);
         res.json(setupAccount);
-    }
-    catch (error){
+    } catch (error) {
         logger.server.error(error);
         res.status(400).send(
             {
@@ -277,8 +273,8 @@ router.delete('/:id', async (req, res) => {
     try {
         const id = req.params.id;
 
-        if(!id){
-            logger.server.error(`Request #${ req.requestId }: SetupAccount deletion from '${req.ip}' does not contain setup account id in URL`)
+        if (!id) {
+            logger.server.error(`Request #${ req.requestId }: SetupAccount deletion from '${ req.ip }' does not contain setup account id in URL`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.deletion.failed,
@@ -290,8 +286,8 @@ router.delete('/:id', async (req, res) => {
 
         const deleted = await SetupAccount.deleteSetupAccount(id);
 
-        if(!deleted){
-            logger.server.error(`Request #${ req.requestId }: SetupAccount deletion from '${req.ip}' for setup account with id '${id}' could not be completed`)
+        if (!deleted) {
+            logger.server.error(`Request #${ req.requestId }: SetupAccount deletion from '${ req.ip }' for setup account with id '${ id }' could not be completed`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.deletion.failed,
@@ -302,8 +298,7 @@ router.delete('/:id', async (req, res) => {
         }
 
         res.send(deleted);
-    }
-    catch (error){
+    } catch (error) {
         logger.server.error(error);
         res.status(400).send(
             {

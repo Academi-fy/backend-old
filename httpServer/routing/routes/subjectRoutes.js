@@ -5,22 +5,22 @@
  */
 
 import express from "express";
-const router = express.Router();
-
 import Subject from "../../models/general/Subject.js";
 import errors from "../../../errors.js";
 import isMissingProperty from "../isMissingProperty.js";
 import logger from "../../../tools/logging/logger.js";
 
+const router = express.Router();
+
 // properties that are required for a subject
-const requiredProperties = ['type', 'shortName', 'courses'];
+const requiredProperties = [ 'type', 'shortName', 'courses' ];
 
 /**
  * @description Formats the request body into a subject
  * @param body - The request body
  * @returns {Subject} - The formatted subject
  * */
-function bodyToSubject(body){
+function bodyToSubject(body) {
 
     const subject = body.subject;
 
@@ -37,7 +37,7 @@ function bodyToSubject(body){
  * @param req.body.inquirer - The id of the user querying. '1' for setup accounts.
  * @returns {JSON<Array<Subject>>} - The list of all subjects existing in the database
  * */
-router.get('/',async (req, res) => {
+router.get('/', async (req, res) => {
 
     const subjects = await Subject.getAllSubjects();
     res.json(subjects);
@@ -51,13 +51,13 @@ router.get('/',async (req, res) => {
  * @returns {JSON<Array<Subject>>} - The list of all subjects matching the filter
  * @throws errors.server.document.query.failed - When the query failed
  * */
-router.get('/filter',async (req, res) => {
+router.get('/filter', async (req, res) => {
 
     try {
         const filter = req.body.filter;
 
-        if(!filter){
-            logger.server.error(`Request #${req.requestId}: Subject query from '${req.ip}' does not contain filter in body`)
+        if (!filter) {
+            logger.server.error(`Request #${ req.requestId }: Subject query from '${ req.ip }' does not contain filter in body`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.query.failed,
@@ -69,8 +69,7 @@ router.get('/filter',async (req, res) => {
 
         const subjects = await Subject.getAllSubjectsByRule(filter);
         res.json(subjects)
-    }
-    catch (error){
+    } catch (error) {
         logger.server.error(error);
         res.status(400).send(
             {
@@ -94,8 +93,8 @@ router.get('/:id', async (req, res) => {
     try {
         const id = req.params.id;
 
-        if(!id){
-            logger.server.error(`Request #${req.requestId}: Subject query from '${req.ip}' does not contain subject id in URL`)
+        if (!id) {
+            logger.server.error(`Request #${ req.requestId }: Subject query from '${ req.ip }' does not contain subject id in URL`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.query.failed,
@@ -107,8 +106,7 @@ router.get('/:id', async (req, res) => {
 
         const subject = await Subject.getSubjectById(id);
         res.json(subject);
-    }
-    catch (error){
+    } catch (error) {
         logger.server.error(error);
         res.status(400).send(
             {
@@ -132,7 +130,7 @@ router.post('/', async (req, res) => {
     try {
 
         if (isMissingProperty(req.body.subject, requiredProperties)) {
-            logger.server.error(`Request #${req.requestId}: Subject creation from '${req.ip}' does not contain all required properties`)
+            logger.server.error(`Request #${ req.requestId }: Subject creation from '${ req.ip }' does not contain all required properties`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.creation.failed,
@@ -145,8 +143,8 @@ router.post('/', async (req, res) => {
         const newSubject = bodyToSubject(req.body);
         newSubject._id = req.body.subject._id.toString();
 
-        if(!newSubject){
-            logger.server.error(`Request #${req.requestId}: Subject creation from '${req.ip}' does not contain subject in body`)
+        if (!newSubject) {
+            logger.server.error(`Request #${ req.requestId }: Subject creation from '${ req.ip }' does not contain subject in body`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.creation.failed,
@@ -156,8 +154,8 @@ router.post('/', async (req, res) => {
             return;
         }
 
-        if(!newSubject._id){
-            logger.server.error(`Request #${req.requestId}: Subject creation from '${req.ip}' does not contain subject id in body`)
+        if (!newSubject._id) {
+            logger.server.error(`Request #${ req.requestId }: Subject creation from '${ req.ip }' does not contain subject id in body`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.creation.failed,
@@ -169,8 +167,7 @@ router.post('/', async (req, res) => {
 
         const subject = await Subject.createSubject(newSubject);
         res.json(subject);
-    }
-    catch (error){
+    } catch (error) {
         logger.server.error(error);
         res.status(400).send(
             {
@@ -194,7 +191,7 @@ router.put('/:id', async (req, res) => {
     try {
 
         if (isMissingProperty(req.body.subject, requiredProperties)) {
-            logger.server.error(`Request #${req.requestId}: Subject creation from '${req.ip}' does not contain all required properties.`)
+            logger.server.error(`Request #${ req.requestId }: Subject creation from '${ req.ip }' does not contain all required properties.`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.update.failed,
@@ -207,8 +204,8 @@ router.put('/:id', async (req, res) => {
         const updatedSubject = bodyToSubject(req.body);
         updatedSubject._id = req.body.subject._id.toString();
 
-        if(!updatedSubject){
-            logger.server.error(`Request #${req.requestId}: Subject update from '${req.ip}' does not contain the full information.`)
+        if (!updatedSubject) {
+            logger.server.error(`Request #${ req.requestId }: Subject update from '${ req.ip }' does not contain the full information.`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.update.failed,
@@ -218,8 +215,8 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        if(req.params.id !== updatedSubject._id){
-            logger.server.error(`Request #${req.requestId}: Subject update from '${req.ip}' with URL '${req.params.id}' does not match subject id in body '${updatedSubject._id}'`)
+        if (req.params.id !== updatedSubject._id) {
+            logger.server.error(`Request #${ req.requestId }: Subject update from '${ req.ip }' with URL '${ req.params.id }' does not match subject id in body '${ updatedSubject._id }'`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.update.failed,
@@ -229,8 +226,8 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        if(!updatedSubject._id){
-            logger.server.error(`Request #${req.requestId}: Subject update from '${req.ip}' with URL '${req.params.id}' does not contain subject id in body`)
+        if (!updatedSubject._id) {
+            logger.server.error(`Request #${ req.requestId }: Subject update from '${ req.ip }' with URL '${ req.params.id }' does not contain subject id in body`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.update.failed,
@@ -240,8 +237,8 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        if(await Subject.getSubjectById(updatedSubject._id) === null){
-            logger.server.error(`Request #${req.requestId}: Subject update from '${req.ip}' with URL '${req.url}' does not match any subject`)
+        if (await Subject.getSubjectById(updatedSubject._id) === null) {
+            logger.server.error(`Request #${ req.requestId }: Subject update from '${ req.ip }' with URL '${ req.url }' does not match any subject`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.update.failed,
@@ -253,8 +250,7 @@ router.put('/:id', async (req, res) => {
 
         const subject = await Subject.updateSubject(req.params.id, updatedSubject);
         res.json(subject);
-    }
-    catch (error){
+    } catch (error) {
         logger.server.error(error);
         res.status(400).send(
             {
@@ -278,8 +274,8 @@ router.delete('/:id', async (req, res) => {
     try {
         const id = req.params.id;
 
-        if(!id){
-            logger.server.error(`Request #${ req.requestId }: Subject deletion from '${req.ip}' does not contain subject id in URL`)
+        if (!id) {
+            logger.server.error(`Request #${ req.requestId }: Subject deletion from '${ req.ip }' does not contain subject id in URL`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.deletion.failed,
@@ -291,8 +287,8 @@ router.delete('/:id', async (req, res) => {
 
         const deleted = await Subject.deleteSubject(id);
 
-        if(!deleted){
-            logger.server.error(`Request #${ req.requestId }: Subject deletion from '${req.ip}' for subject with id '${id}' could not be completed`)
+        if (!deleted) {
+            logger.server.error(`Request #${ req.requestId }: Subject deletion from '${ req.ip }' for subject with id '${ id }' could not be completed`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.deletion.failed,
@@ -303,8 +299,7 @@ router.delete('/:id', async (req, res) => {
         }
 
         res.send(deleted);
-    }
-    catch (error){
+    } catch (error) {
         logger.server.error(error);
         res.status(400).send(
             {

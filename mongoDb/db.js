@@ -5,7 +5,7 @@ import { initializeSchemas } from "./initializeSchemas.js";
 import logger from "../tools/logging/logger.js";
 
 const mongoPassword = config.MONGODB_PASSWORD;
-if(!mongoPassword) throw new ConfigError('MONGODB_PASSWORD cannot be accessed from config')
+if (!mongoPassword) throw new ConfigError('MONGODB_PASSWORD cannot be accessed from config')
 
 const mongoURI = `mongodb+srv://admin:${ mongoPassword }@rotteck-messenger.fejn8su.mongodb.net/?retryWrites=true&w=majority`;
 

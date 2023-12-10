@@ -4,22 +4,22 @@
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
 import express from "express";
-const router = express.Router();
-
 import errors from "../../../errors.js";
 import logger from "../../../tools/logging/logger.js";
 import isMissingProperty from "../isMissingProperty.js";
 import Blackboard from "../../models/general/Blackboard.js";
 
+const router = express.Router();
+
 // properties that are required for a blackboard
-const requiredProperties = ['title', 'author', 'coverImage', 'text', 'tags', 'date', 'state'];
+const requiredProperties = [ 'title', 'author', 'coverImage', 'text', 'tags', 'date', 'state' ];
 
 /**
  * @description Formats the request body into a blackboard
  * @param body - The request body
  * @returns {Blackboard} - The formatted blackboard
  * */
-function bodyToBlackboard(body){
+function bodyToBlackboard(body) {
 
     const blackboard = body.blackboard;
 
@@ -59,8 +59,8 @@ router.get('/filter', async (req, res) => {
     try {
         const filter = req.body.filter;
 
-        if(!filter){
-            logger.server.error(`Request #${req.requestId}: Blackboard query from '${req.ip}' does not contain filter in body`)
+        if (!filter) {
+            logger.server.error(`Request #${ req.requestId }: Blackboard query from '${ req.ip }' does not contain filter in body`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.query.failed,
@@ -72,8 +72,7 @@ router.get('/filter', async (req, res) => {
 
         const blackboards = await Blackboard.getAllBlackboardsByRule(filter);
         res.json(blackboards)
-    }
-    catch (error){
+    } catch (error) {
         logger.server.error(error);
         res.status(400).send(
             {
@@ -97,8 +96,8 @@ router.get('/:id', async (req, res) => {
     try {
         const id = req.params.id;
 
-        if(!id){
-            logger.server.error(`Request #${req.requestId}: Blackboard query from '${req.ip}' does not contain id in params`)
+        if (!id) {
+            logger.server.error(`Request #${ req.requestId }: Blackboard query from '${ req.ip }' does not contain id in params`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.query.failed,
@@ -110,8 +109,7 @@ router.get('/:id', async (req, res) => {
 
         const blackboard = await Blackboard.getBlackboardById(id);
         res.json(blackboard)
-    }
-    catch (error){
+    } catch (error) {
         logger.server.error(error);
         res.status(400).send(
             {
@@ -132,10 +130,10 @@ router.get('/:id', async (req, res) => {
  * */
 router.post('/', async (req, res) => {
 
-    try{
+    try {
 
-        if(isMissingProperty(req.body.blackboard, requiredProperties)){
-            logger.server.error(`Request #${req.requestId}: Blackboard creation from '${req.ip}' does not contain all required properties.`)
+        if (isMissingProperty(req.body.blackboard, requiredProperties)) {
+            logger.server.error(`Request #${ req.requestId }: Blackboard creation from '${ req.ip }' does not contain all required properties.`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.creation.failed,
@@ -148,8 +146,8 @@ router.post('/', async (req, res) => {
         const newBlackboard = bodyToBlackboard(req.body);
         newBlackboard._id = req.body.blackboard._id.toString();
 
-        if(!newBlackboard){
-            logger.server.error(`Request #${req.requestId}: Blackboard creation from '${req.ip}' failed.`)
+        if (!newBlackboard) {
+            logger.server.error(`Request #${ req.requestId }: Blackboard creation from '${ req.ip }' failed.`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.creation.failed,
@@ -159,8 +157,8 @@ router.post('/', async (req, res) => {
             return;
         }
 
-        if(!newBlackboard._id){
-            logger.server.error(`Request #${req.requestId}: Blackboard creation from '${req.ip}' does not contain blackboard id in body`)
+        if (!newBlackboard._id) {
+            logger.server.error(`Request #${ req.requestId }: Blackboard creation from '${ req.ip }' does not contain blackboard id in body`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.creation.failed,
@@ -173,8 +171,7 @@ router.post('/', async (req, res) => {
         const blackboard = await Blackboard.createBlackboard(newBlackboard);
         res.json(blackboard);
 
-    }
-    catch (error){
+    } catch (error) {
         logger.server.error(error);
         res.status(400).send(
             {

@@ -30,7 +30,7 @@ export default yup.object().shape({
     location: yup.string().required(),
     host: yup.string().required(),
     clubs: yup.array().of(
-            yup.string()
+        yup.string()
     ).required(),
     startDate: yup.number().required(),
     endDate: yup.number().required(),

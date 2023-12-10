@@ -276,7 +276,7 @@ export default class EventTicket {
 
     }
 
-    static getPopulationPaths(){
+    static getPopulationPaths() {
 
         return [
             { path: 'event' },

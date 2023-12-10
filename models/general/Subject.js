@@ -255,7 +255,7 @@ export default class Subject {
         }
     }
 
-    static getPopulationPaths(){
+    static getPopulationPaths() {
         return [
             { path: 'courses' }
         ]

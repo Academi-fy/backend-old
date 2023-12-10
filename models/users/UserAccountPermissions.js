@@ -37,12 +37,9 @@ export default {
             }
         }
     },
-    event: {
-
-    }
+    event: {}
 
 }
-
 
 
 const test = {

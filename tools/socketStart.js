@@ -18,5 +18,5 @@ nodemon
         process.exit();
     })
     .on('restart', function (files) {
-        logger.socket.info(`App restarted due to: ${files}`);
+        logger.socket.info(`App restarted due to: ${ files }`);
     });

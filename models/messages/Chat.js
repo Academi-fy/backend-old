@@ -332,7 +332,7 @@ export default class Chat {
 
     }
 
-    static  getPopulationPaths(){
+    static getPopulationPaths() {
         return [
             { path: 'targets' },
             { path: 'courses' },

@@ -243,7 +243,7 @@ export default class Grade {
 
     }
 
-    static getPopulationPaths(){
+    static getPopulationPaths() {
         return [
             { path: 'classes' }
         ]

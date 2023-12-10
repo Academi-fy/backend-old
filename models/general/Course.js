@@ -307,7 +307,7 @@ export default class Course {
         }
     }
 
-    static getPopulationPaths(){
+    static getPopulationPaths() {
         return [
             { path: 'members' },
             { path: 'classes' },

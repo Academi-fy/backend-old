@@ -8,7 +8,7 @@ import moment from "moment";
  * @param {String} message - The log messages
  * */
 function handleLog(sender, type, message) {
-    console.log(`${chalk.white(`${moment().format('YYYY/MM/DD HH:mm:ss.SS')}`)} [${chalk.bold.hex(sender.color)(sender.name)}] [${chalk.bold.hex(type.color)(type.name)}] ${chalk.white(message)}`);
+    console.log(`${ chalk.white(`${ moment().format('YYYY/MM/DD HH:mm:ss.SS') }`) } [${ chalk.bold.hex(sender.color)(sender.name) }] [${ chalk.bold.hex(type.color)(type.name) }] ${ chalk.white(message) }`);
 }
 
 /**

@@ -25,7 +25,7 @@ export default yup.object().shape({
     tags: yup.array().of(YupTagSchema).required(),
     date: yup.number().required(),
     state: yup.string().oneOf(
-        ['SUGGESTED', 'REJECTED', 'APPROVED', 'EDIT_SUGGESTED', 'EDIT_REJECTED',
-                    'EDIT_APPROVED', 'DELETE_SUGGESTED', 'DELETE_REJECTED', 'DELETE_APPROVED']
+        [ 'SUGGESTED', 'REJECTED', 'APPROVED', 'EDIT_SUGGESTED', 'EDIT_REJECTED',
+            'EDIT_APPROVED', 'DELETE_SUGGESTED', 'DELETE_REJECTED', 'DELETE_APPROVED' ]
     ).required()
 })

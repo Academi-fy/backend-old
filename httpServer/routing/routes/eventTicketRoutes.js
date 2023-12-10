@@ -5,22 +5,22 @@
  */
 
 import express from "express";
-const router = express.Router();
-
 import errors from "../../../errors.js";
 import isMissingProperty from "../isMissingProperty.js";
 import logger from "../../../tools/logging/logger.js";
 import EventTicket from "../../models/events/EventTicket.js";
 
+const router = express.Router();
+
 // properties that are required for an event ticket
-const requiredProperties = ['event', 'buyer', 'price', 'saleDate'];
+const requiredProperties = [ 'event', 'buyer', 'price', 'saleDate' ];
 
 /**
  * @description Formats the request body into an event ticket
  * @param body - The request body
  * @returns {EventTicket} - The formatted eventTicket
  * */
-function bodyToEventTicket(body){
+function bodyToEventTicket(body) {
 
     const eventTicket = body.eventTicket;
 
@@ -38,7 +38,7 @@ function bodyToEventTicket(body){
  * @param req.body.inquirer - The id of the user querying. '1' for setup accounts.
  * @returns {JSON<Array<EventTicket>>} - The list of all eventTickets existing in the database
  * */
-router.get('/',async (req, res) => {
+router.get('/', async (req, res) => {
 
     const eventTickets = await EventTicket.getAllEventTickets();
     res.json(eventTickets);
@@ -52,13 +52,13 @@ router.get('/',async (req, res) => {
  * @returns {JSON<Array<EventTicket>>} - The list of all eventTickets matching the filter
  * @throws errors.server.document.query.failed - When the query failed
  * */
-router.get('/filter',async (req, res) => {
+router.get('/filter', async (req, res) => {
 
     try {
         const filter = req.body.filter;
 
-        if(!filter){
-            logger.server.error(`Request #${req.requestId}: EventTicket query from '${req.ip}' does not contain filter in body`)
+        if (!filter) {
+            logger.server.error(`Request #${ req.requestId }: EventTicket query from '${ req.ip }' does not contain filter in body`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.query.failed,
@@ -70,8 +70,7 @@ router.get('/filter',async (req, res) => {
 
         const eventTickets = await EventTicket.getAllEventTicketsByRule(filter);
         res.json(eventTickets)
-    }
-    catch (error){
+    } catch (error) {
         logger.server.error(error);
         res.status(400).send(
             {
@@ -95,8 +94,8 @@ router.get('/:id', async (req, res) => {
     try {
         const id = req.params.id;
 
-        if(!id){
-            logger.server.error(`Request #${req.requestId}: EventTicket query from '${req.ip}' does not contain event ticket id in URL`)
+        if (!id) {
+            logger.server.error(`Request #${ req.requestId }: EventTicket query from '${ req.ip }' does not contain event ticket id in URL`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.query.failed,
@@ -108,8 +107,7 @@ router.get('/:id', async (req, res) => {
 
         const eventTicket = await EventTicket.getEventTicketById(id);
         res.json(eventTicket);
-    }
-    catch (error){
+    } catch (error) {
         logger.server.error(error);
         res.status(400).send(
             {
@@ -133,7 +131,7 @@ router.post('/', async (req, res) => {
     try {
 
         if (isMissingProperty(req.body.eventTicket, requiredProperties)) {
-            logger.server.error(`Request #${req.requestId}: EventTicket creation from '${req.ip}' does not contain all required properties`)
+            logger.server.error(`Request #${ req.requestId }: EventTicket creation from '${ req.ip }' does not contain all required properties`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.creation.failed,
@@ -146,8 +144,8 @@ router.post('/', async (req, res) => {
         const newEventTicket = bodyToEventTicket(req.body);
         newEventTicket._id = req.body.eventTicket._id.toString();
 
-        if(!newEventTicket){
-            logger.server.error(`Request #${req.requestId}: EventTicket creation from '${req.ip}' does not contain event ticket in body`)
+        if (!newEventTicket) {
+            logger.server.error(`Request #${ req.requestId }: EventTicket creation from '${ req.ip }' does not contain event ticket in body`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.creation.failed,
@@ -157,8 +155,8 @@ router.post('/', async (req, res) => {
             return;
         }
 
-        if(!newEventTicket._id){
-            logger.server.error(`Request #${req.requestId}: EventTicket creation from '${req.ip}' does not contain event ticket id in body`)
+        if (!newEventTicket._id) {
+            logger.server.error(`Request #${ req.requestId }: EventTicket creation from '${ req.ip }' does not contain event ticket id in body`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.creation.failed,
@@ -170,8 +168,7 @@ router.post('/', async (req, res) => {
 
         const eventTicket = await EventTicket.createEventTicket(newEventTicket);
         res.json(eventTicket);
-    }
-    catch (error){
+    } catch (error) {
         logger.server.error(error);
         res.status(400).send(
             {
@@ -195,7 +192,7 @@ router.put('/:id', async (req, res) => {
     try {
 
         if (isMissingProperty(req.body.eventTicket, requiredProperties)) {
-            logger.server.error(`Request #${req.requestId}: EventTicket creation from '${req.ip}' does not contain all required properties.`)
+            logger.server.error(`Request #${ req.requestId }: EventTicket creation from '${ req.ip }' does not contain all required properties.`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.update.failed,
@@ -208,8 +205,8 @@ router.put('/:id', async (req, res) => {
         const updatedEventTicket = bodyToEventTicket(req.body);
         updatedEventTicket._id = req.body.eventTicket._id.toString();
 
-        if(!updatedEventTicket){
-            logger.server.error(`Request #${req.requestId}: EventTicket update from '${req.ip}' does not contain the full information.`)
+        if (!updatedEventTicket) {
+            logger.server.error(`Request #${ req.requestId }: EventTicket update from '${ req.ip }' does not contain the full information.`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.update.failed,
@@ -219,8 +216,8 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        if(req.params.id !== updatedEventTicket._id){
-            logger.server.error(`Request #${req.requestId}: EventTicket update from '${req.ip}' with URL '${req.params.id}' does not match event ticket id in body '${updatedEventTicket._id}'`)
+        if (req.params.id !== updatedEventTicket._id) {
+            logger.server.error(`Request #${ req.requestId }: EventTicket update from '${ req.ip }' with URL '${ req.params.id }' does not match event ticket id in body '${ updatedEventTicket._id }'`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.update.failed,
@@ -230,8 +227,8 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        if(!updatedEventTicket._id){
-            logger.server.error(`Request #${req.requestId}: EventTicket update from '${req.ip}' with URL '${req.params.id}' does not contain event ticket id in body`)
+        if (!updatedEventTicket._id) {
+            logger.server.error(`Request #${ req.requestId }: EventTicket update from '${ req.ip }' with URL '${ req.params.id }' does not contain event ticket id in body`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.update.failed,
@@ -241,8 +238,8 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        if(await EventTicket.getEventTicketById(updatedEventTicket._id) === null){
-            logger.server.error(`Request #${req.requestId}: EventTicket update from '${req.ip}' with URL '${req.url}' does not match any event ticket`)
+        if (await EventTicket.getEventTicketById(updatedEventTicket._id) === null) {
+            logger.server.error(`Request #${ req.requestId }: EventTicket update from '${ req.ip }' with URL '${ req.url }' does not match any event ticket`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.update.failed,
@@ -254,8 +251,7 @@ router.put('/:id', async (req, res) => {
 
         const eventTicket = await EventTicket.updateEventTicket(req.params.id, updatedEventTicket);
         res.json(eventTicket);
-    }
-    catch (error){
+    } catch (error) {
         logger.server.error(error);
         res.status(400).send(
             {
@@ -279,8 +275,8 @@ router.delete('/:id', async (req, res) => {
     try {
         const id = req.params.id;
 
-        if(!id){
-            logger.server.error(`Request #${ req.requestId }: EventTicket deletion from '${req.ip}' does not contain event ticket id in URL`)
+        if (!id) {
+            logger.server.error(`Request #${ req.requestId }: EventTicket deletion from '${ req.ip }' does not contain event ticket id in URL`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.deletion.failed,
@@ -292,8 +288,8 @@ router.delete('/:id', async (req, res) => {
 
         const deleted = await EventTicket.deleteEventTicket(id);
 
-        if(!deleted){
-            logger.server.error(`Request #${ req.requestId }: EventTicket deletion from '${req.ip}' for event ticket with id '${id}' could not be completed`)
+        if (!deleted) {
+            logger.server.error(`Request #${ req.requestId }: EventTicket deletion from '${ req.ip }' for event ticket with id '${ id }' could not be completed`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.deletion.failed,
@@ -304,8 +300,7 @@ router.delete('/:id', async (req, res) => {
         }
 
         res.send(deleted);
-    }
-    catch (error){
+    } catch (error) {
         logger.server.error(error);
         res.status(400).send(
             {

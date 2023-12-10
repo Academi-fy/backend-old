@@ -401,7 +401,7 @@ export default class Event {
 
     }
 
-    static  getPopulationPaths(){
+    static getPopulationPaths() {
         return [
             { path: 'clubs' },
             { path: 'tickets' },

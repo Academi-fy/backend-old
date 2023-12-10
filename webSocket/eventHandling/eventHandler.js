@@ -5,8 +5,6 @@
  *
  */
 
-import logger from "../../tools/logging/logger.js";
-import errors from "../../errors.js";
 import socketEvents from "./socketEvents.js";
 import EventHandlerError from "../errors/EventHandlerError.js";
 
@@ -22,16 +20,15 @@ export function handleEvents(ws, data, messageId, date) {
     const now = Date.now();
     const event = data.event;
 
-    if(socketEvents[event]){
+    if (socketEvents[event]) {
 
         try {
             socketEvents[event].handler(ws, data, messageId, date);
-        }
-        catch (error){
-            throw new EventHandlerError(`Event '${event}' could not be handled: \n${error.stack}`)
+        } catch (error) {
+            throw new EventHandlerError(`Event '${ event }' could not be handled: \n${ error.stack }`)
         }
 
     }
-    else throw new EventHandlerError(`Event '${event}' could not be handled`)
+    else throw new EventHandlerError(`Event '${ event }' could not be handled`)
 
 }

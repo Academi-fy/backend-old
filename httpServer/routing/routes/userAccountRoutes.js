@@ -5,22 +5,22 @@
  */
 
 import express from "express";
-const router = express.Router();
-
 import errors from "../../../errors.js";
 import isMissingProperty from "../isMissingProperty.js";
 import logger from "../../../tools/logging/logger.js";
 import UserAccount from "../../models/users/UserAccount.js";
 
+const router = express.Router();
+
 // properties that are required for a userAccount
-const requiredProperties = ['user', 'username', 'password', 'settings', 'permissions'];
+const requiredProperties = [ 'user', 'username', 'password', 'settings', 'permissions' ];
 
 /**
  * @description Formats the request body into a userAccount
  * @param body - The request body
  * @returns {UserAccount} - The formatted userAccount
  * */
-function bodyToUserAccount(body){
+function bodyToUserAccount(body) {
 
     const userAccount = body.userAccount;
 
@@ -39,7 +39,7 @@ function bodyToUserAccount(body){
  * @param req.body.inquirer - The id of the user querying. '1' for setup accounts.
  * @returns {JSON<Array<UserAccount>>} - The list of all userAccounts existing in the database
  * */
-router.get('/',async (req, res) => {
+router.get('/', async (req, res) => {
 
     res.status(400).send(
         {
@@ -57,13 +57,13 @@ router.get('/',async (req, res) => {
  * @returns {JSON<Array<UserAccount>>} - The list of all userAccounts matching the filter
  * @throws errors.server.document.query.failed - When the query failed
  * */
-router.get('/filter',async (req, res) => {
+router.get('/filter', async (req, res) => {
 
     try {
         const filter = req.body.filter;
 
-        if(!filter){
-            logger.server.error(`Request #${req.requestId}: UserAccount query from '${req.ip}' does not contain filter in body`)
+        if (!filter) {
+            logger.server.error(`Request #${ req.requestId }: UserAccount query from '${ req.ip }' does not contain filter in body`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.query.failed,
@@ -75,8 +75,7 @@ router.get('/filter',async (req, res) => {
 
         const userAccounts = await UserAccount.getAllUserAccountsByRule(filter);
         res.json(userAccounts)
-    }
-    catch (error){
+    } catch (error) {
         logger.server.error(error);
         res.status(400).send(
             {
@@ -100,8 +99,8 @@ router.get('/:id', async (req, res) => {
     try {
         const id = req.params.id;
 
-        if(!id){
-            logger.server.error(`Request #${req.requestId}: UserAccount query from '${req.ip}' does not contain user account id in URL`)
+        if (!id) {
+            logger.server.error(`Request #${ req.requestId }: UserAccount query from '${ req.ip }' does not contain user account id in URL`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.query.failed,
@@ -113,8 +112,7 @@ router.get('/:id', async (req, res) => {
 
         const userAccount = await UserAccount.getUserAccountById(id);
         res.json(userAccount);
-    }
-    catch (error){
+    } catch (error) {
         logger.server.error(error);
         res.status(400).send(
             {
@@ -138,7 +136,7 @@ router.post('/', async (req, res) => {
     try {
 
         if (isMissingProperty(req.body.userAccount, requiredProperties)) {
-            logger.server.error(`Request #${req.requestId}: UserAccount creation from '${req.ip}' does not contain all required properties`)
+            logger.server.error(`Request #${ req.requestId }: UserAccount creation from '${ req.ip }' does not contain all required properties`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.creation.failed,
@@ -151,8 +149,8 @@ router.post('/', async (req, res) => {
         const newUserAccount = bodyToUserAccount(req.body);
         newUserAccount._id = req.body.userAccount._id.toString();
 
-        if(!newUserAccount){
-            logger.server.error(`Request #${req.requestId}: UserAccount creation from '${req.ip}' does not contain user account in body`)
+        if (!newUserAccount) {
+            logger.server.error(`Request #${ req.requestId }: UserAccount creation from '${ req.ip }' does not contain user account in body`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.creation.failed,
@@ -162,8 +160,8 @@ router.post('/', async (req, res) => {
             return;
         }
 
-        if(!newUserAccount._id){
-            logger.server.error(`Request #${req.requestId}: UserAccount creation from '${req.ip}' does not contain user account id in body`)
+        if (!newUserAccount._id) {
+            logger.server.error(`Request #${ req.requestId }: UserAccount creation from '${ req.ip }' does not contain user account id in body`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.creation.failed,
@@ -175,8 +173,7 @@ router.post('/', async (req, res) => {
 
         const userAccount = await UserAccount.createUserAccount(newUserAccount);
         res.json(userAccount);
-    }
-    catch (error){
+    } catch (error) {
         logger.server.error(error);
         res.status(400).send(
             {
@@ -200,7 +197,7 @@ router.put('/:id', async (req, res) => {
     try {
 
         if (isMissingProperty(req.body.userAccount, requiredProperties)) {
-            logger.server.error(`Request #${req.requestId}: UserAccount creation from '${req.ip}' does not contain all required properties.`)
+            logger.server.error(`Request #${ req.requestId }: UserAccount creation from '${ req.ip }' does not contain all required properties.`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.update.failed,
@@ -213,8 +210,8 @@ router.put('/:id', async (req, res) => {
         const updatedUserAccount = bodyToUserAccount(req.body);
         updatedUserAccount._id = req.body.userAccount._id.toString();
 
-        if(!updatedUserAccount){
-            logger.server.error(`Request #${req.requestId}: UserAccount update from '${req.ip}' does not contain the full information.`)
+        if (!updatedUserAccount) {
+            logger.server.error(`Request #${ req.requestId }: UserAccount update from '${ req.ip }' does not contain the full information.`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.update.failed,
@@ -224,8 +221,8 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        if(req.params.id !== updatedUserAccount._id){
-            logger.server.error(`Request #${req.requestId}: UserAccount update from '${req.ip}' with URL '${req.params.id}' does not match userAccount id in body '${updatedUserAccount._id}'`)
+        if (req.params.id !== updatedUserAccount._id) {
+            logger.server.error(`Request #${ req.requestId }: UserAccount update from '${ req.ip }' with URL '${ req.params.id }' does not match userAccount id in body '${ updatedUserAccount._id }'`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.update.failed,
@@ -235,8 +232,8 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        if(!updatedUserAccount._id){
-            logger.server.error(`Request #${req.requestId}: UserAccount update from '${req.ip}' with URL '${req.params.id}' does not contain user account id in body`)
+        if (!updatedUserAccount._id) {
+            logger.server.error(`Request #${ req.requestId }: UserAccount update from '${ req.ip }' with URL '${ req.params.id }' does not contain user account id in body`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.update.failed,
@@ -246,8 +243,8 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        if(await UserAccount.getUserAccountById(updatedUserAccount._id) === null){
-            logger.server.error(`Request #${req.requestId}: UserAccount update from '${req.ip}' with URL '${req.url}' does not match any user account`)
+        if (await UserAccount.getUserAccountById(updatedUserAccount._id) === null) {
+            logger.server.error(`Request #${ req.requestId }: UserAccount update from '${ req.ip }' with URL '${ req.url }' does not match any user account`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.update.failed,
@@ -259,8 +256,7 @@ router.put('/:id', async (req, res) => {
 
         const userAccount = await UserAccount.updateUserAccount(req.params.id, updatedUserAccount);
         res.json(userAccount);
-    }
-    catch (error){
+    } catch (error) {
         logger.server.error(error);
         res.status(400).send(
             {
@@ -284,8 +280,8 @@ router.delete('/:id', async (req, res) => {
     try {
         const id = req.params.id;
 
-        if(!id){
-            logger.server.error(`Request #${ req.requestId }: UserAccount deletion from '${req.ip}' does not contain user account id in URL`)
+        if (!id) {
+            logger.server.error(`Request #${ req.requestId }: UserAccount deletion from '${ req.ip }' does not contain user account id in URL`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.deletion.failed,
@@ -297,8 +293,8 @@ router.delete('/:id', async (req, res) => {
 
         const deleted = await UserAccount.deleteUserAccount(id);
 
-        if(!deleted){
-            logger.server.error(`Request #${ req.requestId }: UserAccount deletion from '${req.ip}' for user account with id '${id}' could not be completed`)
+        if (!deleted) {
+            logger.server.error(`Request #${ req.requestId }: UserAccount deletion from '${ req.ip }' for user account with id '${ id }' could not be completed`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.deletion.failed,
@@ -309,8 +305,7 @@ router.delete('/:id', async (req, res) => {
         }
 
         res.send(deleted);
-    }
-    catch (error){
+    } catch (error) {
         logger.server.error(error);
         res.status(400).send(
             {

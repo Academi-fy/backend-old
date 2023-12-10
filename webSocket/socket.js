@@ -12,8 +12,6 @@ import logger from "../tools/logging/logger.js";
 import { nanoid } from "nanoid";
 import errors from "../errors.js";
 import memoryLogger from "../tools/logging/memoryLogger.js";
-import BlackboardCreateEvent from "./eventHandling/handlers/blackboards/BlackboardCreateEvent.js";
-import socketEvents from "./eventHandling/socketEvents.js";
 
 dotenv.config();
 
@@ -23,10 +21,10 @@ dotenv.config();
  */
 const wss = new WebSocketServer({ port: parseInt(config.WEBSOCKET_PORT) });
 wss.on('connection', (ws, req) => {
-    const connectionId = `con-${nanoid(16)}`;
-    logger.socket.debug(`New connection #${connectionId} to: ${req.socket.remoteAddress}`);
-    logger.socket.debug(`Connection #${connectionId}: established at: ${new Date().toISOString()}`);
-    logger.socket.debug(`Connection #${connectionId}: user-agent: ${req.headers['user-agent']}`);
+    const connectionId = `con-${ nanoid(16) }`;
+    logger.socket.debug(`New connection #${ connectionId } to: ${ req.socket.remoteAddress }`);
+    logger.socket.debug(`Connection #${ connectionId }: established at: ${ new Date().toISOString() }`);
+    logger.socket.debug(`Connection #${ connectionId }: user-agent: ${ req.headers['user-agent'] }`);
 
     /**
      * Event listener for incoming messages
@@ -121,6 +119,6 @@ wss.on('connection', (ws, req) => {
 
 });
 
-logger.socket.info(`WebSocket server running at http://localhost:${config.WEBSOCKET_PORT}`);
+logger.socket.info(`WebSocket server running at http://localhost:${ config.WEBSOCKET_PORT }`);
 
 memoryLogger(logger.socket);

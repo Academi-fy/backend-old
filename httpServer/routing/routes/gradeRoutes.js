@@ -5,22 +5,22 @@
  */
 
 import express from "express";
-const router = express.Router();
-
 import errors from "../../../errors.js";
 import isMissingProperty from "../isMissingProperty.js";
 import logger from "../../../tools/logging/logger.js";
 import Grade from "../../models/general/Grade.js";
 
+const router = express.Router();
+
 // properties that are required for a grade
-const requiredProperties = ['level', 'classes'];
+const requiredProperties = [ 'level', 'classes' ];
 
 /**
  * @description Formats the request body into a grade
  * @param body - The request body
  * @returns {Grade} - The formatted grade
  * */
-function bodyToGrade(body){
+function bodyToGrade(body) {
 
     const grade = body.grade;
 
@@ -36,7 +36,7 @@ function bodyToGrade(body){
  * @param req.body.inquirer - The id of the user querying. '1' for setup accounts.
  * @returns {JSON<Array<Grade>>} - The list of all grades existing in the database
  * */
-router.get('/',async (req, res) => {
+router.get('/', async (req, res) => {
 
     const grades = await Grade.getAllGrades();
     res.json(grades);
@@ -50,13 +50,13 @@ router.get('/',async (req, res) => {
  * @returns {JSON<Array<Grade>>} - The list of all grades matching the filter
  * @throws errors.server.document.query.failed - When the query failed
  * */
-router.get('/filter',async (req, res) => {
+router.get('/filter', async (req, res) => {
 
     try {
         const filter = req.body.filter;
 
-        if(!filter){
-            logger.server.error(`Request #${req.requestId}: Grade query from '${req.ip}' does not contain filter in body`)
+        if (!filter) {
+            logger.server.error(`Request #${ req.requestId }: Grade query from '${ req.ip }' does not contain filter in body`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.query.failed,
@@ -68,8 +68,7 @@ router.get('/filter',async (req, res) => {
 
         const grades = await Grade.getAllGradesByRule(filter);
         res.json(grades)
-    }
-    catch (error){
+    } catch (error) {
         logger.server.error(error);
         res.status(400).send(
             {
@@ -93,8 +92,8 @@ router.get('/:id', async (req, res) => {
     try {
         const id = req.params.id;
 
-        if(!id){
-            logger.server.error(`Request #${req.requestId}: Grade query from '${req.ip}' does not contain grade id in URL`)
+        if (!id) {
+            logger.server.error(`Request #${ req.requestId }: Grade query from '${ req.ip }' does not contain grade id in URL`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.query.failed,
@@ -106,8 +105,7 @@ router.get('/:id', async (req, res) => {
 
         const grade = await Grade.getGradeById(id);
         res.json(grade);
-    }
-    catch (error){
+    } catch (error) {
         logger.server.error(error);
         res.status(400).send(
             {
@@ -131,7 +129,7 @@ router.post('/', async (req, res) => {
     try {
 
         if (isMissingProperty(req.body.grade, requiredProperties)) {
-            logger.server.error(`Request #${req.requestId}: Grade creation from '${req.ip}' does not contain all required properties`)
+            logger.server.error(`Request #${ req.requestId }: Grade creation from '${ req.ip }' does not contain all required properties`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.creation.failed,
@@ -144,8 +142,8 @@ router.post('/', async (req, res) => {
         const newGrade = bodyToGrade(req.body);
         newGrade._id = req.body.grade._id.toString();
 
-        if(!newGrade){
-            logger.server.error(`Request #${req.requestId}: Grade creation from '${req.ip}' does not contain grade in body`)
+        if (!newGrade) {
+            logger.server.error(`Request #${ req.requestId }: Grade creation from '${ req.ip }' does not contain grade in body`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.creation.failed,
@@ -155,8 +153,8 @@ router.post('/', async (req, res) => {
             return;
         }
 
-        if(!newGrade._id){
-            logger.server.error(`Request #${req.requestId}: Grade creation from '${req.ip}' does not contain grade id in body`)
+        if (!newGrade._id) {
+            logger.server.error(`Request #${ req.requestId }: Grade creation from '${ req.ip }' does not contain grade id in body`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.creation.failed,
@@ -168,8 +166,7 @@ router.post('/', async (req, res) => {
 
         const grade = await Grade.createGrade(newGrade);
         res.json(grade);
-    }
-    catch (error){
+    } catch (error) {
         logger.server.error(error);
         res.status(400).send(
             {
@@ -193,7 +190,7 @@ router.put('/:id', async (req, res) => {
     try {
 
         if (isMissingProperty(req.body.grade, requiredProperties)) {
-            logger.server.error(`Request #${req.requestId}: Grade creation from '${req.ip}' does not contain all required properties.`)
+            logger.server.error(`Request #${ req.requestId }: Grade creation from '${ req.ip }' does not contain all required properties.`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.update.failed,
@@ -206,8 +203,8 @@ router.put('/:id', async (req, res) => {
         const updatedGrade = bodyToGrade(req.body);
         updatedGrade._id = req.body.grade._id.toString();
 
-        if(!updatedGrade){
-            logger.server.error(`Request #${req.requestId}: Grade update from '${req.ip}' does not contain the full information.`)
+        if (!updatedGrade) {
+            logger.server.error(`Request #${ req.requestId }: Grade update from '${ req.ip }' does not contain the full information.`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.update.failed,
@@ -217,8 +214,8 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        if(req.params.id !== updatedGrade._id){
-            logger.server.error(`Request #${req.requestId}: Grade update from '${req.ip}' with URL '${req.params.id}' does not match grade id in body '${updatedGrade._id}'`)
+        if (req.params.id !== updatedGrade._id) {
+            logger.server.error(`Request #${ req.requestId }: Grade update from '${ req.ip }' with URL '${ req.params.id }' does not match grade id in body '${ updatedGrade._id }'`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.update.failed,
@@ -228,8 +225,8 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        if(!updatedGrade._id){
-            logger.server.error(`Request #${req.requestId}: Grade update from '${req.ip}' with URL '${req.params.id}' does not contain grade id in body`)
+        if (!updatedGrade._id) {
+            logger.server.error(`Request #${ req.requestId }: Grade update from '${ req.ip }' with URL '${ req.params.id }' does not contain grade id in body`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.update.failed,
@@ -239,8 +236,8 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        if(await Grade.getGradeById(updatedGrade._id) === null){
-            logger.server.error(`Request #${req.requestId}: Grade update from '${req.ip}' with URL '${req.url}' does not match any grade`)
+        if (await Grade.getGradeById(updatedGrade._id) === null) {
+            logger.server.error(`Request #${ req.requestId }: Grade update from '${ req.ip }' with URL '${ req.url }' does not match any grade`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.update.failed,
@@ -252,8 +249,7 @@ router.put('/:id', async (req, res) => {
 
         const grade = await Grade.updateGrade(req.params.id, updatedGrade);
         res.json(grade);
-    }
-    catch (error){
+    } catch (error) {
         logger.server.error(error);
         res.status(400).send(
             {
@@ -277,8 +273,8 @@ router.delete('/:id', async (req, res) => {
     try {
         const id = req.params.id;
 
-        if(!id){
-            logger.server.error(`Request #${ req.requestId }: Grade deletion from '${req.ip}' does not contain grade id in URL`)
+        if (!id) {
+            logger.server.error(`Request #${ req.requestId }: Grade deletion from '${ req.ip }' does not contain grade id in URL`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.deletion.failed,
@@ -290,8 +286,8 @@ router.delete('/:id', async (req, res) => {
 
         const deleted = await Grade.deleteGrade(id);
 
-        if(!deleted){
-            logger.server.error(`Request #${ req.requestId }: Grade deletion from '${req.ip}' for grade with id '${id}' could not be completed`)
+        if (!deleted) {
+            logger.server.error(`Request #${ req.requestId }: Grade deletion from '${ req.ip }' for grade with id '${ id }' could not be completed`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.deletion.failed,
@@ -302,8 +298,7 @@ router.delete('/:id', async (req, res) => {
         }
 
         res.send(deleted);
-    }
-    catch (error){
+    } catch (error) {
         logger.server.error(error);
         res.status(400).send(
             {

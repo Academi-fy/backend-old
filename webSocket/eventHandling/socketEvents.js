@@ -7,7 +7,9 @@ import * as handlers from "./handlers.js";
 
 function createHandler(eventName) {
     return {
-        handler: (ws, data, messageId, date) => { handlers[eventName](ws, data, messageId, date) }
+        handler: (ws, data, messageId, date) => {
+            handlers[eventName](ws, data, messageId, date)
+        }
     };
 }
 

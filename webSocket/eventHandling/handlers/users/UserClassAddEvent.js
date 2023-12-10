@@ -14,5 +14,5 @@ import logger from "../../../../tools/logging/logger.js";
  */
 export default function (ws, data, messageId, date) {
 
-    logger.socket.debug(`Message #${messageId} processed in ${Date.now() - date} ms`)
+    logger.socket.debug(`Message #${ messageId } processed in ${ Date.now() - date } ms`)
 }

@@ -4,7 +4,6 @@
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
 import yup from "yup";
-import YupMessageReactionSchema from "./YupMessageReactionSchema.js";
 
 /**
  * @typedef {Object} YupMessageReactionSchema
@@ -12,6 +11,6 @@ import YupMessageReactionSchema from "./YupMessageReactionSchema.js";
  * @param {Object} value - The value of the messages content.
  */
 export default yup.object().shape({
-    type: yup.string().oneOf(['FILE', 'IMAGE', 'POLL', 'TEXT', 'VIDEO']),
+    type: yup.string().oneOf([ 'FILE', 'IMAGE', 'POLL', 'TEXT', 'VIDEO' ]),
     value: yup.mixed().required()
 })

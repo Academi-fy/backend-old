@@ -100,7 +100,7 @@ export default class Message {
         validateArray('Message reactions', value);
 
         for (const reaction of value) {
-            if(!reaction instanceof MessageReaction) throw new TypeError(`Message reactions must be of type MessageReaction`);
+            if (!reaction instanceof MessageReaction) throw new TypeError(`Message reactions must be of type MessageReaction`);
         }
 
         this.reactions = value;
@@ -339,7 +339,7 @@ export default class Message {
 
     }
 
-    static getPopulationPaths(){
+    static getPopulationPaths() {
         return [
             { path: 'chat' },
             { path: 'author' },

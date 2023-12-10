@@ -5,22 +5,22 @@
  */
 
 import express from "express";
-const router = express.Router();
-
 import errors from "../../../errors.js";
 import isMissingProperty from "../isMissingProperty.js";
 import logger from "../../../tools/logging/logger.js";
 import Chat from "../../models/messages/Chat.js";
 
+const router = express.Router();
+
 // properties that are required for a chat
-const requiredProperties = ['type', 'targets', 'courses', 'clubs', 'name', 'avatar', 'messages'];
+const requiredProperties = [ 'type', 'targets', 'courses', 'clubs', 'name', 'avatar', 'messages' ];
 
 /**
  * @description Formats the request body into a chat
  * @param body - The request
  * @returns {Chat} - The formatted chat
  * */
-function bodyToChat(body){
+function bodyToChat(body) {
 
     const chat = body.chat;
 
@@ -41,7 +41,7 @@ function bodyToChat(body){
  * @param req.body.inquirer - The id of the user querying. '1' for setup accounts.
  * @returns {JSON<Array<Chat>>} - The list of all chats existing in the database
  * */
-router.get('/',async (req, res) => {
+router.get('/', async (req, res) => {
 
     const chats = await Chat.getAllChats();
     res.json(chats);
@@ -55,13 +55,13 @@ router.get('/',async (req, res) => {
  * @returns {JSON<Array<Chat>>} - The list of all chats matching the filter
  * @throws errors.server.document.query.failed - When the query failed
  * */
-router.get('/filter',async (req, res) => {
+router.get('/filter', async (req, res) => {
 
     try {
         const filter = req.body.filter;
 
-        if(!filter){
-            logger.server.error(`Request #${req.requestId}: Chat query from '${req.ip}' does not contain filter in body`)
+        if (!filter) {
+            logger.server.error(`Request #${ req.requestId }: Chat query from '${ req.ip }' does not contain filter in body`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.query.failed,
@@ -73,8 +73,7 @@ router.get('/filter',async (req, res) => {
 
         const chats = await Chat.getAllChatsByRule(filter);
         res.json(chats)
-    }
-    catch (error){
+    } catch (error) {
         logger.server.error(error.stack);
         res.status(400).send(
             {
@@ -98,8 +97,8 @@ router.get('/:id', async (req, res) => {
     try {
         const id = req.params.id;
 
-        if(!id){
-            logger.server.error(`Request #${req.requestId}: Chat query from '${req.ip}' does not contain chat id in URL`)
+        if (!id) {
+            logger.server.error(`Request #${ req.requestId }: Chat query from '${ req.ip }' does not contain chat id in URL`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.query.failed,
@@ -111,8 +110,7 @@ router.get('/:id', async (req, res) => {
 
         const chat = await Chat.getChatById(id);
         res.json(chat);
-    }
-    catch (error){
+    } catch (error) {
         logger.server.error(error.stack);
         res.status(400).send(
             {
@@ -136,7 +134,7 @@ router.post('/', async (req, res) => {
     try {
 
         if (isMissingProperty(req.body.chat, requiredProperties)) {
-            logger.server.error(`Request #${req.requestId}: Chat creation from '${req.ip}' does not contain all required properties`)
+            logger.server.error(`Request #${ req.requestId }: Chat creation from '${ req.ip }' does not contain all required properties`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.creation.failed,
@@ -149,8 +147,8 @@ router.post('/', async (req, res) => {
         const newChat = bodyToChat(req.body);
         newChat._id = req.body.chat._id.toString();
 
-        if(!newChat){
-            logger.server.error(`Request #${req.requestId}: Chat creation from '${req.ip}' does not contain chat in body`)
+        if (!newChat) {
+            logger.server.error(`Request #${ req.requestId }: Chat creation from '${ req.ip }' does not contain chat in body`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.creation.failed,
@@ -160,8 +158,8 @@ router.post('/', async (req, res) => {
             return;
         }
 
-        if(!newChat._id){
-            logger.server.error(`Request #${req.requestId}: Chat creation from '${req.ip}' does not contain chat id in body`)
+        if (!newChat._id) {
+            logger.server.error(`Request #${ req.requestId }: Chat creation from '${ req.ip }' does not contain chat id in body`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.creation.failed,
@@ -173,8 +171,7 @@ router.post('/', async (req, res) => {
 
         const chat = await Chat.createChat(newChat);
         res.json(chat);
-    }
-    catch (error){
+    } catch (error) {
         logger.server.error(error.stack);
         res.status(400).send(
             {
@@ -198,7 +195,7 @@ router.put('/:id', async (req, res) => {
     try {
 
         if (isMissingProperty(req.body.chat, requiredProperties)) {
-            logger.server.error(`Request #${req.requestId}: Chat creation from '${req.ip}' does not contain all required properties.`)
+            logger.server.error(`Request #${ req.requestId }: Chat creation from '${ req.ip }' does not contain all required properties.`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.update.failed,
@@ -211,8 +208,8 @@ router.put('/:id', async (req, res) => {
         const updatedChat = bodyToChat(req.body);
         updatedChat._id = req.body.chat._id.toString();
 
-        if(!updatedChat){
-            logger.server.error(`Request #${req.requestId}: Chat update from '${req.ip}' does not contain the full information.`)
+        if (!updatedChat) {
+            logger.server.error(`Request #${ req.requestId }: Chat update from '${ req.ip }' does not contain the full information.`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.update.failed,
@@ -222,8 +219,8 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        if(req.params.id !== updatedChat._id){
-            logger.server.error(`Request #${req.requestId}: Chat update from '${req.ip}' with URL '${req.params.id}' does not match chat id in body '${updatedChat._id}'`)
+        if (req.params.id !== updatedChat._id) {
+            logger.server.error(`Request #${ req.requestId }: Chat update from '${ req.ip }' with URL '${ req.params.id }' does not match chat id in body '${ updatedChat._id }'`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.update.failed,
@@ -233,8 +230,8 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        if(!updatedChat._id){
-            logger.server.error(`Request #${req.requestId}: Chat update from '${req.ip}' with URL '${req.params.id}' does not contain chat id in body`)
+        if (!updatedChat._id) {
+            logger.server.error(`Request #${ req.requestId }: Chat update from '${ req.ip }' with URL '${ req.params.id }' does not contain chat id in body`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.update.failed,
@@ -244,8 +241,8 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        if(await Chat.getChatById(updatedChat._id) === null){
-            logger.server.error(`Request #${req.requestId}: Chat update from '${req.ip}' with URL '${req.url}' does not match any chat`)
+        if (await Chat.getChatById(updatedChat._id) === null) {
+            logger.server.error(`Request #${ req.requestId }: Chat update from '${ req.ip }' with URL '${ req.url }' does not match any chat`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.update.failed,
@@ -257,8 +254,7 @@ router.put('/:id', async (req, res) => {
 
         const chat = await Chat.updateChat(req.params.id, updatedChat);
         res.json(chat);
-    }
-    catch (error){
+    } catch (error) {
         logger.server.error(error.stack);
         res.status(400).send(
             {
@@ -282,8 +278,8 @@ router.delete('/:id', async (req, res) => {
     try {
         const id = req.params.id;
 
-        if(!id){
-            logger.server.error(`Request #${ req.requestId }: Chat deletion from '${req.ip}' does not contain chat id in URL`)
+        if (!id) {
+            logger.server.error(`Request #${ req.requestId }: Chat deletion from '${ req.ip }' does not contain chat id in URL`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.deletion.failed,
@@ -295,8 +291,8 @@ router.delete('/:id', async (req, res) => {
 
         const deleted = await Chat.deleteChat(id);
 
-        if(!deleted){
-            logger.server.error(`Request #${ req.requestId }: Chat deletion from '${req.ip}' for chat with id '${id}' could not be completed`)
+        if (!deleted) {
+            logger.server.error(`Request #${ req.requestId }: Chat deletion from '${ req.ip }' for chat with id '${ id }' could not be completed`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.deletion.failed,
@@ -307,8 +303,7 @@ router.delete('/:id', async (req, res) => {
         }
 
         res.send(deleted);
-    }
-    catch (error){
+    } catch (error) {
         logger.server.error(error.stack);
         res.status(400).send(
             {

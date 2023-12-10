@@ -326,7 +326,7 @@ export default class User {
 
     }
 
-    static  getPopulationPaths(){
+    static getPopulationPaths() {
         return [
             { path: 'classes' },
             { path: 'extraCourses' },

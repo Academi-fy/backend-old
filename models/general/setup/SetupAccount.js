@@ -6,7 +6,8 @@
 import { validateNotEmpty, validateObject } from "../../propertyValidation.js";
 import {
     createDocument,
-    deleteDocument, getAllDocuments,
+    deleteDocument,
+    getAllDocuments,
     getDocument,
     getDocumentsByRule,
     updateDocument
@@ -174,7 +175,7 @@ export default class SetupAccount {
 
     }
 
-    static getPopulationPaths(){
+    static getPopulationPaths() {
         return [
             { path: 'school' }
         ]

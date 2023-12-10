@@ -325,7 +325,7 @@ export default class School {
 
     }
 
-    static getPopulationPaths(){
+    static getPopulationPaths() {
         return [
             { path: 'grades' },
             { path: 'courses' },

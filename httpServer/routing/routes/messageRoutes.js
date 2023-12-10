@@ -5,22 +5,22 @@
  */
 
 import express from "express";
-const router = express.Router();
-
 import errors from "../../../errors.js";
 import isMissingProperty from "../isMissingProperty.js";
 import logger from "../../../tools/logging/logger.js";
 import Message from "../../models/messages/Message.js";
 
+const router = express.Router();
+
 // properties that are required for a messages
-const requiredProperties = ['chat', 'author', 'content', 'reactions', 'answer', 'editHistory', 'date'];
+const requiredProperties = [ 'chat', 'author', 'content', 'reactions', 'answer', 'editHistory', 'date' ];
 
 /**
  * @description Formats the request body into a messages
  * @param body - The request body
  * @returns {Message} - The formatted messages
  * */
-function bodyToMessage(body){
+function bodyToMessage(body) {
 
     const message = body.message;
 
@@ -41,7 +41,7 @@ function bodyToMessage(body){
  * @param req.body.inquirer - The id of the user querying. '1' for setup accounts.
  * @returns {JSON<Array<Message>>} - The list of all messages existing in the database
  * */
-router.get('/',async (req, res) => {
+router.get('/', async (req, res) => {
 
     const messages = await Message.getAllMessages();
     res.json(messages);
@@ -55,13 +55,13 @@ router.get('/',async (req, res) => {
  * @returns {JSON<Array<Message>>} - The list of all messages matching the filter
  * @throws errors.server.document.query.failed - When the query failed
  * */
-router.get('/filter',async (req, res) => {
+router.get('/filter', async (req, res) => {
 
     try {
         const filter = req.body.filter;
 
-        if(!filter){
-            logger.server.error(`Request #${req.requestId}: Message query from '${req.ip}' does not contain filter in body`)
+        if (!filter) {
+            logger.server.error(`Request #${ req.requestId }: Message query from '${ req.ip }' does not contain filter in body`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.query.failed,
@@ -73,8 +73,7 @@ router.get('/filter',async (req, res) => {
 
         const messages = await Message.getAllMessagesByRule(filter);
         res.json(messages)
-    }
-    catch (error){
+    } catch (error) {
         logger.server.error(error);
         res.status(400).send(
             {
@@ -98,8 +97,8 @@ router.get('/:id', async (req, res) => {
     try {
         const id = req.params.id;
 
-        if(!id){
-            logger.server.error(`Request #${req.requestId}: Message query from '${req.ip}' does not contain message id in URL`)
+        if (!id) {
+            logger.server.error(`Request #${ req.requestId }: Message query from '${ req.ip }' does not contain message id in URL`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.query.failed,
@@ -111,8 +110,7 @@ router.get('/:id', async (req, res) => {
 
         const message = await Message.getMessageById(id);
         res.json(message);
-    }
-    catch (error){
+    } catch (error) {
         logger.server.error(error);
         res.status(400).send(
             {
@@ -136,7 +134,7 @@ router.post('/', async (req, res) => {
     try {
 
         if (isMissingProperty(req.body.message, requiredProperties)) {
-            logger.server.error(`Request #${req.requestId}: Message creation from '${req.ip}' does not contain all required properties`)
+            logger.server.error(`Request #${ req.requestId }: Message creation from '${ req.ip }' does not contain all required properties`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.creation.failed,
@@ -149,8 +147,8 @@ router.post('/', async (req, res) => {
         const newMessage = bodyToMessage(req.body);
         newMessage._id = req.body.message._id.toString();
 
-        if(!newMessage){
-            logger.server.error(`Request #${req.requestId}: Message creation from '${req.ip}' does not contain message in body`)
+        if (!newMessage) {
+            logger.server.error(`Request #${ req.requestId }: Message creation from '${ req.ip }' does not contain message in body`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.creation.failed,
@@ -160,8 +158,8 @@ router.post('/', async (req, res) => {
             return;
         }
 
-        if(!newMessage._id){
-            logger.server.error(`Request #${req.requestId}: Message creation from '${req.ip}' does not contain message id in body`)
+        if (!newMessage._id) {
+            logger.server.error(`Request #${ req.requestId }: Message creation from '${ req.ip }' does not contain message id in body`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.creation.failed,
@@ -173,8 +171,7 @@ router.post('/', async (req, res) => {
 
         const message = await Message.createMessage(newMessage);
         res.json(message);
-    }
-    catch (error){
+    } catch (error) {
         logger.server.error(error);
         res.status(400).send(
             {
@@ -198,7 +195,7 @@ router.put('/:id', async (req, res) => {
     try {
 
         if (isMissingProperty(req.body.message, requiredProperties)) {
-            logger.server.error(`Request #${req.requestId}: Message creation from '${req.ip}' does not contain all required properties.`)
+            logger.server.error(`Request #${ req.requestId }: Message creation from '${ req.ip }' does not contain all required properties.`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.update.failed,
@@ -211,8 +208,8 @@ router.put('/:id', async (req, res) => {
         const updatedMessage = bodyToMessage(req.body);
         updatedMessage._id = req.body.message._id.toString();
 
-        if(!updatedMessage){
-            logger.server.error(`Request #${req.requestId}: Message update from '${req.ip}' does not contain the full information.`)
+        if (!updatedMessage) {
+            logger.server.error(`Request #${ req.requestId }: Message update from '${ req.ip }' does not contain the full information.`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.update.failed,
@@ -222,8 +219,8 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        if(req.params.id !== updatedMessage._id){
-            logger.server.error(`Request #${req.requestId}: Message update from '${req.ip}' with URL '${req.params.id}' does not match message id in body '${updatedMessage._id}'`)
+        if (req.params.id !== updatedMessage._id) {
+            logger.server.error(`Request #${ req.requestId }: Message update from '${ req.ip }' with URL '${ req.params.id }' does not match message id in body '${ updatedMessage._id }'`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.update.failed,
@@ -233,8 +230,8 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        if(!updatedMessage._id){
-            logger.server.error(`Request #${req.requestId}: Message update from '${req.ip}' with URL '${req.params.id}' does not contain message id in body`)
+        if (!updatedMessage._id) {
+            logger.server.error(`Request #${ req.requestId }: Message update from '${ req.ip }' with URL '${ req.params.id }' does not contain message id in body`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.update.failed,
@@ -244,8 +241,8 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        if(await Message.getMessageById(updatedMessage._id) === null){
-            logger.server.error(`Request #${req.requestId}: Message update from '${req.ip}' with URL '${req.url}' does not match any message`)
+        if (await Message.getMessageById(updatedMessage._id) === null) {
+            logger.server.error(`Request #${ req.requestId }: Message update from '${ req.ip }' with URL '${ req.url }' does not match any message`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.update.failed,
@@ -257,8 +254,7 @@ router.put('/:id', async (req, res) => {
 
         const message = await Message.updateMessage(req.params.id, updatedMessage);
         res.json(message);
-    }
-    catch (error){
+    } catch (error) {
         logger.server.error(error);
         res.status(400).send(
             {
@@ -282,8 +278,8 @@ router.delete('/:id', async (req, res) => {
     try {
         const id = req.params.id;
 
-        if(!id){
-            logger.server.error(`Request #${ req.requestId }: Message deletion from '${req.ip}' does not contain message id in URL`)
+        if (!id) {
+            logger.server.error(`Request #${ req.requestId }: Message deletion from '${ req.ip }' does not contain message id in URL`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.deletion.failed,
@@ -295,8 +291,8 @@ router.delete('/:id', async (req, res) => {
 
         const deleted = await Message.deleteMessage(id);
 
-        if(!deleted){
-            logger.server.error(`Request #${ req.requestId }: Message deletion from '${req.ip}' for message with id '${id}' could not be completed`)
+        if (!deleted) {
+            logger.server.error(`Request #${ req.requestId }: Message deletion from '${ req.ip }' for message with id '${ id }' could not be completed`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.deletion.failed,
@@ -307,8 +303,7 @@ router.delete('/:id', async (req, res) => {
         }
 
         res.send(deleted);
-    }
-    catch (error){
+    } catch (error) {
         logger.server.error(error);
         res.status(400).send(
             {

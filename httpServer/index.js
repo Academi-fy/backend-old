@@ -10,36 +10,15 @@
 import * as db from '../mongoDb/db.js';
 import config from "../config.js";
 import logger from "../tools/logging/logger.js";
-
-db.connect().then(() => logger.database.info("Connected."));
-
 /**
  * @description HTTP Server:
  * @host localhost
  * @port 3000
  * */
 import express from 'express';
-const app = express();
-
-const port = config.SERVER_PORT;
-const host = config.SERVER_HOST;
-app.listen(port, () => {
-    logger.server.info(`HTTP Server is running at http://${ host }:${ port }`);
-});
-
 // middleware
 import requestDebugger from "./middleware/requestDebugger.js";
 import cors from 'cors';
-try {
-    app.use(requestDebugger);
-    app.use(express.static('public'));
-    app.use(cors());
-    app.use(express.json());
-}
-catch (error){
-    logger.server.fatal(error.stack);
-}
-
 // routes
 import blackboardRoutes from "./routing/routes/blackboardRoutes.js";
 import classRoutes from "./routing/routes/classRoutes.js";
@@ -55,6 +34,26 @@ import subjectRoutes from "./routing/routes/subjectRoutes.js";
 import userAccountRoutes from "./routing/routes/userAccountRoutes.js";
 import userRoutes from "./routing/routes/userRoutes.js";
 import memoryLogger from "../tools/logging/memoryLogger.js";
+
+db.connect().then(() => logger.database.info("Connected."));
+
+const app = express();
+
+const port = config.SERVER_PORT;
+const host = config.SERVER_HOST;
+app.listen(port, () => {
+    logger.server.info(`HTTP Server is running at http://${ host }:${ port }`);
+});
+
+try {
+    app.use(requestDebugger);
+    app.use(express.static('public'));
+    app.use(cors());
+    app.use(express.json());
+} catch (error) {
+    logger.server.fatal(error.stack);
+}
+
 try {
     app.use('/api/blackboards', blackboardRoutes);
     app.use('/api/chats', chatRoutes);
@@ -69,8 +68,7 @@ try {
     app.use('/api/subjects', subjectRoutes);
     app.use('/api/user-accounts', userAccountRoutes);
     app.use('/api/users', userRoutes);
-}
-catch (error) {
+} catch (error) {
     logger.server.fatal(error.stack);
 }
 

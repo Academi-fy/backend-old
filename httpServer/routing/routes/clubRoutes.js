@@ -4,22 +4,22 @@
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
 import express from "express";
-const router = express.Router();
-
 import errors from "../../../errors.js";
 import isMissingProperty from "../isMissingProperty.js";
 import logger from "../../../tools/logging/logger.js";
 import Club from "../../models/clubs/Club.js";
 
+const router = express.Router();
+
 // properties that are required for a club
-const requiredProperties = ['name', 'details', 'leaders', 'members', 'chat', 'events', 'state', 'editHistory'];
+const requiredProperties = [ 'name', 'details', 'leaders', 'members', 'chat', 'events', 'state', 'editHistory' ];
 
 /**
  * @description Formats the request body into a club
  * @param body - The request body
  * @returns {Club} - The formatted club
  * */
-function bodyToClub(body){
+function bodyToClub(body) {
 
     const club = body.club;
 
@@ -41,7 +41,7 @@ function bodyToClub(body){
  * @param req.body.inquirer - The id of the user querying. '1' for setup accounts.
  * @returns {JSON<Array<Club>>} - The list of all clubs existing in the database
  * */
-router.get('/',async (req, res) => {
+router.get('/', async (req, res) => {
 
     const clubs = await Club.getAllClubs();
     res.json(clubs);
@@ -55,13 +55,13 @@ router.get('/',async (req, res) => {
  * @returns {JSON<Array<Club>>} - The list of all clubs matching the filter
  * @throws errors.server.document.query.failed - When the query failed
  * */
-router.get('/filter',async (req, res) => {
+router.get('/filter', async (req, res) => {
 
     try {
         const filter = req.body.filter;
 
-        if(!filter){
-            logger.server.error(`Request #${req.requestId}: Club query from '${req.ip}' does not contain filter in body`)
+        if (!filter) {
+            logger.server.error(`Request #${ req.requestId }: Club query from '${ req.ip }' does not contain filter in body`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.query.failed,
@@ -73,8 +73,7 @@ router.get('/filter',async (req, res) => {
 
         const clubs = await Club.getAllClubsByRule(filter);
         res.json(clubs)
-    }
-    catch (error){
+    } catch (error) {
         logger.server.error(error);
         res.status(400).send(
             {
@@ -98,8 +97,8 @@ router.get('/:id', async (req, res) => {
     try {
         const id = req.params.id;
 
-        if(!id){
-            logger.server.error(`Request #${req.requestId}: Club query from '${req.ip}' does not contain club id in URL`)
+        if (!id) {
+            logger.server.error(`Request #${ req.requestId }: Club query from '${ req.ip }' does not contain club id in URL`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.query.failed,
@@ -111,8 +110,7 @@ router.get('/:id', async (req, res) => {
 
         const club = await Club.getClubById(id);
         res.json(club);
-    }
-    catch (error){
+    } catch (error) {
         logger.server.error(error);
         res.status(400).send(
             {
@@ -136,7 +134,7 @@ router.post('/', async (req, res) => {
     try {
 
         if (isMissingProperty(req.body.club, requiredProperties)) {
-            logger.server.error(`Request #${req.requestId}: Club creation from '${req.ip}' does not contain all required properties`)
+            logger.server.error(`Request #${ req.requestId }: Club creation from '${ req.ip }' does not contain all required properties`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.creation.failed,
@@ -149,8 +147,8 @@ router.post('/', async (req, res) => {
         const newClub = bodyToClub(req.body);
         newClub._id = req.body.club._id.toString();
 
-        if(!newClub){
-            logger.server.error(`Request #${req.requestId}: Club creation from '${req.ip}' does not contain club in body`)
+        if (!newClub) {
+            logger.server.error(`Request #${ req.requestId }: Club creation from '${ req.ip }' does not contain club in body`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.creation.failed,
@@ -160,8 +158,8 @@ router.post('/', async (req, res) => {
             return;
         }
 
-        if(!newClub._id){
-            logger.server.error(`Request #${req.requestId}: Club creation from '${req.ip}' does not contain club id in body`)
+        if (!newClub._id) {
+            logger.server.error(`Request #${ req.requestId }: Club creation from '${ req.ip }' does not contain club id in body`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.creation.failed,
@@ -173,8 +171,7 @@ router.post('/', async (req, res) => {
 
         const club = await Club.createClub(newClub);
         res.json(club);
-    }
-    catch (error){
+    } catch (error) {
         logger.server.error(error);
         res.status(400).send(
             {
@@ -198,7 +195,7 @@ router.put('/:id', async (req, res) => {
     try {
 
         if (isMissingProperty(req.body.club, requiredProperties)) {
-            logger.server.error(`Request #${req.requestId}: Club creation from '${req.ip}' does not contain all required properties.`)
+            logger.server.error(`Request #${ req.requestId }: Club creation from '${ req.ip }' does not contain all required properties.`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.update.failed,
@@ -211,8 +208,8 @@ router.put('/:id', async (req, res) => {
         const updatedClub = bodyToClub(req.body);
         updatedClub._id = req.body.club._id.toString();
 
-        if(!updatedClub){
-            logger.server.error(`Request #${req.requestId}: Club update from '${req.ip}' does not contain the full information.`)
+        if (!updatedClub) {
+            logger.server.error(`Request #${ req.requestId }: Club update from '${ req.ip }' does not contain the full information.`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.update.failed,
@@ -222,8 +219,8 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        if(req.params.id !== updatedClub._id){
-            logger.server.error(`Request #${req.requestId}: Club update from '${req.ip}' with URL '${req.params.id}' does not match club id in body '${updatedClub._id}'`)
+        if (req.params.id !== updatedClub._id) {
+            logger.server.error(`Request #${ req.requestId }: Club update from '${ req.ip }' with URL '${ req.params.id }' does not match club id in body '${ updatedClub._id }'`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.update.failed,
@@ -233,8 +230,8 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        if(!updatedClub._id){
-            logger.server.error(`Request #${req.requestId}: Club update from '${req.ip}' with URL '${req.params.id}' does not contain club id in body`)
+        if (!updatedClub._id) {
+            logger.server.error(`Request #${ req.requestId }: Club update from '${ req.ip }' with URL '${ req.params.id }' does not contain club id in body`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.update.failed,
@@ -244,8 +241,8 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        if(await Club.getClubById(updatedClub._id) === null){
-            logger.server.error(`Request #${req.requestId}: Club update from '${req.ip}' with URL '${req.url}' does not match any club`)
+        if (await Club.getClubById(updatedClub._id) === null) {
+            logger.server.error(`Request #${ req.requestId }: Club update from '${ req.ip }' with URL '${ req.url }' does not match any club`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.update.failed,
@@ -257,8 +254,7 @@ router.put('/:id', async (req, res) => {
 
         const club = await Club.updateClub(req.params.id, updatedClub);
         res.json(club);
-    }
-    catch (error){
+    } catch (error) {
         logger.server.error(error);
         res.status(400).send(
             {
@@ -282,8 +278,8 @@ router.delete('/:id', async (req, res) => {
     try {
         const id = req.params.id;
 
-        if(!id){
-            logger.server.error(`Request #${ req.requestId }: Club deletion from '${req.ip}' does not contain club id in URL`)
+        if (!id) {
+            logger.server.error(`Request #${ req.requestId }: Club deletion from '${ req.ip }' does not contain club id in URL`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.deletion.failed,
@@ -295,8 +291,8 @@ router.delete('/:id', async (req, res) => {
 
         const deleted = await Club.deleteClub(id);
 
-        if(!deleted){
-            logger.server.error(`Request #${ req.requestId }: Club deletion from '${req.ip}' for club with id '${id}' could not be completed`)
+        if (!deleted) {
+            logger.server.error(`Request #${ req.requestId }: Club deletion from '${ req.ip }' for club with id '${ id }' could not be completed`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.deletion.failed,
@@ -307,8 +303,7 @@ router.delete('/:id', async (req, res) => {
         }
 
         res.send(deleted);
-    }
-    catch (error){
+    } catch (error) {
         logger.server.error(error);
         res.status(400).send(
             {

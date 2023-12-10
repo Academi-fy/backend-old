@@ -314,7 +314,7 @@ export default class Blackboard {
 
     }
 
-    static getPopulationPaths(){
+    static getPopulationPaths() {
         return [
             { path: 'author' }
         ]
