@@ -33,8 +33,8 @@ wss.on('connection', (ws, req) => {
      * */
     ws.on('message', message => {
 
-        const messageId = `msg-${nanoid(16)}`;
-        logger.socket.debug(`Received message #${messageId} from connection #${connectionId}`)
+        const messageId = `msg-${ nanoid(16) }`;
+        logger.socket.debug(`Received message #${ messageId } from connection #${ connectionId }`)
 
         let data;
         try {
@@ -48,8 +48,8 @@ wss.on('connection', (ws, req) => {
             /**
              * Sends an error messages to the client if the messages could not be parsed.
              * */
-            if(error.name === "SocketMessageParsingError") {
-                logger.socket.debug(`Message #${messageId} could not be parsed: ${error.stack}`);
+            if (error.name === "SocketMessageParsingError") {
+                logger.socket.debug(`Message #${ messageId } could not be parsed: ${ error.stack }`);
                 ws.send(
                     JSON.stringify({
                         event: "ERROR",
@@ -66,8 +66,8 @@ wss.on('connection', (ws, req) => {
             /**
              * Sends an error messages to the client if the messages could not be parsed due to an unknown event.
              * */
-            if(error.name === "UnknownEventError") {
-                logger.socket.debug(`Message #${messageId} contains unknown event: ${error.message}`);
+            if (error.name === "UnknownEventError") {
+                logger.socket.debug(`Message #${ messageId } contains unknown event: ${ error.message }`);
                 ws.send(
                     JSON.stringify({
                         event: "ERROR",
@@ -97,11 +97,26 @@ wss.on('connection', (ws, req) => {
 
             return;
         }
-        logger.socket.debug(`Message #${messageId} sent event: ${data.event}`)
+        logger.socket.debug(`Message #${ messageId } sent event: ${ data.event }`)
+
         /**
          * Handle the parsed messages
          * */
-        handleEvents(ws, data, messageId, Date.now());
+        try {
+            handleEvents(ws, data, messageId, Date.now());
+        } catch (error) {
+            logger.socket.error(`Error while handling event: ${ error.stack }`);
+            ws.send(
+                JSON.stringify({
+                    event: "ERROR",
+                    payload: {
+                        errorCode: errors.socket.messages.parsing.failed.unknownReason,
+                        errorMessage: `Event ${ data.event } could not be handled.`,
+                        errorStack: error.stack
+                    }
+                })
+            );
+        }
     });
 
 });

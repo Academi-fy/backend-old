@@ -8,6 +8,7 @@
 import logger from "../../tools/logging/logger.js";
 import errors from "../../errors.js";
 import socketEvents from "./socketEvents.js";
+import EventHandlerError from "../errors/EventHandlerError.js";
 
 /**
  * @description This function handles different types of events that can occur in a WebSocket connection.
@@ -22,19 +23,15 @@ export function handleEvents(ws, data, messageId, date) {
     const event = data.event;
 
     if(socketEvents[event]){
-        socketEvents[event].handler(ws, data, messageId, date);
+        
+        try {
+            socketEvents[event].handler(ws, data, messageId, date);
+        }
+        catch (error){
+            throw new EventHandlerError(`Event '${event}' could not be handled: \n${error.stack}`)
+        }
+
     }
-    else {
-        logger.socket.debug(`Message #${messageId} contains unknown event ${event}`);
-        ws.send(
-            JSON.stringify({
-                event: "ERROR",
-                payload: {
-                    errorCode: errors.socket.messages.parsing.failed.unknownEvent,
-                    errorMessage: `Invalid event type. \nSee documentation for more information [https://github.com/Academi-fy/backend/wiki/SocketEvents]`
-                }
-            })
-        );
-    }
+    else throw new EventHandlerError(`Event '${event}' could not be handled`)
 
 }
