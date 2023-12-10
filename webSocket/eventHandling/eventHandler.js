@@ -23,7 +23,7 @@ export function handleEvents(ws, data, messageId, date) {
     const event = data.event;
 
     if(socketEvents[event]){
-        
+
         try {
             socketEvents[event].handler(ws, data, messageId, date);
         }
