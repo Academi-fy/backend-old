@@ -1,16 +1,31 @@
-# Inhaltsverzeichnis: Backend Server
+# Documentation
 
 [Home](https://github.com/Academi-fy/backend/wiki/)
 
-# Documentation
-
 ## HTTP Server
-- [Caching](https://github.com/Academi-fy/backend/wiki/Caching)
-- [Index](https://github.com/Academi-fy/backend/wiki/Index)
-- [PropertyValidation](https://github.com/Academi-fy/backend/wiki/PropertyValidation)
-- [Errors](https://github.com/Academi-fy/backend/wiki/Errors)
-- [ErrorCodes](https://github.com/Academi-fy/backend/wiki/ErrorCodes)
-- [RuleSearching](https://github.com/Academi-fy/backend/wiki/RuleSearching)
+### [Caching](https://github.com/Academi-fy/backend/wiki/Caching)
+
+TODO
+
+### [Index](https://github.com/Academi-fy/backend/wiki/Index)
+
+TODO
+
+### [PropertyValidation](https://github.com/Academi-fy/backend/wiki/PropertyValidation)
+
+TODO
+
+### [Errors](https://github.com/Academi-fy/backend/wiki/Errors)
+
+TODO
+
+### [ErrorCodes](https://github.com/Academi-fy/backend/wiki/ErrorCodes)
+
+TODO
+
+### [RuleSearching](https://github.com/Academi-fy/backend/wiki/RuleSearching) 
+
+Bei Models kann neben den regulären Methoden `getAll...()` und `get...ById(id)` auch die Methode `get...ByRule(filter)` verwendet werden.
 
 ## Models
 
@@ -133,6 +148,8 @@ Eine [Nachricht](https://github.com/Academi-fy/backend/wiki/Message) besteht auc
 Dieser beinhaltet den eigentlichen Inhalt der Nachricht, wie z.B. den Text oder ein Bild.
 
 - [MessageReaction](https://github.com/Academi-fy/backend/wiki/MessageReaction)
+
+Eine MessageReaction ist eine Emoji-Reaktion auf eine [Nachricht](https://github.com/Academi-fy/backend/wiki/Message).
 
 ****
 

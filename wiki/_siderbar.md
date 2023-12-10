@@ -4,7 +4,9 @@
 - [Inhaltsverzeichnis](https://github.com/Academi-fy/backend/wiki/ContentIndex)
 
 ## [HTTP Server](https://github.com/Academi-fy/backend/wiki/ContentIndex#http-server)
-- Routes
+- [PropertyValidation](https://github.com/Academi-fy/backend/wiki/PropertyValidation)
+- [ErrorCodes](https://github.com/Academi-fy/backend/wiki/ErrorCodes)
+- [RuleSearching](https://github.com/Academi-fy/backend/wiki/RuleSearching)
 ## [Models](https://github.com/Academi-fy/backend/wiki/ContentIndex#models)
 - [Allgemein](https://github.com/Academi-fy/backend/wiki/ContentIndex#allgemein)
 - [Clubs](https://github.com/Academi-fy/backend/wiki/ContentIndex#clubs)
