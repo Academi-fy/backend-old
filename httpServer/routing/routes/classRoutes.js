@@ -5,7 +5,7 @@
  */
 
 import express from "express";
-import Class from "../../models/general/Class.js";
+import Class from "../../../models/general/Class.js";
 import errors from "../../../errors.js";
 import isMissingProperty from "../isMissingProperty.js";
 import logger from "../../../tools/logging/logger.js";

@@ -10,11 +10,11 @@ import {
     getDocument,
     getDocumentsByRule,
     updateDocument
-} from "../../../../mongoDb/collectionAccess.js";
-import SchoolSchema from "../../../../mongoDb/schemas/general/setup/SchoolSchema.js";
+} from "../../../mongoDb/collectionAccess.js";
+import SchoolSchema from "../../../mongoDb/schemas/general/setup/SchoolSchema.js";
 import { validateArray, validateNotEmpty } from "../../propertyValidation.js";
-import DatabaseError from "../../../errors/DatabaseError.js";
-import RetrievalError from "../../../errors/RetrievalError.js";
+import DatabaseError from "../../../httpServer/errors/DatabaseError.js";
+import RetrievalError from "../../../httpServer/errors/RetrievalError.js";
 import Grade from "../Grade.js";
 import Course from "../Course.js";
 import User from "../../users/User.js";

@@ -9,10 +9,10 @@ import {
     getDocument,
     getDocumentsByRule,
     updateDocument
-} from "../../../mongoDb/collectionAccess.js";
-import UserAccountSchema from "../../../mongoDb/schemas/user/UserAccountSchema.js";
+} from "../../mongoDb/collectionAccess.js";
+import UserAccountSchema from "../../mongoDb/schemas/user/UserAccountSchema.js";
 import { validateArray, validateNotEmpty } from "../propertyValidation.js";
-import DatabaseError from "../../errors/DatabaseError.js";
+import DatabaseError from "../../httpServer/errors/DatabaseError.js";
 import UserAccountPermissions from "./UserAccountPermissions.js";
 
 /**

@@ -8,7 +8,7 @@ import express from "express";
 import errors from "../../../errors.js";
 import isMissingProperty from "../isMissingProperty.js";
 import logger from "../../../tools/logging/logger.js";
-import UserAccount from "../../models/users/UserAccount.js";
+import UserAccount from "../../../models/users/UserAccount.js";
 
 const router = express.Router();
 

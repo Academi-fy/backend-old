@@ -4,13 +4,13 @@
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
 import { validateArray, validateNotEmpty, verifyInCache } from "../propertyValidation.js";
-import cache from "../../cache.js";
-import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../../mongoDb/collectionAccess.js";
-import ClassSchema from "../../../mongoDb/schemas/general/ClassSchema.js";
+import cache from "../../httpServer/cache.js";
+import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../mongoDb/collectionAccess.js";
+import ClassSchema from "../../mongoDb/schemas/general/ClassSchema.js";
 import { findByRule } from "../findByRule.js";
-import RetrievalError from "../../errors/RetrievalError.js";
-import DatabaseError from "../../errors/DatabaseError.js";
-import CacheError from "../../errors/CacheError.js";
+import RetrievalError from "../../httpServer/errors/RetrievalError.js";
+import DatabaseError from "../../httpServer/errors/DatabaseError.js";
+import CacheError from "../../httpServer/errors/CacheError.js";
 import Grade from "./Grade.js";
 import Course from "./Course.js";
 import User from "../users/User.js";

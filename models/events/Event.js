@@ -3,14 +3,14 @@
  * @author Daniel Dopatka
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
-import cache from "../../cache.js";
-import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../../mongoDb/collectionAccess.js";
-import EventSchema from "../../../mongoDb/schemas/events/EventSchema.js";
+import cache from "../../httpServer/cache.js";
+import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../mongoDb/collectionAccess.js";
+import EventSchema from "../../mongoDb/schemas/events/EventSchema.js";
 import { validateArray, validateNotEmpty, validateNumber, verifyInCache } from "../propertyValidation.js";
 import { findByRule } from "../findByRule.js";
-import RetrievalError from "../../errors/RetrievalError.js";
-import DatabaseError from "../../errors/DatabaseError.js";
-import CacheError from "../../errors/CacheError.js";
+import RetrievalError from "../../httpServer/errors/RetrievalError.js";
+import DatabaseError from "../../httpServer/errors/DatabaseError.js";
+import CacheError from "../../httpServer/errors/CacheError.js";
 import User from "../users/User.js";
 import EventTicket from "./EventTicket.js";
 import Club from "../clubs/Club.js";

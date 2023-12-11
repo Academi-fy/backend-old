@@ -8,7 +8,7 @@ import express from "express";
 import errors from "../../../errors.js";
 import isMissingProperty from "../isMissingProperty.js";
 import logger from "../../../tools/logging/logger.js";
-import User from "../../models/users/User.js";
+import User from "../../../models/users/User.js";
 
 const router = express.Router();
 
@@ -30,7 +30,8 @@ function bodyToUser(body) {
         user.teacher,
         user.chat,
         user.subject,
-        user.subject
+        user.subject,
+        user.blackboards
     );
 
 }

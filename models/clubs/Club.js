@@ -4,12 +4,12 @@
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
 import { validateArray, validateNotEmpty, validateObject, verifyInCache } from "../propertyValidation.js";
-import cache from "../../cache.js";
-import ClubSchema from "../../../mongoDb/schemas/clubs/ClubSchema.js";
-import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../../mongoDb/collectionAccess.js";
+import cache from "../../httpServer/cache.js";
+import ClubSchema from "../../mongoDb/schemas/clubs/ClubSchema.js";
+import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../mongoDb/collectionAccess.js";
 import { findByRule } from "../findByRule.js";
-import DatabaseError from "../../errors/DatabaseError.js";
-import CacheError from "../../errors/CacheError.js";
+import DatabaseError from "../../httpServer/errors/DatabaseError.js";
+import CacheError from "../../httpServer/errors/CacheError.js";
 import Event from "../events/Event.js";
 import Chat from "../messages/Chat.js";
 import User from "../users/User.js";

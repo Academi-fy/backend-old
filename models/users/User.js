@@ -4,7 +4,7 @@
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
 import { validateArray, validateNotEmpty, verifyInCache } from "../propertyValidation.js";
-import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../../mongoDb/collectionAccess.js";
+import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../mongoDb/collectionAccess.js";
 import mongoose from "mongoose";
 import { findByRule } from "../findByRule.js";
 import Class from "../general/Class.js";
@@ -182,7 +182,7 @@ export default class User {
      * @return {Promise<Array<User>>} The list of users.
      * @throws {RetrievalError} When no users match the rule.
      * */
-    static async getUserByRule(rule) {
+    static async getAllUsersByRule(rule) {
 
         const users = await this.getAllUsers();
 
@@ -315,7 +315,7 @@ export default class User {
                 user.extraCourses,
                 user.blackboards
             );
-            populatedUser.id = user._id.toString();
+            populatedUser._id = user._id.toString();
 
             return populatedUser;
 

@@ -7,7 +7,7 @@ import express from "express";
 import errors from "../../../errors.js";
 import logger from "../../../tools/logging/logger.js";
 import isMissingProperty from "../isMissingProperty.js";
-import Blackboard from "../../models/general/Blackboard.js";
+import Blackboard from "../../../models/general/Blackboard.js";
 
 const router = express.Router();
 

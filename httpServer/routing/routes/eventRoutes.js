@@ -5,7 +5,7 @@
  */
 
 import express from "express";
-import Event from "../../models/events/Event.js";
+import Event from "../../../models/events/Event.js";
 
 import errors from "../../../errors.js";
 import isMissingProperty from "../isMissingProperty.js";
@@ -27,7 +27,7 @@ function bodyToEvent(body) {
 
     const event = body.event;
 
-    return new Event(
+    return new Event( //TODO function parseToEvent (für alle models)
         event.title,
         event.description,
         event.location,
@@ -38,7 +38,8 @@ function bodyToEvent(body) {
         event.information,
         event.tickets,
         event.state,
-        event.editHistory
+        event.editHistory,
+        event.subscribers
     );
 
 }

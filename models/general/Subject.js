@@ -3,14 +3,14 @@
  * @author Daniel Dopatka
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
-import cache from "../../cache.js";
-import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../../mongoDb/collectionAccess.js";
+import cache from "../../httpServer/cache.js";
+import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../mongoDb/collectionAccess.js";
 import { validateArray, validateNotEmpty, verifyInCache } from "../propertyValidation.js";
-import SubjectSchema from "../../../mongoDb/schemas/general/SubjectSchema.js";
+import SubjectSchema from "../../mongoDb/schemas/general/SubjectSchema.js";
 import { findByRule } from "../findByRule.js";
-import RetrievalError from "../../errors/RetrievalError.js";
-import DatabaseError from "../../errors/DatabaseError.js";
-import CacheError from "../../errors/CacheError.js";
+import RetrievalError from "../../httpServer/errors/RetrievalError.js";
+import DatabaseError from "../../httpServer/errors/DatabaseError.js";
+import CacheError from "../../httpServer/errors/CacheError.js";
 import Course from "./Course.js";
 
 const expirationTime = 10 * 60 * 1000;

@@ -11,9 +11,9 @@ import {
     getDocument,
     getDocumentsByRule,
     updateDocument
-} from "../../../../mongoDb/collectionAccess.js";
-import DatabaseError from "../../../errors/DatabaseError.js";
-import SetupAccountSchema from "../../../../mongoDb/schemas/general/setup/SetupAccountSchema.js";
+} from "../../../mongoDb/collectionAccess.js";
+import DatabaseError from "../../../httpServer/errors/DatabaseError.js";
+import SetupAccountSchema from "../../../mongoDb/schemas/general/setup/SetupAccountSchema.js";
 import School from "./School.js";
 
 /**
