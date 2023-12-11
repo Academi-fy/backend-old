@@ -3,18 +3,18 @@
  * @author Daniel Dopatka
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
-import UserSchema from "../../../mongoDb/schemas/user/UserSchema.js";
-import cache from "../../cache.js";
 import { validateArray, validateNotEmpty, verifyInCache } from "../propertyValidation.js";
 import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../../mongoDb/collectionAccess.js";
 import mongoose from "mongoose";
 import { findByRule } from "../findByRule.js";
-import RetrievalError from "../../errors/RetrievalError.js";
-import DatabaseError from "../../errors/DatabaseError.js";
-import CacheError from "../../errors/CacheError.js";
 import Class from "../general/Class.js";
 import Course from "../general/Course.js";
 import Blackboard from "../general/Blackboard.js";
+import UserSchema from "../../mongoDb/schemas/user/UserSchema.js";
+import cache from "../../httpServer/cache.js";
+import DatabaseError from "../../httpServer/errors/DatabaseError.js";
+import CacheError from "../../httpServer/errors/CacheError.js";
+import RetrievalError from "../../httpServer/errors/RetrievalError.js";
 
 const expirationTime = 3 * 60 * 1000;
 
@@ -49,6 +49,7 @@ export default class User {
         classes,
         extraCourses,
         blackboards
+        //TODO clubs
     ) {
         this.firstName = firstName;
         this.lastName = lastName;
@@ -168,8 +169,8 @@ export default class User {
 
         const users = await this.getAllUsers();
 
-        let user = users.find(user => user.id === userId);
-        if (!user) throw new Error(`User with id ${ userId } not found`);
+        let user = users.find(user => user._id === userId);
+        if (!user) throw new RetrievalError(`User with id ${ userId } not found`);
 
         return user;
 
@@ -185,12 +186,10 @@ export default class User {
 
         const users = await this.getAllUsers();
 
-        let user = findByRule(users, rule);
-        if (!user) throw new RetrievalError(`Failed to get user matching rule:\n${ rule }`);
+        const matchingUsers = findByRule(users, rule);
+        if (!matchingUsers) throw new RetrievalError(`Failed to get clubs with rule:\n${ rule }`);
 
-        //TODO populate
-
-        return user;
+        return matchingUsers;
 
     }
 
