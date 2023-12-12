@@ -257,7 +257,7 @@ export default class Class {
                         populate: Grade.getPopulationPaths()
                     },
                     {
-                        path: 'course',
+                        path: 'courses',
                         populate: Course.getPopulationPaths()
                     },
                     {
@@ -277,7 +277,7 @@ export default class Class {
             return populatedClass;
 
         } catch (error) {
-            throw new DatabaseError(`Failed to populate event:\n${ class_ }\n${ error }`);
+            throw new DatabaseError(`Failed to populate class:\n${ class_ }\n${ error }`);
         }
 
     }

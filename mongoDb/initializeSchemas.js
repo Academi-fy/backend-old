@@ -28,7 +28,10 @@ export function getModel(model) {
     if (!model) {
         throw new Error('Model not found.');
     }
-    return mongoose.model(model.name, model.schema);
+    return {
+        name: model.name,
+        model: mongoose.model(model.name, model.schema)
+    };
 }
 
 export function getAllModels() {

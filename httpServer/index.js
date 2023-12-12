@@ -34,8 +34,11 @@ import subjectRoutes from "./routing/routes/subjectRoutes.js";
 import userAccountRoutes from "./routing/routes/userAccountRoutes.js";
 import userRoutes from "./routing/routes/userRoutes.js";
 import memoryLogger from "../tools/logging/memoryLogger.js";
+import { initCache } from "../tools/cacheInitlializer.js";
 
-db.connect().then(() => logger.database.info("Connected."));
+db.connect().then(() => {
+    logger.database.info(`Connected to HTTP Server`)
+})
 
 const app = express();
 
@@ -71,5 +74,10 @@ try {
 } catch (error) {
     logger.server.fatal(error.stack);
 }
+
+logger.server.debug(`Caching initialized... `)
+const cacheInitStart = Date.now();
+const cacheCount = await initCache();
+logger.server.debug(`${cacheCount} objects cached in ${(Date.now() - cacheInitStart) / 1000} s.`)
 
 memoryLogger(logger.server);

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <title>WebSocket Test</title>
@@ -8,47 +8,72 @@
 <h1>
     Nur ein Test
 </h1>
+<button id="sendMessageButton">Nachricht senden</button>
 </body>
 </html>
 
-<script>
+<script type="module">
+    import TextContent from "../models/messages/contentTypes/TextContent.js";
 
-    /**
-     * Create a new WebSocket connection to the specified URL
-     * @type {WebSocket}
-     */
-    const ws = new WebSocket("ws://localhost:8080");
+    (async () => {
+    let users = await httpCall("api/users/");
+    let chats = await httpCall("api/chats/");
 
-    /**
-     * Add an event listener for the 'open' event
-     * This event is emitted when the WebSocket connection is established
-     */
+    const ws = new WebSocket(`ws://localhost:8080/?userId=${users[0]._id}`);
+
     ws.addEventListener("open", () => {
         console.log("Verbindung hergestellt");
     });
 
-    setTimeout(() => {
-        ws.send(
-            JSON.stringify({
-                event: "MESSAGE_SEND",
-                payload: {
-                    sender: "sender",
-                    data: {
-                        id: "id"
-                    }
-                }
-            })
-        );
-    }, 1000);
-
-    /**
-     * Add an event listener for the 'messages' event
-     * This event is emitted when a messages is received from the server
-     * The messages data is logged to the console
-     */
     ws.addEventListener("message", ({ data }) => {
         console.log(data);
     });
+
+    async function sendMessage() {
+
+        let send = JSON.stringify({
+            event: "MESSAGE_SEND",
+            payload: {
+                sender: users[1]._id,
+                data: {
+                    chat: chats[0]._id,
+                    author: users[1]._id,
+                    content: [
+                        new TextContent(generateRandomString(10))
+                    ],
+                    reactions: [],
+                    answer: null,
+                    editHistory: [],
+                    date: Date.now()
+                }
+            }
+
+        });
+
+        ws.send(
+            send
+        );
+    }
+
+    function httpCall(path){
+        return fetch(`http://localhost:3000/${path}`)
+            .then(response => response.json())
+            .then(data => {
+                return data;
+            });
+    }
+
+    function generateRandomString(length) {
+        let result = '';
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        for (let i = 0; i < length; i++) {
+            result += characters.charAt(Math.floor(Math.random() * characters.length));
+        }
+        return result;
+    }
+
+    document.getElementById('sendMessageButton').addEventListener('click', sendMessage);
+})();
 
 </script>
 

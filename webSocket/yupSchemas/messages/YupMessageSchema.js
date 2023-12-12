@@ -18,8 +18,7 @@ import YupMessageReactionSchema from "./YupMessageReactionSchema.js";
  * @param {Array<Message>} editHistory - The editHistory made to the messages.
  * @param {Number} date - The date the messages was created.
  */
-export default yup.object().shape({
-    id: yup.string().required(),
+export default {
     chat: yup.string().required(),
     author: yup.string().required(),
     content: yup.array().of(
@@ -28,9 +27,9 @@ export default yup.object().shape({
     reactions: yup.array().of(
         YupMessageReactionSchema
     ).required(),
-    answer: yup.string().nullable(),
+    answer: yup.object().nullable(),
     editHistory: yup.array().of(
         yup.object()
     ).required(),
     date: yup.number().required()
-})
+}

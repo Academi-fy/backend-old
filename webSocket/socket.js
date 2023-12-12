@@ -12,6 +12,9 @@ import logger from "../tools/logging/logger.js";
 import { nanoid } from "nanoid";
 import errors from "../errors.js";
 import memoryLogger from "../tools/logging/memoryLogger.js";
+import * as db from '../mongoDb/db.js';
+import Message from "../models/messages/Message.js";
+import { initCache } from "../tools/cacheInitlializer.js";
 
 dotenv.config();
 
@@ -20,9 +23,25 @@ dotenv.config();
  * @type {WebSocketServer}
  */
 const wss = new WebSocketServer({ port: parseInt(config.WEBSOCKET_PORT) });
+
+db.connect().then(() => {
+    logger.database.info(`Connected to WebSocket`)
+})
+
+logger.socket.debug(`Caching initialized... `)
+const cacheInitStart = Date.now();
+const cacheCount = await initCache();
+logger.socket.debug(`${cacheCount} objects cached in ${(Date.now() - cacheInitStart) / 1000} s.`)
+
 wss.on('connection', (ws, req) => {
-    const connectionId = `con-${ nanoid(16) }`;
-    logger.socket.debug(`New connection #${ connectionId } to: ${ req.socket.remoteAddress }`);
+    const url = new URL(req.url, `http://${req.headers.host}`);
+    const userId = url.searchParams.get('userId');
+
+    const connectionId = `conn-${ nanoid(16) }`
+    ws.id = connectionId;
+    ws.userId = userId;
+
+    logger.socket.debug(`New connection #${ connectionId } to: ${ req.socket.remoteAddress } with user id '${userId}'`);
     logger.socket.debug(`Connection #${ connectionId }: established at: ${ new Date().toISOString() }`);
     logger.socket.debug(`Connection #${ connectionId }: user-agent: ${ req.headers['user-agent'] }`);
 
@@ -101,7 +120,7 @@ wss.on('connection', (ws, req) => {
          * Handle the parsed messages
          * */
         try {
-            handleEvents(ws, data, messageId, Date.now());
+            handleEvents(wss, ws, data, messageId, Date.now());
         } catch (error) {
             logger.socket.error(`Error while handling event: ${ error.stack }`);
             ws.send(

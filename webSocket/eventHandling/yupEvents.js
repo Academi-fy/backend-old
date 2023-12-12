@@ -236,14 +236,14 @@ export default {
     /**
      * @description The event that is fired when a new message is sent.
      */
-    "MESSAGE_SEND": standardFormat(YupMessageSchema.required()),
+    "MESSAGE_SEND": standardFormat(YupMessageSchema),
 
     /**
      * @description The event that is fired when a message is edited.
      */
     "MESSAGE_EDIT": standardFormat({
         oldMessageId: yup.string().required(),
-        newMessage: YupMessageSchema.required()
+        newMessage: YupMessageSchema
     }),
 
     /**

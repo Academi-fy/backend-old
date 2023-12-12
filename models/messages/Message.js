@@ -138,20 +138,20 @@ export default class Message {
      * @return {Promise<Array<Message>>} The updated list of messages.
      */
     static async updateMessageCache() {
-
-        cache.del('messages');
         const messagesFromDb = await getAllDocuments(MessageSchema);
+
+        if (!messagesFromDb || !Array.isArray(messagesFromDb)) {
+            throw new DatabaseError('Failed to fetch messages from database');
+        }
 
         const messages = [];
         for (const message of messagesFromDb) {
-            messages.push(
-                await this.populateMessage(message)
-            );
+            messages.push(await this.populateMessage(message));
         }
 
         cache.put('messages', messages, expirationTime);
-        return messages;
 
+        return messages;
     }
 
     /**
@@ -214,15 +214,17 @@ export default class Message {
 
         const messages = await this.getAllMessages();
 
-        const insertedMessage = await createDocument(MessageSchema, message);
-        if (!insertedMessage) throw new DatabaseError(`Failed to create message:\n${ message }`);
+        let insertedMessage = await createDocument(MessageSchema, message);
+        if (!insertedMessage) throw new DatabaseError(`Failed to create message:\n`, message );
+
+        insertedMessage = await this.populateMessage(insertedMessage);
 
         messages.push(
-            await this.populateMessage(insertedMessage)
+            insertedMessage
         );
         cache.put('messages', messages, expirationTime);
 
-        if (!this.verifyMessageInCache(message))
+        if (!this.verifyMessageInCache(insertedMessage))
 
             if (!await verifyInCache(cache.get('messages'), insertedMessage, this.updateMessageCache))
                 throw new CacheError(`Failed to put message in cache:\n${ insertedMessage }`);

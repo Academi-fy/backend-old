@@ -13,9 +13,10 @@ import logger from "../tools/logging/logger.js";
  * */
 export async function createDocument(model, document) {
     model = getModel(model);
-    await model.create(document);
-    logger.database.warning(`${ model.name } created: \n${ JSON.stringify(document, null, 4) }\``);
-    return model.findById(document._id);
+    await model.model.create(document);
+    const created = await model.model.findOne(document);
+    logger.database.warning(`${ model.name } created: ${created._id}`);
+    return created;
 }
 
 /**
@@ -27,11 +28,11 @@ export async function createDocument(model, document) {
  * */
 export async function updateDocument(model, oldDocumentId, newDocument) {
     model = getModel(model);
-    await model.findOneAndUpdate({ _id: oldDocumentId }, newDocument, { new: true });
+    await model.model.findOneAndUpdate({ _id: oldDocumentId }, newDocument, { new: true });
 
     logger.database.warning(`${ model.name } updated: ${ oldDocumentId }`);
 
-    return model.findById(oldDocumentId);
+    return model.model.findById(oldDocumentId);
 }
 
 /**
@@ -43,7 +44,7 @@ export async function updateDocument(model, oldDocumentId, newDocument) {
 export async function deleteDocument(model, id) {
     model = getModel(model);
     let deleted = getDocument(model, id);
-    await model.deleteOne({ id: id });
+    await model.model.deleteOne({ id: id });
     logger.database.warning(`${ model.name } deleted: ${ id }`);
     return deleted;
 }
@@ -56,7 +57,7 @@ export async function deleteDocument(model, id) {
  * */
 export async function getDocument(model, id) {
     model = getModel(model);
-    return await model.findOne({ id: id });
+    return await model.model.findOne({ id: id });
 }
 
 /**
@@ -66,7 +67,7 @@ export async function getDocument(model, id) {
  * */
 export async function getAllDocuments(model) {
     model = getModel(model);
-    return await model.find({});
+    return await model.model.find({});
 }
 
 /**

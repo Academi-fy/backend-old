@@ -20,7 +20,7 @@ export function parseMessage(message) {
 
     if (!("event" in object)) throw new SocketMessageParsingError("Invalid messages: messages event is required");
 
-    if (!socketEvents.includes(object.event)) throw new UnknownEventError(`Invalid message: event '${ object.event }' does not exist`);
+    if (!Object.keys(socketEvents).includes(object.event)) throw new UnknownEventError(`Invalid message: event '${ object.event }' does not exist`);
 
     /**
      * @description The actual data of the event.
