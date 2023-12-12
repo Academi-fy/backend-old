@@ -14,3 +14,4 @@
 - [Messages](https://github.com/Academi-fy/backend/wiki/ContentIndex#messages)
 - [Users](https://github.com/Academi-fy/backend/wiki/ContentIndex#users)
 ## [WebSocket](https://github.com/Academi-fy/backend/wiki/ContentIndex#websocket)
+- [SocketEvents](https://github.com/Academi-fy/backend/wiki/SocketEvents)
