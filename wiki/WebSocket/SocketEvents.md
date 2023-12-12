@@ -7,7 +7,7 @@ SEITE NOCH NICHT FERTIG
 
 #### `MESSAGE_RECEIVE`
 
-Ein Client empfängt eine Nachricht in einem Chat.
+Ein Client empfängt eine Nachricht vom WebSocket, nachdem sie in einen Chat gesendet wurde.
 
 ```json
 {
@@ -25,7 +25,7 @@ Message im Format von [Message](https://github.com/Academi-fy/backend/wiki/Messa
 
 #### `MESSAGE_SEND`
 
-Ein Client schickt eineNachricht in einen Chat.
+Ein Client schickt eine Nachricht in einen Chat, danach an den WebSocket.
 
 ```json
 {
