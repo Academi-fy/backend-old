@@ -8,18 +8,19 @@ import Message from "../../../../models/messages/Message.js";
 import EventHandlerError from "../../../errors/EventHandlerError.js";
 import Chat from "../../../../models/messages/Chat.js";
 import cache from "../../../../httpServer/cache.js";
+import sendToTargetSocket from "../../../sendToTargetSocket.js";
 
 /**
  * @description Function handling the MessageSendEvent.
  * @param {Object} ws - The WebSocket connection object.
  * @param {Object} data - The data received from the WebSocket connection.
  * @param {String} messageId - The id of the socket message.
- * @param {Number} date - The date when the event was received.
+ * @param {Number} messageDate - The date when the event was received.
  */
-export default async function (ws, data, messageId, date) {
+export default async function (ws, data, messageId, messageDate) {
 
     const { server, connection } = ws;
-    let { chat, author, content, reactions, answer, editHistory } = data.payload.data;
+    let { chat, author, content, reactions, answer, editHistory, date } = data.payload.data;
 
     const newMessage = new Message(chat, author, content, reactions, answer, editHistory, date);
 
@@ -31,33 +32,26 @@ export default async function (ws, data, messageId, date) {
         chat.messages.push(message._id);
         await Chat.updateChat(chat._id, chat);
 
-        let targets = [
-            ...chat.targets,
-            ...chat.courses.reduce((members, course) => members.concat(course.members), []),
-            ...chat.clubs.reduce((members, club) => members.concat(club.members), [])
-        ];
-
+        const targets = chat.getAllTargets();
         targets.forEach(target => {
 
-            const targetSocket = Array.from(server.clients).find(client => client.userId === target._id.toString());
-
-            if (targetSocket && targetSocket.userId !== connection.userId) {
-                targetSocket.send(
-                    JSON.stringify({
-                        event: "MESSAGE_RECEIVED",
-                        payload: {
-                            sender: `socket`,
-                            data: message
-                        }
-                    })
-                );
+            if(!sendToTargetSocket(server, target, 
+                JSON.stringify({
+                    event: "MESSAGE_SEND_RECEIVED",
+                    payload: {
+                        sender: `socket`,
+                        data: message
+                    }
+                })
+            )){
+                logger.socket.error(`Message #${ messageId }: target '${ target.id }' could not be notified.`)
             }
 
         });
 
-        logger.socket.debug(`Message #${ messageId } processed in ${ Date.now() - date } ms`)
+        logger.socket.debug(`Message #${ messageId } processed in ${ Date.now() - messageDate } ms`)
     } catch (error) {
-        throw new EventHandlerError(`Failed to process Message #${ messageId }: \n${ error.stack }`);
+        throw new EventHandlerError(error.stack);
     }
 
 }

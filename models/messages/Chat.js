@@ -125,6 +125,18 @@ export default class Chat {
     }
 
     /**
+     * @description Get all the targets from targets, courses and clubs.
+     * @return {Array<User>} The targets of the chats.
+     */
+    static getAllTargets(){
+        return [
+            ...this._targets,
+            ...this._courses.reduce((members, course) => members.concat(course.members), []),
+            ...this._clubs.reduce((members, club) => members.concat(club.members), [])
+        ];
+    }
+
+    /**
      * @description Update the chat cache.
      * @return {Promise<Array<Chat>>} The updated chats.
      */
