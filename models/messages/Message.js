@@ -152,17 +152,43 @@ export default class Message {
 
         reactions = this._reactions;
         
-        if(reactions.incluedes(emoji)){
+        if(this.existsReaction(reactions, emoji)){
             let reaction = this.getReaction(emoji);
             reaction.increment(); //TODO checken, ob es ohne static funktioniert
 
             const index = reactions.findIndex(reaction);
-            this._reactions[index] = cast; //TODO simplify mit copilot
+            this._reactions[index] = reaction; //TODO simplify mit copilot
         }
         else {
             this._reactions = reactions.push(new MessageReaction(emoji))
         }
 
+    }
+
+    /**
+     * @description Removes a reaction to the message. If it exists already, the count is increased by 1.
+     * @param {String} emoji - The emoji of the reaction
+     */
+    removeReaction(emoji){ //TODO brauche ich static?
+
+        reactions = this._reactions;
+        
+        if(existsReaction(reactions, emoji)){
+            let reaction = this.getReaction(emoji);
+            reaction.decrement();
+
+            const index = reactions.findIndex(reaction);
+            if(reaction._count > 0){
+                this.reactions[index] = reaction;
+            }
+            else this.reactions.splice(index, 1)
+
+        }
+
+    }
+
+    static existsReaction(reactions, emoji){
+        return Boolean(reactions.find(reaction => reaction.emoji === emoji));
     }
 
     /**

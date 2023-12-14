@@ -29,8 +29,8 @@ export default async function (ws, data, messageId, messageDate) {
 
         chat = await Chat.getChatById(chat);
         let index = chat.messages.findIndex(msg => msg.id === msgId);
-        chat.messages[index] = updatedMessage;
-        await Chat.updateChat(chat._id, chat);
+        chat._messages[index] = updatedMessage;
+        chat.updateChatCache();
 
         const targets = chat.getAllTargets();
         targets.forEach(target => {

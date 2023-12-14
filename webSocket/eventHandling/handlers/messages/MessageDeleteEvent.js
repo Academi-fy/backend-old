@@ -27,8 +27,9 @@ export default async function (ws, data, messageId, date) {
 
         chat = await Chat.getChatById(chat);
         let index = chat.messages.findIndex(msg => msg.id === msgId);
-        chat.messages[index] = updatedMessage;
-        await Chat.updateChat(chat._id, chat);
+        chat.messages.splice(index, 1);
+        await Chat.updateChat(chat._id, chat); //TODO ohne argumente machen, also static weg
+        chat.updateChatInCache();
 
         const targets = chat.getAllTargets();
         targets.forEach(target => {

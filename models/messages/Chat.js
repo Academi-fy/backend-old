@@ -6,7 +6,7 @@
 import cache from "../../httpServer/cache.js";
 import ChatSchema from "../../mongoDb/schemas/general/ChatSchema.js";
 import { validateArray, validateNotEmpty, verifyInCache } from "../propertyValidation.js";
-import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../mongoDb/collectionAccess.js";
+import { createDocument, deleteDocument, getAllDocuments, getDocument, updateDocument } from "../../mongoDb/collectionAccess.js";
 import { findByRule } from "../findByRule.js";
 import RetrievalError from "../../httpServer/errors/RetrievalError.js";
 import DatabaseError from "../../httpServer/errors/DatabaseError.js";
@@ -175,6 +175,18 @@ export default class Chat {
     }
 
     /**
+     * @description Update the chat cache for one specifiy chat.
+     * @param {Chat} chat - The updated chat
+     * @return {Promise<Array<Chat>>} The updated chat
+     */
+    async updateChatInCache() {
+
+
+        // TODO implement update in cache
+
+    }
+
+    /**
      * @description Get all chats.
      * @return {Promise<Array<Chat>>} The chats.
      */
@@ -230,7 +242,7 @@ export default class Chat {
      * @throws {DatabaseError} When the chat could not be created.
      * @throws {CacheError} When the chat could not be put in cache.
      */
-    static async createChat(chat) {
+    static async createChat(chat) { // TODO argument und static weg
 
         const chats = await this.getAllChats();
 
@@ -258,7 +270,7 @@ export default class Chat {
      * @throws {DatabaseError} When the chat could not be updated.
      * @throws {CacheError} When the chat could not be updated in cache.
      */
-    static async updateChat(chatId, updateChat) {
+    static async updateChat(chatId, updateChat) { // TODO argument und static weg
 
         const chats = await this.getAllChats();
 
@@ -285,7 +297,7 @@ export default class Chat {
      * @throws {DatabaseError} When the chat could not be deleted.
      * @throws {CacheError} When the chat could not be deleted from cache.
      */
-    static async deleteChat(chatId) {
+    static async deleteChat(chatId) { // TODO argument und static weg
 
         const deletedChat = await deleteDocument(ChatSchema, chatId);
         if (!deletedChat) throw new DatabaseError(`Failed to delete chat with id ${ chatId }`);
@@ -305,7 +317,7 @@ export default class Chat {
      * @param {Chat} chat - The chat to verify.
      * @return {Boolean} The status of the verification.
      */
-    static async verifyChatInCache(chat) {
+    static async verifyChatInCache(chat) { // TODO static und argument weg
 
         const cacheResult = cache.get('chats').find(chat_ => chat_._id === chat._id);
 
