@@ -128,12 +128,29 @@ export default class Chat {
      * @description Get all the targets from targets, courses and clubs.
      * @return {Array<User>} The targets of the chats.
      */
-    static getAllTargets(){
+    static getAllTargets(){ //TODO static nötig?
         return [
             ...this._targets,
             ...this._courses.reduce((members, course) => members.concat(course.members), []),
             ...this._clubs.reduce((members, club) => members.concat(club.members), [])
         ];
+    }
+
+    /**
+     * @description Cast an object to a chat object.
+     * @param {Object} chat - The chat to be cast
+     * @return {Chat} - The cast chat
+     */
+    static castToChat(chat){
+        return new Chat(
+            chat.type,
+            chat.targets,
+            chat.courses,
+            chat.clubs,
+            chat.name,
+            chat.avatar,
+            chat.messages
+        )
     }
 
     /**

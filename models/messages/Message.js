@@ -134,6 +134,38 @@ export default class Message {
     }
 
     /**
+     * @description Get the reaction object from a message.
+     * @param {String} emoji - The emoji of the reaction
+     * @returns {MessageReaction} - The reaction
+     * @returns {null} - If the reaction doesn exist
+     */
+    getReaction(emoji){
+        const reaction = reactions.find(r => r.emoji === emoji);
+        return MessageReaction.castToReaction(reaction);
+    }
+
+    /**
+     * @description Adds a reaction to the message. If it exists already, the count is increased by 1.
+     * @param {String} emoji - The emoji of the reaction
+     */
+    addReaction(emoji){ //TODO brauche ich static?
+
+        reactions = this._reactions;
+        
+        if(reactions.incluedes(emoji)){
+            let reaction = this.getReaction(emoji);
+            reaction.increment(); //TODO checken, ob es ohne static funktioniert
+
+            const index = reactions.findIndex(reaction);
+            this._reactions[index] = cast; //TODO simplify mit copilot
+        }
+        else {
+            this._reactions = reactions.push(new MessageReaction(emoji))
+        }
+
+    }
+
+    /**
      * @description Update the cache of messages.
      * @return {Promise<Array<Message>>} The updated list of messages.
      */
@@ -321,6 +353,9 @@ export default class Message {
                         populate: Message.getPopulationPaths()
                     }
                 ]);
+
+            message.chat = Chat.castToChat(message.chat);
+            //TODO casts
 
             const populatedMessage = new Message(
                 message.chat,

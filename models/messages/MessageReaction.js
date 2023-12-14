@@ -18,11 +18,10 @@ export default class MessageReaction {
      * @param {Number} count - The count of the reaction (default is 0).
      */
     constructor(
-        emoji,
-        count
+        emoji
     ) {
         this.emoji = emoji;
-        this.count = count;
+        this.count = 0;
 
         validateNotEmpty("Message reaction emoji", emoji);
         validateNumber("Message reaction count", count);
@@ -58,6 +57,15 @@ export default class MessageReaction {
      */
     decrement() {
         this.count--;
+    }
+
+    /**
+     * Cast an object to a message reaction.
+     * @param {Object} reaction - The reaction object to cast. Contains emoji and count.
+     */
+    static castToReaction(reaction){
+        const returnVal =  new MessageReaction(reaction.emoji);
+        returnVal._count = reaction.count;
     }
 
 }
