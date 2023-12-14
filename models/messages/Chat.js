@@ -138,18 +138,18 @@ export default class Chat {
 
     /**
      * @description Cast an object to a chat object.
-     * @param {Object} chat - The chat to be cast
+     * @param {Object} object - The chat to be cast
      * @return {Chat} - The cast chat
      */
-    static castToChat(chat){
+    static castToChat(object){
         return new Chat(
-            chat.type,
-            chat.targets,
-            chat.courses,
-            chat.clubs,
-            chat.name,
-            chat.avatar,
-            chat.messages
+            object.type,
+            object.targets,
+            object.courses,
+            object.clubs,
+            object.name,
+            object.avatar,
+            object.messages
         )
     }
 
