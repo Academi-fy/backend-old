@@ -235,28 +235,33 @@ export default class Chat {
 
     }
 
+    static getChatCache(){
+        return cache.get('chats');
+    }
+
     /**
      * @description Create a chat.
-     * @param {Chat} chat - The chat to create.
      * @return {Promise<Chat>} The created chat.
      * @throws {DatabaseError} When the chat could not be created.
      * @throws {CacheError} When the chat could not be put in cache.
      */
-    static async createChat(chat) { // TODO argument und static weg
+    async createChat() { // TODO name ändern: create
 
         const chats = await this.getAllChats();
 
-        const insertedChat = await createDocument(ChatSchema, chat);
-        if (!insertedChat) throw new DatabaseError(`Failed to create chat:\n${ chat }`);
+        let insertedChat = await createDocument(ChatSchema, this); //TODO funktioniert das?
+        if (!insertedChat) throw new DatabaseError(`Failed to create chat:\n${ this }`);
+
+        insertedChat = await this.populateChat(insertedChat);
 
         chats.push(
-            await this.populateChat(insertedChat)
+            insertedChat
         );
         cache.put('chats', chats, expirationTime);
 
-        if (!this.verifyChatInCache(insertedChat))
+        if (!insertedChat.verifyChatInCache())
 
-            if (!await verifyInCache(cache.get('chats'), insertedChat, this.updateChatCache))
+            if (!await verifyInCache(this.getChatCache, insertedChat, this.updateChatCache))
                 throw new CacheError(`Failed to put chat in cache:\n${ insertedChat }`);
 
         return insertedChat;
@@ -264,27 +269,26 @@ export default class Chat {
 
     /**
      * @description Update a chat.
-     * @param {String} chatId - The id of the chat to update.
      * @param {Chat} updateChat - The chat to update.
      * @return {Promise<Chat>} The updated chat.
      * @throws {DatabaseError} When the chat could not be updated.
      * @throws {CacheError} When the chat could not be updated in cache.
      */
-    static async updateChat(chatId, updateChat) { // TODO argument und static weg
+    async updateChat(updated) { // TODO name ändern: update
 
         const chats = await this.getAllChats();
 
-        let updatedChat = await updateDocument(ChatSchema, chatId, updateChat);
-        if (!updatedChat) throw new DatabaseError(`Failed to update chat:\n${ updateChat }`);
+        let updatedChat = await updateDocument(ChatSchema, this._id, updated);
+        if (!updatedChat) throw new DatabaseError(`Failed to update chat:\n${ updated }`);
 
         updatedChat = await this.populateChat(updatedChat);
 
-        chats.splice(chats.findIndex(chat => chat._id === chatId), 1, updatedChat);
+        chats.splice(chats.findIndex(chat => chat._id === this._id), 1, updatedChat);
         cache.put('chats', chats, expirationTime);
 
-        if (!this.verifyChatInCache(updatedChat))
+        if (!updatedChat.verifyChatInCache())
 
-            if (!await verifyInCache(cache.get('chats'), updatedChat, this.updateChatCache))
+            if (!await verifyInCache(this.getChatCache, updatedChat, this.updateChatCache))
                 throw new CacheError(`Failed to update chat in cache:\n${ updatedChat }`);
 
         return updatedChat;
@@ -292,21 +296,20 @@ export default class Chat {
 
     /**
      * @description Delete a chat.
-     * @param {String} chatId - The id of the chat to delete.
      * @return {Promise<Boolean>} The status of the deletion.
      * @throws {DatabaseError} When the chat could not be deleted.
      * @throws {CacheError} When the chat could not be deleted from cache.
      */
-    static async deleteChat(chatId) { // TODO argument und static weg
+    static async deleteChat() { // TODO name ändern: delete
 
-        const deletedChat = await deleteDocument(ChatSchema, chatId);
-        if (!deletedChat) throw new DatabaseError(`Failed to delete chat with id ${ chatId }`);
+        const deletedChat = await deleteDocument(ChatSchema, this._id);
+        if (!deletedChat) throw new DatabaseError(`Failed to delete chat with id '${ this._id }'`);
 
         const chats = await this.getAllChats();
-        chats.splice(chats.findIndex(chat => chat._id === chatId), 1);
+        chats.splice(chats.findIndex(chat => chat._id === this._id), 1);
         cache.put('chats', chats, expirationTime);
 
-        if (this.verifyChatInCache(deletedChat))
+        if (deletedChat.verifyChatInCache())
             throw new CacheError(`Failed to delete chat from cache:\n${ deletedChat }`);
 
         return true;
@@ -314,12 +317,11 @@ export default class Chat {
 
     /**
      * @description Verify a chat in cache.
-     * @param {Chat} chat - The chat to verify.
      * @return {Boolean} The status of the verification.
      */
-    static async verifyChatInCache(chat) { // TODO static und argument weg
+    async verifyChatInCache() { // TODO static und argument weg
 
-        const cacheResult = cache.get('chats').find(chat_ => chat_._id === chat._id);
+        const cacheResult = cache.get('chats').find(chat_ => chat_._id === this._id);
 
         return Boolean(cacheResult);
 
@@ -327,10 +329,11 @@ export default class Chat {
 
     /**
      * @description Populate a chat.
-     * @param {Object} chat - The chat to populate.
      * @return {Promise<Chat>} The populated chat.
      * */
-    static async populateChat(chat) {
+    static async populateChat() {
+
+        let chat = this; // TODO funktioniert das?
 
         try {
 

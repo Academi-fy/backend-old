@@ -263,16 +263,15 @@ export default class Message {
 
     /**
      * @description Create a new messages.
-     * @param {Message} message - The messages object.
      * @return {Promise<Message>} The created messages object.
      * @throws {DatabaseError} When the messages is not created.
      * @throws {CacheError} When the messages is not created in the cache.
      */
-    static async createMessage(message) {
+    async createMessage() { //TODO name zu create
 
         const messages = await this.getAllMessages();
 
-        let insertedMessage = await createDocument(MessageSchema, message);
+        let insertedMessage = await createDocument(MessageSchema, this); // TODO this working?
         if (!insertedMessage) throw new DatabaseError(`Failed to create message:\n`, message );
 
         insertedMessage = await this.populateMessage(insertedMessage);
@@ -293,25 +292,24 @@ export default class Message {
 
     /**
      * @description Update a messages.
-     * @param {String} messageId - The ID of the messages to update.
      * @param {Message} updateMessage - The updated messages object.
      * @return {Promise<Message>} The updated messages object.
      * @throws {DatabaseError} When the messages is not updated.
      * @throws {CacheError} When the messages is not updated in the cache.
      */
-    static async updateMessages(messageId, updateMessage) {
+    static async updateMessages(updateMessage) {
 
         const messages = await this.getAllMessages();
 
-        let updatedMessage = await updateDocument(MessageSchema, messageId, updateMessage);
-        if (!updatedMessage) throw new DatabaseError(`Failed to update message:\n${ updateMessage }`);
+        let updatedMessage = await updateDocument(MessageSchema, this._id, updateMessage);
+        if (!updatedMessage) throw new DatabaseError(`Failed to update message with id '${ this._id }'`);
 
         updatedMessage = await this.populateMessage(updatedMessage);
 
-        messages.splice(messages.findIndex(message => message._id === messageId), 1, updatedMessage);
+        messages.splice(messages.findIndex(message => message._id === this._id), 1, updatedMessage);
         cache.put('messages', messages, expirationTime);
 
-        if (!this.verifyMessageInCache(updatedMessage))
+        if (!updateMessage.verifyMessageInCache())
 
             if (!await verifyInCache(cache.get('messages'), updatedMessage, this.updateMessageCache))
                 throw new CacheError(`Failed to update message in cache:\n${ updatedMessage }`);
@@ -320,47 +318,46 @@ export default class Message {
     }
 
     /**
-     * Delete a messages.
-     * @param {String} messageId - The ID of the messages to delete.
+     * @description Delete a messages.
      * @return {Promise<Boolean>} The status of the deletion.
      * @throws {DatabaseError} When the messages is not deleted.
      * @throws {CacheError} When the messages is not deleted in the cache.
      */
-    static async deleteMessage(messageId) {
+    async deleteMessage() {
 
-        const deletedMessage = await deleteDocument(MessageSchema, messageId);
-        if (!deletedMessage) throw new DatabaseError(`Failed to delete message with id ${ messageId }`);
+        const deletedMessage = await deleteDocument(MessageSchema, this._id);
+        if (!deletedMessage) throw new DatabaseError(`Failed to delete message with id ${ this._id }`);
 
         const messages = await this.getAllMessages();
-        messages.splice(messages.findIndex(message => message._id === messageId), 1);
+        messages.splice(messages.findIndex(message => message._id === this._id), 1);
         cache.put('messages', messages, expirationTime);
 
-        if (this.verifyMessageInCache(deletedMessage))
+        if (deletedMessage.verifyInCache())
 
             if (!await verifyInCache(cache.get('messages'), deletedMessage, this.updateMessageCache))
-                throw new CacheError(`Failed to delete message from cache:\n${ deletedMessage }`);
+                throw new CacheError(`Failed to delete message from cache with id '${ this._id }'`);
 
         return true;
     }
 
     /**
-     * Verify if a messages is in the cache.
-     * @param {Message} testMessage - The messages to verify.
+     * @description Verify if a messages is in the cache.
      * @return {Boolean} True if the messages is in the cache, false otherwise.
      */
-    static verifyMessageInCache(testMessage) {
+    verifyMessageInCache() {
 
-        const cacheResult = cache.get("messages").find(message => message._id === testMessage._id);
+        const cacheResult = cache.get("messages").find(message => message._id === this._id);
         return Boolean(cacheResult);
 
     }
 
     /**
      * @description Populate a messages.
-     * @param {Object} message - The messages to populate.
      * @return {Promise<Message>} The populated messages.
      * */
-    static async populateMessage(message) {
+    async populateMessage() {
+
+        let message = this;
 
         try {
 

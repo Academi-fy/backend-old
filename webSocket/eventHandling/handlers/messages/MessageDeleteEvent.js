@@ -6,6 +6,7 @@
 import Message from "../../../../models/messages/Message.js";
 import logger from "../../../../tools/logging/logger.js";
 import EventHandlerError from "../../../errors/EventHandlerError.js";
+import SocketMessageSendError from "../../../errors/SocketMessageSendError.js";
 
 /**
  * @description Function handling the MessageDeleteEvent.
@@ -22,8 +23,9 @@ export default async function (ws, data, messageId, date) {
 
     try {
 
-        const deleted = Message.deleteMessage(msgId);
-        if(!deleted) throw new EventHandlerError()
+        let deleted = await Message.getMessageById(msgId);
+        deleted = deleted.deleteChat();
+        if(!deleted) throw new EventHandlerError('')
 
         chat = await Chat.getChatById(chat);
         let index = chat.messages.findIndex(msg => msg.id === msgId);
@@ -45,7 +47,7 @@ export default async function (ws, data, messageId, date) {
                     }
                 })
             )){
-                logger.socket.error(`Message #${ messageId }: target '${ target.id }' could not be notified.`)
+                throw new SocketMessageSendError(`'target '${ target.id }' could not be notified.'`);
             }
 
         });

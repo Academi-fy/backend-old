@@ -6,6 +6,7 @@
 import Chat from "../../../../models/messages/Chat.js";
 import Message from "../../../../models/messages/Message.js";
 import logger from "../../../../tools/logging/logger.js";
+import SocketMessageSendError from "../../../errors/SocketMessageSendError.js";
 
 /**
  * @description Function handling the MessageEditEvent.
@@ -25,7 +26,8 @@ export default async function (ws, data, messageId, messageDate) {
 
     try {
 
-        const updatedMessage = Message.updatedMessage(msgId, newMessage);
+        const updateMessage = await Message.getMessageById(msgId);
+        updateMessage.updateMessage(newMessage);
 
         chat = await Chat.getChatById(chat);
         let index = chat.messages.findIndex(msg => msg.id === msgId);
@@ -44,7 +46,7 @@ export default async function (ws, data, messageId, messageDate) {
                     }
                 })
             )){
-                logger.socket.error(`Message #${ messageId }: target '${ target.id }' could not be notified.`)
+                throw new SocketMessageSendError(`'target '${ target.id }' could not be notified.'`);
             }
 
         });

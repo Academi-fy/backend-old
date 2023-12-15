@@ -25,7 +25,7 @@ export default async function (ws, data, messageId, date) {
 
         const message = await Message.getMessageById(msgId);
         message.removeReaction(emoji); //TODO checken, ob es verändert wird
-        const updatedMessage = await Message.updatedMessage(msgId, message); // TODO brauche ich das?
+        const updatedMessage = await Message.updateMessage(message); // TODO brauche ich das?
 
         const chat = message._chat; //TODO check if type = Chat
         let index = chat._messages.findIndex(updatedMessage);
@@ -48,7 +48,7 @@ export default async function (ws, data, messageId, date) {
                     }
                 })
             )){
-                logger.socket.error(`Message #${ messageId }: target '${ target.id }' could not be notified.`)
+                throw new SocketMessageSendError(`'target '${ target.id }' could not be notified.'`);
             }
 
         });
