@@ -61,6 +61,12 @@ export default new Schema(
                 type: ObjectId,
                 ref: 'Club'
             }
+        ],
+        chats: [
+            {
+                type: ObjectId,
+                ref: 'Chat'
+            }
         ]
 
     },
