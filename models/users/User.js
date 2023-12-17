@@ -10,6 +10,8 @@ import DatabaseError from "../../httpServer/errors/DatabaseError.js";
 import Blackboard from "../general/Blackboard.js";
 import Course from "../general/Course.js";
 import Class from "../general/Class.js";
+import Chat from "../messages/Chat.js";
+import Club from "../clubs/Club.js";
 /**
  * @description Class representing a User.
  * @param {String} _id - The _id of the user.
@@ -21,6 +23,7 @@ import Class from "../general/Class.js";
  * @param {Array<Course>} extraCourses - The extra courses of the user.
  * @param {Array<Blackboard>} blackboards - The blackboards of the user.
  * @param {Array<Club>} clubs - The clubs of the user.
+ * @param {Array<Chat>} chats - The ids of the chats of the user.
  */
 export default class User extends BaseModel {
 
@@ -31,7 +34,9 @@ export default class User extends BaseModel {
     static populationPaths = [
         { path: 'classes' },
         { path: 'extraCourses' },
-        { path: 'blackboards' }
+        { path: 'blackboards' },
+        { path: 'clubs' },
+        { path: 'chats' }
     ];
 
     /**
@@ -44,6 +49,7 @@ export default class User extends BaseModel {
      * @param {Array<String>} extraCourses - The ids of the extra courses of the user.
      * @param {Array<String>} blackboards - The ids of the blackboards of the user.
      * @param {Array<String>} clubs - The ids of the clubs of the user.
+     * @param {Array<String>} chats - The ids of the chats of the user.
      */
     constructor(
         firstName,
@@ -53,7 +59,8 @@ export default class User extends BaseModel {
         classes,
         extraCourses,
         blackboards,
-        clubs
+        clubs,
+        chats
     ){
         super({
             firstName,
@@ -63,7 +70,8 @@ export default class User extends BaseModel {
             classes,
             extraCourses,
             blackboards,
-            clubs
+            clubs,
+            chats
         });
         this.id = null;
         this._firstName = firstName;
@@ -74,6 +82,7 @@ export default class User extends BaseModel {
         this._extraCourses = extraCourses;
         this._blackboards = blackboards;
         this._clubs = clubs;
+        this._chats = chats;
 
         if(!Object.keys(UserAccountTypes).includes(type)){
             throw new Error(`User type does not exist: ${ type }`);
@@ -87,7 +96,7 @@ export default class User extends BaseModel {
      * @returns {User} The cast instance of the User class.
      */
     static castToUser(user) {
-        const { _id, firstName, lastName, avatar, type, classes, extraCourses, blackboards, clubs } = user;
+        const { _id, firstName, lastName, avatar, type, classes, extraCourses, blackboards, clubs, chats } = user;
         const castUser = new User(
             firstName,
             lastName,
@@ -96,7 +105,8 @@ export default class User extends BaseModel {
             classes,
             extraCourses,
             blackboards,
-            clubs
+            clubs,
+            chats
         );
         castUser._id = _id.toString();
         return castUser;
@@ -108,7 +118,7 @@ export default class User extends BaseModel {
      * @returns {Object} An object representation of the User instance without underscores in the property names.
      */
     toJSON(){
-        const { _id, firstName, lastName, avatar, type, classes, extraCourses, blackboards, clubs } = this;
+        const { _id, firstName, lastName, avatar, type, classes, extraCourses, blackboards, clubs, chats } = this;
         return {
             _id,
             firstName,
@@ -118,7 +128,8 @@ export default class User extends BaseModel {
             classes,
             extraCourses,
             blackboards,
-            clubs
+            clubs,
+            chats
         };
     }
 
@@ -144,6 +155,14 @@ export default class User extends BaseModel {
                     {
                         path: 'blackboards',
                         populate: Blackboard.getPopulationPaths()
+                    },
+                    {
+                        path: 'clubs',
+                        populate: Club.getPopulationPaths()
+                    },
+                    {
+                        path: 'chats',
+                        populate: Chat.getPopulationPaths()
                     }
                 ]);
 
@@ -239,6 +258,14 @@ export default class User extends BaseModel {
 
     set _id(value) {
         this.id = value;
+    }
+
+    get chats() {
+        return this._chats;
+    }
+
+    set chats(value) {
+        this._chats = value;
     }
 
 }
