@@ -11,7 +11,7 @@ import SetupAccountSchema from "../../../mongoDb/schemas/general/setup/SetupAcco
 
 /**
  * @description The setup account model.
- * @param {String} id - The id of the setup account.
+ * @param {String} _id - The _id of the setup account.
  * @param {String} schoolName - The name of the school of the setup account.
  * @param {School} school - The school of the setup account. Assigned once the school is created.
  * */
@@ -38,7 +38,7 @@ export default class SetupAccount extends BaseModel {
             schoolName,
             school
         });
-        this._id = null;
+        this.id = null;
         this._schoolName = schoolName;
         this._school = school;
     }
@@ -49,12 +49,12 @@ export default class SetupAccount extends BaseModel {
      * @returns {SetupAccount} The cast instance of the School class.
      */
     static castToSetupAccount(setupAccount) {
-        const { id, schoolName, school } = setupAccount;
+        const { _id, schoolName, school } = setupAccount;
         const castSetupAccount = new SetupAccount(
             schoolName,
             school
         );
-        castSetupAccount.id = id.toString();
+        castSetupAccount._id = _id.toString();
         return castSetupAccount;
     }
 
@@ -64,9 +64,9 @@ export default class SetupAccount extends BaseModel {
      * @returns {Object} An object representation of the SetupAccount instance without underscores in the property names.
      */
     toJSON(){
-        const { id, schoolName, school } = this;
+        const { _id, schoolName, school } = this;
         return {
-            id,
+            _id,
             schoolName,
             school
         };
@@ -87,12 +87,12 @@ export default class SetupAccount extends BaseModel {
                         populate: School.getPopulationPaths()
                     }
                 ]);
-            setupAccount.id = setupAccount._id.toString();
+            setupAccount._id = setupAccount._id.toString();
 
             return this.castToSetupAccount(setupAccount);
         } catch (error) {
-            // here setupAccount._id is used instead of setupAccount.id because setupAccount is an instance of the mongoose model
-            throw new DatabaseError(`Failed to populate setup account with id #${setupAccount._id}' \n${ error.stack }`);
+            // here setupAccount._id is used instead of setupAccount._id because setupAccount is an instance of the mongoose model
+            throw new DatabaseError(`Failed to populate setup account with _id #${setupAccount._id}' \n${ error.stack }`);
         }
     }
 
@@ -122,12 +122,12 @@ export default class SetupAccount extends BaseModel {
         this._school = value;
     }
 
-    get id() {
-        return this._id;
+    get _id() {
+        return this.id;
     }
 
-    set id(value) {
-        this._id = value;
+    set _id(value) {
+        this.id = value;
     }
 
 }

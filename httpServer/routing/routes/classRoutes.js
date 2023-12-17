@@ -133,7 +133,7 @@ router.post('/', async (req, res) => {
         }
 
         const newClass = bodyToClass(req.body);
-        newClass.id = req.body.class.id.toString();
+        newClass._id = req.body.class.id.toString();
 
         if (!newClass) {
             logger.server.error(`Request #${ req.requestId }: Class creation from '${ req.ip }' does not contain class in body`)
@@ -146,7 +146,7 @@ router.post('/', async (req, res) => {
             return;
         }
 
-        if (!newClass.id) {
+        if (!newClass._id) {
             logger.server.error(`Request #${ req.requestId }: Class creation from '${ req.ip }' does not contain class id in body`)
             res.status(400).send(
                 {
@@ -195,7 +195,7 @@ router.put('/:id', async (req, res) => {
         }
 
         const updatedClass = bodyToClass(req.body);
-        updatedClass.id = req.body.class.id.toString();
+        updatedClass._id = req.body.class.id.toString();
 
         if (!updatedClass) {
             logger.server.error(`Request #${ req.requestId }: Class update from '${ req.ip }' does not contain the full information.`)
@@ -208,7 +208,7 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        if (req.params.id !== updatedClass.id) {
+        if (req.params.id !== updatedClass._id) {
             logger.server.error(`Request #${ req.requestId }: Class update from '${ req.ip }' with URL '${ req.params.id }' does not match class id in body '${ updatedClass.id }'`)
             res.status(400).send(
                 {
@@ -219,7 +219,7 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        if (!updatedClass.id) {
+        if (!updatedClass._id) {
             logger.server.error(`Request #${ req.requestId }: Class update from '${ req.ip }' with URL '${ req.params.id }' does not contain class id in body`)
             res.status(400).send(
                 {

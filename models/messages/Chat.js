@@ -11,7 +11,7 @@ import Club from "../clubs/Club.js";
 import User from "../users/User.js";
 /**
  * @description Class representing a Chat.
- * @param {String} id - The id of the chat.
+ * @param {String} _id - The _id of the chat.
  * @param {String} type - The type of the chat. Valid types are: 'PRIVATE', 'GROUP', 'COURSE', 'CLUB'.
  * @param {Array<User>} targets - The targets of the chat.
  * @param {Array<Course>} courses - The courses related to the chat.
@@ -60,7 +60,7 @@ export default class Chat extends BaseModel {
             avatar,
             messages
         });
-        this._id = null;
+        this.id = null;
         this._type = type;
         this._targets = targets;
         this._courses = courses;
@@ -77,7 +77,7 @@ export default class Chat extends BaseModel {
      * @returns {Chat} The cast instance of the Chat class.
      */
     static castToChat(chat) {
-        const { id, type, targets, courses, clubs, name, avatar, messages } = chat;
+        const { _id, type, targets, courses, clubs, name, avatar, messages } = chat;
         const castChat = new Chat(
             type,
             targets,
@@ -87,7 +87,7 @@ export default class Chat extends BaseModel {
             avatar,
             messages
         );
-        castChat.id = id.toString();
+        castChat._id = _id.toString();
         return castChat;
     }
 
@@ -97,9 +97,9 @@ export default class Chat extends BaseModel {
      * @returns {Object} An object representation of the Chat instance without underscores in the property names.
      */
     toJSON(){
-        const { id, type, targets, courses, clubs, name, avatar, messages } = this;
+        const { _id, type, targets, courses, clubs, name, avatar, messages } = this;
         return {
-            id,
+            _id,
             type,
             targets,
             courses,
@@ -134,12 +134,12 @@ export default class Chat extends BaseModel {
                     }
                 ]);
 
-            chat.id = chat._id.toString();
+            chat._id = chat._id.toString();
 
             return this.castToChat(chat);
         } catch (error) {
-            // here chat._id is used instead of chat.id because chat is an instance of the mongoose model
-            throw new DatabaseError(`Failed to populate chat with id #${chat._id}' \n${ error.stack }`);
+            // here chat._id is used instead of chat._id because chat is an instance of the mongoose model
+            throw new DatabaseError(`Failed to populate chat with _id #${chat._id}' \n${ error.stack }`);
         }
     }
 
@@ -209,12 +209,12 @@ export default class Chat extends BaseModel {
         this._messages = value;
     }
 
-    get id() {
-        return this._id;
+    get _id() {
+        return this.id;
     }
 
-    set id(value) {
-        this._id = value;
+    set _id(value) {
+        this.id = value;
     }
 
 }

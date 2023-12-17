@@ -13,7 +13,7 @@ import Course from "../general/Course.js";
 
 /**
  * @description Class representing a Club
- * @param {String} id - The id of the club.
+ * @param {String} _id - The _id of the club.
  * @param {String} name - The name of the club.
  * @param {ClubDetails} details - The details of the club.
  * @param {Array<User>} leaders - The leaders of the club.
@@ -59,7 +59,7 @@ export default class Club extends BaseModel {
             state,
             editHistory
         });
-        this._id = null;
+        this.id = null;
         this._name = name;
         this._details = details;
         this._leaders = leaders;
@@ -76,7 +76,7 @@ export default class Club extends BaseModel {
      * @returns {Club} The cast instance of the Club class.
      */
     static castToClub(club) {
-        const { id, name, details, leaders, members, chat, events, state, editHistory } = club;
+        const { _id, name, details, leaders, members, chat, events, state, editHistory } = club;
         const castClub = new Club(
             name,
             details,
@@ -87,7 +87,7 @@ export default class Club extends BaseModel {
             state,
             editHistory
         );
-        castClub.id = id.toString();
+        castClub._id = _id.toString();
         return castClub;
     }
 
@@ -97,9 +97,9 @@ export default class Club extends BaseModel {
      * @returns {Object} An object representation of the Club instance without underscores in the property names.
      */
     toJSON(){
-        const { id, name, details, leaders, members, chat, events, state, editHistory } = this;
+        const { _id, name, details, leaders, members, chat, events, state, editHistory } = this;
         return {
-            id,
+            _id,
             name,
             details,
             leaders,
@@ -138,12 +138,12 @@ export default class Club extends BaseModel {
                         populate: Message.getPopulationPaths()
                     },
                 ]);
-            club.id = club._id.toString();
+            club._id = club._id.toString();
 
             return this.castToClub(club);
         } catch (error) {
-            // here club._id is used instead of club.id because club is an instance of the mongoose model
-            throw new DatabaseError(`Failed to populate club with id #${club._id}' \n${ error.stack }`);
+            // here club._id is used instead of club._id because club is an instance of the mongoose model
+            throw new DatabaseError(`Failed to populate club with _id #${club._id}' \n${ error.stack }`);
         }
     }
 
@@ -221,12 +221,12 @@ export default class Club extends BaseModel {
         this._editHistory = value;
     }
 
-    get id() {
-        return this._id;
+    get _id() {
+        return this.id;
     }
 
-    set id(value) {
-        this._id = value;
+    set _id(value) {
+        this.id = value;
     }
 
 }

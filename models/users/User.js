@@ -12,7 +12,7 @@ import Course from "../general/Course.js";
 import Class from "../general/Class.js";
 /**
  * @description Class representing a User.
- * @param {String} _id - The id of the user.
+ * @param {String} _id - The _id of the user.
  * @param {String} firstName - The first name of the user.
  * @param {String} lastName - The last name of the user.
  * @param {String} avatar - The avatar URL of the user.
@@ -65,7 +65,7 @@ export default class User extends BaseModel {
             blackboards,
             clubs
         });
-        this._id = null;
+        this.id = null;
         this._firstName = firstName;
         this._lastName = lastName;
         this._avatar = avatar;
@@ -87,7 +87,7 @@ export default class User extends BaseModel {
      * @returns {User} The cast instance of the User class.
      */
     static castToUser(user) {
-        const { id, firstName, lastName, avatar, type, classes, extraCourses, blackboards, clubs } = user;
+        const { _id, firstName, lastName, avatar, type, classes, extraCourses, blackboards, clubs } = user;
         const castUser = new User(
             firstName,
             lastName,
@@ -98,7 +98,7 @@ export default class User extends BaseModel {
             blackboards,
             clubs
         );
-        castUser.id = id.toString();
+        castUser._id = _id.toString();
         return castUser;
     }
 
@@ -108,9 +108,9 @@ export default class User extends BaseModel {
      * @returns {Object} An object representation of the User instance without underscores in the property names.
      */
     toJSON(){
-        const { id, firstName, lastName, avatar, type, classes, extraCourses, blackboards, clubs } = this;
+        const { _id, firstName, lastName, avatar, type, classes, extraCourses, blackboards, clubs } = this;
         return {
-            id,
+            _id,
             firstName,
             lastName,
             avatar,
@@ -147,12 +147,12 @@ export default class User extends BaseModel {
                     }
                 ]);
 
-            user.id = user._id.toString();
+            user._id = user._id.toString();
 
             return this.castToUser(user);
         } catch (error) {
-            // here user._id is used instead of user.id because user is an instance of the mongoose model
-            throw new DatabaseError(`Failed to populate user with id #${user._id}' \n${ error.stack }`);
+            // here user._id is used instead of user._id because user is an instance of the mongoose model
+            throw new DatabaseError(`Failed to populate user with _id #${user._id}' \n${ error.stack }`);
         }
     }
 
@@ -233,12 +233,12 @@ export default class User extends BaseModel {
         this._clubs = value;
     }
 
-    get id() {
-        return this._id;
+    get _id() {
+        return this.id;
     }
 
-    set id(value) {
-        this._id = value;
+    set _id(value) {
+        this.id = value;
     }
 
 }

@@ -25,12 +25,12 @@ export default class BaseModel {
         this._data = data;
     }
 
-    get id(){
-        throw new Error(`${this.constructor.modelName}: id getter method not implemented`);
+    get _id(){
+        throw new Error(`${this.constructor.modelName}: _id getter method not implemented`);
     }
 
-    set id(value){
-        throw new Error(`${this.constructor.modelName}: id setter method not implemented`);
+    set _id(value){
+        throw new Error(`${this.constructor.modelName}: _id setter method not implemented`);
     }
 
     /**
@@ -49,16 +49,16 @@ export default class BaseModel {
 
     /**
      * Retrieves a specific instance of the model by its ID.
-     * @param {string} id - The ID of the instance to retrieve.
+     * @param {string} _id - The ID of the instance to retrieve.
      * @returns {Promise<Object>} The instance of the model with the given ID.
      * @throws {RetrievalError} If the instance with the given ID is not found.
      */
-    static async getById(id){
+    static async getById(_id){
 
         const items  = await this.getAll();
 
-        const item = items.find(i => i._id === id);
-        if(!item) throw  new RetrievalError(`Failed to find ${ this.modelName } with id '${ id }'`);
+        const item = items.find(i => i._id === _id);
+        if(!item) throw  new RetrievalError(`Failed to find ${ this.modelName } with _id '${ _id }'`);
 
         return item;
     }
@@ -86,19 +86,19 @@ export default class BaseModel {
      * @throws {CacheError} If the instance could not be added to the cache.
      */
     async create(){
-        const id = this.id;
+        const _id = this._id;
 
         const items = await BaseModel.getAll();
 
         let insertedItem = await mongoAccess.createDocument(this.constructor.schema, this.data);
-        if(!insertedItem) throw new DatabaseError(`Failed to create ${ this.constructor.modelName } with id '${ this.id }'`);
+        if(!insertedItem) throw new DatabaseError(`Failed to create ${ this.constructor.modelName } with _id '${ this._id }'`);
 
         insertedItem = this.constructor.populate(insertedItem);
 
         items.push(insertedItem);
         cache.put(this.constructor.cacheKey, items, this.constructor.expirationTime  * 60 * 1000);
 
-        if(!this.constructor.verifyInCache(id))
+        if(!this.constructor.verifyInCache(_id))
             throw new CacheError(`Failed to put item in cache:\n${ insertedItem }`);
 
         return insertedItem;
@@ -112,19 +112,19 @@ export default class BaseModel {
      * @throws {CacheError} If the updated instance could not be updated in the cache.
      */
     async update(newModel){
-        const id = this.id;
+        const _id = this._id;
 
         const items = await BaseModel.getAll();
 
-        let updatedItem = await mongoAccess.updateDocument(this.constructor.schema, id, newModel);
-        if(!updatedItem) throw new DatabaseError(`Failed to update ${ this.constructor.modelName } with id '${ id }'`);
+        let updatedItem = await mongoAccess.updateDocument(this.constructor.schema, _id, newModel);
+        if(!updatedItem) throw new DatabaseError(`Failed to update ${ this.constructor.modelName } with _id '${ _id }'`);
 
         updatedItem = this.constructor.populate(updatedItem);
 
-        items.splice(items.findIndex(item => item._id === id), 1, updatedItem);
+        items.splice(items.findIndex(item => item._id === _id), 1, updatedItem);
         cache.put(this.constructor.cacheKey, items, this.constructor.expirationTime  * 60 * 1000);
 
-        if(!this.constructor.verifyInCache(id))
+        if(!this.constructor.verifyInCache(_id))
             throw new CacheError(`Failed insert item:\n${ updatedItem }`);
 
         return updatedItem;
@@ -137,17 +137,17 @@ export default class BaseModel {
      * @throws {CacheError} If the instance could not be removed from the cache.
      */
     async delete(){
-        const id = this.id;
+        const _id = this._id;
 
-        const deletedItem = await mongoAccess.deleteDocument(this.constructor.schema, id);
-        if(!deletedItem) throw new DatabaseError(`Failed to delete ${ this.constructor.modelName } with id '${ id }'`);
+        const deletedItem = await mongoAccess.deleteDocument(this.constructor.schema, _id);
+        if(!deletedItem) throw new DatabaseError(`Failed to delete ${ this.constructor.modelName } with _id '${ _id }'`);
 
         const items = await BaseModel.getAll();
-        items.splice(items.findIndex(item => item._id === id), 1);
+        items.splice(items.findIndex(item => item._id === _id), 1);
         cache.put(this.constructor.cacheKey, items, this.constructor.expirationTime * 60 * 1000);
 
-        if(this.constructor.verifyInCache(id))
-            throw new CacheError(`Failed to delete item from cache with id '${ id }'`);
+        if(this.constructor.verifyInCache(_id))
+            throw new CacheError(`Failed to delete item from cache with _id '${ _id }'`);
 
         return true;
     }
@@ -173,7 +173,7 @@ export default class BaseModel {
 
         items.forEach(item => {
             if (item && !this.verifyInCache(item._id)) {
-                throw new CacheError(`Failed to insert ${ this.modelName } with id '${ item._id }'`);
+                throw new CacheError(`Failed to insert ${ this.modelName } with _id '${ item._id }'`);
             }
         });
 
@@ -182,12 +182,12 @@ export default class BaseModel {
 
     /**
      * Verifies if an instance of the model with the given ID is in the cache.
-     * @param {string} id - The ID of the instance to verify.
+     * @param {string} _id - The ID of the instance to verify.
      * @returns {boolean} Returns true if the instance is in the cache, false otherwise.
      */
-    static verifyInCache(id){
+    static verifyInCache(_id){
         const items = cache.get(this.cacheKey);
-        return items.some(i => i._id === id);
+        return items.some(i => i._id === _id);
     }
 
     /**

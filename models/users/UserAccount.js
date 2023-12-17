@@ -17,8 +17,8 @@ import UserAccountPermissions from "./UserAccountPermissions.js";
 
 /**
  * @description The model for a users account.
- * @param {String} _id - The id of the users account.
- * @param {String} user - The id of the user of the users account.
+ * @param {String} _id - The _id of the users account.
+ * @param {String} user - The _id of the user of the users account.
  * @param {String} username - The username of the users.
  * @param {String} password - The password of the users.
  * @param {Array<String>} settings - The settings of the users.
@@ -28,7 +28,7 @@ export default class UserAccount {
 
     /**
      * @description The constructor for a users account.
-     * @param {String} user - The id of the user that the account belongs to.
+     * @param {String} user - The _id of the user that the account belongs to.
      * @param {String} username - The username of the users.
      * @param {String} password - The password of the users.
      * @param {Array<String>} settings - The settings of the users.
@@ -119,7 +119,7 @@ export default class UserAccount {
      * @returns {UserAccount} The cast instance of the User class.
      */
     static castToUserAccount(userAccount) {
-        const { id, user, username, password, settings, permissions } = userAccount;
+        const { _id, user, username, password, settings, permissions } = userAccount;
         const castUserAccount = new UserAccount(
             user,
             username,
@@ -127,7 +127,7 @@ export default class UserAccount {
             settings,
             permissions
         );
-        castUserAccount.id = id.toString();
+        castUserAccount._id = _id.toString();
         return castUserAccount;
     }
 
@@ -137,9 +137,9 @@ export default class UserAccount {
      * @returns {Object} An object representation of the User instance without underscores in the property names.
      */
     toJSON(){
-        const { id, user, username, password, settings, permissions } = this;
+        const { _id, user, username, password, settings, permissions } = this;
         return {
-            id,
+            _id,
             user,
             username,
             password,
@@ -149,12 +149,12 @@ export default class UserAccount {
     }
 
     /**
-     * @description Get a users account by its id.
-     * @param {String} id - The id of the users account.
+     * @description Get a users account by its _id.
+     * @param {String} _id - The _id of the users account.
      * @return {Promise<Object>} The users account.
      * */
-    static async getUserAccountById(id) {
-        const document = await getDocument(UserAccountSchema, id);
+    static async getUserAccountById(_id) {
+        const document = await getDocument(UserAccountSchema, _id);
         return await this.populateUserAccount(document);
     }
 
@@ -186,14 +186,14 @@ export default class UserAccount {
 
     /**
      * @description Update a users account.
-     * @param {String} id - The id of the users account to update.
+     * @param {String} _id - The _id of the users account to update.
      * @param {UserAccount} userAccount - The users account to update.
      * @return {Promise<UserAccount>} The updated users account.
      * @throws {DatabaseError} When the users account is not updated.
      */
-    static async updateUserAccount(id, userAccount) {
+    static async updateUserAccount(_id, userAccount) {
 
-        const updatedUserAccount = await updateDocument(UserAccountSchema, id, userAccount);
+        const updatedUserAccount = await updateDocument(UserAccountSchema, _id, userAccount);
         if (!updatedUserAccount) throw new DatabaseError(`Failed to update user account:\n${ userAccount }`);
 
         return await this.populateUserAccount(updatedUserAccount);
@@ -246,7 +246,7 @@ export default class UserAccount {
             return populatedUserAccount;
 
         } catch (error) {
-            throw new DatabaseError(`Failed to populate user account with id '${ userAccount._id }:'\n${ error }`);
+            throw new DatabaseError(`Failed to populate user account with _id '${ userAccount._id }:'\n${ error }`);
         }
 
     }

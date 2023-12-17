@@ -19,7 +19,7 @@ import Blackboard from "../Blackboard.js";
 
 /**
  * @description Class representing a school.
- * @param {String} _id - The id of the school.
+ * @param {String} _id - The _id of the school.
  * @param {String} name - The name of the school.
  * @param {Array<Grade>} grades - The grades in the school.
  * @param {Array<Course>} courses - The courses in the school.
@@ -86,7 +86,7 @@ export default class School extends BaseModel {
             events,
             blackboards
         });
-        this._id = null;
+        this.id = null;
         this._name = name;
         this._grades = grades;
         this._courses = courses;
@@ -105,7 +105,7 @@ export default class School extends BaseModel {
      * @returns {School} The cast instance of the School class.
      */
     static castToSchool(school) {
-        const { id, name, grades, courses, members, classes, messages, subjects, clubs, events, blackboards } = school;
+        const { _id, name, grades, courses, members, classes, messages, subjects, clubs, events, blackboards } = school;
         const castSchool = new School(
             name,
             grades,
@@ -118,7 +118,7 @@ export default class School extends BaseModel {
             events,
             blackboards
         );
-        castSchool.id = id.toString();
+        castSchool._id = _id.toString();
         return castSchool;
     }
 
@@ -128,9 +128,9 @@ export default class School extends BaseModel {
      * @returns {Object} An object representation of the School instance without underscores in the property names.
      */
     toJSON(){
-        const { id, name, grades, courses, members, classes, messages, subjects, clubs, events, blackboards } = this;
+        const { _id, name, grades, courses, members, classes, messages, subjects, clubs, events, blackboards } = this;
         return {
-            id,
+            _id,
             name,
             grades,
             courses,
@@ -191,12 +191,12 @@ export default class School extends BaseModel {
                         populate: Blackboard.getPopulationPaths()
                     },
                 ]);
-            school.id = school._id.toString();
+            school._id = school._id.toString();
 
             return this.castToSchool(school);
         } catch (error) {
-            // here school._id is used instead of school.id because school is an instance of the mongoose model
-            throw new DatabaseError(`Failed to populate school with id #${school._id}' \n${ error.stack }`);
+            // here school._id is used instead of school._id because school is an instance of the mongoose model
+            throw new DatabaseError(`Failed to populate school with _id #${school._id}' \n${ error.stack }`);
         }
     }
 
@@ -290,12 +290,12 @@ export default class School extends BaseModel {
         this._blackboards = value;
     }
 
-    get id() {
-        return this._id;
+    get _id() {
+        return this.id;
     }
 
-    set id(value) {
-        this._id = value;
+    set _id(value) {
+        this.id = value;
     }
 
 }

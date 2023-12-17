@@ -11,7 +11,7 @@ import DatabaseError from "../../httpServer/errors/DatabaseError.js";
 
 /**
  * @description Class representing a Subject.
- * @param {String} _id - The id of the subject.
+ * @param {String} _id - The _id of the subject.
  * @param {String} type - The type of the subject.
  * @param {String} shortName - The short name of the subject.
  * @param {Array<Course>} courses - The courses of the subject.
@@ -42,7 +42,7 @@ export default class Subject extends BaseModel {
             shortName,
             courses
         });
-        this._id = null;
+        this.id = null;
         this._type = type;
         this._shortName = shortName;
         this._courses = courses;
@@ -54,13 +54,13 @@ export default class Subject extends BaseModel {
      * @returns {Subject} The cast instance of the Subject class.
      */
     static castToSubject(subject) {
-        const { id, type, shortName, courses } = subject;
+        const { _id, type, shortName, courses } = subject;
         const castSubject = new Subject(
             type,
             shortName,
             courses
         );
-        castSubject.id = id.toString();
+        castSubject._id = _id.toString();
         return castSubject;
     }
 
@@ -70,9 +70,9 @@ export default class Subject extends BaseModel {
      * @returns {Object} An object representation of the Subject instance without underscores in the property names.
      */
     toJSON(){
-        const { id, type, shortName, courses } = this;
+        const { _id, type, shortName, courses } = this;
         return {
-            id,
+            _id,
             type,
             shortName,
             courses
@@ -95,12 +95,12 @@ export default class Subject extends BaseModel {
                     }
                 ]);
 
-            subject.id = subject._id.toString();
+            subject._id = subject._id.toString();
 
             return this.castToSubject(subject);
         } catch (error) {
-            // here subject._id is used instead of subject.id because subject is an instance of the mongoose model
-            throw new DatabaseError(`Failed to populate subject with id #${subject._id}' \n${ error.stack }`);
+            // here subject._id is used instead of subject._id because subject is an instance of the mongoose model
+            throw new DatabaseError(`Failed to populate subject with _id #${subject._id}' \n${ error.stack }`);
         }
     }
 
@@ -138,12 +138,12 @@ export default class Subject extends BaseModel {
         this._courses = value;
     }
 
-    get id() {
-        return this._id;
+    get _id() {
+        return this.id;
     }
 
-    set id(value) {
-        this._id = value;
+    set _id(value) {
+        this.id = value;
     }
 
 }

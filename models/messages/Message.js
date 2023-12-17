@@ -11,9 +11,9 @@ import User from "../users/User.js";
 
 /**
  * @description Class representing a Message.
- * @param {String} id - The id of the messages.
- * @param {Chat} chat - The id of the chat that the messages belongs to.
- * @param {User} author - The id of the author of the messages.
+ * @param {String} _id - The _id of the messages.
+ * @param {Chat} chat - The _id of the chat that the messages belongs to.
+ * @param {User} author - The _id of the author of the messages.
  * @param {Array<FileContent | ImageContent | PollContent | TextContent | VideoContent>} content - The content of the messages.
  * @param {Array<MessageReaction>} reactions - The reactions to the messages.
  * @param {Message | null} answer - The messages that this messages is an answer to.
@@ -34,11 +34,11 @@ export default class Message extends BaseModel {
 
     /**
      * @description Create a messages.
-     * @param {String} chat - The id of the chat that the messages belongs to.
-     * @param {String} author - The id of the author of the messages.
+     * @param {String} chat - The _id of the chat that the messages belongs to.
+     * @param {String} author - The _id of the author of the messages.
      * @param {Array<FileContent | ImageContent | PollContent | TextContent | VideoContent>} content - The content of the messages.
      * @param {Array<MessageReaction>} reactions - The reactions to the messages.
-     * @param {String | null} answer - The id of the messages that this messages is an answer to.
+     * @param {String | null} answer - The _id of the messages that this messages is an answer to.
      * @param {Array<Message>} editHistory - The editHistory made to the messages.
      * @param {Number} date - The date the messages was created.
      */
@@ -61,7 +61,7 @@ export default class Message extends BaseModel {
             editHistory,
             date
         });
-        this._id = null;
+        this.id = null;
         this._chat = chat;
         this._author = author;
         this._content = content;
@@ -77,7 +77,7 @@ export default class Message extends BaseModel {
      * @returns {Message} The cast instance of the Message class.
      */
     static castToMessage(message) {
-        const { id, chat, author, content, reactions, answer, editHistory, date } = message;
+        const { _id, chat, author, content, reactions, answer, editHistory, date } = message;
         const castMessage = new Message(
             chat,
             author,
@@ -87,7 +87,7 @@ export default class Message extends BaseModel {
             editHistory,
             date
         );
-        castMessage.id = id.toString();
+        castMessage._id = _id.toString();
         return castMessage;
     }
 
@@ -97,9 +97,9 @@ export default class Message extends BaseModel {
      * @returns {Object} An object representation of the Message instance without underscores in the property names.
      */
     toJSON(){
-        const { id, chat, author, content, reactions, answer, editHistory, date } = this;
+        const { _id, chat, author, content, reactions, answer, editHistory, date } = this;
         return {
-            id,
+            _id,
             chat,
             author,
             content,
@@ -133,12 +133,12 @@ export default class Message extends BaseModel {
                         populate: Message.getPopulationPaths()
                     }
                 ]);
-            message.id = message._id.toString();
+            message._id = message._id.toString();
 
             return this.castToMessage(message);
         } catch (error) {
-            // here message._id is used instead of message.id because message is an instance of the mongoose model
-            throw new DatabaseError(`Failed to populate chat with id #${message._id}' \n${ error.stack }`);
+            // here message._id is used instead of message._id because message is an instance of the mongoose model
+            throw new DatabaseError(`Failed to populate chat with _id #${message._id}' \n${ error.stack }`);
         }
     }
 
@@ -208,12 +208,12 @@ export default class Message extends BaseModel {
         this._date = value;
     }
 
-    get id() {
-        return this._id;
+    get _id() {
+        return this.id;
     }
 
-    set id(value) {
-        this._id = value;
+    set _id(value) {
+        this.id = value;
     }
 
 }

@@ -9,7 +9,7 @@ import Class from "./Class.js";
 import DatabaseError from "../../httpServer/errors/DatabaseError.js";
 /**
  * Represents a Grade.
- * @param {String} _id - The id of the grade.
+ * @param {String} _id - The _id of the grade.
  * @param {Number} level - The level of the grade.
  * @param {Array<Class>} classes - The classes of the grade.
  * */
@@ -36,7 +36,7 @@ export default class Grade extends BaseModel {
             level,
             classes
         });
-        this._id = null;
+        this.id = null;
         this._level = level;
         this._classes = classes;
     }
@@ -47,12 +47,12 @@ export default class Grade extends BaseModel {
      * @returns {Grade} The cast instance of the Grade class.
      */
     static castToGrade(grade) {
-        const { id, level, classes } = grade;
+        const { _id, level, classes } = grade;
         const castGrade = new Grade(
             level,
             classes
         );
-        castGrade.id = id.toString();
+        castGrade._id = _id.toString();
         return castGrade;
     }
 
@@ -62,9 +62,9 @@ export default class Grade extends BaseModel {
      * @returns {Object} An object representation of the Chat instance without underscores in the property names.
      */
     toJSON(){
-        const { id, level, classes } = this;
+        const { _id, level, classes } = this;
         return {
-            id,
+            _id,
             level,
             classes
         }
@@ -86,12 +86,12 @@ export default class Grade extends BaseModel {
                     }
                 ]);
 
-            grade.id = grade._id.toString();
+            grade._id = grade._id.toString();
 
             return this.castToGrade(grade);
         } catch (error) {
-            // here grade._id is used instead of grade.id because grade is an instance of the mongoose model
-            throw new DatabaseError(`Failed to populate grade with id #${grade._id}' \n${ error.stack }`);
+            // here grade._id is used instead of grade._id because grade is an instance of the mongoose model
+            throw new DatabaseError(`Failed to populate grade with _id #${grade._id}' \n${ error.stack }`);
         }
     }
 
@@ -121,12 +121,12 @@ export default class Grade extends BaseModel {
         this._classes = value;
     }
 
-    get id() {
-        return this._id;
+    get _id() {
+        return this.id;
     }
 
-    set id(value) {
-        this._id = value;
+    set _id(value) {
+        this.id = value;
     }
 
 }

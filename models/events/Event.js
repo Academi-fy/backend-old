@@ -13,7 +13,7 @@ import User from "../users/User.js";
 
 /**
  * @description Class representing an Event.
- * @param {String} id - The id of the event.
+ * @param {String} _id - The _id of the event.
  * @param {String} title - The title of the event.
  * @param {String} description - The description of the event.
  * @param {String} location - The location of the event.
@@ -89,7 +89,7 @@ export default class Event extends BaseModel {
             editHistory,
             subscribers
         });
-        this._id = null;
+        this.id = null;
         this._title = title;
         this._description = description;
         this._location = location;
@@ -110,7 +110,7 @@ export default class Event extends BaseModel {
      * @returns {Event} The cast instance of the Event class.
      */
     static castToEvent(event) {
-        const { id, title, description, location, host, clubs, startDate, endDate, information, tickets, state, editHistory, subscribers } = event;
+        const { _id, title, description, location, host, clubs, startDate, endDate, information, tickets, state, editHistory, subscribers } = event;
         const castEvent = new Event(
             title,
             description,
@@ -125,7 +125,7 @@ export default class Event extends BaseModel {
             editHistory,
             subscribers
         );
-        event.id = id.toString();
+        event._id = _id.toString();
         return castEvent;
     }
 
@@ -135,9 +135,9 @@ export default class Event extends BaseModel {
      * @returns {Object} An object representation of the Event instance without underscores in the property names.
      */
     toJSON(){
-        const { id, title, description, location, host, clubs, startDate, endDate, information, tickets, state, editHistory, subscribers } = this;
+        const { _id, title, description, location, host, clubs, startDate, endDate, information, tickets, state, editHistory, subscribers } = this;
         return {
-            id,
+            _id,
             title,
             description,
             location,
@@ -176,12 +176,12 @@ export default class Event extends BaseModel {
                         populate: User.getPopulationPaths()
                     },
                 ]);
-            event.id = event._id.toString();
+            event._id = event._id.toString();
 
             return this.castToClub(event);
         } catch (error) {
-            // here event._id is used instead of event.id because event is an instance of the mongoose model
-            throw new DatabaseError(`Failed to populate event with id #${event._id}' \n${ error.stack }`);
+            // here event._id is used instead of event._id because event is an instance of the mongoose model
+            throw new DatabaseError(`Failed to populate event with _id #${event._id}' \n${ error.stack }`);
         }
     }
 
@@ -291,12 +291,12 @@ export default class Event extends BaseModel {
         this._subscribers = value;
     }
 
-    get id() {
-        return this._id;
+    get _id() {
+        return this.id;
     }
 
-    set id(value) {
-        this._id = value;
+    set _id(value) {
+        this.id = value;
     }
 
 }

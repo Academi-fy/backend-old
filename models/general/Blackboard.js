@@ -14,7 +14,7 @@ import User from "../users/User.js";
 
 /**
  * @description Class representing a blackboard.
- * @param {String} _id - The id of the blackboard.
+ * @param {String} _id - The _id of the blackboard.
  * @param {String} title - The title of the blackboard.
  * @param {User} author - The author of the blackboard.
  * @param {String} coverImage - The cover image of the blackboard.
@@ -36,7 +36,7 @@ export default class Blackboard extends BaseModel {
     /**
      * @description Create a blackboard.
      * @param {String} title - The title of the blackboard.
-     * @param {String} author - The id of the author of the blackboard.
+     * @param {String} author - The _id of the author of the blackboard.
      * @param {String} coverImage - The cover image of the blackboard.
      * @param {String} text - The text of the blackboard.
      * @param {Array<Tag>} tags - The tags of the blackboard.
@@ -61,7 +61,7 @@ export default class Blackboard extends BaseModel {
             date,
             state
         });
-        this._id = null;
+        this.id = null;
         this._title = title;
         this._author = author;
         this._coverImage = coverImage;
@@ -77,7 +77,7 @@ export default class Blackboard extends BaseModel {
      * @returns {Blackboard} The cast instance of the Blackboard class.
      */
     static castToBlackboard(blackboard) {
-        const { id, title, author, coverImage, text, tags, date, state } = blackboard;
+        const { _id, title, author, coverImage, text, tags, date, state } = blackboard;
         const castBlackboard = new Blackboard(
             title,
             author,
@@ -87,7 +87,7 @@ export default class Blackboard extends BaseModel {
             date,
             state
         );
-        castBlackboard.id = id.toString();
+        castBlackboard._id = _id.toString();
         return castBlackboard;
     }
 
@@ -97,9 +97,9 @@ export default class Blackboard extends BaseModel {
      * @returns {Object} An object representation of the Blackboard instance without underscores in the property names.
      */
     toJSON(){
-        const { id, title, author, coverImage, text, tags, date, state } = this;
+        const { _id, title, author, coverImage, text, tags, date, state } = this;
         return {
-            id,
+            _id,
             title,
             author,
             coverImage,
@@ -138,12 +138,12 @@ export default class Blackboard extends BaseModel {
                         populate: Message.getPopulationPaths()
                     },
                 ]);
-            blackboard.id = blackboard._id.toString();
+            blackboard._id = blackboard._id.toString();
 
             return this.castToBlackboard(blackboard);
         } catch (error) {
-            // here blackboard._id is used instead of blackboard.id because blackboard is an instance of the mongoose model
-            throw new DatabaseError(`Failed to populate blackboard with id #${blackboard._id}' \n${ error.stack }`);
+            // here blackboard._id is used instead of blackboard._id because blackboard is an instance of the mongoose model
+            throw new DatabaseError(`Failed to populate blackboard with _id #${blackboard._id}' \n${ error.stack }`);
         }
     }
 
@@ -213,12 +213,12 @@ export default class Blackboard extends BaseModel {
         this._state = value;
     }
 
-    get id() {
-        return this._id;
+    get _id() {
+        return this.id;
     }
 
-    set id(value) {
-        this._id = value;
+    set _id(value) {
+        this.id = value;
     }
 
 }

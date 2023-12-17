@@ -132,7 +132,7 @@ router.post('/', async (req, res) => {
         }
 
         const newBlackboard = bodyToBlackboard(req.body);
-        newBlackboard.id = req.body.blackboard.id.toString();
+        newBlackboard._id = req.body.blackboard._id.toString();
 
         if (!newBlackboard) {
             logger.server.error(`Request #${ req.requestId }: Blackboard creation from '${ req.ip }' failed.`)
@@ -145,7 +145,7 @@ router.post('/', async (req, res) => {
             return;
         }
 
-        if (!newBlackboard.id) {
+        if (!newBlackboard._id) {
             logger.server.error(`Request #${ req.requestId }: Blackboard creation from '${ req.ip }' does not contain blackboard id in body`)
             res.status(400).send(
                 {
@@ -197,7 +197,7 @@ router.put('/:id', async (req, res) => {
         }
 
         const updatedBlackboard = bodyToBlackboard(req.body);
-        updatedBlackboard.id = req.body.blackboard.id.toString();
+        updatedBlackboard._id = req.body.blackboard._id.toString();
 
         if (!updatedBlackboard) {
             logger.server.error(`Request #${ req.requestId }: Blackboard update from '${ req.ip }' failed.`)
@@ -210,7 +210,7 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        if (updatedBlackboard.id !== req.params.id) {
+        if (updatedBlackboard._id !== req.params.id) {
             logger.server.error(`Request #${ req.requestId }: Blackboard update from '${ req.ip }' with URL '${ req.params.id }' does not match blackboard id in body '${ updatedBlackboard.id }'`);
             res.status(400).send(
                 {
@@ -221,7 +221,7 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        if (!updatedBlackboard.id) {
+        if (!updatedBlackboard._id) {
             logger.server.error(`Request #${ req.requestId }: Blackboard update from '${ req.ip }' with URL '${ req.params.id }' does not contain blackboard id in body`)
             res.status(400).send(
                 {

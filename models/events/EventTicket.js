@@ -10,9 +10,9 @@ import Event from "./Event.js";
 import User from "../users/User.js";
 /**
  * @description The class for an event ticket.
- * @param {String} _id - The id of the event ticket.
- * @param {Event} event - The id of the event of the ticket.
- * @param {User} buyer - The id of the buyer of the ticket.
+ * @param {String} _id - The _id of the event ticket.
+ * @param {Event} event - The _id of the event of the ticket.
+ * @param {User} buyer - The _id of the buyer of the ticket.
  * @param {Number} price - The price of the ticket.
  * @param {Number} saleDate - The date the ticket was sold.
  * */
@@ -29,8 +29,8 @@ export default class EventTicket extends BaseModel {
 
     /**
      * @description The constructor for an event ticket.
-     * @param {String} event - The id of the event of the ticket.
-     * @param {String} buyer - The id of the buyer of the ticket.
+     * @param {String} event - The _id of the event of the ticket.
+     * @param {String} buyer - The _id of the buyer of the ticket.
      * @param {Number} price - The price of the ticket.
      * @param {Number} saleDate - The date the ticket was sold.
      */
@@ -46,7 +46,7 @@ export default class EventTicket extends BaseModel {
             price,
             saleDate
         });
-        this._id = null;
+        this.id = null;
         this._event = event;
         this._buyer = buyer;
         this._price = price;
@@ -59,14 +59,14 @@ export default class EventTicket extends BaseModel {
      * @returns {EventTicket} The cast instance of the EventTicket class.
      */
     static castToEventTicket(eventTicket) {
-        const { id, event, buyer, price, saleDate } = eventTicket;
+        const { _id, event, buyer, price, saleDate } = eventTicket;
         const castEventTicket = new EventTicket(
             event,
             buyer,
             price,
             saleDate
         );
-        eventTicket.id = id.toString();
+        eventTicket._id = _id.toString();
         return castEventTicket;
     }
 
@@ -76,9 +76,9 @@ export default class EventTicket extends BaseModel {
      * @returns {Object} An object representation of the EventTicket instance without underscores in the property names.
      */
     toJSON(){
-        const { id, event, buyer, price, saleDate } = this;
+        const { _id, event, buyer, price, saleDate } = this;
         return {
-            id,
+            _id,
             event,
             buyer,
             price,
@@ -105,12 +105,12 @@ export default class EventTicket extends BaseModel {
                         populate: User.getPopulationPaths()
                     }
                 ]);
-            eventTicket.id = eventTicket._id.toString();
+            eventTicket._id = eventTicket._id.toString();
 
             return this.castToEventTicket(eventTicket);
         } catch (error) {
-            // here eventTicket._id is used instead of eventTicket.id because eventTicket is an instance of the mongoose model
-            throw new DatabaseError(`Failed to populate event ticket with id #${eventTicket._id}' \n${ error.stack }`);
+            // here eventTicket._id is used instead of eventTicket._id because eventTicket is an instance of the mongoose model
+            throw new DatabaseError(`Failed to populate event ticket with _id #${eventTicket._id}' \n${ error.stack }`);
         }
     }
 
@@ -156,12 +156,12 @@ export default class EventTicket extends BaseModel {
         this._saleDate = value;
     }
 
-    get id() {
-        return this._id;
+    get _id() {
+        return this.id;
     }
 
-    set id(value) {
-        this._id = value;
+    set _id(value) {
+        this.id = value;
     }
 
 }

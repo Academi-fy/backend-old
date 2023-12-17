@@ -133,7 +133,7 @@ router.post('/', async (req, res) => {
         }
 
         const newChat = bodyToChat(req.body);
-        newChat.id = req.body.chat.id.toString();
+        newChat._id = req.body.chat._id.toString();
 
         if (!newChat) {
             logger.server.error(`Request #${ req.requestId }: Chat creation from '${ req.ip }' does not contain chat in body`)
@@ -146,7 +146,7 @@ router.post('/', async (req, res) => {
             return;
         }
 
-        if (!newChat.id) {
+        if (!newChat._id) {
             logger.server.error(`Request #${ req.requestId }: Chat creation from '${ req.ip }' does not contain chat id in body`)
             res.status(400).send(
                 {
@@ -195,7 +195,7 @@ router.put('/:id', async (req, res) => {
         }
 
         const updatedChat = bodyToChat(req.body);
-        updatedChat.id = req.body.chat.id.toString();
+        updatedChat._id = req.body.chat.id.toString();
 
         if (!updatedChat) {
             logger.server.error(`Request #${ req.requestId }: Chat update from '${ req.ip }' does not contain the full information.`)
@@ -208,7 +208,7 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        if (req.params.id !== updatedChat.id) {
+        if (req.params.id !== updatedChat._id) {
             logger.server.error(`Request #${ req.requestId }: Chat update from '${ req.ip }' with URL '${ req.params.id }' does not match chat id in body '${ updatedChat.id }'`)
             res.status(400).send(
                 {
@@ -219,7 +219,7 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        if (!updatedChat.id) {
+        if (!updatedChat._id) {
             logger.server.error(`Request #${ req.requestId }: Chat update from '${ req.ip }' with URL '${ req.params.id }' does not contain chat id in body`)
             res.status(400).send(
                 {

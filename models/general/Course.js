@@ -14,7 +14,7 @@ import User from "../users/User.js";
 
 /**
  * @description Class representing a Course.
- * @param {String} _id - The id of the course.
+ * @param {String} _id - The _id of the course.
  * @param {Array<User>} members - The members of the course.
  * @param {Array<Class>} classes - The classes in the course.
  * @param {User} teacher - The teacher of the course.
@@ -39,9 +39,9 @@ export default class Course extends BaseModel {
      * @description Create a course.
      * @param {Array} members - The members of the course.
      * @param {Array<String>} classes - The classes in the course.
-     * @param {String} teacher - The id of the teacher of the course.
-     * @param {String} chat - The id of the chat of the course.
-     * @param {String} subject - The id of the subject of the course.
+     * @param {String} teacher - The _id of the teacher of the course.
+     * @param {String} chat - The _id of the chat of the course.
+     * @param {String} subject - The _id of the subject of the course.
      */
     constructor(
         members,
@@ -57,7 +57,7 @@ export default class Course extends BaseModel {
             chat,
             subject
         });
-        this._id = null;
+        this.id = null;
         this._members = members;
         this._classes = classes;
         this._teacher = teacher;
@@ -71,7 +71,7 @@ export default class Course extends BaseModel {
      * @returns {Course} The cast instance of the Course class.
      */
     static castToCourse(course) {
-        const { id, members, classes, teacher, chat, subject } = course;
+        const { _id, members, classes, teacher, chat, subject } = course;
         const castCourse = new Course(
             members,
             classes,
@@ -79,7 +79,7 @@ export default class Course extends BaseModel {
             chat,
             subject
         );
-        castCourse.id = id.toString();
+        castCourse._id = _id.toString();
         return castCourse;
     }
 
@@ -89,9 +89,9 @@ export default class Course extends BaseModel {
      * @returns {Object} An object representation of the Course instance without underscores in the property names.
      */
     toJSON(){
-        const { id, members, classes, teacher, chat, subject } = this;
+        const { _id, members, classes, teacher, chat, subject } = this;
         return {
-            id,
+            _id,
             members,
             classes,
             teacher,
@@ -132,12 +132,12 @@ export default class Course extends BaseModel {
                     },
                 ]);
 
-            course.id = course._id.toString();
+            course._id = course._id.toString();
 
             return this.castToCourse(course);
         } catch (error) {
-            // here course._id is used instead of course.id because course is an instance of the mongoose model
-            throw new DatabaseError(`Failed to populate course with id #${course._id}' \n${ error.stack }`);
+            // here course._id is used instead of course._id because course is an instance of the mongoose model
+            throw new DatabaseError(`Failed to populate course with _id #${course._id}' \n${ error.stack }`);
         }
     }
 
@@ -191,12 +191,12 @@ export default class Course extends BaseModel {
         this._subject = value;
     }
 
-    get id() {
-        return this._id;
+    get _id() {
+        return this.id;
     }
 
-    set id(value) {
-        this._id = value;
+    set _id(value) {
+        this.id = value;
     }
 
 

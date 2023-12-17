@@ -12,7 +12,7 @@ import Course from "./Course.js";
 import User from "../users/User.js";
 /**
  * @description Class representing a school class.
- * @param {String} id - The id of the class.
+ * @param {String} _id - The _id of the class.
  * @param {Grade} grade - The grade of the class.
  * @param {Array<Course>} courses - The courses of the class.
  * @param {Array<User>} members - The members of the class.
@@ -32,7 +32,7 @@ export default class Class extends BaseModel {
 
     /**
      * @description Create a class.
-     * @param {String} grade - The id of the grade of the class.
+     * @param {String} grade - The _id of the grade of the class.
      * @param {Array<String>} courses - The ids of the courses of the class.
      * @param {Array<String>} members - The ids of the members of the class.
      * @param {String} specifiedGrade - The specified grade of the class.
@@ -49,7 +49,7 @@ export default class Class extends BaseModel {
             members,
             specifiedGrade
         });
-        this._id = null;
+        this.id = null;
         this._grade = grade;
         this._courses = courses;
         this._members = members;
@@ -62,14 +62,14 @@ export default class Class extends BaseModel {
      * @returns {Class} The cast instance of the Class class.
      */
     static castToClass(class_) {
-        const { id, grade, courses, members, specifiedGrade } = class_;
+        const { _id, grade, courses, members, specifiedGrade } = class_;
         const castClass = new Class(
             grade,
             courses,
             members,
             specifiedGrade
         );
-        castClass.id = id.toString();
+        castClass._id = _id.toString();
     }
 
     /**
@@ -78,9 +78,9 @@ export default class Class extends BaseModel {
      * @returns {Object} An object representation of the Class instance without underscores in the property names.
      */
     toJSON(){
-        const { id, grade, courses, members, specifiedGrade } = this;
+        const { _id, grade, courses, members, specifiedGrade } = this;
         return {
-            id,
+            _id,
             grade,
             courses,
             members,
@@ -112,12 +112,12 @@ export default class Class extends BaseModel {
                     },
                 ]);
 
-            class_.id = class_._id.toString();
+            class_._id = class_._id.toString();
 
             return this.castToClass(class_);
         } catch (error) {
-            // here class_._id is used instead of class_.id because class_ is an instance of the mongoose model
-            throw new DatabaseError(`Failed to populate class with id #${class_._id}' \n${ error.stack }`);
+            // here class_._id is used instead of class_._id because class_ is an instance of the mongoose model
+            throw new DatabaseError(`Failed to populate class with _id #${class_._id}' \n${ error.stack }`);
         }
     }
 
@@ -163,12 +163,12 @@ export default class Class extends BaseModel {
         this._specifiedGrade = value;
     }
 
-    get id() {
-        return this._id;
+    get _id() {
+        return this.id;
     }
 
-    set id(value) {
-        this._id = value;
+    set _id(value) {
+        this.id = value;
     }
 
 }
