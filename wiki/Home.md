@@ -53,5 +53,3 @@ Beiträge sind willkommen! Bitte lesen Sie die Richtlinien zur Mitwirkung, bevor
 ## Lizenz
 
 Dieses Projekt steht unter den Bedingungen der MIT-Lizenz.
-
-<sub>© Copyright: Daniel Dopatka, Linus Bung (2023)</sub>

@@ -23,22 +23,7 @@ const requiredProperties = [ 'name', 'grades', 'courses', 'members',
  * @returns {School} - The formatted school
  * */
 function bodyToSchool(body) {
-
-    const school = body.school;
-
-    return new School(
-        school.name,
-        school.grades,
-        school.courses,
-        school.members,
-        school.classes,
-        school.messages,
-        school.subjects,
-        school.clubs,
-        school.events,
-        school.blackboards,
-    );
-
+    return School.castToSchool(body.school);
 }
 
 /**
@@ -48,7 +33,7 @@ function bodyToSchool(body) {
  * */
 router.get('/', async (req, res) => {
 
-    const schools = await School.getAllSchools();
+    const schools = await School.getAll();
     res.json(schools);
 
 });
@@ -76,7 +61,7 @@ router.get('/filter', async (req, res) => {
             return;
         }
 
-        const schools = await School.getAllSchoolsByRule(filter);
+        const schools = await School.getAllByRule(filter);
         res.json(schools)
     } catch (error) {
         logger.server.error(error);
@@ -113,7 +98,7 @@ router.get('/:id', async (req, res) => {
             return;
         }
 
-        const school = await School.getSchoolById(id);
+        const school = await School.getById(id);
         res.json(school);
     } catch (error) {
         logger.server.error(error);
@@ -174,7 +159,7 @@ router.post('/', async (req, res) => {
             return;
         }
 
-        const school = await School.createSchool(newSchool);
+        const school = await newSchool.create();
         res.json(school);
     } catch (error) {
         logger.server.error(error);
@@ -198,6 +183,7 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
 
     try {
+        const oldSchool = await School.getById(req.params.id);
 
         if (isMissingProperty(req.body.school, requiredProperties)) {
             logger.server.error(`Request #${ req.requestId }: School creation from '${ req.ip }' does not contain all required properties.`)
@@ -246,7 +232,7 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        if (await School.getSchoolById(updatedSchool._id) === null) {
+        if (oldSchool === null) {
             logger.server.error(`Request #${ req.requestId }: School update from '${ req.ip }' with URL '${ req.url }' does not match any school`)
             res.status(400).send(
                 {
@@ -257,7 +243,7 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        const school = await School.updateSchool(req.params.id, updatedSchool);
+        const school = await oldSchool.update(updatedSchool);
         res.json(school);
     } catch (error) {
         logger.server.error(error);
@@ -281,33 +267,36 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
 
     try {
+
         const id = req.params.id;
 
         if (!id) {
-            logger.server.error(`Request #${ req.requestId }: School deletion from '${ req.ip }' does not contain school id in URL`)
+            logger.server.error(`Request #${ req.requestId }: School deletion from '${ req.ip }' does not contain id in params`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.deletion.failed,
-                    errorMessage: "School id missing in URL."
+                    errorMessage: "School id missing in params."
                 }
             );
             return;
         }
 
-        const deleted = await School.deleteSchool(id);
+        const school = await School.getById(id);
 
-        if (!deleted) {
-            logger.server.error(`Request #${ req.requestId }: School deletion from '${ req.ip }' for school with id '${ id }' could not be completed`)
+        if (school === null) {
+            logger.server.error(`Request #${ req.requestId }: School deletion from '${ req.ip }' with URL '${ req.url }' does not match any school`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.deletion.failed,
-                    errorMessage: "School could not be deleted."
+                    errorMessage: "School id in params does not match any school."
                 }
             );
             return;
         }
 
-        res.send(deleted);
+        const deletionState = await school.delete();
+        res.json(deletionState);
+
     } catch (error) {
         logger.server.error(error);
         res.status(400).send(
@@ -317,6 +306,7 @@ router.delete('/:id', async (req, res) => {
             }
         );
     }
+
 });
 
 export default router;

@@ -13,7 +13,6 @@ import { nanoid } from "nanoid";
 import errors from "../errors.js";
 import memoryLogger from "../tools/logging/memoryLogger.js";
 import * as db from '../mongoDb/db.js';
-import Message from "../models/messages/Message.js";
 import { initCache } from "../tools/cacheInitlializer.js";
 
 dotenv.config();

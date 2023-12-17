@@ -3,17 +3,14 @@
  * @author Daniel Dopatka
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
-import cache from "../../httpServer/cache.js";
-import BlackboardSchema from "../../mongoDb/schemas/general/BlackboardSchema.js";
-import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../mongoDb/collectionAccess.js";
-import { validateArray, validateNotEmpty, validateNumber, verifyInCache } from "../propertyValidation.js";
-import { findByRule } from "../findByRule.js";
-import RetrievalError from "../../httpServer/errors/RetrievalError.js";
-import DatabaseError from "../../httpServer/errors/DatabaseError.js";
-import CacheError from "../../httpServer/errors/CacheError.js";
-import User from "../users/User.js";
 
-const expirationTime = 10 * 60 * 1000;
+import BaseModel from "../BaseModel.js";
+import BlackboardSchema from "../../mongoDb/schemas/general/BlackboardSchema.js";
+import Message from "../messages/Message.js";
+import Club from "../clubs/Club.js";
+import DatabaseError from "../../httpServer/errors/DatabaseError.js";
+import Course from "./Course.js";
+import User from "../users/User.js";
 
 /**
  * @description Class representing a blackboard.
@@ -26,7 +23,15 @@ const expirationTime = 10 * 60 * 1000;
  * @param {Number} date - The date of the blackboard.
  * @param {String} state - The state of the blackboard. Valid states are: 'SUGGESTED', 'REJECTED', 'APPROVED', 'EDIT_SUGGESTED', 'EDIT_REJECTED', 'EDIT_APPROVED', 'DELETE_SUGGESTED', 'DELETE_REJECTED', 'DELETE_APPROVED'
  * */
-export default class Blackboard {
+export default class Blackboard extends BaseModel {
+
+    static modelName = 'Blackboard';
+    static schema = BlackboardSchema;
+    static cacheKey = 'blackboards';
+    static expirationTime = 10; // time in minutes after which the cache expires
+    static populationPaths = [
+        { path: 'author' }
+    ];
 
     /**
      * @description Create a blackboard.
@@ -47,277 +52,173 @@ export default class Blackboard {
         date,
         state
     ) {
-        this.title = title;
-        this.author = author;
-        this.coverImage = coverImage;
-        this.text = text;
-        this.tags = tags;
-        this.date = date;
-        this.state = state;
-    }
-
-    get _title() {
-        return this.title;
-    }
-
-    set _title(value) {
-        validateNotEmpty('Blackboard title', value);
-        this.title = value;
-    }
-
-    get _author() {
-        return this.author;
-    }
-
-    set _author(value) {
-        validateNotEmpty('Blackboard author', value);
-        this.author = value;
-    }
-
-    get _coverImage() {
-        return this.coverImage;
-    }
-
-    set _coverImage(value) {
-        validateNotEmpty('Blackboard cover image', value);
-        this.coverImage = value;
-    }
-
-    get _text() {
-        return this.text;
-    }
-
-    set _text(value) {
-        validateNotEmpty('Blackboard text', value);
-        this.text = value;
-    }
-
-    get _tags() {
-        return this.tags;
-    }
-
-    set _tags(value) {
-        validateArray('Blackboard tags', value);
-        this.tags = value;
-    }
-
-    get _date() {
-        return this.date;
-    }
-
-    set _date(value) {
-        validateNumber('Blackboard date', value);
-        this.date = value;
-    }
-
-    get _state() {
-        return this.state;
-    }
-
-    set _state(value) {
-        validateNotEmpty('Blackboard state', value);
-        this.state = value;
+        super({
+            title,
+            author,
+            coverImage,
+            text,
+            tags,
+            date,
+            state
+        });
+        this._id = null;
+        this._title = title;
+        this._author = author;
+        this._coverImage = coverImage;
+        this._text = text;
+        this._tags = tags;
+        this._date = date;
+        this._state = state;
     }
 
     /**
-     * Update the cache of blackboards.
-     * @return {Promise<Array<Blackboard>>} The updated list of blackboards.
+     * Casts a plain object to an instance of the Blackboard class.
+     * @param {Object} blackboard - The plain object to cast.
+     * @returns {Blackboard} The cast instance of the Blackboard class.
      */
-    static async updateBlackboardCache() {
-
-        cache.del('blackboards');
-        const blackboardsFromDb = await getAllDocuments(BlackboardSchema);
-
-        const blackboards = [];
-        for (const blackboard of blackboardsFromDb) {
-            blackboards.push(
-                await this.populateBlackboard(blackboard)
-            );
-        }
-
-        cache.put('blackboards', blackboards, expirationTime);
-        return blackboards;
-    }
-
-    /**
-     * Get all blackboards.
-     * @return {Promise<Array<Blackboard>>} The list of blackboards.
-     */
-    static async getAllBlackboards() {
-
-        const blackboards = cache.get("blackboards");
-
-        if (blackboards) {
-            return blackboards;
-        }
-        return await this.updateBlackboardCache();
-    }
-
-    /**
-     * Get a blackboard by id.
-     * @param {String} id - The id of the blackboard.
-     * @return {Promise<Blackboard>} The blackboard.
-     * @throws {RetrievalError} When the blackboard could not be found.
-     */
-    static async getBlackboardById(id) {
-
-        const blackboards = await this.getAllBlackboards();
-
-        const blackboard = blackboards.find(blackboard => blackboard._id.toString() === id);
-        if (!blackboard) throw new RetrievalError(`Failed to find blackboard with id:\n${ id }`);
-
-        return blackboard;
-
-    }
-
-    /**
-     * @description Get all blackboards that match the rule.
-     * @param {Object} rule - The rule to find the blackboards by.
-     * @return {Promise<Array<Blackboard>>} The matching blackboard.
-     * @throws {RetrievalError} When the blackboards could not be found.
-     */
-    static async getAllBlackboardsByRule(rule) {
-
-        const blackboards = await this.getAllBlackboards();
-
-        const matchingBlackboards = findByRule(blackboards, rule);
-        if (!matchingBlackboards) throw new RetrievalError(`Failed to find blackboards matching rule:\n${ rule }`);
-
-        return matchingBlackboards;
-
-    }
-
-    /**
-     * Create a new blackboard.
-     * @param {Blackboard} blackboard - The blackboard to create.
-     * @return {Promise<Blackboard>} The created blackboard.
-     * @throws {DatabaseError} When the blackboard could not be created.
-     * @throws {CacheError} When the blackboard could not be put in the cache.
-     */
-    static async createBlackboard(blackboard) {
-
-        const blackboards = await this.getAllBlackboards();
-
-        const insertedBlackboard = await createDocument(BlackboardSchema, blackboard);
-        if (!insertedBlackboard) throw new DatabaseError(`Failed to create blackboard:\n${ blackboard }`);
-
-        blackboards.push(
-            await this.populateBlackboard(insertedBlackboard)
+    static castToBlackboard(blackboard) {
+        const { id, title, author, coverImage, text, tags, date, state } = blackboard;
+        const castBlackboard = new Blackboard(
+            title,
+            author,
+            coverImage,
+            text,
+            tags,
+            date,
+            state
         );
-        cache.put('blackboards', blackboards, expirationTime);
-
-        if (!this.verifyBlackboardInCache(insertedBlackboard))
-
-            if (!await verifyInCache(cache.get('blackboards'), insertedBlackboard, this.updateBlackboardCache))
-                throw new CacheError(`Failed to put blackboard in cache:\n${ insertedBlackboard }`);
-
-        return insertedBlackboard;
+        castBlackboard.id = id.toString();
+        return castBlackboard;
     }
 
     /**
-     * Update a messages.
-     * @param {String} blackboardId - The ID of the blackboard to update.
-     * @param {Blackboard} updateBlackboard - The updated blackboard object.
-     * @return {Promise<Blackboard>} The updated blackboard object.
-     * @throws {DatabaseError} When the blackboard could not be updated.
-     * @throws {CacheError} When the blackboard could not be put in the cache.
+     * Converts the Blackboard instance into a JSON-friendly format by removing the underscores from the property names.
+     * This method is automatically called when JSON.stringify() is used on a Blackboard instance.
+     * @returns {Object} An object representation of the Blackboard instance without underscores in the property names.
      */
-    static async updateBlackboard(blackboardId, updateBlackboard) {
-
-        const blackboards = await this.getAllBlackboards();
-
-        let updatedBlackboard = await updateDocument(BlackboardSchema, blackboardId, updateBlackboard);
-        if (!updatedBlackboard) throw new DatabaseError(`Failed to update blackboard:\n${ updateBlackboard }`);
-
-        updatedBlackboard = await this.populateBlackboard(updatedBlackboard);
-
-        blackboards.splice(blackboards.findIndex(blackboard => blackboard._id.toString() === blackboardId), 1, updatedBlackboard);
-        cache.put('blackboards', blackboards, expirationTime);
-
-        if (!this.verifyBlackboardInCache(updatedBlackboard))
-
-            if (!await verifyInCache(cache.get('blackboards'), updatedBlackboard, this.updateBlackboardCache))
-                throw new CacheError(`Failed to put blackboard in cache:\n${ updatedBlackboard }`);
-
-        return updatedBlackboard;
-    }
-
-    /**
-     * Delete a blackboard.
-     * @param {String} blackboardId - The ID of the blackboard to delete.
-     * @return {Promise<Boolean>} True if the blackboard was deleted, false otherwise.
-     * @throws {DatabaseError} When the blackboard could not be deleted.
-     * @throws {CacheError} When the blackboard could not be deleted from the cache.
-     */
-    static async deleteBlackboard(blackboardId) {
-
-        const deleteBlackboard = await deleteDocument(BlackboardSchema, blackboardId);
-        if (!deleteBlackboard) throw new DatabaseError(`Failed to delete blackboard with id:\n${ blackboardId }`);
-
-        const blackboards = await this.getAllBlackboards();
-        blackboards.splice(blackboards.findIndex(blackboard => blackboard._id.toString() === blackboardId), 1);
-        cache.put('blackboards', blackboards, expirationTime);
-
-        if (this.verifyBlackboardInCache(deleteBlackboard))
-            throw new CacheError(`Failed to delete blackboard in cache:\n${ deleteBlackboard }`);
-
-
-        return true;
-    }
-
-    /**
-     * Verify if a blackboard is in the cache.
-     * @param {Blackboard} testBlackboard - The blackboard to which the messages belongs.
-     * @return {Boolean} True if the blackboard is in the cache, false otherwise.
-     */
-    static verifyBlackboardInCache(testBlackboard) {
-
-        const cacheResult = cache.get('blackboards').find(blackboard => blackboard._id === testBlackboard._id);
-
-        return Boolean(cacheResult);
+    toJSON(){
+        const { id, title, author, coverImage, text, tags, date, state } = this;
+        return {
+            id,
+            title,
+            author,
+            coverImage,
+            text,
+            tags,
+            date,
+            state
+        };
 
     }
 
     /**
-     * Populate a blackboard.
-     * @param {Object} blackboard - The blackboard to populate.
-     * @return {Blackboard} The populated blackboard.
+     * Populates the given Blackboard with related data from other collections.
+     * @param {Object} blackboard - The Blackboard to populate.
+     * @returns {Promise<Blackboard>} The populated Blackboard.
+     * @throws {DatabaseError} If the Blackboard could not be populated.
      */
     static async populateBlackboard(blackboard) {
-
         try {
-
             blackboard = await blackboard
                 .populate([
                     {
-                        path: 'author',
+                        path: 'targets',
                         populate: User.getPopulationPaths()
-                    }
+                    },
+                    {
+                        path: 'courses',
+                        populate: Course.getPopulationPaths()
+                    },
+                    {
+                        path: 'clubs',
+                        populate: Club.getPopulationPaths()
+                    },
+                    {
+                        path: 'messages',
+                        populate: Message.getPopulationPaths()
+                    },
                 ]);
+            blackboard.id = blackboard._id.toString();
 
-            const populatedBlackboard = new Blackboard(
-                blackboard.title,
-                blackboard.author,
-                blackboard.coverImage,
-                blackboard.text,
-                blackboard.tags,
-                blackboard.date,
-                blackboard.state
-            );
-            populatedBlackboard._id = blackboard._id.toString();
-
-            return populatedBlackboard;
-
+            return this.castToBlackboard(blackboard);
         } catch (error) {
-            throw new DatabaseError(`Failed to populate blackboard:\n${ blackboard }\n${ error }`);
+            // here blackboard._id is used instead of blackboard.id because blackboard is an instance of the mongoose model
+            throw new DatabaseError(`Failed to populate blackboard with id #${blackboard._id}' \n${ error.stack }`);
         }
-
     }
 
-    static getPopulationPaths() {
-        return [
-            { path: 'author' }
-        ]
+    /**
+     * Calls the static populateBlackboard method.
+     * @param {Object} object - The instance to populate.
+     * @returns {Promise<Blackboard>} The populated instance.
+     * @throws {DatabaseError} If the instance could not be populated.
+     */
+    static async populate(object) {
+        return await this.populateBlackboard(object);
+    }
+
+    get title() {
+        return this._title;
+    }
+
+    set title(value) {
+        this._title = value;
+    }
+
+    get author() {
+        return this._author;
+    }
+
+    set author(value) {
+        this._author = value;
+    }
+
+    get coverImage() {
+        return this._coverImage;
+    }
+
+    set coverImage(value) {
+        this._coverImage = value;
+    }
+
+    get text() {
+        return this._text;
+    }
+
+    set text(value) {
+        this._text = value;
+    }
+
+    get tags() {
+        return this._tags;
+    }
+
+    set tags(value) {
+        this._tags = value;
+    }
+
+    get date() {
+        return this._date;
+    }
+
+    set date(value) {
+        this._date = value;
+    }
+
+    get state() {
+        return this._state;
+    }
+
+    set state(value) {
+        this._state = value;
+    }
+
+    get id() {
+        return this._id;
+    }
+
+    set id(value) {
+        this._id = value;
     }
 
 }

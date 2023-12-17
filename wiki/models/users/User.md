@@ -42,7 +42,8 @@ User {
     type: "TEACHER",
     classes: [ { ... } ],
     extraCourses: [ { ... } ],
-    blackboards: [ { ... } ]
+    blackboards: [ { ... } ],
+    clubs: [ { ... } ],
 }
 ```
 
@@ -56,10 +57,11 @@ User {
 | `classes`      | Array<[Class](https://github.com/Academi-fy/backend/wiki/Class)>           | Die Klassen, die dem User zugeordnet sind.                        |
 | `extraCourses` | Array<[Course](https://github.com/Academi-fy/backend/wiki/Course)>         | Die Kurse, die dem User zusätzlich zugeordnet sind.               |
 | `blackboards`  | Array<[Blackboard](https://github.com/Academi-fy/backend/wiki/Blackboard)> | Die Blackboards, die dem User zugeordnet sind.                    |
+| `clubs`        | Array<[Club](https://github.com/Academi-fy/backend/wiki/Club)>             | Die Clubs, die dem User zugeordnet sind.                          |
 
 #### Besonderheiten
 
-- `classes`, `extraCourses` und blackboards sind MongoDB Referenzen zu den jeweiligen Objekten
+- `classes`, `extraCourses`, `blackboards` und `clubs` sind MongoDB Referenzen zu den jeweiligen Objekten
     - sie werden erst beim Abrufen auf dem HTTP-Server aufgelöst
 
 - `type` ist ein Enum, der in der Datenbank als String gespeichert wird
@@ -141,6 +143,12 @@ DELETE /api/users/:id
             type: ObjectId,
             ref: 'Blackboard'
         }
+    ],
+    clubs: [
+        {
+          type: ObjectId,
+          ref: 'Club'
+        }
     ]
 
 },
@@ -148,5 +156,3 @@ DELETE /api/users/:id
     timestamps: true
 }
 ```
-
-<sub>© Copyright: Daniel Dopatka, Linus Bung (2023)</sub>

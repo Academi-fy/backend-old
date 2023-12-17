@@ -3,19 +3,11 @@
  * @author Daniel Dopatka
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
-import cache from "../../httpServer/cache.js";
+import BaseModel from "../BaseModel.js";
 import EventTicketSchema from "../../mongoDb/schemas/events/EventTicketSchema.js";
-import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../mongoDb/collectionAccess.js";
-import { validateNumber, validateObject, verifyInCache } from "../propertyValidation.js";
-import { findByRule } from "../findByRule.js";
-import RetrievalError from "../../httpServer/errors/RetrievalError.js";
 import DatabaseError from "../../httpServer/errors/DatabaseError.js";
-import CacheError from "../../httpServer/errors/CacheError.js";
-import User from "../users/User.js";
 import Event from "./Event.js";
-
-const expirationTime = 15 * 60 * 1000;
-
+import User from "../users/User.js";
 /**
  * @description The class for an event ticket.
  * @param {String} _id - The id of the event ticket.
@@ -24,7 +16,16 @@ const expirationTime = 15 * 60 * 1000;
  * @param {Number} price - The price of the ticket.
  * @param {Number} saleDate - The date the ticket was sold.
  * */
-export default class EventTicket {
+export default class EventTicket extends BaseModel {
+
+    static modelName = 'EventTicket';
+    static schema = EventTicketSchema;
+    static cacheKey = 'eventTickets';
+    static expirationTime = 15; // time in minutes after which the cache expires
+    static populationPaths = [
+        { path: 'event' },
+        { path: 'buyer' }
+    ];
 
     /**
      * @description The constructor for an event ticket.
@@ -39,215 +40,60 @@ export default class EventTicket {
         price,
         saleDate
     ) {
-        this.event = event;
-        this.buyer = buyer;
-        this.price = price;
-        this.saleDate = saleDate;
-    }
-
-    get _event() {
-        return this.event;
-    }
-
-    set _event(value) {
-        validateObject('Event ticket event', value)
-        this.event = value;
-    }
-
-    get _buyer() {
-        return this.buyer;
-    }
-
-    set _buyer(value) {
-        validateObject('Event ticket buyer', value)
-        this.buyer = value;
-    }
-
-    get _price() {
-        return this.price;
-    }
-
-    set _price(value) {
-        validateNumber('Event ticket price', value);
-        this.price = value;
-    }
-
-    get _saleDate() {
-        return this.saleDate;
-    }
-
-    set _saleDate(value) {
-        validateNumber('Event ticket sale date', value);
-        this.saleDate = value;
+        super({
+            event,
+            buyer,
+            price,
+            saleDate
+        });
+        this._id = null;
+        this._event = event;
+        this._buyer = buyer;
+        this._price = price;
+        this._saleDate = saleDate;
     }
 
     /**
-     * @description Create an event ticket.
-     * @returns {Promise<Array<EventTicket>>} - The updated event tickets.
+     * Casts a plain object to an instance of the EventTicket class.
+     * @param {Object} eventTicket - The plain object to cast.
+     * @returns {EventTicket} The cast instance of the EventTicket class.
      */
-    static async updateEventTicketCache() {
-
-        cache.del('eventTickets');
-        const eventTicketsFromDb = await getAllDocuments(EventTicketSchema);
-
-        let eventTickets = [];
-        for (const eventTicket in eventTicketsFromDb) {
-            eventTickets.push(
-                await this.populateEvent(eventTicket)
-            );
-        }
-
-        cache.put('eventTickets', eventTickets, expirationTime);
-        return eventTickets;
-    }
-
-    /**
-     * @description Get all the event tickets.
-     * @returns {Promise<Array<EventTicket>>} - The event tickets.
-     */
-    static async getAllEventTickets() {
-
-        const cacheResults = cache.get('eventTickets');
-
-        if (cacheResults) {
-            return cacheResults;
-        }
-        else return await this.updateEventTicketCache();
-
-    }
-
-    /**
-     * @description Get an event ticket by its id.
-     * @param {String} eventTicketId - The id of the event ticket.
-     * @returns {Promise<EventTicket>} - The event ticket.
-     * @throws {RetrievalError} - When the event ticket could not be found.
-     */
-    static async getEventTicketById(eventTicketId) {
-
-        const eventTickets = await this.getAllEventTickets();
-
-        const eventTicket = eventTickets.find(eventTicket => eventTicket._id === eventTicketId);
-        if (!eventTicket) throw new RetrievalError(`Failed to get event ticket:\n${ eventTicketId }`);
-
-        return eventTicket;
-
-    }
-
-    /**
-     * @description Get all event ticket that match a rule.
-     * @param {Object} rule - The rule to find the event tickets by.
-     * @returns {Promise<Array<EventTicket>>} - The matching event tickets.
-     * @throws {RetrievalError} - When the event tickets could not be found.
-     * */
-    static async getAllEventTicketsByRule(rule) {
-
-        const eventTickets = await this.getAllEventTickets();
-
-        const matchingTickets = findByRule(eventTickets, rule);
-        if (!matchingTickets) throw new RetrievalError(`Failed to get event tickets with rule:\n${ rule }`);
-
-        return matchingTickets;
-
-    }
-
-    /**
-     * @description Create an event ticket.
-     * @param {EventTicket} eventTicket - The event ticket to create.
-     * @returns {Promise<EventTicket>} - The created event ticket.
-     * @throws {DatabaseError} - When the event ticket could not be created.
-     * @throws {CacheError} - When the event ticket could not be put in the cache.
-     */
-    static async createEventTicket(eventTicket) {
-
-        const eventTickets = await this.getAllEventTickets();
-
-        const insertedEventTicket = await createDocument(EventTicketSchema, eventTicket);
-        if (!insertedEventTicket) throw new DatabaseError(`Failed to create event ticket:\n${ eventTicket }`);
-
-        eventTickets.push(
-            await this.populateEvent(insertedEventTicket)
+    static castToEventTicket(eventTicket) {
+        const { id, event, buyer, price, saleDate } = eventTicket;
+        const castEventTicket = new EventTicket(
+            event,
+            buyer,
+            price,
+            saleDate
         );
-        cache.put('eventTickets', eventTickets, expirationTime);
-
-        if (!this.verifyTicketInCache(insertedEventTicket))
-
-            if (!await verifyInCache(cache.get('eventTickets'), insertedEventTicket, this.updateEventTicketCache))
-                throw new CacheError(`Failed to put event ticket in cache:\n${ insertedEventTicket }`);
-
-        return insertedEventTicket;
+        eventTicket.id = id.toString();
+        return castEventTicket;
     }
 
     /**
-     * @description Update an event ticket.
-     * @param {String} id - The id of the event ticket to update.
-     * @param {EventTicket} eventTicket - The event ticket to update.
-     * @returns {Promise<EventTicket>} - The updated event ticket.
-     * @throws {DatabaseError} - When the event ticket could not be updated.
-     * @throws {CacheError} - When the event ticket could not be put in the cache.
+     * Converts the EventTicket instance into a JSON-friendly format by removing the underscores from the property names.
+     * This method is automatically called when JSON.stringify() is used on an EventTicket instance.
+     * @returns {Object} An object representation of the EventTicket instance without underscores in the property names.
      */
-    static async updateEventTicket(id, eventTicket) {
-
-        const eventTickets = await this.getAllEventTickets();
-
-        let updatedEventTicket = await updateDocument(EventTicketSchema, id, eventTicket);
-        if (!updatedEventTicket) throw new DatabaseError(`Failed to update event ticket:\n${ eventTicket }`);
-
-        updatedEventTicket = await this.populateEvent(updatedEventTicket);
-
-        eventTickets.splice(eventTickets.indexOf(eventTicket), 1, updatedEventTicket);
-        cache.put('eventTickets', eventTickets, expirationTime);
-
-        if (!this.verifyTicketInCache(updatedEventTicket))
-
-            if (!await verifyInCache(cache.get('eventTickets'), updatedEventTicket, this.updateEventTicketCache))
-                throw new CacheError(`Failed to put event ticket in cache:\n${ updatedEventTicket }`);
-
-        return updatedEventTicket;
+    toJSON(){
+        const { id, event, buyer, price, saleDate } = this;
+        return {
+            id,
+            event,
+            buyer,
+            price,
+            saleDate
+        };
     }
 
     /**
-     * @description Delete an event ticket.
-     * @param {String} eventTicketId - The id of the event ticket to delete.
-     * @returns {Promise<Boolean>} - Whether the event ticket was deleted.
-     * @throws {DatabaseError} - When the event ticket could not be deleted.
-     * @throws {CacheError} - When the event ticket could not be deleted from the cache.
+     * Populates the given EventTicket with related data from other collections.
+     * @param {Object} eventTicket - The EventTicket to populate.
+     * @returns {Promise<EventTicket>} The populated EventTicket.
+     * @throws {DatabaseError} If the EventTicket could not be populated.
      */
-    static async deleteEventTicket(eventTicketId) {
-
-        const deletedEventTicket = await deleteDocument(EventTicketSchema, eventTicketId);
-        if (!deletedEventTicket) throw new DatabaseError(`Failed to delete event ticket:\n${ eventTicketId }`);
-
-        const eventTickets = await this.getAllEventTickets();
-        eventTickets.splice(eventTickets.indexOf(deletedEventTicket), 1);
-        cache.put('eventTickets', eventTickets, expirationTime);
-
-        if (this.verifyTicketInCache(deletedEventTicket))
-            throw new CacheError(`Failed to delete event ticket in cache:\n${ deletedEventTicket }`);
-
-        return true;
-    }
-
-    /**
-     * @description Verify if a ticket is in the cache.
-     * @param {EventTicket} testTicket - The ticket to test.
-     * @returns {Boolean} - Whether the ticket is in the cache.
-     */
-    static async verifyTicketInCache(testTicket) {
-
-        const cacheResult = await cache.get('eventTickets').find(ticket => ticket._id === testTicket._id);
-        return Boolean(cacheResult);
-
-    }
-
-    /**
-     * @description Populates the event ticket.
-     * @param {Object} eventTicket - The event ticket to populate.
-     * @returns {Promise<EventTicket>} - The populated event ticket.
-     */
-    static async populateEvent(eventTicket) {
-
+    static async populateEventTicket(eventTicket) {
         try {
-
             eventTicket = await eventTicket
                 .populate([
                     {
@@ -259,30 +105,63 @@ export default class EventTicket {
                         populate: User.getPopulationPaths()
                     }
                 ]);
+            eventTicket.id = eventTicket._id.toString();
 
-            const populatedEventTicket = new EventTicket(
-                eventTicket.event,
-                eventTicket.buyer,
-                eventTicket.price,
-                eventTicket.saleDate
-            );
-            populatedEventTicket._id = eventTicket._id.toString();
-
-            return populatedEventTicket;
-
+            return this.castToEventTicket(eventTicket);
         } catch (error) {
-            throw new DatabaseError(`Failed to populate event ticket:\n${ eventTicket }\n${ error }`);
+            // here eventTicket._id is used instead of eventTicket.id because eventTicket is an instance of the mongoose model
+            throw new DatabaseError(`Failed to populate event ticket with id #${eventTicket._id}' \n${ error.stack }`);
         }
-
     }
 
-    static getPopulationPaths() {
+    /**
+     * Calls the static populateEvent method.
+     * @param {Object} object - The instance to populate.
+     * @returns {Promise<EventTicket>} The populated instance.
+     * @throws {DatabaseError} If the instance could not be populated.
+     */
+    static async populate(object) {
+        return await this.populateEventTicket(object);
+    }
 
-        return [
-            { path: 'event' },
-            { path: 'buyer' }
-        ]
+    get event() {
+        return this._event;
+    }
 
+    set event(value) {
+        this._event = value;
+    }
+
+    get buyer() {
+        return this._buyer;
+    }
+
+    set buyer(value) {
+        this._buyer = value;
+    }
+
+    get price() {
+        return this._price;
+    }
+
+    set price(value) {
+        this._price = value;
+    }
+
+    get saleDate() {
+        return this._saleDate;
+    }
+
+    set saleDate(value) {
+        this._saleDate = value;
+    }
+
+    get id() {
+        return this._id;
+    }
+
+    set id(value) {
+        this._id = value;
     }
 
 }

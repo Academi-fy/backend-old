@@ -17,16 +17,16 @@ import User from "../models/users/User.js";
 
 export async function initCache () {
     return (await Promise.all([
-        Club.updateClubCache(),
-        Event.updateEventCache(),
-        EventTicket.updateEventTicketCache(),
-        Blackboard.updateBlackboardCache(),
-        Class.updateClassCache(),
-        Course.updateCourseCache(),
-        Grade.updateGradeCache(),
-        Subject.updateSubjectCache(),
-        Chat.updateChatCache(),
-        Message.updateMessageCache(),
-        User.updateUserCache()
+        Club.updateCache(),
+        Event.updateCache(),
+        EventTicket.updateCache(),
+        Blackboard.updateCache(),
+        Class.updateCache(),
+        Course.updateCache(),
+        Grade.updateCache(),
+        Subject.updateCache(),
+        Chat.updateCache(),
+        Message.updateCache(),
+        User.updateCache()
     ])).reduce((total, current) => total + current.length, 0);
 }

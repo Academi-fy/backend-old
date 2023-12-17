@@ -13,7 +13,7 @@ import User from "../../../models/users/User.js";
 const router = express.Router();
 
 // properties that are required for a user
-const requiredProperties = [ 'firstName', 'lastName', 'avatar', 'type', 'classes', 'extraCourses' ];
+const requiredProperties = [ 'firstName', 'lastName', 'avatar', 'type', 'classes', 'extraCourses', 'blackboards', 'clubs' ];
 
 /**
  * @description Formats the request body into a user
@@ -21,19 +21,7 @@ const requiredProperties = [ 'firstName', 'lastName', 'avatar', 'type', 'classes
  * @returns {User} - The formatted user
  * */
 function bodyToUser(body) {
-
-    const user = body.user;
-
-    return new User(
-        user.members,
-        user.classes,
-        user.teacher,
-        user.chat,
-        user.subject,
-        user.subject,
-        user.blackboards
-    );
-
+    return User.castToUser(body.user);
 }
 
 /**
@@ -43,9 +31,9 @@ function bodyToUser(body) {
  * */
 router.get('/', async (req, res) => {
 
-    const users = await User.getAllUsers();
+    const users = await User.getAll();
     res.json(users);
-
+    
 });
 
 /**
@@ -71,7 +59,7 @@ router.get('/filter', async (req, res) => {
             return;
         }
 
-        const users = await User.getAllUsersByRule(filter);
+        const users = await User.getAllByRule(filter);
         res.json(users)
     } catch (error) {
         logger.server.error(error);
@@ -108,7 +96,7 @@ router.get('/:id', async (req, res) => {
             return;
         }
 
-        const user = await User.getUserById(id);
+        const user = await User.getById(id);
         res.json(user);
     } catch (error) {
         logger.server.error(error);
@@ -169,7 +157,7 @@ router.post('/', async (req, res) => {
             return;
         }
 
-        const user = await User.createUser(newUser);
+        const user = await newUser.create();
         res.json(user);
     } catch (error) {
         logger.server.error(error);
@@ -193,6 +181,7 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
 
     try {
+        const oldUser = await User.getById(req.params.id);
 
         if (isMissingProperty(req.body.user, requiredProperties)) {
             logger.server.error(`Request #${ req.requestId }: User creation from '${ req.ip }' does not contain all required properties.`)
@@ -241,7 +230,7 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        if (await User.getUserById(updatedUser._id) === null) {
+        if (oldUser === null) {
             logger.server.error(`Request #${ req.requestId }: User update from '${ req.ip }' with URL '${ req.url }' does not match any user`)
             res.status(400).send(
                 {
@@ -252,7 +241,7 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        const user = await User.updateUser(req.params.id, updatedUser);
+        const user = await oldUser.update(updatedUser);
         res.json(user);
     } catch (error) {
         logger.server.error(error);
@@ -276,33 +265,36 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
 
     try {
+
         const id = req.params.id;
 
         if (!id) {
-            logger.server.error(`Request #${ req.requestId }: User deletion from '${ req.ip }' does not contain user id in URL`)
+            logger.server.error(`Request #${ req.requestId }: User deletion from '${ req.ip }' does not contain id in params`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.deletion.failed,
-                    errorMessage: "User id missing in URL."
+                    errorMessage: "User id missing in params."
                 }
             );
             return;
         }
 
-        const deleted = await User.deleteUser(id);
+        const user = await User.getById(id);
 
-        if (!deleted) {
-            logger.server.error(`Request #${ req.requestId }: User deletion from '${ req.ip }' for user with id '${ id }' could not be completed`)
+        if (user === null) {
+            logger.server.error(`Request #${ req.requestId }: User deletion from '${ req.ip }' with URL '${ req.url }' does not match any user`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.deletion.failed,
-                    errorMessage: "User could not be deleted."
+                    errorMessage: "User id in params does not match any user."
                 }
             );
             return;
         }
 
-        res.send(deleted);
+        const deletionState = await user.delete();
+        res.json(deletionState);
+
     } catch (error) {
         logger.server.error(error);
         res.status(400).send(
@@ -312,6 +304,7 @@ router.delete('/:id', async (req, res) => {
             }
         );
     }
+
 });
 
 export default router;

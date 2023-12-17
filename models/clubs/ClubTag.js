@@ -3,7 +3,7 @@
  * @author Daniel Dopatka
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
-import { validateNotEmpty } from "../propertyValidation.js";
+import { validateNotEmpty } from "../../../models/propertyValidation.js";
 
 export default class ClubTag {
 

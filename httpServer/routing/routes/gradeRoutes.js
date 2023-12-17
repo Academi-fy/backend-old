@@ -21,14 +21,7 @@ const requiredProperties = [ 'level', 'classes' ];
  * @returns {Grade} - The formatted grade
  * */
 function bodyToGrade(body) {
-
-    const grade = body.grade;
-
-    return new Grade(
-        grade.level,
-        grade.classes
-    );
-
+    return Grade.castToGrade(body.grade);
 }
 
 /**
@@ -38,7 +31,7 @@ function bodyToGrade(body) {
  * */
 router.get('/', async (req, res) => {
 
-    const grades = await Grade.getAllGrades();
+    const grades = await Grade.getAll();
     res.json(grades);
 
 });
@@ -66,7 +59,7 @@ router.get('/filter', async (req, res) => {
             return;
         }
 
-        const grades = await Grade.getAllGradesByRule(filter);
+        const grades = await Grade.getAllByRule(filter);
         res.json(grades)
     } catch (error) {
         logger.server.error(error);
@@ -103,7 +96,7 @@ router.get('/:id', async (req, res) => {
             return;
         }
 
-        const grade = await Grade.getGradeById(id);
+        const grade = await Grade.getById(id);
         res.json(grade);
     } catch (error) {
         logger.server.error(error);
@@ -164,7 +157,7 @@ router.post('/', async (req, res) => {
             return;
         }
 
-        const grade = await Grade.createGrade(newGrade);
+        const grade = await newGrade.create();
         res.json(grade);
     } catch (error) {
         logger.server.error(error);
@@ -188,6 +181,7 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
 
     try {
+        const oldGrade = await Grade.getById(req.params.id);
 
         if (isMissingProperty(req.body.grade, requiredProperties)) {
             logger.server.error(`Request #${ req.requestId }: Grade creation from '${ req.ip }' does not contain all required properties.`)
@@ -236,7 +230,7 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        if (await Grade.getGradeById(updatedGrade._id) === null) {
+        if (oldGrade === null) {
             logger.server.error(`Request #${ req.requestId }: Grade update from '${ req.ip }' with URL '${ req.url }' does not match any grade`)
             res.status(400).send(
                 {
@@ -247,7 +241,7 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        const grade = await Grade.updateGrade(req.params.id, updatedGrade);
+        const grade = await oldGrade.update(updatedGrade);
         res.json(grade);
     } catch (error) {
         logger.server.error(error);
@@ -271,33 +265,36 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
 
     try {
+
         const id = req.params.id;
 
         if (!id) {
-            logger.server.error(`Request #${ req.requestId }: Grade deletion from '${ req.ip }' does not contain grade id in URL`)
+            logger.server.error(`Request #${ req.requestId }: Grade deletion from '${ req.ip }' does not contain id in params`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.deletion.failed,
-                    errorMessage: "Grade id missing in URL."
+                    errorMessage: "Grade id missing in params."
                 }
             );
             return;
         }
 
-        const deleted = await Grade.deleteGrade(id);
+        const grade = await Grade.getById(id);
 
-        if (!deleted) {
-            logger.server.error(`Request #${ req.requestId }: Grade deletion from '${ req.ip }' for grade with id '${ id }' could not be completed`)
+        if (grade === null) {
+            logger.server.error(`Request #${ req.requestId }: Grade deletion from '${ req.ip }' with URL '${ req.url }' does not match any grade`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.deletion.failed,
-                    errorMessage: "Grade could not be deleted."
+                    errorMessage: "Grade id in params does not match any grade."
                 }
             );
             return;
         }
 
-        res.send(deleted);
+        const deletionState = await grade.delete();
+        res.json(deletionState);
+
     } catch (error) {
         logger.server.error(error);
         res.status(400).send(
@@ -307,6 +304,7 @@ router.delete('/:id', async (req, res) => {
             }
         );
     }
+
 });
 
 export default router;

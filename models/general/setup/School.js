@@ -3,26 +3,18 @@
  * @author Daniel Dopatka
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
-import {
-    createDocument,
-    deleteDocument,
-    getAllDocuments,
-    getDocument,
-    getDocumentsByRule,
-    updateDocument
-} from "../../../mongoDb/collectionAccess.js";
+
+import BaseModel from "../../BaseModel.js";
 import SchoolSchema from "../../../mongoDb/schemas/general/setup/SchoolSchema.js";
-import { validateArray, validateNotEmpty } from "../../propertyValidation.js";
 import DatabaseError from "../../../httpServer/errors/DatabaseError.js";
-import RetrievalError from "../../../httpServer/errors/RetrievalError.js";
+import Event from "../../events/Event.js";
+import Message from "../../messages/Message.js";
+import Club from "../../clubs/Club.js";
 import Grade from "../Grade.js";
 import Course from "../Course.js";
 import User from "../../users/User.js";
 import Class from "../Class.js";
-import Message from "../../messages/Message.js";
 import Subject from "../Subject.js";
-import Club from "../../clubs/Club.js";
-import Event from "../../events/Event.js";
 import Blackboard from "../Blackboard.js";
 
 /**
@@ -39,7 +31,23 @@ import Blackboard from "../Blackboard.js";
  * @param {Array<Event>} events - The events in the school.
  * @param {Array<Blackboard>} blackboards - The blackboards in the school.
  * */
-export default class School {
+export default class School extends BaseModel {
+
+    static modelName = 'School';
+    static schema = SchoolSchema;
+    static cacheKey = 'schools';
+    static expirationTime = 15; // time in minutes after which the cache expires
+    static populationPaths = [
+        { path: 'grades' },
+        { path: 'courses' },
+        { path: 'members' },
+        { path: 'classes' },
+        { path: 'messages' },
+        { path: 'subjects' },
+        { path: 'clubs' },
+        { path: 'events' },
+        { path: 'blackboards' }
+    ];
 
     /**
      * @description Create a school.
@@ -65,204 +73,85 @@ export default class School {
         clubs,
         events,
         blackboards
-    ) {
-        this.name = name;
-        this.grades = grades;
-        this.courses = courses;
-        this.members = members;
-        this.classes = classes;
-        this.messages = messages;
-        this.subjects = subjects;
-        this.clubs = clubs;
-        this.events = events;
-        this.blackboards = blackboards;
-    }
-
-    get _name() {
-        return this.name;
-    }
-
-    set _name(value) {
-        validateNotEmpty('School name', value);
-        this.name = value;
-    }
-
-    get _grades() {
-        return this.grades;
-    }
-
-    set _grades(value) {
-        validateArray('School grades', value)
-        this.grades = value;
-    }
-
-    get _courses() {
-        return this.courses;
-    }
-
-    set _courses(value) {
-        validateArray('School courses', value)
-        this.courses = value;
-    }
-
-    get _members() {
-        return this.members;
-    }
-
-    set _members(value) {
-        validateArray('School members', value)
-        this.members = value;
-    }
-
-    get _classes() {
-        return this.classes;
-    }
-
-    set _classes(value) {
-        validateArray('School classes', value)
-        this.classes = value;
-    }
-
-    get _messages() {
-        return this.messages;
-    }
-
-    set _messages(value) {
-        validateArray('School messages', value)
-        this.messages = value;
-    }
-
-    get _subjects() {
-        return this.subjects;
-    }
-
-    set _subjects(value) {
-        validateArray('School subjects', value)
-        this.subjects = value;
-    }
-
-    get _clubs() {
-        return this.clubs;
-    }
-
-    set _clubs(value) {
-        validateArray('School clubs', value)
-        this.clubs = value;
-    }
-
-    get _events() {
-        return this.events;
-    }
-
-    set _events(value) {
-        validateArray('School events', value)
-        this.events = value;
-    }
-
-    get _blackboards() {
-        return this.blackboards;
-    }
-
-    set _blackboards(value) {
-        validateArray('School blackboards', value)
-        this.blackboards = value;
+    ){
+        super({
+            name,
+            grades,
+            courses,
+            members,
+            classes,
+            messages,
+            subjects,
+            clubs,
+            events,
+            blackboards
+        });
+        this._id = null;
+        this._name = name;
+        this._grades = grades;
+        this._courses = courses;
+        this._members = members;
+        this._classes = classes;
+        this._messages = messages;
+        this._subjects = subjects;
+        this._clubs = clubs;
+        this._events = events;
+        this._blackboards = blackboards;
     }
 
     /**
-     * @description Get all schools.
-     * @return {Promise<Array<School>>} The schools.
+     * Casts a plain object to an instance of the school class.
+     * @param {Object} school - The plain object to cast.
+     * @returns {School} The cast instance of the School class.
      */
-    static async getAllSchools() {
-
-        const schools = await getAllDocuments(SchoolSchema);
-        if (!schools) throw new RetrievalError(`Failed to get all schools`);
-
-        //TODO populate
-
-        return schools;
+    static castToSchool(school) {
+        const { id, name, grades, courses, members, classes, messages, subjects, clubs, events, blackboards } = school;
+        const castSchool = new School(
+            name,
+            grades,
+            courses,
+            members,
+            classes,
+            messages,
+            subjects,
+            clubs,
+            events,
+            blackboards
+        );
+        castSchool.id = id.toString();
+        return castSchool;
     }
 
     /**
-     * @description Get a school by id.
-     * @param {String} id - The id of the school.
-     * @return {Promise<School>} The school.
+     * Converts the School instance into a JSON-friendly format by removing the underscores from the property names.
+     * This method is automatically called when JSON.stringify() is used on a School instance.
+     * @returns {Object} An object representation of the School instance without underscores in the property names.
      */
-    static async getSchoolById(id) {
-
-        const school = await getDocument(SchoolSchema, id);
-        if (!school) throw new RetrievalError(`Failed to get school with id:\n${ id }`);
-
-        //TODO populate
-
-        return school;
+    toJSON(){
+        const { id, name, grades, courses, members, classes, messages, subjects, clubs, events, blackboards } = this;
+        return {
+            id,
+            name,
+            grades,
+            courses,
+            members,
+            classes,
+            messages,
+            subjects,
+            clubs,
+            events,
+            blackboards
+        };
     }
 
     /**
-     * @description Get a school by rule.
-     * @param {Object} rule - The rule to find the school by.
-     * @return {Promise<School>} The school.
-     * */
-    static async getSchoolByRule(rule) {
-
-        const school = await getDocumentsByRule(SchoolSchema, rule);
-        if (!school) throw new RetrievalError(`Failed to get school matching rule:\n${ rule }`);
-
-        //TODO populate
-
-        return school;
-    }
-
-    /**
-     * @description Create a school.
-     * @param {School} school - The school to create.
-     * @return {Promise<School>} The created school.
-     */
-    static async createSchool(school) {
-
-        const insertedSchool = await createDocument(SchoolSchema, school);
-        if (!insertedSchool) throw new DatabaseError(`Failed to create school:\n${ school }`);
-
-        return await this.populateSchool(insertedSchool);
-
-    }
-
-    /**
-     * @description Update a school.
-     * @param {String} schoolId - The id of the school to update.
-     * @param {School} updateSchool - The updated school.
-     * @return {Promise<School>} The updated school.
-     * */
-    static async updateSchool(schoolId, updateSchool) {
-
-        const updatedSchool = await updateDocument(SchoolSchema, schoolId, updateSchool);
-        if (!updatedSchool) throw new DatabaseError(`Failed to update school:\n${ updatedSchool }`);
-
-        return await this.populateSchool(updatedSchool);
-
-    }
-
-    /**
-     * @description Delete a school.
-     * @param {String} schoolId - The id of the school to delete.
-     * @return {Promise<Boolean>} The state of the deletion.
-     * */
-    static async deleteSchool(schoolId) {
-
-        const deletedSchool = await deleteDocument(SchoolSchema, schoolId);
-        if (!deletedSchool) throw new DatabaseError(`Failed to delete school:\n${ schoolId }`);
-
-        return true;
-    }
-
-    /**
-     * @description Populate a school.
-     * @param {Object} school - The school to populate.
-     * @return {Promise<School>} The populated school.
+     * Populates the given School with related data from other collections.
+     * @param {Object} school - The School to populate.
+     * @returns {Promise<School>} The populated School.
+     * @throws {DatabaseError} If the School could not be populated.
      */
     static async populateSchool(school) {
-
         try {
-
             school = await school
                 .populate([
                     {
@@ -302,41 +191,111 @@ export default class School {
                         populate: Blackboard.getPopulationPaths()
                     },
                 ]);
+            school.id = school._id.toString();
 
-            const populatedSchool = new School(
-                school.name,
-                school.grades,
-                school.courses,
-                school.members,
-                school.classes,
-                school.messages,
-                school.subjects,
-                school.clubs,
-                school.events,
-                school.blackboards
-            );
-            populatedSchool._id = school._id.toString();
-
-            return populatedSchool;
-
+            return this.castToSchool(school);
         } catch (error) {
-            throw new DatabaseError(`Failed to populate school:\n${ school }\n${ error }`);
+            // here school._id is used instead of school.id because school is an instance of the mongoose model
+            throw new DatabaseError(`Failed to populate school with id #${school._id}' \n${ error.stack }`);
         }
-
     }
 
-    static getPopulationPaths() {
-        return [
-            { path: 'grades' },
-            { path: 'courses' },
-            { path: 'members' },
-            { path: 'classes' },
-            { path: 'messages' },
-            { path: 'subjects' },
-            { path: 'clubs' },
-            { path: 'events' },
-            { path: 'blackboards' },
-        ]
+    /**
+     * Calls the static populateSchool method.
+     * @param {Object} object - The instance to populate.
+     * @returns {Promise<School>} The populated instance.
+     * @throws {DatabaseError} If the instance could not be populated.
+     */
+    static async populate(object) {
+        return await this.populateSchool(object);
+    }
+
+    get name() {
+        return this._name;
+    }
+
+    set name(value) {
+        this._name = value;
+    }
+
+    get grades() {
+        return this._grades;
+    }
+
+    set grades(value) {
+        this._grades = value;
+    }
+
+    get courses() {
+        return this._courses;
+    }
+
+    set courses(value) {
+        this._courses = value;
+    }
+
+    get members() {
+        return this._members;
+    }
+
+    set members(value) {
+        this._members = value;
+    }
+
+    get classes() {
+        return this._classes;
+    }
+
+    set classes(value) {
+        this._classes = value;
+    }
+
+    get messages() {
+        return this._messages;
+    }
+
+    set messages(value) {
+        this._messages = value;
+    }
+
+    get subjects() {
+        return this._subjects;
+    }
+
+    set subjects(value) {
+        this._subjects = value;
+    }
+
+    get clubs() {
+        return this._clubs;
+    }
+
+    set clubs(value) {
+        this._clubs = value;
+    }
+
+    get events() {
+        return this._events;
+    }
+
+    set events(value) {
+        this._events = value;
+    }
+
+    get blackboards() {
+        return this._blackboards;
+    }
+
+    set blackboards(value) {
+        this._blackboards = value;
+    }
+
+    get id() {
+        return this._id;
+    }
+
+    set id(value) {
+        this._id = value;
     }
 
 }

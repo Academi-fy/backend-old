@@ -13,7 +13,7 @@ import logger from "../../../tools/logging/logger.js";
 const router = express.Router();
 
 // properties that are required for a class
-const requiredProperties = [ 'members', 'classes', 'teacher', 'chat', 'subject' ];
+const requiredProperties = [ 'grade', 'courses', 'members', 'specifiedGrade' ];
 
 /**
  * @description Formats the request body into a blackboard
@@ -21,16 +21,7 @@ const requiredProperties = [ 'members', 'classes', 'teacher', 'chat', 'subject' 
  * @returns {Class} - The formatted blackboard
  * */
 function bodyToClass(body) {
-
-    const class_ = body.class;
-
-    return new Class(
-        class_.grade,
-        class_.courses,
-        class_.members,
-        class_.specifiedGrade
-    );
-
+    return Class.castToClass(body.class);
 }
 
 /**
@@ -40,7 +31,7 @@ function bodyToClass(body) {
  * */
 router.get('/', async (req, res) => {
 
-    const class_ = await Class.getAllClasses();
+    const class_ = await Class.getAll();
     res.json(class_);
 
 });
@@ -68,7 +59,7 @@ router.get('/filter', async (req, res) => {
             return;
         }
 
-        const class_ = await Class.getAllClassesByRule(filter);
+        const class_ = await Class.getAllByRule(filter);
         res.json(class_)
     } catch (error) {
         logger.server.error(error);
@@ -105,7 +96,7 @@ router.get('/:id', async (req, res) => {
             return;
         }
 
-        const class_ = await Class.getClassById(id);
+        const class_ = await Class.getById(id);
         res.json(class_);
     } catch (error) {
         logger.server.error(error);
@@ -142,7 +133,7 @@ router.post('/', async (req, res) => {
         }
 
         const newClass = bodyToClass(req.body);
-        newClass._id = req.body.class._id.toString();
+        newClass.id = req.body.class.id.toString();
 
         if (!newClass) {
             logger.server.error(`Request #${ req.requestId }: Class creation from '${ req.ip }' does not contain class in body`)
@@ -155,7 +146,7 @@ router.post('/', async (req, res) => {
             return;
         }
 
-        if (!newClass._id) {
+        if (!newClass.id) {
             logger.server.error(`Request #${ req.requestId }: Class creation from '${ req.ip }' does not contain class id in body`)
             res.status(400).send(
                 {
@@ -166,7 +157,7 @@ router.post('/', async (req, res) => {
             return;
         }
 
-        const class_ = await Class.createClass(newClass);
+        const class_ = await newClass.create();
         res.json(class_);
     } catch (error) {
         logger.server.error(error);
@@ -190,6 +181,7 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
 
     try {
+        const oldClass = await Class.getById(req.params.id)
 
         if (isMissingProperty(req.body.class, requiredProperties)) {
             logger.server.error(`Request #${ req.requestId }: Class creation from '${ req.ip }' does not contain all required properties.`)
@@ -203,7 +195,7 @@ router.put('/:id', async (req, res) => {
         }
 
         const updatedClass = bodyToClass(req.body);
-        updatedClass._id = req.body.class._id.toString();
+        updatedClass.id = req.body.class.id.toString();
 
         if (!updatedClass) {
             logger.server.error(`Request #${ req.requestId }: Class update from '${ req.ip }' does not contain the full information.`)
@@ -216,8 +208,8 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        if (req.params.id !== updatedClass._id) {
-            logger.server.error(`Request #${ req.requestId }: Class update from '${ req.ip }' with URL '${ req.params.id }' does not match class id in body '${ updatedClass._id }'`)
+        if (req.params.id !== updatedClass.id) {
+            logger.server.error(`Request #${ req.requestId }: Class update from '${ req.ip }' with URL '${ req.params.id }' does not match class id in body '${ updatedClass.id }'`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.update.failed,
@@ -227,7 +219,7 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        if (!updatedClass._id) {
+        if (!updatedClass.id) {
             logger.server.error(`Request #${ req.requestId }: Class update from '${ req.ip }' with URL '${ req.params.id }' does not contain class id in body`)
             res.status(400).send(
                 {
@@ -238,7 +230,7 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        if (await Class.getClassById(updatedClass._id) === null) {
+        if (oldClass === null) {
             logger.server.error(`Request #${ req.requestId }: Class update from '${ req.ip }' with URL '${ req.url }' does not match any class`)
             res.status(400).send(
                 {
@@ -249,7 +241,7 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        const class_ = await Class.updateClass(req.params.id, updatedClass);
+        const class_ = await oldClass.update(updatedClass);
         res.json(class_);
     } catch (error) {
         logger.server.error(error);
@@ -273,33 +265,36 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
 
     try {
+
         const id = req.params.id;
 
         if (!id) {
-            logger.server.error(`Request #${ req.requestId }: Class deletion from '${ req.ip }' does not contain class id in URL`)
+            logger.server.error(`Request #${ req.requestId }: Class deletion from '${ req.ip }' does not contain id in params`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.deletion.failed,
-                    errorMessage: "Class id missing in URL."
+                    errorMessage: "Class id missing in params."
                 }
             );
             return;
         }
 
-        const deleted = await Class.deleteClass(id);
+        const class_ = await Class.getById(id);
 
-        if (!deleted) {
-            logger.server.error(`Request #${ req.requestId }: Class deletion from '${ req.ip }' for class with id '${ id }' could not be completed`)
+        if (class_ === null) {
+            logger.server.error(`Request #${ req.requestId }: Class deletion from '${ req.ip }' with URL '${ req.url }' does not match any class`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.deletion.failed,
-                    errorMessage: "Class could not be deleted."
+                    errorMessage: "Class id in params does not match any class."
                 }
             );
             return;
         }
 
-        res.send(deleted);
+        const deletionState = await class_.delete();
+        res.json(deletionState);
+
     } catch (error) {
         logger.server.error(error);
         res.status(400).send(
@@ -309,6 +304,7 @@ router.delete('/:id', async (req, res) => {
             }
         );
     }
+
 });
 
 export default router;

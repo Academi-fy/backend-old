@@ -13,7 +13,7 @@ import SetupAccount from "../../../models/general/setup/SetupAccount.js";
 const router = express.Router();
 
 // properties that are required for a setupAccount
-const requiredProperties = [ 'members', 'classes', 'teacher', 'chat', 'subject' ];
+const requiredProperties = [ 'schoolName', 'school' ];
 
 /**
  * @description Formats the request body into a setupAccount
@@ -21,14 +21,7 @@ const requiredProperties = [ 'members', 'classes', 'teacher', 'chat', 'subject' 
  * @returns {SetupAccount} - The formatted setupAccount
  * */
 function bodyToSetupAccount(body) {
-
-    const setupAccount = body.setupAccount;
-
-    return new SetupAccount(
-        setupAccount.schoolName,
-        setupAccount.school,
-    );
-
+    return SetupAccount.castToSetupAccount(body.setupAccount);
 }
 
 /**
@@ -38,7 +31,7 @@ function bodyToSetupAccount(body) {
  * */
 router.get('/', async (req, res) => {
 
-    const setupAccounts = await SetupAccount.getAllSetupAccounts();
+    const setupAccounts = await SetupAccount.getAll();
     res.json(setupAccounts);
 
 });
@@ -66,7 +59,7 @@ router.get('/filter', async (req, res) => {
             return;
         }
 
-        const setupAccounts = await SetupAccount.getAllSetupAccountsByRule(filter);
+        const setupAccounts = await SetupAccount.getAllByRule(filter);
         res.json(setupAccounts)
     } catch (error) {
         logger.server.error(error);
@@ -103,7 +96,7 @@ router.get('/:id', async (req, res) => {
             return;
         }
 
-        const setupAccount = await SetupAccount.getSetupAccountById(id);
+        const setupAccount = await SetupAccount.getById(id);
         res.json(setupAccount);
     } catch (error) {
         logger.server.error(error);
@@ -164,7 +157,7 @@ router.post('/', async (req, res) => {
             return;
         }
 
-        const setupAccount = await SetupAccount.createSetupAccount(newSetupAccount);
+        const setupAccount = await newSetupAccount.create();
         res.json(setupAccount);
     } catch (error) {
         logger.server.error(error);
@@ -188,6 +181,7 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
 
     try {
+        const oldSetupAccount = await SetupAccount.getById(req.params.id);
 
         if (isMissingProperty(req.body.setupAccount, requiredProperties)) {
             logger.server.error(`Request #${ req.requestId }: SetupAccount creation from '${ req.ip }' does not contain all required properties.`)
@@ -236,7 +230,7 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        if (await SetupAccount.getSetupAccountById(updatedSetupAccount._id) === null) {
+        if (oldSetupAccount === null) {
             logger.server.error(`Request #${ req.requestId }: SetupAccount update from '${ req.ip }' with URL '${ req.url }' does not match any setup account`)
             res.status(400).send(
                 {
@@ -247,7 +241,7 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        const setupAccount = await SetupAccount.updateSetupAccount(req.params.id, updatedSetupAccount);
+        const setupAccount = await oldSetupAccount.update(updatedSetupAccount);
         res.json(setupAccount);
     } catch (error) {
         logger.server.error(error);
@@ -271,33 +265,36 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
 
     try {
+
         const id = req.params.id;
 
         if (!id) {
-            logger.server.error(`Request #${ req.requestId }: SetupAccount deletion from '${ req.ip }' does not contain setup account id in URL`)
+            logger.server.error(`Request #${ req.requestId }: SetupAccount deletion from '${ req.ip }' does not contain id in params`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.deletion.failed,
-                    errorMessage: "SetupAccount id missing in URL."
+                    errorMessage: "SetupAccount id missing in params."
                 }
             );
             return;
         }
 
-        const deleted = await SetupAccount.deleteSetupAccount(id);
+        const setupAccount = await SetupAccount.getById(id);
 
-        if (!deleted) {
-            logger.server.error(`Request #${ req.requestId }: SetupAccount deletion from '${ req.ip }' for setup account with id '${ id }' could not be completed`)
+        if (setupAccount === null) {
+            logger.server.error(`Request #${ req.requestId }: SetupAccount deletion from '${ req.ip }' with URL '${ req.url }' does not match any setupAccount`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.deletion.failed,
-                    errorMessage: "SetupAccount could not be deleted."
+                    errorMessage: "SetupAccount id in params does not match any setupAccount."
                 }
             );
             return;
         }
 
-        res.send(deleted);
+        const deletionState = await setupAccount.delete();
+        res.json(deletionState);
+
     } catch (error) {
         logger.server.error(error);
         res.status(400).send(
@@ -307,6 +304,7 @@ router.delete('/:id', async (req, res) => {
             }
         );
     }
+
 });
 
 export default router;

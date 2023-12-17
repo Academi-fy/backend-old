@@ -8,6 +8,7 @@ import errors from "../../../errors.js";
 import isMissingProperty from "../isMissingProperty.js";
 import logger from "../../../tools/logging/logger.js";
 import Club from "../../../models/clubs/Club.js";
+import Class from "../../../models/general/Class.js";
 
 const router = express.Router();
 
@@ -20,20 +21,7 @@ const requiredProperties = [ 'name', 'details', 'leaders', 'members', 'chat', 'e
  * @returns {Club} - The formatted club
  * */
 function bodyToClub(body) {
-
-    const club = body.club;
-
-    return new Club(
-        club.name,
-        club.details,
-        club.leaders,
-        club.members,
-        club.chat,
-        club.events,
-        club.state,
-        club.editHistory
-    );
-
+    return Club.castToClub(body.club);
 }
 
 /**
@@ -43,7 +31,7 @@ function bodyToClub(body) {
  * */
 router.get('/', async (req, res) => {
 
-    const clubs = await Club.getAllClubs();
+    const clubs = await Club.getAll();
     res.json(clubs);
 
 });
@@ -71,7 +59,7 @@ router.get('/filter', async (req, res) => {
             return;
         }
 
-        const clubs = await Club.getAllClubsByRule(filter);
+        const clubs = await Club.getAllByRule(filter);
         res.json(clubs)
     } catch (error) {
         logger.server.error(error);
@@ -108,7 +96,7 @@ router.get('/:id', async (req, res) => {
             return;
         }
 
-        const club = await Club.getClubById(id);
+        const club = await Club.getById(id);
         res.json(club);
     } catch (error) {
         logger.server.error(error);
@@ -169,7 +157,7 @@ router.post('/', async (req, res) => {
             return;
         }
 
-        const club = await Club.createClub(newClub);
+        const club = await newClub.create();
         res.json(club);
     } catch (error) {
         logger.server.error(error);
@@ -193,6 +181,7 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
 
     try {
+        const oldClub = await Club.getById(req.params.id);
 
         if (isMissingProperty(req.body.club, requiredProperties)) {
             logger.server.error(`Request #${ req.requestId }: Club creation from '${ req.ip }' does not contain all required properties.`)
@@ -241,7 +230,7 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        if (await Club.getClubById(updatedClub._id) === null) {
+        if (oldClub === null) {
             logger.server.error(`Request #${ req.requestId }: Club update from '${ req.ip }' with URL '${ req.url }' does not match any club`)
             res.status(400).send(
                 {
@@ -252,7 +241,7 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        const club = await Club.updateClub(req.params.id, updatedClub);
+        const club = await oldClub.update(updatedClub);
         res.json(club);
     } catch (error) {
         logger.server.error(error);
@@ -276,33 +265,36 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
 
     try {
+
         const id = req.params.id;
 
         if (!id) {
-            logger.server.error(`Request #${ req.requestId }: Club deletion from '${ req.ip }' does not contain club id in URL`)
+            logger.server.error(`Request #${ req.requestId }: Club deletion from '${ req.ip }' does not contain id in params`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.deletion.failed,
-                    errorMessage: "Club id missing in URL."
+                    errorMessage: "Club id missing in params."
                 }
             );
             return;
         }
 
-        const deleted = await Club.deleteClub(id);
+        const club = await Club.getById(id);
 
-        if (!deleted) {
-            logger.server.error(`Request #${ req.requestId }: Club deletion from '${ req.ip }' for club with id '${ id }' could not be completed`)
+        if (club === null) {
+            logger.server.error(`Request #${ req.requestId }: Club deletion from '${ req.ip }' with URL '${ req.url }' does not match any club`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.deletion.failed,
-                    errorMessage: "Club could not be deleted."
+                    errorMessage: "Club id in params does not match any club."
                 }
             );
             return;
         }
 
-        res.send(deleted);
+        const deletionState = await club.delete();
+        res.json(deletionState);
+
     } catch (error) {
         logger.server.error(error);
         res.status(400).send(
@@ -312,6 +304,7 @@ router.delete('/:id', async (req, res) => {
             }
         );
     }
+
 });
 
 export default router;

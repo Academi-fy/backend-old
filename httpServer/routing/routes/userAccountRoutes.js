@@ -21,17 +21,7 @@ const requiredProperties = [ 'user', 'username', 'password', 'settings', 'permis
  * @returns {UserAccount} - The formatted userAccount
  * */
 function bodyToUserAccount(body) {
-
-    const userAccount = body.userAccount;
-
-    return new UserAccount(
-        userAccount.user,
-        userAccount.username,
-        userAccount.password,
-        userAccount.settings,
-        userAccount.permissions
-    );
-
+    return UserAccount.castToUserAccount(body.userAccount);
 }
 
 /**
@@ -278,33 +268,36 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
 
     try {
+
         const id = req.params.id;
 
         if (!id) {
-            logger.server.error(`Request #${ req.requestId }: UserAccount deletion from '${ req.ip }' does not contain user account id in URL`)
+            logger.server.error(`Request #${ req.requestId }: UserAccount deletion from '${ req.ip }' does not contain id in params`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.deletion.failed,
-                    errorMessage: "UserAccount id missing in URL."
+                    errorMessage: "UserAccount id missing in params."
                 }
             );
             return;
         }
 
-        const deleted = await UserAccount.deleteUserAccount(id);
+        const userAccount = await UserAccount.getUserAccountById(id);
 
-        if (!deleted) {
-            logger.server.error(`Request #${ req.requestId }: UserAccount deletion from '${ req.ip }' for user account with id '${ id }' could not be completed`)
+        if (userAccount === null) {
+            logger.server.error(`Request #${ req.requestId }: UserAccount deletion from '${ req.ip }' with URL '${ req.url }' does not match any userAccount`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.deletion.failed,
-                    errorMessage: "UserAccount could not be deleted."
+                    errorMessage: "UserAccount id in params does not match any userAccount."
                 }
             );
             return;
         }
 
-        res.send(deleted);
+        const deletionState = await userAccount.delete();
+        res.json(deletionState);
+
     } catch (error) {
         logger.server.error(error);
         res.status(400).send(
@@ -314,6 +307,7 @@ router.delete('/:id', async (req, res) => {
             }
         );
     }
+
 });
 
 export default router;

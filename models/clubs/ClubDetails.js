@@ -3,7 +3,7 @@
  * @author Daniel Dopatka
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
-import { validateArray, validateNotEmpty } from "../propertyValidation.js";
+import { validateArray, validateNotEmpty } from "../../../models/propertyValidation.js";
 
 /**
  * @description Class representing the details of a club.

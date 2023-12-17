@@ -3,26 +3,27 @@
  * @author Daniel Dopatka
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
-import { validateNotEmpty, validateObject } from "../../propertyValidation.js";
-import {
-    createDocument,
-    deleteDocument,
-    getAllDocuments,
-    getDocument,
-    getDocumentsByRule,
-    updateDocument
-} from "../../../mongoDb/collectionAccess.js";
+
+import BaseModel from "../../BaseModel.js";
 import DatabaseError from "../../../httpServer/errors/DatabaseError.js";
-import SetupAccountSchema from "../../../mongoDb/schemas/general/setup/SetupAccountSchema.js";
 import School from "./School.js";
+import SetupAccountSchema from "../../../mongoDb/schemas/general/setup/SetupAccountSchema.js";
 
 /**
  * @description The setup account model.
- * @param {String} _id - The id of the setup account.
+ * @param {String} id - The id of the setup account.
  * @param {String} schoolName - The name of the school of the setup account.
  * @param {School} school - The school of the setup account. Assigned once the school is created.
  * */
-export default class SetupAccount {
+export default class SetupAccount extends BaseModel {
+
+    static modelName = 'SetupAccount';
+    static schema = SetupAccountSchema;
+    static cacheKey = 'setupAccounts';
+    static expirationTime = 15; // time in minutes after which the cache expires
+    static populationPaths = [
+        { path: 'school' }
+    ];
 
     /**
      * @description Create a setup account.
@@ -33,126 +34,52 @@ export default class SetupAccount {
         schoolName,
         school
     ) {
-        this.schoolName = schoolName;
-        this.school = school;
-    }
-
-    get _schoolName() {
-        return this.schoolName;
-    }
-
-    set _schoolName(value) {
-        validateNotEmpty('Setup account school name', value);
-        this.schoolName = value;
-    }
-
-    get _school() {
-        return this.school;
-    }
-
-    set _school(value) {
-        validateObject('Setup account school', value);
-        this.school = value;
+        super({
+            schoolName,
+            school
+        });
+        this._id = null;
+        this._schoolName = schoolName;
+        this._school = school;
     }
 
     /**
-     * @description Get all setup accounts
-     * @return {Promise<Object>} All setup accounts in the database.
-     * */
-    static async getAllSetupAccounts() {
-        const documents = await getAllDocuments(SetupAccountSchema);
-        if (!documents) throw new DatabaseError(`Failed to get setup accounts`);
-
-        const setupAccounts = [];
-        for (const document of documents) {
-            setupAccounts.push(await this.populateSetupAccount(document));
-        }
-
-        return setupAccounts;
-    }
-
-    /**
-     * @description Get a setup account by its id.
-     * @param {String} id - The id of the setup account.
-     * @return {Promise<Object>} The setup account.
-     * */
-    static async getSetupAccountById(id) {
-        const document = await getDocument(SetupAccountSchema, id);
-        if (!document) throw new DatabaseError(`Failed to get setup account with id '${ id }'`);
-
-        return await this.populateSetupAccount(document);
-    }
-
-    /**
-     * @description Get a setup account by a rule.
-     * @param {Object} rule - The rule for the search
-     * @return {Promise<Array<SetupAccount>>} The setup account.
+     * Casts a plain object to an instance of the setup account class.
+     * @param {Object} setupAccount - The plain object to cast.
+     * @returns {SetupAccount} The cast instance of the School class.
      */
-    static async getAllSetupAccountsByRule(rule) {
-        const documents = await getDocumentsByRule(SetupAccountSchema, rule);
-        if (!documents) throw new DatabaseError(`Failed to get setup account with rule:\n${ rule }`);
-
-        const setupAccounts = [];
-        for (const document of documents) {
-            setupAccounts.push(await this.populateSetupAccount(document));
-        }
-
-        return setupAccounts;
+    static castToSetupAccount(setupAccount) {
+        const { id, schoolName, school } = setupAccount;
+        const castSetupAccount = new SetupAccount(
+            schoolName,
+            school
+        );
+        castSetupAccount.id = id.toString();
+        return castSetupAccount;
     }
 
     /**
-     * @description Create a setup account.
-     * @param {SetupAccount} setupAccount - The setup account to create.
-     * @return {Promise<SetupAccount>} The created setup account.
-     * @throws {DatabaseError} When the setup account is not created.
+     * Converts the SetupAccount instance into a JSON-friendly format by removing the underscores from the property names.
+     * This method is automatically called when JSON.stringify() is used on a SetupAccount instance.
+     * @returns {Object} An object representation of the SetupAccount instance without underscores in the property names.
      */
-    static async createSetupAccount(setupAccount) {
-
-        const insertedSetupAccount = await createDocument(SetupAccountSchema, setupAccount);
-        if (!insertedSetupAccount) throw new DatabaseError(`Failed to create setup account:\n${ setupAccount }`);
-
-        return await this.populateSetupAccount(insertedSetupAccount);
+    toJSON(){
+        const { id, schoolName, school } = this;
+        return {
+            id,
+            schoolName,
+            school
+        };
     }
 
     /**
-     * @description Update a setup account.
-     * @param {String} id - The id of the setup account to update.
-     * @param {SetupAccount} setupAccount - The setup account to update.
-     * @return {Promise<SetupAccount>} The updated setup account.
-     * @throws {DatabaseError} When the setup account is not updated.
-     */
-    static async updateSetupAccount(id, setupAccount) {
-
-        const updatedSetupAccount = await updateDocument(SetupAccountSchema, id, setupAccount);
-        if (!updatedSetupAccount) throw new DatabaseError(`Failed to update setup account:\n${ setupAccount }`);
-
-        return await this.populateSetupAccount(updatedSetupAccount);
-
-    }
-
-    /**
-     * @description Delete a setup account.
-     * @param {SetupAccount} setupAccount - The setup account to delete.
-     * @return {Promise<Boolean>} The deleted setup account.
-     * @throws {DatabaseError} When the setup account is not deleted.
-     */
-    static async deleteSetupAccount(setupAccount) {
-
-        const deletedSetupAccount = await deleteDocument(SetupAccountSchema, setupAccount._id);
-        if (!deletedSetupAccount) throw new DatabaseError(`Failed to delete setup account:\n${ setupAccount }`);
-
-        return true;
-    }
-
-    /**
-     * @description Populate a setup account.
-     * @param {Object} setupAccount - The setup account to populate.
-     * @return {Promise<SetupAccount>} The populated setup account.
+     * Populates the given SetupAccount with related data from other collections.
+     * @param {Object} setupAccount - The SetupAccount to populate.
+     * @returns {Promise<SetupAccount>} The populated SetupAccount.
+     * @throws {DatabaseError} If the SetupAccount could not be populated.
      */
     static async populateSetupAccount(setupAccount) {
-
         try {
-
             setupAccount = await setupAccount
                 .populate([
                     {
@@ -160,25 +87,47 @@ export default class SetupAccount {
                         populate: School.getPopulationPaths()
                     }
                 ]);
+            setupAccount.id = setupAccount._id.toString();
 
-            const populatedSetupAccount = new SetupAccount(
-                setupAccount.schoolName,
-                setupAccount.school
-            );
-            populatedSetupAccount._id = setupAccount._id.toString();
-
-            return populatedSetupAccount;
-
+            return this.castToSetupAccount(setupAccount);
         } catch (error) {
-            throw new DatabaseError(`Failed to populate setup account with id '${ setupAccount._id }:'\n${ error }`);
+            // here setupAccount._id is used instead of setupAccount.id because setupAccount is an instance of the mongoose model
+            throw new DatabaseError(`Failed to populate setup account with id #${setupAccount._id}' \n${ error.stack }`);
         }
-
     }
 
-    static getPopulationPaths() {
-        return [
-            { path: 'school' }
-        ]
+    /**
+     * Calls the static populateSetupAccount method.
+     * @param {Object} object - The instance to populate.
+     * @returns {Promise<SetupAccount>} The populated instance.
+     * @throws {DatabaseError} If the instance could not be populated.
+     */
+    static async populate(object) {
+        return await this.populateSetupAccount(object);
+    }
+
+    get schoolName() {
+        return this._schoolName;
+    }
+
+    set schoolName(value) {
+        this._schoolName = value;
+    }
+
+    get school() {
+        return this._school;
+    }
+
+    set school(value) {
+        this._school = value;
+    }
+
+    get id() {
+        return this._id;
+    }
+
+    set id(value) {
+        this._id = value;
     }
 
 }

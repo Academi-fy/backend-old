@@ -55,6 +55,12 @@ export default new Schema(
                 type: ObjectId,
                 ref: 'Blackboard'
             }
+        ],
+        clubs: [
+            {
+                type: ObjectId,
+                ref: 'Club'
+            }
         ]
 
     },

@@ -21,16 +21,7 @@ const requiredProperties = [ 'event', 'buyer', 'price', 'saleDate' ];
  * @returns {EventTicket} - The formatted eventTicket
  * */
 function bodyToEventTicket(body) {
-
-    const eventTicket = body.eventTicket;
-
-    return new EventTicket(
-        eventTicket.event,
-        eventTicket.buyer,
-        eventTicket.price,
-        eventTicket.saleDate
-    );
-
+    return EventTicket.castToEventTicket(body.eventTicket);
 }
 
 /**
@@ -40,7 +31,7 @@ function bodyToEventTicket(body) {
  * */
 router.get('/', async (req, res) => {
 
-    const eventTickets = await EventTicket.getAllEventTickets();
+    const eventTickets = await EventTicket.getAll();
     res.json(eventTickets);
 
 });
@@ -68,7 +59,7 @@ router.get('/filter', async (req, res) => {
             return;
         }
 
-        const eventTickets = await EventTicket.getAllEventTicketsByRule(filter);
+        const eventTickets = await EventTicket.getAllByRule(filter);
         res.json(eventTickets)
     } catch (error) {
         logger.server.error(error);
@@ -105,7 +96,7 @@ router.get('/:id', async (req, res) => {
             return;
         }
 
-        const eventTicket = await EventTicket.getEventTicketById(id);
+        const eventTicket = await EventTicket.getById(id);
         res.json(eventTicket);
     } catch (error) {
         logger.server.error(error);
@@ -166,7 +157,7 @@ router.post('/', async (req, res) => {
             return;
         }
 
-        const eventTicket = await EventTicket.createEventTicket(newEventTicket);
+        const eventTicket = await newEventTicket.create();
         res.json(eventTicket);
     } catch (error) {
         logger.server.error(error);
@@ -190,6 +181,7 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
 
     try {
+        const oldEventTicket = await EventTicket.getById(req.params.id);
 
         if (isMissingProperty(req.body.eventTicket, requiredProperties)) {
             logger.server.error(`Request #${ req.requestId }: EventTicket creation from '${ req.ip }' does not contain all required properties.`)
@@ -238,7 +230,7 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        if (await EventTicket.getEventTicketById(updatedEventTicket._id) === null) {
+        if (oldEventTicket === null) {
             logger.server.error(`Request #${ req.requestId }: EventTicket update from '${ req.ip }' with URL '${ req.url }' does not match any event ticket`)
             res.status(400).send(
                 {
@@ -249,7 +241,7 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        const eventTicket = await EventTicket.updateEventTicket(req.params.id, updatedEventTicket);
+        const eventTicket = await oldEventTicket.update(updatedEventTicket);
         res.json(eventTicket);
     } catch (error) {
         logger.server.error(error);
@@ -273,33 +265,36 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
 
     try {
+
         const id = req.params.id;
 
         if (!id) {
-            logger.server.error(`Request #${ req.requestId }: EventTicket deletion from '${ req.ip }' does not contain event ticket id in URL`)
+            logger.server.error(`Request #${ req.requestId }: Event deletion from '${ req.ip }' does not contain id in params`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.deletion.failed,
-                    errorMessage: "EventTicket id missing in URL."
+                    errorMessage: "Event id missing in params."
                 }
             );
             return;
         }
 
-        const deleted = await EventTicket.deleteEventTicket(id);
+        const event = await Event.getById(id);
 
-        if (!deleted) {
-            logger.server.error(`Request #${ req.requestId }: EventTicket deletion from '${ req.ip }' for event ticket with id '${ id }' could not be completed`)
+        if (event === null) {
+            logger.server.error(`Request #${ req.requestId }: Event deletion from '${ req.ip }' with URL '${ req.url }' does not match any event`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.deletion.failed,
-                    errorMessage: "EventTicket could not be deleted."
+                    errorMessage: "Event id in params does not match any event."
                 }
             );
             return;
         }
 
-        res.send(deleted);
+        const deletionState = await event.delete();
+        res.json(deletionState);
+
     } catch (error) {
         logger.server.error(error);
         res.status(400).send(
@@ -309,6 +304,7 @@ router.delete('/:id', async (req, res) => {
             }
         );
     }
+
 });
 
 export default router;

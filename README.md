@@ -53,5 +53,3 @@ Contributions are currently not planned.
 ## License
 
 This project is licensed under the terms of the MIT license.
-
-<sub>© Copyright: Daniel Dopatka, Linus Bung (2023)</sub>

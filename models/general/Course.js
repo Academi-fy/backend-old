@@ -3,21 +3,14 @@
  * @author Daniel Dopatka
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
-import { validateArray, validateNotEmpty, validateObject, verifyInCache } from "../propertyValidation.js";
-import cache from "../../httpServer/cache.js";
-import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../mongoDb/collectionAccess.js";
-import CourseSchema from "../../mongoDb/schemas/general/CourseSchema.js";
-import { findByRule } from "../findByRule.js";
-import RetrievalError from "../../httpServer/errors/RetrievalError.js";
-import DatabaseError from "../../httpServer/errors/DatabaseError.js";
-import CacheError from "../../httpServer/errors/CacheError.js";
-import User from "../users/User.js";
-import Class from "./Class.js";
-import Subject from "./Subject.js";
-import Chat from "../messages/Chat.js";
 
-// Define the cache expiration time in milliseconds
-const expirationTime = 5 * 60 * 1000;
+import BaseModel from "../BaseModel.js";
+import CourseSchema from "../../mongoDb/schemas/general/CourseSchema.js";
+import DatabaseError from "../../httpServer/errors/DatabaseError.js";
+import Class from "./Class.js";
+import Chat from "../messages/Chat.js";
+import Subject from "./Subject.js";
+import User from "../users/User.js";
 
 /**
  * @description Class representing a Course.
@@ -28,7 +21,19 @@ const expirationTime = 5 * 60 * 1000;
  * @param {Chat} chat - The chat of the course.
  * @param {Subject} subject - The subject of the course.
  */
-export default class Course {
+export default class Course extends BaseModel {
+
+    static modelName = 'Course';
+    static schema = CourseSchema;
+    static cacheKey = 'courses';
+    static expirationTime = 5; // time in minutes after which the cache expires
+    static populationPaths = [
+        { path: 'members' },
+        { path: 'classes' },
+        { path: 'teacher' },
+        { path: 'chat' },
+        { path: 'subject' }
+    ];
 
     /**
      * @description Create a course.
@@ -38,7 +43,6 @@ export default class Course {
      * @param {String} chat - The id of the chat of the course.
      * @param {String} subject - The id of the subject of the course.
      */
-
     constructor(
         members,
         classes,
@@ -46,227 +50,63 @@ export default class Course {
         chat,
         subject
     ) {
-        this.members = members;
-        this.classes = classes;
-        this.teacher = teacher;
-        this.chat = chat;
-        this.subject = subject;
-    }
-
-    get _members() {
-        return this.members;
-    }
-
-    set _members(value) {
-        validateArray('Course members', value);
-        this.members = value;
-    }
-
-    get _classes() {
-        return this.classes;
-    }
-
-    set _classes(value) {
-        validateArray('Course classes', value);
-        this.classes = value;
-    }
-
-    get _teacher() {
-        return this.teacher;
-    }
-
-    set _teacher(value) {
-        validateObject('Course teacher', value);
-        this.teacher = value;
-    }
-
-    get _chat() {
-        return this.chat;
-    }
-
-    set _chat(value) {
-        validateNotEmpty('Course chat', value);
-        this.chat = value;
-    }
-
-    get _subject() {
-        return this.subject;
-    }
-
-    set _subject(value) {
-        validateNotEmpty('Course subject', value);
-        this.subject = value;
+        super({
+            members,
+            classes,
+            teacher,
+            chat,
+            subject
+        });
+        this._id = null;
+        this._members = members;
+        this._classes = classes;
+        this._teacher = teacher;
+        this._chat = chat;
+        this._subject = subject;
     }
 
     /**
-     * Update the course cache from the database.
-     * @return {Promise<Array<Course>>} The updated courses.
+     * Casts a plain object to an instance of the Course class.
+     * @param {Object} course - The plain object to cast.
+     * @returns {Course} The cast instance of the Course class.
      */
-    static async updateCourseCache() {
-
-        cache.del('courses');
-        const coursesFromDb = await getAllDocuments(CourseSchema);
-
-        const courses = [];
-        for (const course of coursesFromDb) {
-            courses.push(
-                await this.populateCourse(course)
-            );
-        }
-
-        cache.put('courses', courses, expirationTime);
-        return courses;
-
-    }
-
-    /**
-     * @description Get all courses from cache or database.
-     * @return {Promise<Array>} The courses.
-     */
-    static async getAllCourses() {
-
-        const cacheResults = cache.get('courses');
-
-        if (cacheResults) {
-            return cacheResults;
-        }
-        else return await this.updateCourseCache();
-
-    }
-
-    /**
-     * @description Get a course by its ID.
-     * @param {String} courseId - The id of the course.
-     * @return {Promise<Course>} The course.
-     * @throws {RetrievalError} When no course matches the id.
-     */
-    static async getCourseById(courseId) {
-
-        const courses = await this.getAllCourses();
-
-
-        const course = courses.find(course => course._id.toString() === courseId);
-        if (!course) throw new RetrievalError(`Course not found:\n${ courseId }`);
-
-        return course;
-
-    }
-
-    /**
-     * @description Get courses by rule.
-     * @param {String} rule - The rule to find courses by.
-     * @return {Promise<Array<Course>>} The matching courses.
-     * @throws {RetrievalError} When no course matches the rule.
-     * */
-    static async getAllCoursesByRule(rule) {
-
-        const courses = await this.getAllCourses();
-
-        const matchingCourses = findByRule(courses, rule);
-        if (!matchingCourses) throw new RetrievalError(`Failed to find courses matching rule:\n`, rule);
-
-        return matchingCourses;
-
-    }
-
-    /**
-     * @description Create a new course and add it to the database and cache.
-     * @param {Course} course - The course to create.
-     * @return {Promise<Course>} The created course.
-     * @throws {DatabaseError} When the course could not be created.
-     * @throws {CacheError} When the course could not be created in the cache.
-     */
-    static async createCourse(course) {
-
-        const courses = await this.getAllCourses();
-
-        let insertedCourse = await createDocument(CourseSchema, course);
-        if (!insertedCourse) throw new DatabaseError(`Course could not be created:\n${ course }`);
-
-        insertedCourse = await this.populateCourse(insertedCourse)
-
-        courses.push(
-            insertedCourse
+    static castToCourse(course) {
+        const { id, members, classes, teacher, chat, subject } = course;
+        const castCourse = new Course(
+            members,
+            classes,
+            teacher,
+            chat,
+            subject
         );
-        cache.put('courses', courses, expirationTime);
-
-        if (!this.verifyCourseInCache(insertedCourse))
-
-            if (!await verifyInCache(cache.get('courses'), insertedCourse, this.updateCourseCache))
-                throw new CacheError(`Course could not be created:\n${ insertedCourse }`);
-
-        return insertedCourse;
+        castCourse.id = id.toString();
+        return castCourse;
     }
 
     /**
-     * @description Update a course in the database and cache.
-     * @param {String} courseId - The ID of the course to update.
-     * @param {Course} updateCourse - The course to update.
-     * @return {Promise<Course>} The updated course.
-     * @throws {DatabaseError} When the course could not be updated.
-     * @throws {CacheError} When the course could not be updated in the cache.
+     * Converts the Course instance into a JSON-friendly format by removing the underscores from the property names.
+     * This method is automatically called when JSON.stringify() is used on a Course instance.
+     * @returns {Object} An object representation of the Course instance without underscores in the property names.
      */
-    static async updateCourse(courseId, updateCourse) {
-
-        const courses = await this.getAllCourses();
-
-        let updatedCourse = await updateDocument(CourseSchema, courseId, updateCourse);
-        if (!updatedCourse) throw new DatabaseError(`Course could not be updated:\n${ updateCourse }`);
-
-        updatedCourse = await this.populateCourse(updatedCourse);
-
-        courses.splice(courses.findIndex(course => course._id === courseId), 1, updatedCourse);
-        cache.put('courses', courses, expirationTime);
-
-        if (!this.verifyCourseInCache(updatedCourse))
-
-            if (!await verifyInCache(cache.get('courses'), updatedCourse, this.updateCourseCache))
-                throw new CacheError(`Course could not be updated:\n${ updatedCourse }`);
-
-
-        return updatedCourse;
+    toJSON(){
+        const { id, members, classes, teacher, chat, subject } = this;
+        return {
+            id,
+            members,
+            classes,
+            teacher,
+            chat,
+            subject
+        };
     }
 
     /**
-     * @description Delete a course in the database and cache.
-     * @param {String} courseId - The ID of the course to update.
-     * @return {Promise<Boolean>} State of the deletion.
-     * @throws {DatabaseError} When the course could not be deleted.
+     * Populates the given Course with related data from other collections.
+     * @param {Object} course - The Course to populate.
+     * @returns {Promise<Course>} The populated Course.
+     * @throws {DatabaseError} If the Course could not be populated.
      */
-    static async deleteCourse(courseId) {
-
-        const deletedCourse = await deleteDocument(CourseSchema, courseId);
-        if (!deletedCourse) throw new DatabaseError(`Course could not be deleted:\n${ courseId }`);
-
-        const courses = await this.getAllCourses();
-        courses.splice(courses.findIndex(course => course._id === courseId), 1);
-        cache.put('courses', courses, expirationTime);
-
-        if (this.verifyCourseInCache(deletedCourse))
-            throw new CacheError(`Course could not be deleted from cache:\n${ deletedCourse }`);
-
-        return true;
-    }
-
-    /**
-     * @description Verify if a course is in the cache.
-     * @param {Course} course - The course to verify.
-     * @return {Boolean} True if the course is in the cache, false otherwise.
-     */
-    static async verifyCourseInCache(course) {
-
-        const cacheResult = cache.get('courses').find(course_ => course_._id === course._id)
-
-        return Boolean(cacheResult);
-    }
-
-    /**
-     * @description Populate a course.
-     * @param {Object} course - The course to populate.
-     * @return {Promise<Course>} The populated course.
-     **/
     static async populateCourse(course) {
-
         try {
             course = await course
                 .populate([
@@ -292,29 +132,72 @@ export default class Course {
                     },
                 ]);
 
-            const populatedCourse = new Course(
-                course.members,
-                course.classes,
-                course.teacher,
-                course.chat,
-                course.subject
-            );
-            populatedCourse._id = course._id.toString();
+            course.id = course._id.toString();
 
-            return populatedCourse;
+            return this.castToCourse(course);
         } catch (error) {
-            throw new DatabaseError(`Failed to populate course:\n${ course }\n${ error }`);
+            // here course._id is used instead of course.id because course is an instance of the mongoose model
+            throw new DatabaseError(`Failed to populate course with id #${course._id}' \n${ error.stack }`);
         }
     }
 
-    static getPopulationPaths() {
-        return [
-            { path: 'members' },
-            { path: 'classes' },
-            { path: 'teacher' },
-            { path: 'chat' },
-            { path: 'subject' },
-        ]
+    /**
+     * Calls the static populateCourse method.
+     * @param {Object} object - The instance to populate.
+     * @returns {Promise<Course>} The populated instance.
+     * @throws {DatabaseError} If the instance could not be populated.
+     */
+    static async populate(object) {
+        return await this.populateCourse(object);
     }
+
+    get members() {
+        return this._members;
+    }
+
+    set members(value) {
+        this._members = value;
+    }
+
+    get classes() {
+        return this._classes;
+    }
+
+    set classes(value) {
+        this._classes = value;
+    }
+
+    get teacher() {
+        return this._teacher;
+    }
+
+    set teacher(value) {
+        this._teacher = value;
+    }
+
+    get chat() {
+        return this._chat;
+    }
+
+    set chat(value) {
+        this._chat = value;
+    }
+
+    get subject() {
+        return this._subject;
+    }
+
+    set subject(value) {
+        this._subject = value;
+    }
+
+    get id() {
+        return this._id;
+    }
+
+    set id(value) {
+        this._id = value;
+    }
+
 
 }

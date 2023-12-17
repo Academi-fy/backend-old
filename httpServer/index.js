@@ -4,22 +4,44 @@
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
 
-/**
- * @description MongoDB connection:
- * */
+
 import * as db from '../mongoDb/db.js';
 import config from "../config.js";
 import logger from "../tools/logging/logger.js";
+import express from 'express';
+
+/**
+ * @description MongoDB connection:
+ * */
+db.connect().then(() => {
+    logger.database.info(`Connected to HTTP Server`)
+})
+
 /**
  * @description HTTP Server:
  * @host localhost
  * @port 3000
  * */
-import express from 'express';
-// middleware
+const app = express();
+const port = config.SERVER_PORT;
+const host = config.SERVER_HOST;
+app.listen(port, () => {
+    logger.server.info(`HTTP Server is running at http://${ host }:${ port }`);
+});
+
 import requestDebugger from "./middleware/requestDebugger.js";
 import cors from 'cors';
-// routes
+import memoryLogger from "../tools/logging/memoryLogger.js";
+import { initCache } from "../tools/cacheInitlializer.js";
+try {
+    app.use(requestDebugger);
+    app.use(express.static('public'));
+    app.use(cors());
+    app.use(express.json());
+} catch (error) {
+    logger.server.fatal(error.stack);
+}
+
 import blackboardRoutes from "./routing/routes/blackboardRoutes.js";
 import classRoutes from "./routing/routes/classRoutes.js";
 import chatRoutes from "./routing/routes/chatRoutes.js";
@@ -33,30 +55,6 @@ import setupAccountRoutes from "./routing/routes/setupAccountRoutes.js";
 import subjectRoutes from "./routing/routes/subjectRoutes.js";
 import userAccountRoutes from "./routing/routes/userAccountRoutes.js";
 import userRoutes from "./routing/routes/userRoutes.js";
-import memoryLogger from "../tools/logging/memoryLogger.js";
-import { initCache } from "../tools/cacheInitlializer.js";
-
-db.connect().then(() => {
-    logger.database.info(`Connected to HTTP Server`)
-})
-
-const app = express();
-
-const port = config.SERVER_PORT;
-const host = config.SERVER_HOST;
-app.listen(port, () => {
-    logger.server.info(`HTTP Server is running at http://${ host }:${ port }`);
-});
-
-try {
-    app.use(requestDebugger);
-    app.use(express.static('public'));
-    app.use(cors());
-    app.use(express.json());
-} catch (error) {
-    logger.server.fatal(error.stack);
-}
-
 try {
     app.use('/api/blackboards', blackboardRoutes);
     app.use('/api/chats', chatRoutes);

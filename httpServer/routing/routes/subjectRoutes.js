@@ -21,15 +21,7 @@ const requiredProperties = [ 'type', 'shortName', 'courses' ];
  * @returns {Subject} - The formatted subject
  * */
 function bodyToSubject(body) {
-
-    const subject = body.subject;
-
-    return new Subject(
-        subject.type,
-        subject.shortName,
-        subject.courses
-    );
-
+    return Subject.castToSubject(body.subject);
 }
 
 /**
@@ -39,7 +31,7 @@ function bodyToSubject(body) {
  * */
 router.get('/', async (req, res) => {
 
-    const subjects = await Subject.getAllSubjects();
+    const subjects = await Subject.getAll();
     res.json(subjects);
 
 });
@@ -67,7 +59,7 @@ router.get('/filter', async (req, res) => {
             return;
         }
 
-        const subjects = await Subject.getAllSubjectsByRule(filter);
+        const subjects = await Subject.getAllByRule(filter);
         res.json(subjects)
     } catch (error) {
         logger.server.error(error);
@@ -104,7 +96,7 @@ router.get('/:id', async (req, res) => {
             return;
         }
 
-        const subject = await Subject.getSubjectById(id);
+        const subject = await Subject.getById(id);
         res.json(subject);
     } catch (error) {
         logger.server.error(error);
@@ -165,7 +157,7 @@ router.post('/', async (req, res) => {
             return;
         }
 
-        const subject = await Subject.createSubject(newSubject);
+        const subject = await newSubject.create();
         res.json(subject);
     } catch (error) {
         logger.server.error(error);
@@ -189,6 +181,7 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
 
     try {
+        const oldSubject = await Subject.getById(req.params.id);
 
         if (isMissingProperty(req.body.subject, requiredProperties)) {
             logger.server.error(`Request #${ req.requestId }: Subject creation from '${ req.ip }' does not contain all required properties.`)
@@ -237,7 +230,7 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        if (await Subject.getSubjectById(updatedSubject._id) === null) {
+        if (oldSubject === null) {
             logger.server.error(`Request #${ req.requestId }: Subject update from '${ req.ip }' with URL '${ req.url }' does not match any subject`)
             res.status(400).send(
                 {
@@ -248,7 +241,7 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        const subject = await Subject.updateSubject(req.params.id, updatedSubject);
+        const subject = await oldSubject.update(updatedSubject);
         res.json(subject);
     } catch (error) {
         logger.server.error(error);
@@ -272,33 +265,36 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
 
     try {
+
         const id = req.params.id;
 
         if (!id) {
-            logger.server.error(`Request #${ req.requestId }: Subject deletion from '${ req.ip }' does not contain subject id in URL`)
+            logger.server.error(`Request #${ req.requestId }: Subject deletion from '${ req.ip }' does not contain id in params`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.deletion.failed,
-                    errorMessage: "Subject id missing in URL."
+                    errorMessage: "Subject id missing in params."
                 }
             );
             return;
         }
 
-        const deleted = await Subject.deleteSubject(id);
+        const subject = await Subject.getById(id);
 
-        if (!deleted) {
-            logger.server.error(`Request #${ req.requestId }: Subject deletion from '${ req.ip }' for subject with id '${ id }' could not be completed`)
+        if (subject === null) {
+            logger.server.error(`Request #${ req.requestId }: Subject deletion from '${ req.ip }' with URL '${ req.url }' does not match any subject`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.deletion.failed,
-                    errorMessage: "Subject could not be deleted."
+                    errorMessage: "Subject id in params does not match any subject."
                 }
             );
             return;
         }
 
-        res.send(deleted);
+        const deletionState = await subject.delete();
+        res.json(deletionState);
+
     } catch (error) {
         logger.server.error(error);
         res.status(400).send(
@@ -308,6 +304,7 @@ router.delete('/:id', async (req, res) => {
             }
         );
     }
+
 });
 
 export default router;

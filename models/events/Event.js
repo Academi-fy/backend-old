@@ -3,28 +3,22 @@
  * @author Daniel Dopatka
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
-import cache from "../../httpServer/cache.js";
-import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../mongoDb/collectionAccess.js";
-import EventSchema from "../../mongoDb/schemas/events/EventSchema.js";
-import { validateArray, validateNotEmpty, validateNumber, verifyInCache } from "../propertyValidation.js";
-import { findByRule } from "../findByRule.js";
-import RetrievalError from "../../httpServer/errors/RetrievalError.js";
-import DatabaseError from "../../httpServer/errors/DatabaseError.js";
-import CacheError from "../../httpServer/errors/CacheError.js";
-import User from "../users/User.js";
-import EventTicket from "./EventTicket.js";
-import Club from "../clubs/Club.js";
 
-const expirationTime = 5 * 60 * 1000;
+import BaseModel from "../BaseModel.js";
+import EventSchema from "../../mongoDb/schemas/events/EventSchema.js";
+import DatabaseError from "../../httpServer/errors/DatabaseError.js";
+import Club from "../clubs/Club.js";
+import EventTicket from "./EventTicket.js";
+import User from "../users/User.js";
 
 /**
  * @description Class representing an Event.
- * @param {String} _id - The id of the event.
+ * @param {String} id - The id of the event.
  * @param {String} title - The title of the event.
  * @param {String} description - The description of the event.
  * @param {String} location - The location of the event.
  * @param {String} host - The host of the event.
- * @param {Array<Club>} clubs - The clubs of the event.
+ * @param {Array<Event>} clubs - The clubs of the event.
  * @param {Number} startDate - The start date of the event.
  * @param {Number} endDate - The end date of the event.
  * @param {Array<EventInformation>} information - The information of the event.
@@ -36,7 +30,18 @@ const expirationTime = 5 * 60 * 1000;
  * @param {Array<Event>} editHistory - The edit history of the event.
  * @param {Array<User>} subscribers - The subscribers of the event.
  * */
-export default class Event {
+
+export default class Event extends BaseModel {
+
+    static modelName = 'Event';
+    static schema = EventSchema;
+    static cacheKey = 'events';
+    static expirationTime = 5; // time in minutes after which the cache expires
+    static populationPaths = [
+        { path: 'clubs' },
+        { path: 'tickets' },
+        { path: 'subscribers' }
+    ];
 
     /**
      * @description Create an event.
@@ -69,298 +74,93 @@ export default class Event {
         state,
         editHistory,
         subscribers
-    ) {
-        this.title = title;
-        this.description = description;
-        this.location = location;
-        this.host = host;
-        this.clubs = clubs;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.information = information;
-        this.tickets = tickets;
-        this.state = state;
-        this.editHistory = editHistory;
-        this.subscribers = subscribers;
-    }
-
-    get _title() {
-        return this.title;
-    }
-
-    set _title(value) {
-        validateNotEmpty('Event title', value)
-        this.title = value;
-    }
-
-    get _description() {
-        return this.description;
-    }
-
-    set _description(value) {
-        validateNotEmpty('Event description', value)
-        this.description = value;
-    }
-
-    get _location() {
-        return this.location;
-    }
-
-    set _location(value) {
-        validateNotEmpty('Event location', value)
-        this.location = value;
-    }
-
-    get _host() {
-        return this.host;
-    }
-
-    set _host(value) {
-        validateNotEmpty('Event host', value)
-        this.host = value;
-    }
-
-    get _clubs() {
-        return this.clubs;
-    }
-
-    set _clubs(value) {
-        validateArray('Event clubs', value);
-        this.clubs = value;
-    }
-
-    get _startDate() {
-        return this.startDate;
-    }
-
-    set _startDate(value) {
-        validateNumber('Event start date', value);
-        this.startDate = value;
-    }
-
-    get _endDate() {
-        return this.endDate;
-    }
-
-    set _endDate(value) {
-        validateNumber('Event end date', value);
-        this.endDate = value;
-    }
-
-    get _information() {
-        return this.information;
-    }
-
-    set _information(value) {
-        validateArray('Event information', value);
-        this.information = value;
-    }
-
-    get _tickets() {
-        return this.tickets;
-    }
-
-    set _tickets(value) {
-        validateArray('Event tickets', value);
-        this.tickets = value;
-    }
-
-    get _state() {
-        return this.state;
-    }
-
-    set _state(value) {
-        this.state = value;
-    }
-
-    get _editHistory() {
-        return this.editHistory;
-    }
-
-    set _editHistory(value) {
-        validateArray('Event edit history', value);
-        this.editHistory = value;
-    }
-
-    get _subscribers() {
-        return this.subscribers;
-    }
-
-    set _subscribers(value) {
-        validateArray('Event subscribers', value);
-        this.subscribers = value;
+    ){
+        super({
+            title,
+            description,
+            location,
+            host,
+            clubs,
+            startDate,
+            endDate,
+            information,
+            tickets,
+            state,
+            editHistory,
+            subscribers
+        });
+        this._id = null;
+        this._title = title;
+        this._description = description;
+        this._location = location;
+        this._host = host;
+        this._clubs = clubs;
+        this._startDate = startDate;
+        this._endDate = endDate;
+        this._information = information;
+        this._tickets = tickets;
+        this._state = state;
+        this._editHistory = editHistory;
+        this._subscribers = subscribers;
     }
 
     /**
-     * @description Get all events from the cache.
-     * @returns {Promise<Array<Event>>} All events from the cache.
+     * Casts a plain object to an instance of the Event class.
+     * @param {Object} event - The plain object to cast.
+     * @returns {Event} The cast instance of the Event class.
      */
-    static async updateEventCache() {
-
-        cache.del('events');
-        const eventsFromDb = await getAllDocuments(EventSchema);
-
-        const events = [];
-        for (const event of eventsFromDb) {
-            events.push(
-                await this.populateEvent(event)
-            )
-        }
-
-        cache.put('events', events, expirationTime);
-        return events;
-
-    }
-
-    /**
-     * @description Get an event by its ID.
-     * @param {String} eventId - The ID of the event.
-     * @returns {Promise<Event>} The event.
-     * @throws {RetrievalError} When the event could not be retrieved.
-     */
-    static async getEventById(eventId) {
-
-        const events = await this.getAllEvents();
-
-        const event = events.find(event => event._id === eventId);
-        if (!event) throw new RetrievalError(`Failed to get event:\n${ eventId }`);
-
-        return event;
-
-    }
-
-    /**
-     * @description Get all events that match the rule.
-     * @param {Object} rule - The rule to find the events by.
-     * @returns {Promise<Array<Event>>} The matching event.
-     * @throws {RetrievalError} When the events could not be retrieved.
-     * */
-    static async getAllEventsByRule(rule) {
-
-        const events = await this.getAllEvents();
-
-        const event = findByRule(events, rule);
-        if (!event) throw new RetrievalError(`Failed to get events with rule:\n${ rule }`);
-
-        return event;
-
-    }
-
-    /**
-     * @description Get all events.
-     * @returns {Promise<Array<Event>>} The events.
-     */
-    static async getAllEvents() {
-
-        const cacheResults = cache.get('events');
-
-        if (cacheResults) {
-            return cacheResults;
-        }
-
-        return await this.updateEventCache();
-    }
-
-    /**
-     * @description Create an event.
-     * @param {Event} event - The event to create.
-     * @returns {Promise<Event>} The created event.
-     * @throws {DatabaseError} When the event could not be created.
-     * @throws {CacheError} When the event could not be created in the cache.
-     */
-    static async createEvent(event) {
-
-        const events = await this.getAllEvents();
-
-        const insertedEvent = await createDocument(EventSchema, event);
-        if (!insertedEvent) throw new DatabaseError(`Failed to create event:\n${ event }`);
-
-        events.push(
-            await this.populateEvent(insertedEvent)
+    static castToEvent(event) {
+        const { id, title, description, location, host, clubs, startDate, endDate, information, tickets, state, editHistory, subscribers } = event;
+        const castEvent = new Event(
+            title,
+            description,
+            location,
+            host,
+            clubs,
+            startDate,
+            endDate,
+            information,
+            tickets,
+            state,
+            editHistory,
+            subscribers
         );
-        cache.put(`events`, events, expirationTime);
-
-        if (!this.verifyEventInCache(insertedEvent))
-
-            if (!await verifyInCache(cache.get('events'), insertedEvent, this.updateEventCache))
-                throw new CacheError(`Failed to create event in cache:\n${ insertedEvent }`);
-
-        return insertedEvent;
-
+        event.id = id.toString();
+        return castEvent;
     }
 
     /**
-     * @description Update an event.
-     * @param {String} eventId - The ID of the event to update.
-     * @param {Event} updateEvent - The updated event.
-     * @returns {Promise<Event>} The updated event.
-     * @throws {DatabaseError} When the event could not be updated.
-     * @throws {CacheError} When the event could not be updated in the cache.
+     * Converts the Event instance into a JSON-friendly format by removing the underscores from the property names.
+     * This method is automatically called when JSON.stringify() is used on an Event instance.
+     * @returns {Object} An object representation of the Event instance without underscores in the property names.
      */
-    static async updateEvent(eventId, updateEvent) {
-
-        const events = await this.getAllEvents();
-
-        const updatedEvent = await updateDocument(EventSchema, eventId, updateEvent);
-        if (!updatedEvent) throw new DatabaseError(`Failed to update event:\n${ updatedEvent }`);
-
-        events.push(
-            await this.populateEvent(updatedEvent)
-        );
-        cache.put(`events`, events, expirationTime);
-
-        if (!this.verifyEventInCache(updatedEvent))
-
-            if (!await verifyInCache(cache.get('events'), updatedEvent, this.updateEventCache))
-                throw new CacheError(`Failed to update event in cache:\n${ updatedEvent }`);
-
-        return updatedEvent;
+    toJSON(){
+        const { id, title, description, location, host, clubs, startDate, endDate, information, tickets, state, editHistory, subscribers } = this;
+        return {
+            id,
+            title,
+            description,
+            location,
+            host,
+            clubs,
+            startDate,
+            endDate,
+            information,
+            tickets,
+            state,
+            editHistory,
+            subscribers
+        };
     }
 
     /**
-     * @description Delete an event.
-     * @param {String} eventId - The ID of the event to delete.
-     * @returns {Promise<Boolean>} The deleted event.
-     * @throws {DatabaseError} When the event could not be deleted.
-     * @throws {CacheError} When the event could not be deleted in the cache.
-     */
-    static async deleteEvent(eventId) {
-
-        const deletedEvent = await deleteDocument(EventSchema, eventId);
-        if (!deletedEvent) throw new DatabaseError(`Failed to delete event:\n${ eventId }`);
-
-        const events = await this.getAllEvents();
-        events.splice(events.findIndex(event => event._id === eventId), 1);
-        cache.put('events', events, expirationTime);
-
-        if (this.verifyEventInCache(deletedEvent))
-            throw new CacheError(`Failed to delete event from cache:\n${ deletedEvent }`);
-
-        return true;
-    }
-
-    /**
-     * @description Verify if an event is in the cache.
-     * @param {Event} event - The event to verify.
-     * @returns {Boolean} True if the event is in the cache, false otherwise.
-     */
-    static async verifyEventInCache(event) {
-
-        const cacheResults = cache.get('events').find(eventInCache => eventInCache._id === event._id);
-
-        return Boolean(cacheResults);
-
-    }
-
-    /**
-     * @description Populate an Event.
-     * @param {Object} event - The event to populate.
-     * @return {Promise<Event>} The populated event.
+     * Populates the given Event with related data from other collections.
+     * @param {Object} event - The Event to populate.
+     * @returns {Promise<Event>} The populated Event.
+     * @throws {DatabaseError} If the Event could not be populated.
      */
     static async populateEvent(event) {
-
         try {
-
             event = await event
                 .populate([
                     {
@@ -376,36 +176,127 @@ export default class Event {
                         populate: User.getPopulationPaths()
                     },
                 ]);
+            event.id = event._id.toString();
 
-            const populatedEvent = new Event(
-                event.title,
-                event.description,
-                event.location,
-                event.host,
-                event.clubs,
-                event.startDate,
-                event.endDate,
-                event.information,
-                event.tickets,
-                event.state,
-                event.editHistory,
-                event.subscribers
-            );
-            populatedEvent._id = event._id.toString();
-
-            return populatedEvent;
-
+            return this.castToClub(event);
         } catch (error) {
-            throw new DatabaseError(`Failed to populate event:\n${ event }\n${ error }`);
+            // here event._id is used instead of event.id because event is an instance of the mongoose model
+            throw new DatabaseError(`Failed to populate event with id #${event._id}' \n${ error.stack }`);
         }
-
     }
 
-    static getPopulationPaths() {
-        return [
-            { path: 'clubs' },
-            { path: 'tickets' },
-            { path: 'subscribers' }
-        ]
+    /**
+     * Calls the static populateEvent method.
+     * @param {Object} object - The instance to populate.
+     * @returns {Promise<Event>} The populated instance.
+     * @throws {DatabaseError} If the instance could not be populated.
+     */
+    static async populate(object) {
+        return await this.populateEvent(object);
     }
+
+    get title() {
+        return this._title;
+    }
+
+    set title(value) {
+        this._title = value;
+    }
+
+    get description() {
+        return this._description;
+    }
+
+    set description(value) {
+        this._description = value;
+    }
+
+    get location() {
+        return this._location;
+    }
+
+    set location(value) {
+        this._location = value;
+    }
+
+    get host() {
+        return this._host;
+    }
+
+    set host(value) {
+        this._host = value;
+    }
+
+    get clubs() {
+        return this._clubs;
+    }
+
+    set clubs(value) {
+        this._clubs = value;
+    }
+
+    get startDate() {
+        return this._startDate;
+    }
+
+    set startDate(value) {
+        this._startDate = value;
+    }
+
+    get endDate() {
+        return this._endDate;
+    }
+
+    set endDate(value) {
+        this._endDate = value;
+    }
+
+    get information() {
+        return this._information;
+    }
+
+    set information(value) {
+        this._information = value;
+    }
+
+    get tickets() {
+        return this._tickets;
+    }
+
+    set tickets(value) {
+        this._tickets = value;
+    }
+
+    get state() {
+        return this._state;
+    }
+
+    set state(value) {
+        this._state = value;
+    }
+
+    get editHistory() {
+        return this._editHistory;
+    }
+
+    set editHistory(value) {
+        this._editHistory = value;
+    }
+
+    get subscribers() {
+        return this._subscribers;
+    }
+
+    set subscribers(value) {
+        this._subscribers = value;
+    }
+
+    get id() {
+        return this._id;
+    }
+
+    set id(value) {
+        this._id = value;
+    }
+
 }

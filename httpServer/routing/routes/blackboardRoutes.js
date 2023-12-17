@@ -20,19 +20,7 @@ const requiredProperties = [ 'title', 'author', 'coverImage', 'text', 'tags', 'd
  * @returns {Blackboard} - The formatted blackboard
  * */
 function bodyToBlackboard(body) {
-
-    const blackboard = body.blackboard;
-
-    return new Blackboard(
-        blackboard.title,
-        blackboard.author,
-        blackboard.coverImage,
-        blackboard.text,
-        blackboard.tags,
-        blackboard.date,
-        blackboard.state
-    );
-
+    return Blackboard.castToBlackboard(body.blackboard);
 }
 
 /**
@@ -42,7 +30,7 @@ function bodyToBlackboard(body) {
  * */
 router.get('/', async (req, res) => {
 
-    const blackboards = await Blackboard.getAllBlackboards();
+    const blackboards = await Blackboard.getAll();
     res.json(blackboards);
 
 });
@@ -70,14 +58,14 @@ router.get('/filter', async (req, res) => {
             return;
         }
 
-        const blackboards = await Blackboard.getAllBlackboardsByRule(filter);
+        const blackboards = await Blackboard.getAllByRule(filter);
         res.json(blackboards)
     } catch (error) {
         logger.server.error(error);
         res.status(400).send(
             {
                 errorCode: errors.server.document.query.failed,
-                errorMessage: error.message
+                errorMessage: error.stack
             }
         );
     }
@@ -107,14 +95,14 @@ router.get('/:id', async (req, res) => {
             return;
         }
 
-        const blackboard = await Blackboard.getBlackboardById(id);
+        const blackboard = await Blackboard.getById(id);
         res.json(blackboard)
     } catch (error) {
         logger.server.error(error);
         res.status(400).send(
             {
                 errorCode: errors.server.document.query.failed,
-                errorMessage: error.message
+                errorMessage: error.stack
             }
         );
     }
@@ -144,7 +132,7 @@ router.post('/', async (req, res) => {
         }
 
         const newBlackboard = bodyToBlackboard(req.body);
-        newBlackboard._id = req.body.blackboard._id.toString();
+        newBlackboard.id = req.body.blackboard.id.toString();
 
         if (!newBlackboard) {
             logger.server.error(`Request #${ req.requestId }: Blackboard creation from '${ req.ip }' failed.`)
@@ -157,7 +145,7 @@ router.post('/', async (req, res) => {
             return;
         }
 
-        if (!newBlackboard._id) {
+        if (!newBlackboard.id) {
             logger.server.error(`Request #${ req.requestId }: Blackboard creation from '${ req.ip }' does not contain blackboard id in body`)
             res.status(400).send(
                 {
@@ -168,7 +156,7 @@ router.post('/', async (req, res) => {
             return;
         }
 
-        const blackboard = await Blackboard.createBlackboard(newBlackboard);
+        const blackboard = await newBlackboard.create();
         res.json(blackboard);
 
     } catch (error) {
@@ -176,7 +164,7 @@ router.post('/', async (req, res) => {
         res.status(400).send(
             {
                 errorCode: errors.server.document.creation.failed,
-                errorMessage: error.message
+                errorMessage: error.stack
             }
         );
     }
@@ -195,6 +183,8 @@ router.put('/:id', async (req, res) => {
 
     try {
 
+        const oldBlackboard= await Blackboard.getById(req.params.id);
+
         if (isMissingProperty(req.body.blackboard, requiredProperties)) {
             logger.server.error(`Request #${ req.requestId }: Blackboard update from '${ req.ip }' does not contain all required properties.`)
             res.status(400).send(
@@ -207,7 +197,7 @@ router.put('/:id', async (req, res) => {
         }
 
         const updatedBlackboard = bodyToBlackboard(req.body);
-        updatedBlackboard._id = req.body.blackboard._id.toString();
+        updatedBlackboard.id = req.body.blackboard.id.toString();
 
         if (!updatedBlackboard) {
             logger.server.error(`Request #${ req.requestId }: Blackboard update from '${ req.ip }' failed.`)
@@ -220,8 +210,8 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        if (updatedBlackboard._id !== req.params.id) {
-            logger.server.error(`Request #${ req.requestId }: Blackboard update from '${ req.ip }' with URL '${ req.params.id }' does not match blackboard id in body '${ updatedBlackboard._id }'`);
+        if (updatedBlackboard.id !== req.params.id) {
+            logger.server.error(`Request #${ req.requestId }: Blackboard update from '${ req.ip }' with URL '${ req.params.id }' does not match blackboard id in body '${ updatedBlackboard.id }'`);
             res.status(400).send(
                 {
                     errorCode: errors.server.document.update.failed,
@@ -231,7 +221,7 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        if (!updatedBlackboard._id) {
+        if (!updatedBlackboard.id) {
             logger.server.error(`Request #${ req.requestId }: Blackboard update from '${ req.ip }' with URL '${ req.params.id }' does not contain blackboard id in body`)
             res.status(400).send(
                 {
@@ -242,7 +232,7 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        if (await Blackboard.getBlackboardById(updatedBlackboard._id) === null) {
+        if (oldBlackboard === null) {
             logger.server.error(`Request #${ req.requestId }: Blackboard update from '${ req.ip }' with URL '${ req.url }' does not match any blackboard`)
             res.status(400).send(
                 {
@@ -253,7 +243,7 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        const blackboard = await Blackboard.updateBlackboard(req.params.id, updatedBlackboard);
+        const blackboard = await oldBlackboard.update(updatedBlackboard);
         res.json(blackboard);
 
     } catch (error) {
@@ -261,7 +251,7 @@ router.put('/:id', async (req, res) => {
         res.status(400).send(
             {
                 errorCode: errors.server.document.update.failed,
-                errorMessage: error.message
+                errorMessage: error.stack
             }
         );
     }
@@ -291,7 +281,7 @@ router.delete('/:id', async (req, res) => {
             return;
         }
 
-        const blackboard = await Blackboard.getBlackboardById(id);
+        const blackboard = await Blackboard.getById(id);
 
         if (blackboard === null) {
             logger.server.error(`Request #${ req.requestId }: Blackboard deletion from '${ req.ip }' with URL '${ req.url }' does not match any blackboard`)
@@ -304,7 +294,7 @@ router.delete('/:id', async (req, res) => {
             return;
         }
 
-        const deletionState = await Blackboard.deleteBlackboard(id);
+        const deletionState = await blackboard.delete();
         res.json(deletionState);
 
     } catch (error) {
@@ -312,7 +302,7 @@ router.delete('/:id', async (req, res) => {
         res.status(400).send(
             {
                 errorCode: errors.server.document.deletion.failed,
-                errorMessage: error.message
+                errorMessage: error.stack
             }
         );
     }

@@ -2,7 +2,7 @@ import { getModel } from "./initializeSchemas.js";
 import logger from "../tools/logging/logger.js";
 
 /**
- * @file collectionAccess.js - Class exporting functions to access the database.
+ * @file mongoAccess.js - Class exporting functions to access the database.
  * @author Daniel Dopatka
  * @copyright 2023 Daniel Dopatka, Linus Bung
  *

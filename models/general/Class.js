@@ -3,30 +3,32 @@
  * @author Daniel Dopatka
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
-import { validateArray, validateNotEmpty, verifyInCache } from "../propertyValidation.js";
-import cache from "../../httpServer/cache.js";
-import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../mongoDb/collectionAccess.js";
+
+import BaseModel from "../BaseModel.js";
 import ClassSchema from "../../mongoDb/schemas/general/ClassSchema.js";
-import { findByRule } from "../findByRule.js";
-import RetrievalError from "../../httpServer/errors/RetrievalError.js";
 import DatabaseError from "../../httpServer/errors/DatabaseError.js";
-import CacheError from "../../httpServer/errors/CacheError.js";
 import Grade from "./Grade.js";
 import Course from "./Course.js";
 import User from "../users/User.js";
-
-// Cache expiration time in milliseconds
-const expirationTime = 5 * 60 * 1000;
-
 /**
  * @description Class representing a school class.
- * @param {String} _id - The id of the class.
+ * @param {String} id - The id of the class.
  * @param {Grade} grade - The grade of the class.
  * @param {Array<Course>} courses - The courses of the class.
  * @param {Array<User>} members - The members of the class.
  * @param {String} specifiedGrade - The specified grade of the class.
  */
-export default class Class {
+export default class Class extends BaseModel {
+
+    static modelName = 'Class';
+    static schema = ClassSchema;
+    static cacheKey = 'classes';
+    static expirationTime = 5; // time in minutes after which the cache expires
+    static populationPaths = [
+        { path: 'grade' },
+        { path: 'courses' },
+        { path: 'members' }
+    ];
 
     /**
      * @description Create a class.
@@ -41,215 +43,59 @@ export default class Class {
         members,
         specifiedGrade
     ) {
-        this.grade = grade;
-        this.courses = courses;
-        this.members = members;
-        this.specifiedGrade = specifiedGrade;
-    }
-
-    get _grade() {
-        return this.grade;
-    }
-
-    set _grade(value) {
-        validateNotEmpty('Class grade', value);
-        this.grade = value;
-    }
-
-    get _courses() {
-        return this.courses;
-    }
-
-    set _courses(value) {
-        validateArray('Class courses', value);
-        this.courses = value;
-    }
-
-    get _members() {
-        return this.members;
-    }
-
-    set _members(value) {
-        validateArray('Class members', value);
-        this.members = value;
-    }
-
-    get _specifiedGrade() {
-        return this.specifiedGrade;
-    }
-
-    set _specifiedGrade(value) {
-        validateNotEmpty('Class specified grade', value);
-        this.specifiedGrade = value;
+        super({
+            grade,
+            courses,
+            members,
+            specifiedGrade
+        });
+        this._id = null;
+        this._grade = grade;
+        this._courses = courses;
+        this._members = members;
+        this._specifiedGrade = specifiedGrade;
     }
 
     /**
-     * @description Update the class cache.
-     * @return {Promise<Array<Class>>} The updated classes.
+     * Casts a plain object to an instance of the Class class.
+     * @param {Object} class_ - The plain object to cast.
+     * @returns {Class} The cast instance of the Class class.
      */
-    static async updateClassCache() {
-
-        cache.del('classes');
-        const classesFromDb = await getAllDocuments(ClassSchema);
-
-        const classes = [];
-        for (const class_ of classesFromDb) {
-            classes.push(
-                await this.populateClass(class_)
-            )
-        }
-
-        cache.put('classes', classes, expirationTime);
-        return classes;
-
-    }
-
-    /**
-     * @description Get all classes.
-     * @return {Promise<Array<Class>>} The classes.
-     */
-    static async getAllClasses() {
-
-        const cacheResults = cache.get('classes');
-
-        if (cacheResults) {
-            return cacheResults;
-        }
-        else return await this.updateClassCache();
-
-    }
-
-    /**
-     * @description Get a class by id.
-     * @param {String} classId - The id of the class.
-     * @returns {Promise<Class>} The class.
-     * @throws {RetrievalError} When no class matches the id.
-     */
-    static async getClassById(classId) {
-
-        const classes = await this.getAllClasses();
-
-        const class_ = classes.find(class__ => class__._id === classId);
-        if (!class_) throw new RetrievalError(`Failed to find class with id ${ classId }`);
-
-        return class_;
-
-    }
-
-    /**
-     * @description Get classes by a rule.
-     * @param {Object} rule - The rule to find classes by.
-     * @returns {Promise<Array<Class>>} The matching classes.
-     * @throws {RetrievalError} When no classes match the rule.
-     */
-    static async getAllClassesByRule(rule) {
-
-        const classes = await this.getAllClasses();
-
-        const matchingClasses = findByRule(classes, rule);
-        if (!matchingClasses) throw new RetrievalError(`Failed to find classes matching rule:\n${ rule }`);
-
-        return matchingClasses;
-
-    }
-
-    /**
-     * @description Create a class.
-     * @param {Class} class_ - The class to create.
-     * @return {Promise<Class>} The created class.
-     * @throws {DatabaseError} When the class fails to be created.
-     * @throws {CacheError} When the class fails to be put in cache.
-     */
-    static async createClass(class_) {
-
-        const classes = await this.getAllClasses();
-
-        const insertedClass = await createDocument(ClassSchema, class_);
-        if (!insertedClass) throw new DatabaseError(`Failed to create class:\n${ class_ }`);
-
-        classes.push(
-            await this.populateClass(insertedClass)
+    static castToClass(class_) {
+        const { id, grade, courses, members, specifiedGrade } = class_;
+        const castClass = new Class(
+            grade,
+            courses,
+            members,
+            specifiedGrade
         );
-        cache.put('classes', classes, expirationTime);
-
-        if (!this.verifyClassInCache(insertedClass))
-
-            if (!await verifyInCache(cache.get('classes'), insertedClass, this.updateClassCache))
-                throw new CacheError(`Failed to put class in cache:\n${ insertedClass }`);
-
-        return insertedClass;
+        castClass.id = id.toString();
     }
 
     /**
-     * @description Update a class.
-     * @param {String} classId - The id of the class to update.
-     * @param {Class} updateClass - The updated class.
-     * @return {Promise<Class>} The updated class.
-     * @throws {DatabaseError} When the class fails to be updated.
-     * @throws {CacheError} When the class fails to be updated in cache.
+     * Converts the Class instance into a JSON-friendly format by removing the underscores from the property names.
+     * This method is automatically called when JSON.stringify() is used on a Class instance.
+     * @returns {Object} An object representation of the Class instance without underscores in the property names.
      */
-    static async updateClass(classId, updateClass) {
-
-        const classes = await this.getAllClasses();
-
-        let updatedClass = await updateDocument(ClassSchema, classId, updateClass);
-        if (!updatedClass) throw new DatabaseError(`Failed to update class:\n${ updateClass }`);
-
-        updatedClass = await this.populateClass(updatedClass);
-
-        classes.splice(classes.findIndex(class_ => class_._id === classId), 1, updatedClass);
-        cache.put('classes', classes, expirationTime);
-
-        if (!this.verifyClassInCache(updatedClass))
-
-            if (!await verifyInCache(cache.get('classes'), updatedClass, this.updateClassCache))
-                throw new CacheError(`Failed to update class in cache:\n${ updatedClass }`);
-
-        return updatedClass;
+    toJSON(){
+        const { id, grade, courses, members, specifiedGrade } = this;
+        return {
+            id,
+            grade,
+            courses,
+            members,
+            specifiedGrade
+        };
     }
 
     /**
-     * @description Delete a class.
-     * @param {String} classId - The id of the class to delete.
-     * @return {Promise<Boolean>} The status of the deletion.
-     * @throws {DatabaseError} When the class fails to be deleted.
-     * @throws {CacheError} When the class fails to be deleted from cache.
+     * Populates the given Class with related data from other collections.
+     * @param {Object} class_ - The Class to populate.
+     * @returns {Promise<Class>} The populated Class.
+     * @throws {DatabaseError} If the Class could not be populated.
      */
-    static async deleteClass(classId) {
-
-        const deletedClass = await deleteDocument(ClassSchema, classId);
-        if (!deletedClass) throw new DatabaseError(`Failed to delete class with id ${ classId }`);
-
-        const classes = await this.getAllClasses();
-        classes.splice(classes.findIndex(class_ => class_._id === classId), 1);
-        cache.put('classes', classes, expirationTime);
-
-        if (this.verifyClassInCache(deletedClass))
-            throw new CacheError(`Failed to delete class from cache:\n${ deletedClass }`);
-
-        return true;
-    }
-
-    /**
-     * @description Verify a class in cache.
-     * @param {Class} class_ - The class to verify.
-     * @return {Boolean} The status of the verification.
-     */
-    static async verifyClassInCache(class_) {
-        const cacheResult = cache.get('classes').find(class__ => class__._id === class_._id);
-
-        return Boolean(cacheResult);
-    }
-
-    /**
-     * @description Populate a class.
-     * @param {Object} class_ - The class to populate.
-     * @return {Class} The populated class.
-     * */
     static async populateClass(class_) {
-
         try {
-
             class_ = await class_
                 .populate([
                     {
@@ -266,28 +112,63 @@ export default class Class {
                     },
                 ]);
 
-            const populatedClass = new Class(
-                class_.grade,
-                class_.courses,
-                class_.members,
-                class_.specifiedGrade
-            );
-            populatedClass._id = class_._id.toString();
+            class_.id = class_._id.toString();
 
-            return populatedClass;
-
+            return this.castToClass(class_);
         } catch (error) {
-            throw new DatabaseError(`Failed to populate class:\n${ class_ }\n${ error }`);
+            // here class_._id is used instead of class_.id because class_ is an instance of the mongoose model
+            throw new DatabaseError(`Failed to populate class with id #${class_._id}' \n${ error.stack }`);
         }
-
     }
 
-    static getPopulationPaths() {
-        return [
-            { path: 'grade' },
-            { path: 'courses' },
-            { path: 'members' }
-        ]
+    /**
+     * Calls the static populateClass method.
+     * @param {Object} object - The instance to populate.
+     * @returns {Promise<Class>} The populated instance.
+     * @throws {DatabaseError} If the instance could not be populated.
+     */
+    static async populate(object) {
+        return await this.populateClass(object);
+    }
+
+    get grade() {
+        return this._grade;
+    }
+
+    set grade(value) {
+        this._grade = value;
+    }
+
+    get courses() {
+        return this._courses;
+    }
+
+    set courses(value) {
+        this._courses = value;
+    }
+
+    get members() {
+        return this._members;
+    }
+
+    set members(value) {
+        this._members = value;
+    }
+
+    get specifiedGrade() {
+        return this._specifiedGrade;
+    }
+
+    set specifiedGrade(value) {
+        this._specifiedGrade = value;
+    }
+
+    get id() {
+        return this._id;
+    }
+
+    set id(value) {
+        this._id = value;
     }
 
 }

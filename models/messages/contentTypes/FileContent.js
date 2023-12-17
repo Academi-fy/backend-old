@@ -4,7 +4,7 @@
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
 import MessageContent from "../MessageContent.js";
-import { validateNotEmpty } from "../../propertyValidation.js";
+import { validateNotEmpty } from "../../../../models/propertyValidation.js";
 
 /**
  * @description Class representing a file content.

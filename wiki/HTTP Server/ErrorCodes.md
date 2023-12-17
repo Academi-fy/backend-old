@@ -14,6 +14,20 @@ server: {
             deletion: {
                 failed: 7
             }
+        },
+        socket: {
+            messages: {
+                parsing: {
+                    failed: {
+                        unknownReason: 0,
+                            invalidFormBody: 1,
+                            unknownEvent: 2
+                    }
+                }
+            },
+            actions: {
+                insufficientPermission: 99
+            }
         }
     }
 ```

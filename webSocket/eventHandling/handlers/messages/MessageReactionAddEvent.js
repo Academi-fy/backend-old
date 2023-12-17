@@ -27,9 +27,9 @@ export default async function (ws, data, messageId, date) {
 
         const message = await Message.getMessageById(msgId);
         message.addReaction(emoji); //TODO checken, ob es verändert wird
-        const updatedMessage = await Message.updatedMessage(msgId, message);
+        const updatedMessage = await Message.updateMessage(msgId, message);
 
-        const chat = message._chat; //TODO check if type = Chat
+        const chat = message._chat;
 
         chat.getAllTargets().forEach(target => {
             

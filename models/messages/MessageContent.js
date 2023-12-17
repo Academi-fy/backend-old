@@ -3,7 +3,7 @@
  * @author Daniel Dopatka
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
-import { validateNotEmpty, validateObject } from "../propertyValidation.js";
+import { validateNotEmpty, validateObject } from "../../../models/propertyValidation.js";
 
 /**
  * @description Represents the content of a messages.

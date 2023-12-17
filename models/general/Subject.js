@@ -3,17 +3,11 @@
  * @author Daniel Dopatka
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
-import cache from "../../httpServer/cache.js";
-import { createDocument, deleteDocument, getAllDocuments, updateDocument } from "../../mongoDb/collectionAccess.js";
-import { validateArray, validateNotEmpty, verifyInCache } from "../propertyValidation.js";
-import SubjectSchema from "../../mongoDb/schemas/general/SubjectSchema.js";
-import { findByRule } from "../findByRule.js";
-import RetrievalError from "../../httpServer/errors/RetrievalError.js";
-import DatabaseError from "../../httpServer/errors/DatabaseError.js";
-import CacheError from "../../httpServer/errors/CacheError.js";
-import Course from "./Course.js";
 
-const expirationTime = 10 * 60 * 1000;
+import BaseModel from "../BaseModel.js";
+import SubjectSchema from "../../mongoDb/schemas/general/SubjectSchema.js";
+import Course from "./Course.js";
+import DatabaseError from "../../httpServer/errors/DatabaseError.js";
 
 /**
  * @description Class representing a Subject.
@@ -22,7 +16,15 @@ const expirationTime = 10 * 60 * 1000;
  * @param {String} shortName - The short name of the subject.
  * @param {Array<Course>} courses - The courses of the subject.
  */
-export default class Subject {
+export default class Subject extends BaseModel {
+
+    static modelName = 'Subject';
+    static schema = SubjectSchema;
+    static cacheKey = 'subjects';
+    static expirationTime = 10; // time in minutes after which the cache expires
+    static populationPaths = [
+        { path: 'courses' }
+    ];
 
     /**
      * Create a subject.
@@ -35,204 +37,56 @@ export default class Subject {
         shortName,
         courses
     ) {
-        this.type = type;
-        this.courses = courses;
-    }
-
-    get _type() {
-        return this.type;
-    }
-
-    set _type(value) {
-        validateNotEmpty('Subject type', value);
-        this.type = value;
-    }
-
-    get _shortName() {
-        return this.shortName;
-    }
-
-    set _shortName(value) {
-        validateNotEmpty('Subject shortName', value);
-        this.shortName = value;
-    }
-
-    get _courses() {
-        return this.courses;
-    }
-
-    set _courses(value) {
-        validateArray('Subject courses', value);
-        this.courses = value;
+        super({
+            type,
+            shortName,
+            courses
+        });
+        this._id = null;
+        this._type = type;
+        this._shortName = shortName;
+        this._courses = courses;
     }
 
     /**
-     * Update the cache of subjects.
-     * @return {Promise<Array<Subject>>} The updated list of subjects.
+     * Casts a plain object to an instance of the Subject class.
+     * @param {Object} subject - The plain object to cast.
+     * @returns {Subject} The cast instance of the Subject class.
      */
-    static async updateSubjectCache() {
-
-        cache.del('subjects');
-        const subjectsFromDb = await getAllDocuments(SubjectSchema);
-
-        let subjects = [];
-        for (const subject of subjectsFromDb) {
-            subjects.push(
-                await this.populateSubject(subject)
-            );
-        }
-
-        cache.put('subjects', subjects, expirationTime);
-        return subjects;
-
-    }
-
-    /**
-     * Get all subjects.
-     * @return {Promise<Array<Subject>>} The list of subjects.
-     */
-    static async getAllSubjects() {
-
-        const cacheResults = cache.get("subjects");
-
-        if (cacheResults) {
-            return cacheResults;
-        }
-        else return await this.updateSubjectCache();
-
-    }
-
-    /**
-     * Get a subject by its id.
-     * @param {String} id - The id of the subject.
-     * @return {Promise<Subject>} The subject.
-     * @throws {RetrievalError} When the subject is not found.
-     */
-    static async getSubjectById(id) {
-
-        const subjects = await this.getAllSubjects();
-
-        const subject = subjects.find(subject => subject._id === id);
-        if (!subject) throw new RetrievalError(`Subject not found:\n${ id }`);
-
-        return subject;
-
-    }
-
-    /**
-     * @description Get all subjects that match a rule.
-     * @param {Object} rule - The rule to find the subject.
-     * @return {Promise<Array<Subject>>} The matching subjects.
-     * @throws {RetrievalError} When no subjects match the rule.
-     * */
-    static async getAllSubjectsByRule(rule) {
-
-        const subjects = await this.getAllSubjects();
-
-        const matchingSubjects = findByRule(subjects, rule);
-        if (!matchingSubjects) throw new RetrievalError(`Failed to find subjects with rule:\n${ rule }`);
-
-        return matchingSubjects;
-    }
-
-    /**
-     * Create a subject.
-     * @param {Subject} subject - The subject.
-     * @return {Promise<Array<Subject>>} The updated list of subjects.
-     * @throws {DatabaseError} When the subject is not created.
-     * @throws {CacheError} When the subject is not created in the cache.
-     */
-    static async createSubject(subject) {
-
-        const subjects = await this.getAllSubjects();
-
-        const insertedSubject = await createDocument(SubjectSchema, subject);
-        if (!insertedSubject) throw new DatabaseError(`Failed to create subject:\n${ subject }`);
-
-        subjects.push(
-            await this.populateSubject(insertedSubject)
+    static castToSubject(subject) {
+        const { id, type, shortName, courses } = subject;
+        const castSubject = new Subject(
+            type,
+            shortName,
+            courses
         );
-        cache.put('subjects', subjects, expirationTime);
-
-        if (!this.verifySubjectInCache(insertedSubject))
-
-            if (!await verifyInCache(subjects, subject, this.updateSubjectCache))
-                throw new CacheError(`Failed to create subject:\n${ subject }`);
-
+        castSubject.id = id.toString();
+        return castSubject;
     }
 
     /**
-     * Update a subject.
-     * @param {String} subjectId - The id of the subject.
-     * @param {Subject} subject - The subject.
-     * @return {Promise<Subject>} The updated subject.
-     * @throws {DatabaseError} When the subject is not updated.
-     * @throws {CacheError} When the subject is not updated in the cache.
+     * Converts the Subject instance into a JSON-friendly format by removing the underscores from the property names.
+     * This method is automatically called when JSON.stringify() is used on a Subject instance.
+     * @returns {Object} An object representation of the Subject instance without underscores in the property names.
      */
-    static async updateSubject(subjectId, subject) {
-
-        const subjects = await this.getAllSubjects();
-
-        let updatedSubject = await updateDocument(SubjectSchema, subjectId, subject);
-        if (!updatedSubject) throw new DatabaseError(`Failed to update subject:\n${ subject }`);
-
-        updatedSubject = await this.populateSubject(updatedSubject);
-
-        subjects.splice(subjects.findIndex(subject => subject._id === subjectId), 1, updatedSubject);
-        cache.put('subjects', subjects, expirationTime);
-
-        if (!this.verifySubjectInCache(updatedSubject))
-
-            if (!await verifyInCache(subjects, updatedSubject, this.updateSubjectCache))
-                throw new CacheError(`Failed to update subject:\n${ updatedSubject }`);
-
-        return updatedSubject;
+    toJSON(){
+        const { id, type, shortName, courses } = this;
+        return {
+            id,
+            type,
+            shortName,
+            courses
+        };
     }
 
     /**
-     * Delete a subject.
-     * @param {String} subjectId - The id of the subject.
-     * @return {Promise<Subject>} The deleted subject.
-     * @throws {DatabaseError} When the subject is not deleted.
-     */
-    static async deleteSubject(subjectId) {
-
-        const deletedSubject = await deleteDocument(SubjectSchema, subjectId);
-        if (!deletedSubject) throw new DatabaseError(`Failed to delete subject:\n${ subjectId }`);
-
-        const subjects = await this.getAllSubjects();
-        subjects.splice(subjects.findIndex(subject => subject._id === subjectId), 1);
-        cache.put('subjects', subjects, expirationTime);
-
-        if (this.verifySubjectInCache(deletedSubject))
-
-            if (!await verifyInCache(subjects, deletedSubject, this.updateSubjectCache))
-                throw new CacheError(`Failed to delete subject:\n${ deletedSubject }`);
-
-        return deletedSubject;
-    }
-
-    /**
-     * Populate a subject.
-     * @param {Subject} testSubject - The subject.
-     * @return {Boolean} Whether the subject is in the cache.
-     */
-    static verifySubjectInCache(testSubject) {
-
-        const cacheResults = cache.get("subjects").find(subject => subject._id === testSubject._id);
-        return Boolean(cacheResults)
-
-    }
-
-    /**
-     * Populate a subject.
-     * @param {Object} subject - The subject.
-     * @return {Promise<Subject>} The populated subject.
+     * Populates the given Subject with related data from other collections.
+     * @param {Object} subject - The Subject to populate.
+     * @returns {Promise<Subject>} The populated Subject.
+     * @throws {DatabaseError} If the Subject could not be populated.
      */
     static async populateSubject(subject) {
-
         try {
-
             subject = await subject
                 .populate([
                     {
@@ -241,24 +95,55 @@ export default class Subject {
                     }
                 ]);
 
-            const populatedSubject = new Subject(
-                subject.type,
-                subject.shortName,
-                subject.courses
-            );
-            populatedSubject._id = subject._id.toString();
+            subject.id = subject._id.toString();
 
-            return populatedSubject;
-
+            return this.castToSubject(subject);
         } catch (error) {
-            throw new DatabaseError(`Failed to populate subject:\n${ subject }\n${ error }`);
+            // here subject._id is used instead of subject.id because subject is an instance of the mongoose model
+            throw new DatabaseError(`Failed to populate subject with id #${subject._id}' \n${ error.stack }`);
         }
     }
 
-    static getPopulationPaths() {
-        return [
-            { path: 'courses' }
-        ]
+    /**
+     * Calls the static populateSubject method.
+     * @param {Object} object - The instance to populate.
+     * @returns {Promise<Subject>} The populated instance.
+     * @throws {DatabaseError} If the instance could not be populated.
+     */
+    static async populate(object) {
+        return await this.populateSubject(object);
+    }
+
+    get type() {
+        return this._type;
+    }
+
+    set type(value) {
+        this._type = value;
+    }
+
+    get shortName() {
+        return this._shortName;
+    }
+
+    set shortName(value) {
+        this._shortName = value;
+    }
+
+    get courses() {
+        return this._courses;
+    }
+
+    set courses(value) {
+        this._courses = value;
+    }
+
+    get id() {
+        return this._id;
+    }
+
+    set id(value) {
+        this._id = value;
     }
 
 }

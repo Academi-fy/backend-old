@@ -21,19 +21,7 @@ const requiredProperties = [ 'chat', 'author', 'content', 'reactions', 'answer',
  * @returns {Message} - The formatted messages
  * */
 function bodyToMessage(body) {
-
-    const message = body.message;
-
-    return new Message(
-        message.chat,
-        message.content,
-        message.author,
-        message.reactions,
-        message.answer,
-        message.editHistory,
-        message.date
-    );
-
+    return Message.castToMessage(body.message)
 }
 
 /**
@@ -43,7 +31,7 @@ function bodyToMessage(body) {
  * */
 router.get('/', async (req, res) => {
 
-    const messages = await Message.getAllMessages();
+    const messages = await Message.getAll();
     res.json(messages);
 
 });
@@ -71,7 +59,7 @@ router.get('/filter', async (req, res) => {
             return;
         }
 
-        const messages = await Message.getAllMessagesByRule(filter);
+        const messages = await Message.getAllByRule(filter);
         res.json(messages)
     } catch (error) {
         logger.server.error(error);
@@ -108,7 +96,7 @@ router.get('/:id', async (req, res) => {
             return;
         }
 
-        const message = await Message.getMessageById(id);
+        const message = await Message.getById(id);
         res.json(message);
     } catch (error) {
         logger.server.error(error);
@@ -169,7 +157,7 @@ router.post('/', async (req, res) => {
             return;
         }
 
-        const message = await Message.createMessage(newMessage);
+        const message = await newMessage.create();
         res.json(message);
     } catch (error) {
         logger.server.error(error);
@@ -193,6 +181,7 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
 
     try {
+        const oldMessage = await Message.getById(req.params.id);
 
         if (isMissingProperty(req.body.message, requiredProperties)) {
             logger.server.error(`Request #${ req.requestId }: Message creation from '${ req.ip }' does not contain all required properties.`)
@@ -241,7 +230,7 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        if (await Message.getMessageById(updatedMessage._id) === null) {
+        if (oldMessage === null) {
             logger.server.error(`Request #${ req.requestId }: Message update from '${ req.ip }' with URL '${ req.url }' does not match any message`)
             res.status(400).send(
                 {
@@ -252,7 +241,7 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        const message = await Message.updateMessage(req.params.id, updatedMessage);
+        const message = await oldMessage.update(updatedMessage);
         res.json(message);
     } catch (error) {
         logger.server.error(error);
@@ -276,33 +265,36 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
 
     try {
+
         const id = req.params.id;
 
         if (!id) {
-            logger.server.error(`Request #${ req.requestId }: Message deletion from '${ req.ip }' does not contain message id in URL`)
+            logger.server.error(`Request #${ req.requestId }: Message deletion from '${ req.ip }' does not contain id in params`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.deletion.failed,
-                    errorMessage: "Message id missing in URL."
+                    errorMessage: "Message id missing in params."
                 }
             );
             return;
         }
 
-        const deleted = await Message.deleteMessage(id);
+        const message = await Message.getById(id);
 
-        if (!deleted) {
-            logger.server.error(`Request #${ req.requestId }: Message deletion from '${ req.ip }' for message with id '${ id }' could not be completed`)
+        if (message === null) {
+            logger.server.error(`Request #${ req.requestId }: Message deletion from '${ req.ip }' with URL '${ req.url }' does not match any message`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.deletion.failed,
-                    errorMessage: "Message could not be deleted."
+                    errorMessage: "Message id in params does not match any message."
                 }
             );
             return;
         }
 
-        res.send(deleted);
+        const deletionState = await message.delete();
+        res.json(deletionState);
+
     } catch (error) {
         logger.server.error(error);
         res.status(400).send(
@@ -312,6 +304,7 @@ router.delete('/:id', async (req, res) => {
             }
         );
     }
+
 });
 
 export default router;

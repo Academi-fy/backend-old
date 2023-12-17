@@ -21,17 +21,7 @@ const requiredProperties = [ 'members', 'classes', 'teacher', 'chat', 'subject' 
  * @returns {Course} - The formatted course
  * */
 function bodyToCourse(body) {
-
-    const course = body.course;
-
-    return new Course(
-        course.members,
-        course.classes,
-        course.teacher,
-        course.chat,
-        course.subject
-    );
-
+    return Course.castToCourse(body.course);
 }
 
 /**
@@ -41,7 +31,7 @@ function bodyToCourse(body) {
  * */
 router.get('/', async (req, res) => {
 
-    const courses = await Course.getAllCourses();
+    const courses = await Course.getAll();
     res.json(courses);
 
 });
@@ -69,7 +59,7 @@ router.get('/filter', async (req, res) => {
             return;
         }
 
-        const courses = await Course.getAllCoursesByRule(filter);
+        const courses = await Course.getAllByRule(filter);
         res.json(courses)
     } catch (error) {
         logger.server.error(error);
@@ -106,7 +96,7 @@ router.get('/:id', async (req, res) => {
             return;
         }
 
-        const course = await Course.getCourseById(id);
+        const course = await Course.getById(id);
         res.json(course);
     } catch (error) {
         logger.server.error(error);
@@ -167,7 +157,7 @@ router.post('/', async (req, res) => {
             return;
         }
 
-        const course = await Course.createCourse(newCourse);
+        const course = await newCourse.create();
         res.json(course);
     } catch (error) {
         logger.server.error(error);
@@ -191,6 +181,7 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
 
     try {
+        const oldCourse = await Course.getById(req.params.id);
 
         if (isMissingProperty(req.body.course, requiredProperties)) {
             logger.server.error(`Request #${ req.requestId }: Course creation from '${ req.ip }' does not contain all required properties.`)
@@ -239,7 +230,7 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        if (await Course.getCourseById(updatedCourse._id) === null) {
+        if (oldCourse === null) {
             logger.server.error(`Request #${ req.requestId }: Course update from '${ req.ip }' with URL '${ req.url }' does not match any course`)
             res.status(400).send(
                 {
@@ -250,7 +241,7 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        const course = await Course.updateCourse(req.params.id, updatedCourse);
+        const course = await oldCourse.update(updatedCourse);
         res.json(course);
     } catch (error) {
         logger.server.error(error);
@@ -274,33 +265,36 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
 
     try {
+
         const id = req.params.id;
 
         if (!id) {
-            logger.server.error(`Request #${ req.requestId }: Course deletion from '${ req.ip }' does not contain course id in URL`)
+            logger.server.error(`Request #${ req.requestId }: Course deletion from '${ req.ip }' does not contain id in params`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.deletion.failed,
-                    errorMessage: "Course id missing in URL."
+                    errorMessage: "Course id missing in params."
                 }
             );
             return;
         }
 
-        const deleted = await Course.deleteCourse(id);
+        const course = await Course.getById(id);
 
-        if (!deleted) {
-            logger.server.error(`Request #${ req.requestId }: Course deletion from '${ req.ip }' for course with id '${ id }' could not be completed`)
+        if (course === null) {
+            logger.server.error(`Request #${ req.requestId }: Course deletion from '${ req.ip }' with URL '${ req.url }' does not match any course`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.deletion.failed,
-                    errorMessage: "Course could not be deleted."
+                    errorMessage: "Course id in params does not match any course."
                 }
             );
             return;
         }
 
-        res.send(deleted);
+        const deletionState = await course.delete();
+        res.json(deletionState);
+
     } catch (error) {
         logger.server.error(error);
         res.status(400).send(
@@ -310,6 +304,7 @@ router.delete('/:id', async (req, res) => {
             }
         );
     }
+
 });
 
 export default router;

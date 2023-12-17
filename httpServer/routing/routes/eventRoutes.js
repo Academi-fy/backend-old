@@ -16,7 +16,7 @@ const router = express.Router();
 // properties that are required for an event
 const requiredProperties = [ 'title', 'description', 'location', 'host',
     'clubs', 'startDate', 'endDate', 'information',
-    'tickets', 'state', 'editHistory' ];
+    'tickets', 'state', 'editHistory', 'subscribers' ];
 
 /**
  * @description Formats the request body into an event
@@ -24,24 +24,7 @@ const requiredProperties = [ 'title', 'description', 'location', 'host',
  * @returns {Event} - The formatted event
  * */
 function bodyToEvent(body) {
-
-    const event = body.event;
-
-    return new Event( //TODO function parseToEvent (für alle models)
-        event.title,
-        event.description,
-        event.location,
-        event.host,
-        event.clubs,
-        event.startDate,
-        event.endDate,
-        event.information,
-        event.tickets,
-        event.state,
-        event.editHistory,
-        event.subscribers
-    );
-
+    return Event.castToEvent(body.event);
 }
 
 /**
@@ -51,7 +34,7 @@ function bodyToEvent(body) {
  * */
 router.get('/', async (req, res) => {
 
-    const events = await Event.getAllEvents();
+    const events = await Event.getAll();
     res.json(events);
 
 });
@@ -79,7 +62,7 @@ router.get('/filter', async (req, res) => {
             return;
         }
 
-        const events = await Event.getAllEventsByRule(filter);
+        const events = await Event.getAllByRule(filter);
         res.json(events)
     } catch (error) {
         logger.server.error(error);
@@ -116,7 +99,7 @@ router.get('/:id', async (req, res) => {
             return;
         }
 
-        const event = await Event.getEventById(id);
+        const event = await Event.getById(id);
         res.json(event);
     } catch (error) {
         logger.server.error(error);
@@ -177,7 +160,7 @@ router.post('/', async (req, res) => {
             return;
         }
 
-        const event = await Event.createEvent(newEvent);
+        const event = await newEvent.create();
         res.json(event);
     } catch (error) {
         logger.server.error(error);
@@ -201,6 +184,7 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
 
     try {
+        const oldEvent = await Event.getById(req.params.id);
 
         if (isMissingProperty(req.body.event, requiredProperties)) {
             logger.server.error(`Request #${ req.requestId }: Event creation from '${ req.ip }' does not contain all required properties.`)
@@ -249,7 +233,7 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        if (await Event.getEventById(updatedEvent._id) === null) {
+        if (oldEvent === null) {
             logger.server.error(`Request #${ req.requestId }: Event update from '${ req.ip }' with URL '${ req.url }' does not match any event`)
             res.status(400).send(
                 {
@@ -260,7 +244,7 @@ router.put('/:id', async (req, res) => {
             return;
         }
 
-        const event = await Event.updateEvent(req.params.id, updatedEvent);
+        const event = await oldEvent.update(updatedEvent);
         res.json(event);
     } catch (error) {
         logger.server.error(error);
@@ -284,33 +268,36 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
 
     try {
+
         const id = req.params.id;
 
         if (!id) {
-            logger.server.error(`Request #${ req.requestId }: Event deletion from '${ req.ip }' does not contain event id in URL`)
+            logger.server.error(`Request #${ req.requestId }: Event deletion from '${ req.ip }' does not contain id in params`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.deletion.failed,
-                    errorMessage: "Event id missing in URL."
+                    errorMessage: "Event id missing in params."
                 }
             );
             return;
         }
 
-        const deleted = await Event.deleteEvent(id);
+        const event = await Event.getById(id);
 
-        if (!deleted) {
-            logger.server.error(`Request #${ req.requestId }: Event deletion from '${ req.ip }' for event with id '${ id }' could not be completed`)
+        if (event === null) {
+            logger.server.error(`Request #${ req.requestId }: Event deletion from '${ req.ip }' with URL '${ req.url }' does not match any event`)
             res.status(400).send(
                 {
                     errorCode: errors.server.document.deletion.failed,
-                    errorMessage: "Event could not be deleted."
+                    errorMessage: "Event id in params does not match any event."
                 }
             );
             return;
         }
 
-        res.send(deleted);
+        const deletionState = await event.delete();
+        res.json(deletionState);
+
     } catch (error) {
         logger.server.error(error);
         res.status(400).send(
@@ -320,6 +307,7 @@ router.delete('/:id', async (req, res) => {
             }
         );
     }
+
 });
 
 export default router;

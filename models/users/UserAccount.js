@@ -9,7 +9,7 @@ import {
     getDocument,
     getDocumentsByRule,
     updateDocument
-} from "../../mongoDb/collectionAccess.js";
+} from "../../mongoDb/mongoAccess.js";
 import UserAccountSchema from "../../mongoDb/schemas/user/UserAccountSchema.js";
 import { validateArray, validateNotEmpty } from "../propertyValidation.js";
 import DatabaseError from "../../httpServer/errors/DatabaseError.js";
@@ -111,6 +111,41 @@ export default class UserAccount {
         }
 
         this.permissions = permissions;
+    }
+
+    /**
+     * Casts a plain object to an instance of the User class.
+     * @param {Object} userAccount - The plain object to cast.
+     * @returns {UserAccount} The cast instance of the User class.
+     */
+    static castToUserAccount(userAccount) {
+        const { id, user, username, password, settings, permissions } = userAccount;
+        const castUserAccount = new UserAccount(
+            user,
+            username,
+            password,
+            settings,
+            permissions
+        );
+        castUserAccount.id = id.toString();
+        return castUserAccount;
+    }
+
+    /**
+     * Converts the User instance into a JSON-friendly format by removing the underscores from the property names.
+     * This method is automatically called when JSON.stringify() is used on a User instance.
+     * @returns {Object} An object representation of the User instance without underscores in the property names.
+     */
+    toJSON(){
+        const { id, user, username, password, settings, permissions } = this;
+        return {
+            id,
+            user,
+            username,
+            password,
+            settings,
+            permissions
+        };
     }
 
     /**

@@ -72,5 +72,3 @@ Dieser beinhaltet den eigentlichen Inhalt der Nachricht, wie z.B. den Text oder 
 | Attribute | Type   | Description                             |
 |-----------|--------|-----------------------------------------|
 | value     | Object | Das Video-Objekt. _(noch zu erledigen)_ |
-
-<sub>© Copyright: Daniel Dopatka, Linus Bung (2023)</sub>
