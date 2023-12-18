@@ -3,7 +3,6 @@
  * @author Daniel Dopatka
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
-
 import BaseModel from "../BaseModel.js";
 import ClassSchema from "../../mongoDb/schemas/general/ClassSchema.js";
 import DatabaseError from "../../httpServer/errors/DatabaseError.js";
@@ -29,6 +28,19 @@ export default class Class extends BaseModel {
         { path: 'courses' },
         { path: 'members' }
     ];
+
+    static getMapPaths() {
+        return [
+            { path: 'courses', function: Course.castToCourse },
+            { path: 'members', function: User.castToUser }
+        ];
+    }
+
+    static getCastPaths() {
+        return [
+            { path: 'grade', function: Grade.castToGrade }
+        ];
+    }
 
     /**
      * @description Create a class.
@@ -62,6 +74,7 @@ export default class Class extends BaseModel {
      * @returns {Class} The cast instance of the Class class.
      */
     static castToClass(class_) {
+        if(!class_) throw new DatabaseError('Failed to cast to Course: course is undefined');
         const { _id, grade, courses, members, specifiedGrade } = class_;
         const castClass = new Class(
             grade,
@@ -70,6 +83,7 @@ export default class Class extends BaseModel {
             specifiedGrade
         );
         castClass._id = _id.toString();
+        return castClass;
     }
 
     /**
@@ -112,11 +126,14 @@ export default class Class extends BaseModel {
                     },
                 ]);
 
+            if(!class_) return null;
+
             class_._id = class_._id.toString();
 
-            return this.castToClass(class_);
+            let castClass = this.castToClass(class_);
+            castClass.handleProperties();
+            return castClass;
         } catch (error) {
-            // here class_._id is used instead of class_._id because class_ is an instance of the mongoose model
             throw new DatabaseError(`Failed to populate class with _id #${class_._id}' \n${ error.stack }`);
         }
     }

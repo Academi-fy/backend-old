@@ -8,6 +8,9 @@ import MessageSchema from "../../mongoDb/schemas/messages/MessageSchema.js";
 import DatabaseError from "../../httpServer/errors/DatabaseError.js";
 import Chat from "./Chat.js";
 import User from "../users/User.js";
+import School from "../general/setup/School.js";
+import Course from "../general/Course.js";
+import Club from "../clubs/Club.js";
 
 /**
  * @description Class representing a Message.
@@ -31,6 +34,21 @@ export default class Message extends BaseModel {
         { path: 'author' },
         { path: 'answer' }
     ];
+
+    static getMapPaths() {
+        return [
+            { path: 'targets', function: User.castToUser },
+            { path: 'courses', function: Course.castToCourse },
+            { path: 'clubs', function: Club.castToClub }
+        ];
+    }
+
+    static getCastPaths() {
+        return [
+            { path: 'chat', function: School.castToUser },
+            { path: 'answer', function: Message.castToUser }
+        ];
+    }
 
     /**
      * @description Create a messages.
@@ -135,9 +153,10 @@ export default class Message extends BaseModel {
                 ]);
             message._id = message._id.toString();
 
-            return this.castToMessage(message);
+            let castMessage = this.castToMessage(message);
+            castMessage.handleProperties();
+            return castMessage;
         } catch (error) {
-            // here message._id is used instead of message._id because message is an instance of the mongoose model
             throw new DatabaseError(`Failed to populate chat with _id #${message._id}' \n${ error.stack }`);
         }
     }

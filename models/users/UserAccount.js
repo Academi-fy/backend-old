@@ -14,6 +14,7 @@ import UserAccountSchema from "../../mongoDb/schemas/user/UserAccountSchema.js";
 import { validateArray, validateNotEmpty } from "../propertyValidation.js";
 import DatabaseError from "../../httpServer/errors/DatabaseError.js";
 import UserAccountPermissions from "./UserAccountPermissions.js";
+import User from "./User.js";
 
 /**
  * @description The model for a users account.
@@ -227,10 +228,7 @@ export default class UserAccount {
                 .populate([
                     {
                         path: 'user',
-                        populate: [
-                            { path: 'classes' },
-                            { path: 'extraCourses' }
-                        ]
+                        populate: User.getPopulationPaths()
                     }
                 ]);
 
@@ -242,6 +240,7 @@ export default class UserAccount {
                 userAccount.permissions
             );
             populatedUserAccount._id = userAccount._id.toString();
+            userAccount.user = userAccount.user ?  User.castToUser(userAccount.user) : null;
 
             return populatedUserAccount;
 

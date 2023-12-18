@@ -5,6 +5,7 @@ import DatabaseError from "../httpServer/errors/DatabaseError.js";
 import CacheError from "../httpServer/errors/CacheError.js";
 import { populate } from "dotenv";
 import { findByRule } from "./findByRule.js";
+import { castProperties, mapProperties } from "./modelPropertyHelper.js";
 
 /**
  * @file BaseModel.js - The base model for all models in the application.
@@ -18,6 +19,14 @@ export default class BaseModel {
     static cacheKey = '';
     static expirationTime = 0;
     static populationPaths = [];
+
+    static getMapPaths() {
+        throw new Error('method not yet implemented')
+    }
+
+    static getCastPaths() {
+        throw new Error('method not yet implemented')
+    }
 
     constructor(
         data
@@ -207,6 +216,11 @@ export default class BaseModel {
      */
     static getPopulationPaths() {
         return this.populationPaths;
+    }
+
+    handleProperties(){
+        mapProperties({_id: this._id, ...this.data}, this.constructor.getMapPaths());
+        castProperties({_id: this._id, ...this.data}, this.constructor.getCastPaths());
     }
 
     get data() {

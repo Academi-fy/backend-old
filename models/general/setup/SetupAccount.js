@@ -24,6 +24,9 @@ export default class SetupAccount extends BaseModel {
     static populationPaths = [
         { path: 'school' }
     ];
+    static castPaths = [
+        { path: 'school', function: School.castToUser }
+    ];
 
     /**
      * @description Create a setup account.
@@ -89,9 +92,10 @@ export default class SetupAccount extends BaseModel {
                 ]);
             setupAccount._id = setupAccount._id.toString();
 
-            return this.castToSetupAccount(setupAccount);
+            let castSetupAccount = this.castToSetupAccount(setupAccount);
+            castSetupAccount.handleProperties();
+            return castSetupAccount;
         } catch (error) {
-            // here setupAccount._id is used instead of setupAccount._id because setupAccount is an instance of the mongoose model
             throw new DatabaseError(`Failed to populate setup account with _id #${setupAccount._id}' \n${ error.stack }`);
         }
     }

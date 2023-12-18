@@ -39,6 +39,16 @@ export default class User extends BaseModel {
         { path: 'chats' }
     ];
 
+    static getMapPaths() {
+        return [
+            { path: 'classes', function: Class.castToClass },
+            { path: 'extraCourses', function: Course.castToCourse },
+            { path: 'blackboards', function: Blackboard.castToBlackboard },
+            { path: 'clubs', function: Club.castToClub },
+            { path: 'chats', function: Chat.castToChat }
+        ];
+    }
+
     /**
      * User constructor
      * @param {String} firstName - The first name of the user.
@@ -168,9 +178,10 @@ export default class User extends BaseModel {
 
             user._id = user._id.toString();
 
-            return this.castToUser(user);
+            let castUser = this.castToUser(user);
+            castUser.handleProperties();
+            return castUser;
         } catch (error) {
-            // here user._id is used instead of user._id because user is an instance of the mongoose model
             throw new DatabaseError(`Failed to populate user with _id #${user._id}' \n${ error.stack }`);
         }
     }

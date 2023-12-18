@@ -23,6 +23,12 @@ export default class Grade extends BaseModel {
         { path: 'classes' }
     ];
 
+    static getMapPaths() {
+        return [
+            { path: 'classes', function: Class.castToClass }
+        ];
+    }
+
     /**
      * @constructor Create a Grade.
      * @param {Number} level - The level of the grade.
@@ -86,11 +92,14 @@ export default class Grade extends BaseModel {
                     }
                 ]);
 
+            if(!grade) return null;
+
             grade._id = grade._id.toString();
 
-            return this.castToGrade(grade);
+            let castGrade = this.castToGrade(grade);
+            castGrade.handleProperties();
+            return castGrade;
         } catch (error) {
-            // here grade._id is used instead of grade._id because grade is an instance of the mongoose model
             throw new DatabaseError(`Failed to populate grade with _id #${grade._id}' \n${ error.stack }`);
         }
     }

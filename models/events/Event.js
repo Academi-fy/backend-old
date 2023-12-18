@@ -43,6 +43,14 @@ export default class Event extends BaseModel {
         { path: 'subscribers' }
     ];
 
+    static getMapPaths() {
+        return [
+            { path: 'clubs', function: Club.castToUser },
+            { path: 'tickets', function: EventTicket.castToEventTicket },
+            { path: 'subscribers', function: User.castToUser }
+        ];
+    }
+
     /**
      * @description Create an event.
      * @param {String} title - The title of the event.
@@ -178,9 +186,10 @@ export default class Event extends BaseModel {
                 ]);
             event._id = event._id.toString();
 
-            return this.castToClub(event);
+            let castEvent = this.castToEvent(event);
+            castEvent.handleProperties();
+            return castEvent;
         } catch (error) {
-            // here event._id is used instead of event._id because event is an instance of the mongoose model
             throw new DatabaseError(`Failed to populate event with _id #${event._id}' \n${ error.stack }`);
         }
     }

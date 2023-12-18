@@ -6,11 +6,9 @@
 
 import BaseModel from "../BaseModel.js";
 import BlackboardSchema from "../../mongoDb/schemas/general/BlackboardSchema.js";
-import Message from "../messages/Message.js";
-import Club from "../clubs/Club.js";
 import DatabaseError from "../../httpServer/errors/DatabaseError.js";
-import Course from "./Course.js";
 import User from "../users/User.js";
+
 
 /**
  * @description Class representing a blackboard.
@@ -32,6 +30,12 @@ export default class Blackboard extends BaseModel {
     static populationPaths = [
         { path: 'author' }
     ];
+
+    static getCastPaths() {
+        return [
+            { path: 'author', function: User.castToUser }
+        ];
+    }
 
     /**
      * @description Create a blackboard.
@@ -122,27 +126,16 @@ export default class Blackboard extends BaseModel {
             blackboard = await blackboard
                 .populate([
                     {
-                        path: 'targets',
+                        path: 'author',
                         populate: User.getPopulationPaths()
-                    },
-                    {
-                        path: 'courses',
-                        populate: Course.getPopulationPaths()
-                    },
-                    {
-                        path: 'clubs',
-                        populate: Club.getPopulationPaths()
-                    },
-                    {
-                        path: 'messages',
-                        populate: Message.getPopulationPaths()
                     },
                 ]);
             blackboard._id = blackboard._id.toString();
 
-            return this.castToBlackboard(blackboard);
+            let castBlackboard = this.castToBlackboard(blackboard);
+            castBlackboard.handleProperties();
+            return castBlackboard;
         } catch (error) {
-            // here blackboard._id is used instead of blackboard._id because blackboard is an instance of the mongoose model
             throw new DatabaseError(`Failed to populate blackboard with _id #${blackboard._id}' \n${ error.stack }`);
         }
     }

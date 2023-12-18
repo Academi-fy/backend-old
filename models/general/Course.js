@@ -11,6 +11,8 @@ import Class from "./Class.js";
 import Chat from "../messages/Chat.js";
 import Subject from "./Subject.js";
 import User from "../users/User.js";
+import { mapProperties } from "../modelPropertyHelper.js";
+
 
 /**
  * @description Class representing a Course.
@@ -34,6 +36,16 @@ export default class Course extends BaseModel {
         { path: 'chat' },
         { path: 'subject' }
     ];
+
+    static getMapPaths() {
+        return [
+            { path: 'members', function: User.castToUser },
+            { path: 'classes', function: Class.castToClass },
+            { path: 'teacher', function: User.castToUser },
+            { path: 'chat', function: Chat.castToChat },
+            { path: 'subject', function: Subject.castToSubject }
+        ];
+    }
 
     /**
      * @description Create a course.
@@ -71,6 +83,7 @@ export default class Course extends BaseModel {
      * @returns {Course} The cast instance of the Course class.
      */
     static castToCourse(course) {
+        if(!course) throw new DatabaseError('Failed to cast to Course: course is undefined');
         const { _id, members, classes, teacher, chat, subject } = course;
         const castCourse = new Course(
             members,
@@ -134,9 +147,10 @@ export default class Course extends BaseModel {
 
             course._id = course._id.toString();
 
-            return this.castToCourse(course);
+            let castCourse = this.castToCourse(course);
+            castCourse.handleProperties();
+            return castCourse;
         } catch (error) {
-            // here course._id is used instead of course._id because course is an instance of the mongoose model
             throw new DatabaseError(`Failed to populate course with _id #${course._id}' \n${ error.stack }`);
         }
     }

@@ -7,6 +7,7 @@ import Message from "../../../../models/messages/Message.js";
 import logger from "../../../../tools/logging/logger.js";
 import EventHandlerError from "../../../errors/EventHandlerError.js";
 import SocketMessageSendError from "../../../errors/SocketMessageSendError.js";
+import sendToTargetSocket from "../../../sendToTargetSocket.js";
 
 /**
  * @description Function handling the MessageDeleteEvent.
@@ -23,15 +24,13 @@ export default async function (ws, data, messageId, date) {
 
     try {
 
-        let deleted = await Message.getMessageById(msgId);
-        deleted = deleted.deleteChat();
-        if(!deleted) throw new EventHandlerError('')
+        let deleted = await Message.getById(msgId);
+        deleted = deleted.delete();
 
-        chat = await Chat.getChatById(chat);
+        const chat = deleted.chat;
         let index = chat.messages.findIndex(msg => msg.id === msgId);
         chat.messages.splice(index, 1);
-        await Chat.updateChat(chat._id, chat); //TODO ohne argumente machen, also static weg
-        chat.updateChatInCache();
+        await chat.update(chat);
 
         const targets = chat.getAllTargets();
         targets.forEach(target => {

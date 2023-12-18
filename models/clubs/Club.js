@@ -142,7 +142,6 @@ export default class Club extends BaseModel {
 
             return this.castToClub(club);
         } catch (error) {
-            // here club._id is used instead of club._id because club is an instance of the mongoose model
             throw new DatabaseError(`Failed to populate club with _id #${club._id}' \n${ error.stack }`);
         }
     }
