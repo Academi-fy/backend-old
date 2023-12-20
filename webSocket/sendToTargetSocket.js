@@ -3,8 +3,6 @@
  * @author Daniel Dopatka
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
-
-import { WebSocketServer } from "ws";
 /**
  * @description Sends a socket message to a client connected to the socket.
  * @param {WebSocketServer} server - The WebSocket server instance

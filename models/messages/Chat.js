@@ -32,6 +32,18 @@ export default class Chat extends BaseModel {
         { path: 'clubs' }
     ];
 
+    static getMapPaths() {
+        return [
+            { path: 'targets', function: User.castToUser },
+            { path: 'courses', function: Course.castToCourse },
+            { path: 'clubs', function: Club.castToClub }
+        ];
+    }
+
+    static getCastPaths(){
+        return [];
+    }
+
     /**
      * Create a chat.
      * @param {String} type - The type of the chat. Valid types are: 'PRIVATE', 'GROUP', 'COURSE', 'CLUB'.
@@ -69,6 +81,18 @@ export default class Chat extends BaseModel {
         this._avatar = avatar;
         this._messages = messages;
 
+    }
+
+    /**
+     * @description Get all the targets from targets, courses and clubs.
+     * @return {Array<User>} The targets of the chats.
+     */
+    getAllTargets(){
+        return [
+            ...this.targets,
+            ...this.courses.flatMap(course => course.members),
+            ...this.clubs.flatMap(club => club.members)
+        ];
     }
 
     /**
@@ -136,9 +160,10 @@ export default class Chat extends BaseModel {
 
             chat._id = chat._id.toString();
 
-            return this.castToChat(chat);
+            let castChat = this.castToChat(chat);
+            castChat.handleProperties();
+            return castChat;
         } catch (error) {
-            // here chat._id is used instead of chat._id because chat is an instance of the mongoose model
             throw new DatabaseError(`Failed to populate chat with _id #${chat._id}' \n${ error.stack }`);
         }
     }

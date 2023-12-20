@@ -4,8 +4,6 @@
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
 import MessageContent from "../MessageContent.js";
-import { validateNotEmpty } from "../../../../models/propertyValidation.js";
-
 /**
  * @description Class representing a file content.
  * @param {String} type - The type of the content. For file: 'FILE'
@@ -22,17 +20,14 @@ export default class FileContent extends MessageContent {
     ) {
         const type = "FILE";
         super(type, value);
-
-        validateNotEmpty("FileContent value", value);
     }
 
-    get _value() {
-        return this.value;
+    get value() {
+        return this._value;
     }
 
-    set _value(value) {
-        validateNotEmpty("FileContent value", value);
-        this.value = value;
+    set value(value) {
+        this._value = value;
     }
 
 }

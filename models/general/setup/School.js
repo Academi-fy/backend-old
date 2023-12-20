@@ -16,7 +16,6 @@ import User from "../../users/User.js";
 import Class from "../Class.js";
 import Subject from "../Subject.js";
 import Blackboard from "../Blackboard.js";
-
 /**
  * @description Class representing a school.
  * @param {String} _id - The _id of the school.
@@ -48,6 +47,20 @@ export default class School extends BaseModel {
         { path: 'events' },
         { path: 'blackboards' }
     ];
+
+    static getMapPaths() {
+        return [
+            { path: 'grades', function: Grade.castToUser },
+            { path: 'courses', function: Course.castToCourse },
+            { path: 'members', function: User.castToUser },
+            { path: 'classes', function: Class.castToClass },
+            { path: 'messages', function: Message.castToMessage },
+            { path: 'subjects', function: Subject.castToSubject },
+            { path: 'clubs', function: Club.castToClub },
+            { path: 'events', function: Event.castToEvent },
+            { path: 'blackboards', function: Blackboard.castToBlackboard }
+        ];
+    }
 
     /**
      * @description Create a school.
@@ -193,9 +206,11 @@ export default class School extends BaseModel {
                 ]);
             school._id = school._id.toString();
 
-            return this.castToSchool(school);
+            let castSchool = this.castToSchool(school);
+            castSchool.handleProperties();
+
+            return castSchool;
         } catch (error) {
-            // here school._id is used instead of school._id because school is an instance of the mongoose model
             throw new DatabaseError(`Failed to populate school with _id #${school._id}' \n${ error.stack }`);
         }
     }

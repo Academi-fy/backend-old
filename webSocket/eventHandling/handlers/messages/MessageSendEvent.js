@@ -6,8 +6,6 @@
 import logger from "../../../../tools/logging/logger.js";
 import Message from "../../../../models/messages/Message.js";
 import EventHandlerError from "../../../errors/EventHandlerError.js";
-import Chat from "../../../../models/messages/Chat.js";
-import cache from "../../../../httpServer/cache.js";
 import sendToTargetSocket from "../../../sendToTargetSocket.js";
 
 /**
@@ -26,14 +24,13 @@ export default async function (ws, data, messageId, messageDate) {
 
     try {
 
-        const message = await Message.createMessage(newMessage);
+        const message = await newMessage.create();
 
-        chat = await Chat.getChatById(chat);
-        chat.messages.push(message._id);
-        await Chat.updateChat(chat._id, chat);
+        let chat = message.chat;
+        chat.messages.push(message);
+        chat.update(chat);
 
-        const targets = chat.getAllTargets();
-        targets.forEach(target => {
+        chat.getAllTargets().forEach(target => {
 
             if(!sendToTargetSocket(server, target, 
                 JSON.stringify({

@@ -3,7 +3,8 @@
  * @author Daniel Dopatka
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
-import { validateNotEmpty } from "../../../models/propertyValidation.js";
+import { Error } from "mongoose";
+import JSON from "nodemon/lib/utils/index.js";
 
 /**
  * @description Class for an event information.
@@ -21,28 +22,55 @@ export default class EventInformation {
         title,
         items
     ) {
-        this.title = title;
-        this.items = items;
+
 
         this.validateItems(items);
+        this._title = title;
+        this._items = items;
     }
 
-    get _title() {
-        return this.title;
+
+    /**
+     * Converts the EventInformation instance into a JSON-friendly format.
+     * This method is automatically called when JSON.stringify() is used on an EventInformation instance.
+     * @returns {Object} An object representation of the EventInformation instance.
+     */
+    toJSON(){
+        const { title, items } = this;
+        return {
+            title,
+            items
+        };
     }
 
-    set _title(value) {
-        validateNotEmpty('Event information title', value);
-        this.title = value;
+    /**
+     * Casts an object into an EventInformation instance.
+     * @param {Object} eventInformation - The object to be cast into an EventInformation instance.
+     * @returns {EventInformation} A new EventInformation instance.
+     * @throws {TypeError} If the object cannot be cast into an EventInformation instance.
+     */
+    static castToEventInformation(eventInformation) {
+        if (typeof eventInformation !== 'object' || eventInformation === null) {
+            throw new TypeError('Invalid object. Cannot cast to EventInformation.');
+        }
+        const { title, items } = eventInformation;
+        return new EventInformation(title, items);
     }
 
-    get _items() {
-        return this.items;
+    get title() {
+        return this._title;
     }
 
-    set _items(items) {
-        this.validateItems(items);
-        this.items = items;
+    set title(value) {
+        this._title = value;
+    }
+
+    get items() {
+        return this._items;
+    }
+
+    set items(value) {
+        this._items = value;
     }
 
     validateItems(items) {

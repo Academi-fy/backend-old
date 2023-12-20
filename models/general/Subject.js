@@ -8,7 +8,6 @@ import BaseModel from "../BaseModel.js";
 import SubjectSchema from "../../mongoDb/schemas/general/SubjectSchema.js";
 import Course from "./Course.js";
 import DatabaseError from "../../httpServer/errors/DatabaseError.js";
-
 /**
  * @description Class representing a Subject.
  * @param {String} _id - The _id of the subject.
@@ -25,6 +24,17 @@ export default class Subject extends BaseModel {
     static populationPaths = [
         { path: 'courses' }
     ];
+
+
+    static getMapPaths() {
+        return [
+            { path: 'courses', function: Course.castToCourse }
+        ];
+    }
+
+    static getCastPaths(){
+        return [];
+    }
 
     /**
      * Create a subject.
@@ -97,9 +107,10 @@ export default class Subject extends BaseModel {
 
             subject._id = subject._id.toString();
 
-            return this.castToSubject(subject);
+            let castSubject = this.castToSubject(subject);
+            castSubject.handleProperties();
+            return castSubject;
         } catch (error) {
-            // here subject._id is used instead of subject._id because subject is an instance of the mongoose model
             throw new DatabaseError(`Failed to populate subject with _id #${subject._id}' \n${ error.stack }`);
         }
     }

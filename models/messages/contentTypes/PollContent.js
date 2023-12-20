@@ -4,7 +4,6 @@
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
 import MessageContent from "../MessageContent.js";
-import { validatePoll } from "../../../../models/propertyValidation.js";
 
 /**
  * @description Class representing a poll content.
@@ -24,13 +23,12 @@ export default class PollContent extends MessageContent {
         super(type, value);
     }
 
-    get _value() {
-        return this.value;
+    get value() {
+        return this._value;
     }
 
-    set _value(value) {
-        validatePoll("PollContent value", value);
-        this.value = value;
+    set value(value) {
+        this._value = value;
     }
 
 }

@@ -3,7 +3,6 @@
  * @author Daniel Dopatka
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
-import Chat from "../../../../models/messages/Chat.js";
 import Message from "../../../../models/messages/Message.js";
 import logger from "../../../../tools/logging/logger.js";
 import EventHandlerError from "../../../errors/EventHandlerError.js";
@@ -14,9 +13,9 @@ import sendToTargetSocket from "../../../sendToTargetSocket.js";
  * @param {Object} ws - The WebSocket connection object.
  * @param {Object} data - The data received from the WebSocket connection.
  * @param {String} messageId - The id of the socket message.
- * @param {Number} date - The date when the event was received.
+ * @param {Number} messageDate - The date when the event was received.
  */
-export default async function (ws, data, messageId, date) {
+export default async function (ws, data, messageId, messageDate) {
 
     const { server, connection } = ws;
 
@@ -25,11 +24,14 @@ export default async function (ws, data, messageId, date) {
 
     try {
 
-        const message = await Message.getMessageById(msgId);
-        message.addReaction(emoji); //TODO checken, ob es verändert wird
-        const updatedMessage = await Message.updateMessage(msgId, message);
+        const message = await Message.getById(msgId);
+        message.addReaction(emoji);
+        const updatedMessage = await message.update(message);
 
-        const chat = message._chat;
+        let chat = updatedMessage.chat;
+        let index = chat.messages.findIndex(msg => msg.id === msgId);
+        chat.messages[index] = updatedMessage;
+        chat.update(chat);
 
         chat.getAllTargets().forEach(target => {
             
@@ -52,7 +54,7 @@ export default async function (ws, data, messageId, date) {
 
         });
 
-        logger.socket.debug(`Message #${ messageId } processed in ${ Date.now() - date } ms`)
+        logger.socket.debug(`Message #${ messageId } processed in ${ Date.now() - messageDate } ms`)
     }
     catch(error){
         throw new EventHandlerError(error.stack);

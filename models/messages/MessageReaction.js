@@ -3,10 +3,8 @@
  * @author Daniel Dopatka
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
-import { validateNotEmpty, validateNumber } from "../../../models/propertyValidation.js";
-
 /**
- * @description Represents a messages reaction.
+ * @description Represents a message reaction.
  * @param {String} emoji - The emoji used for the reaction.
  * @param {Number} count - The count of the reaction (default is 0)
  */
@@ -15,16 +13,12 @@ export default class MessageReaction {
     /**
      * Constructs a new MessageReaction instance.
      * @param {String} emoji - The emoji used for the reaction.
-     * @param {Number} count - The count of the reaction (default is 0).
      */
     constructor(
         emoji
     ) {
         this.emoji = emoji;
-        this.count = 0;
-
-        validateNotEmpty("Message reaction emoji", emoji);
-        validateNumber("Message reaction count", count);
+        this.count = 1;
     }
 
     get _emoji() {
@@ -32,7 +26,6 @@ export default class MessageReaction {
     }
 
     set _emoji(value) {
-        validateNotEmpty("MessageReaction emoji", value);
         this.emoji = value;
     }
 
@@ -41,7 +34,6 @@ export default class MessageReaction {
     }
 
     set _count(value) {
-        validateNumber("MessageReaction count", value);
         this.count = value;
     }
 
@@ -61,11 +53,12 @@ export default class MessageReaction {
 
     /**
      * Cast an object to a message reaction.
-     * @param {Object} reaction - The reaction object to cast. Contains emoji and count.
+     * @param {MessageReaction} reaction - The reaction object to cast. Contains emoji and count.
      */
     static castToReaction(reaction){
         const returnVal =  new MessageReaction(reaction.emoji);
         returnVal._count = reaction.count;
+        return returnVal;
     }
 
 }

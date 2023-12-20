@@ -3,8 +3,6 @@
  * @author Daniel Dopatka
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
-import { validateNotEmpty, validateObject } from "../../../models/propertyValidation.js";
-
 /**
  * @description Represents the content of a messages.
  * @param {String} type - The type of the messages content. Valid values are: "FILE", "IMAGE", "POLL", "TEXT", "VIDEO".
@@ -15,7 +13,7 @@ export default class MessageContent {
     /**
      * @description Constructs a new MessageContent instance.
      * @param {String} type - The type of the messages content. Valid values are: "FILE", "IMAGE", "POLL", "TEXT", "VIDEO".
-     * @param {Object} value - The value of the messages content.
+     * @param {any} value - The value of the messages content.
      */
     constructor(
         type,
@@ -25,26 +23,37 @@ export default class MessageContent {
             throw new TypeError("Cannot construct MessageContent instances directly");
         }
 
-        this.type = type;
-        this.value = value;
+        this._type = type;
+        this._value = value;
     }
 
-    get _value() {
-        return this.value;
+    /**
+     * Converts the MessageContent instance into a JSON-friendly format.
+     * This method is automatically called when JSON.stringify() is used on a MessageContent instance.
+     * @returns {Object} An object representation of the MessageContent instance.
+     */
+    toJSON(){
+        const { type, value } = this;
+        return {
+            type,
+            value
+        };
     }
 
-    set _value(value) {
-        validateObject('Message content value', value);
-        this.value = value;
+    get value() {
+        return this._value;
     }
 
-    get _type() {
-        return this.type;
+    set value(value) {
+        this._value = value;
     }
 
-    set _type(value) {
-        validateNotEmpty('Message content type', value);
-        this.type = value;
+    get type() {
+        return this._type;
+    }
+
+    set type(value) {
+        this._type = value;
     }
 
 }

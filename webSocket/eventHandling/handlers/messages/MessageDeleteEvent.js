@@ -7,15 +7,16 @@ import Message from "../../../../models/messages/Message.js";
 import logger from "../../../../tools/logging/logger.js";
 import EventHandlerError from "../../../errors/EventHandlerError.js";
 import SocketMessageSendError from "../../../errors/SocketMessageSendError.js";
+import sendToTargetSocket from "../../../sendToTargetSocket.js";
 
 /**
  * @description Function handling the MessageDeleteEvent.
  * @param {Object} ws - The WebSocket connection object.
  * @param {Object} data - The data received from the WebSocket connection.
  * @param {String} messageId - The id of the socket message.
- * @param {Number} date - The date when the event was received.
+ * @param {Number} messageDate - The date when the event was received.
  */
-export default async function (ws, data, messageId, date) {
+export default async function (ws, data, messageId, messageDate) {
 
     const { server, connection } = ws;
 
@@ -23,18 +24,15 @@ export default async function (ws, data, messageId, date) {
 
     try {
 
-        let deleted = await Message.getMessageById(msgId);
-        deleted = deleted.deleteChat();
-        if(!deleted) throw new EventHandlerError('')
+        let deleted = await Message.getById(msgId);
+        deleted = deleted.delete();
 
-        chat = await Chat.getChatById(chat);
+        const chat = deleted.chat;
         let index = chat.messages.findIndex(msg => msg.id === msgId);
         chat.messages.splice(index, 1);
-        await Chat.updateChat(chat._id, chat); //TODO ohne argumente machen, also static weg
-        chat.updateChatInCache();
+        await chat.update(chat);
 
-        const targets = chat.getAllTargets();
-        targets.forEach(target => {
+        chat.getAllTargets().forEach(target => {
 
             if(!sendToTargetSocket(server, target, 
                 JSON.stringify({

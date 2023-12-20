@@ -27,6 +27,13 @@ export default class EventTicket extends BaseModel {
         { path: 'buyer' }
     ];
 
+    static getCastPaths() {
+        return [
+            { path: 'event', function: User.castToUser },
+            { path: 'buyer', function: EventTicket.castToEventTicket }
+        ];
+    }
+
     /**
      * @description The constructor for an event ticket.
      * @param {String} event - The _id of the event of the ticket.
@@ -107,9 +114,11 @@ export default class EventTicket extends BaseModel {
                 ]);
             eventTicket._id = eventTicket._id.toString();
 
-            return this.castToEventTicket(eventTicket);
+            let castEventTicket = this.castToEventTicket(eventTicket);
+            castEventTicket.handleProperties();
+
+            return castEventTicket;
         } catch (error) {
-            // here eventTicket._id is used instead of eventTicket._id because eventTicket is an instance of the mongoose model
             throw new DatabaseError(`Failed to populate event ticket with _id #${eventTicket._id}' \n${ error.stack }`);
         }
     }
