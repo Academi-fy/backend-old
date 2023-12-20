@@ -10,6 +10,7 @@ import DatabaseError from "../../httpServer/errors/DatabaseError.js";
 import Club from "../clubs/Club.js";
 import EventTicket from "./EventTicket.js";
 import User from "../users/User.js";
+import EventInformation from "./EventInformation.js";
 
 /**
  * @description Class representing an Event.
@@ -47,7 +48,8 @@ export default class Event extends BaseModel {
         return [
             { path: 'clubs', function: Club.castToUser },
             { path: 'tickets', function: EventTicket.castToEventTicket },
-            { path: 'subscribers', function: User.castToUser }
+            { path: 'subscribers', function: User.castToUser },
+            { path: 'information', function: EventInformation.castToEventInformation }
         ];
     }
 

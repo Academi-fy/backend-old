@@ -74,7 +74,7 @@ export default class Class extends BaseModel {
      * @returns {Class} The cast instance of the Class class.
      */
     static castToClass(class_) {
-        if(!class_) throw new DatabaseError('Failed to cast to Course: course is undefined');
+        if(!class_) return null;
         const { _id, grade, courses, members, specifiedGrade } = class_;
         const castClass = new Class(
             grade,

@@ -4,7 +4,6 @@
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
 import MessageContent from "../MessageContent.js";
-import { validateNotEmpty } from "../../../../models/propertyValidation.js";
 
 /**
  * @description Class representing an image content.
@@ -26,13 +25,12 @@ export default class ImageContent extends MessageContent {
         validateNotEmpty("FileContent value", value);
     }
 
-    get _value() {
-        return this.value;
+    get value() {
+        return this._value;
     }
 
-    set _value(value) {
-        validateNotEmpty("ImageContent value", value);
-        this.value = value;
+    set value(value) {
+        this._value = value;
     }
 
 }

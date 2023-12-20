@@ -49,6 +49,10 @@ export default class User extends BaseModel {
         ];
     }
 
+    static getCastPaths() {
+        return [];
+    }
+
     /**
      * User constructor
      * @param {String} firstName - The first name of the user.
@@ -106,6 +110,7 @@ export default class User extends BaseModel {
      * @returns {User} The cast instance of the User class.
      */
     static castToUser(user) {
+        if(!user) return null;
         const { _id, firstName, lastName, avatar, type, classes, extraCourses, blackboards, clubs, chats } = user;
         const castUser = new User(
             firstName,

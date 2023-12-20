@@ -7,6 +7,8 @@ import Chat from "../../../../models/messages/Chat.js";
 import Message from "../../../../models/messages/Message.js";
 import logger from "../../../../tools/logging/logger.js";
 import SocketMessageSendError from "../../../errors/SocketMessageSendError.js";
+import sendToTargetSocket from "../../../sendToTargetSocket.js";
+import EventHandlerError from "../../../errors/EventHandlerError.js";
 
 /**
  * @description Function handling the MessageEditEvent.
@@ -26,23 +28,24 @@ export default async function (ws, data, messageId, messageDate) {
 
     try {
 
-        const updateMessage = await Message.getMessageById(msgId);
-        updateMessage.updateMessage(newMessage);
+        const updatedMessage = await Message.getById(msgId);
+        updatedMessage.update(newMessage);
 
-        chat = await Chat.getChatById(chat);
+        chat = await Chat.getById(chat);
         let index = chat.messages.findIndex(msg => msg.id === msgId);
-        chat._messages[index] = updatedMessage;
-        chat.updateChatCache();
+        chat.messages[index] = updatedMessage;
+        chat.update(chat);
 
-        const targets = chat.getAllTargets();
-        targets.forEach(target => {
+        chat.getAllTargets().forEach(target => {
 
             if(!sendToTargetSocket(server, target, 
                 JSON.stringify({
                     event: "MESSAGE_EDIT_RECEIVED",
                     payload: {
                         sender: `socket`,
-                        data: message
+                        data: {
+                            message: updatedMessage
+                        }
                     }
                 })
             )){

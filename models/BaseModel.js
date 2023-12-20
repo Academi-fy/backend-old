@@ -3,7 +3,6 @@ import RetrievalError from "../httpServer/errors/RetrievalError.js";
 import * as mongoAccess from '../mongoDb/mongoAccess.js';
 import DatabaseError from "../httpServer/errors/DatabaseError.js";
 import CacheError from "../httpServer/errors/CacheError.js";
-import { populate } from "dotenv";
 import { findByRule } from "./findByRule.js";
 import { castProperties, mapProperties } from "./modelPropertyHelper.js";
 

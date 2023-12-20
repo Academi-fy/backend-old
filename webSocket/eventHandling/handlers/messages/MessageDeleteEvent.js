@@ -14,9 +14,9 @@ import sendToTargetSocket from "../../../sendToTargetSocket.js";
  * @param {Object} ws - The WebSocket connection object.
  * @param {Object} data - The data received from the WebSocket connection.
  * @param {String} messageId - The id of the socket message.
- * @param {Number} date - The date when the event was received.
+ * @param {Number} messageDate - The date when the event was received.
  */
-export default async function (ws, data, messageId, date) {
+export default async function (ws, data, messageId, messageDate) {
 
     const { server, connection } = ws;
 
@@ -32,8 +32,7 @@ export default async function (ws, data, messageId, date) {
         chat.messages.splice(index, 1);
         await chat.update(chat);
 
-        const targets = chat.getAllTargets();
-        targets.forEach(target => {
+        chat.getAllTargets().forEach(target => {
 
             if(!sendToTargetSocket(server, target, 
                 JSON.stringify({

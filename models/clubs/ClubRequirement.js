@@ -3,8 +3,6 @@
  * @author Daniel Dopatka
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
-import { validateNotEmpty } from "../../../models/propertyValidation.js";
-
 /**
  * @description Class representing a club requirement.
  * @param {String} emoji - The emoji of the club requirement.
@@ -21,26 +19,51 @@ export default class ClubRequirement {
         emoji,
         description
     ) {
-        this.emoji = emoji;
-        this.description = description;
+        this._emoji = emoji;
+        this._description = description;
     }
 
-    get _emoji() {
-        return this.emoji;
+    /**
+     * Convert the ClubRequirement instance into a JSON-friendly format.
+     * @returns {Object} An object that contains all the properties of the ClubRequirement instance.
+     */
+    toJSON() {
+        const { emoji, description } = this;
+        return {
+            emoji,
+            description
+        };
     }
 
-    set _emoji(value) {
-        validateNotEmpty('Club requirement emoji', value);
-        this.emoji = value;
+    /**
+     * Cast an object into a ClubRequirement instance.
+     * @param {Object} clubRequirementObject - The object to be cast into a ClubRequirement instance.
+     * @returns {ClubRequirement} A new ClubRequirement instance.
+     * @throws {TypeError} If the provided object is not valid or does not contain all the necessary properties.
+     */
+    static castToClubRequirement(clubRequirementObject) {
+        if (typeof clubRequirementObject !== 'object' || clubRequirementObject === null) {
+            throw new TypeError('Invalid object. Cannot cast to ClubRequirement.');
+        }
+
+        const { emoji, description } = clubRequirementObject;
+        return new ClubRequirement(emoji, description);
     }
 
-    get _description() {
-        return this.description;
+    get emoji() {
+        return this._emoji;
     }
 
-    set _description(value) {
-        validateNotEmpty('Club requirement description', value);
-        this.description = value;
+    set emoji(value) {
+        this._emoji = value;
+    }
+
+    get description() {
+        return this._description;
+    }
+
+    set description(value) {
+        this._description = value;
     }
 
 }

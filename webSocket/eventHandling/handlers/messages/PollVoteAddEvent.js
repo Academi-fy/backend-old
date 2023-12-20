@@ -10,9 +10,9 @@ import logger from "../../../../tools/logging/logger.js";
  * @param {Object} ws - The WebSocket connection object.
  * @param {Object} data - The data received from the WebSocket connection.
  * @param {String} messageId - The id of the socket message.
- * @param {Number} date - The date when the event was received.
+ * @param {Number} messageDate - The date when the event was received.
  */
-export default function (ws, data, messageId, date) {
+export default function (ws, data, messageId, messageDate) {
 
-    logger.socket.debug(`Message #${ messageId } processed in ${ Date.now() - date } ms`)
+    logger.socket.debug(`Message #${ messageId } processed in ${ Date.now() - messageDate } ms`)
 }

@@ -13,7 +13,6 @@ import { nanoid } from "nanoid";
 import errors from "../errors.js";
 import memoryLogger from "../tools/logging/memoryLogger.js";
 import * as db from '../mongoDb/db.js';
-import { initCache } from "../tools/cacheInitlializer.js";
 
 dotenv.config();
 
@@ -23,14 +22,9 @@ dotenv.config();
  */
 const wss = new WebSocketServer({ port: parseInt(config.WEBSOCKET_PORT) });
 
-db.connect().then(() => {
+await db.connect().then(() => {
     logger.database.info(`Connected to WebSocket`)
 })
-
-logger.socket.debug(`Caching initialized... `)
-const cacheInitStart = Date.now();
-const cacheCount = await initCache();
-logger.socket.debug(`${cacheCount} objects cached in ${(Date.now() - cacheInitStart) / 1000} s.`)
 
 wss.on('connection', (ws, req) => {
     const url = new URL(req.url, `http://${req.headers.host}`);

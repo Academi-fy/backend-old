@@ -40,6 +40,10 @@ export default class Chat extends BaseModel {
         ];
     }
 
+    static getCastPaths(){
+        return [];
+    }
+
     /**
      * Create a chat.
      * @param {String} type - The type of the chat. Valid types are: 'PRIVATE', 'GROUP', 'COURSE', 'CLUB'.

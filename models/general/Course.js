@@ -11,8 +11,6 @@ import Class from "./Class.js";
 import Chat from "../messages/Chat.js";
 import Subject from "./Subject.js";
 import User from "../users/User.js";
-import { mapProperties } from "../modelPropertyHelper.js";
-
 
 /**
  * @description Class representing a Course.
@@ -41,6 +39,11 @@ export default class Course extends BaseModel {
         return [
             { path: 'members', function: User.castToUser },
             { path: 'classes', function: Class.castToClass },
+        ];
+    }
+
+    static getCastPaths() {
+        return [
             { path: 'teacher', function: User.castToUser },
             { path: 'chat', function: Chat.castToChat },
             { path: 'subject', function: Subject.castToSubject }
@@ -83,7 +86,7 @@ export default class Course extends BaseModel {
      * @returns {Course} The cast instance of the Course class.
      */
     static castToCourse(course) {
-        if(!course) throw new DatabaseError('Failed to cast to Course: course is undefined');
+        if(!course) return null;
         const { _id, members, classes, teacher, chat, subject } = course;
         const castCourse = new Course(
             members,
@@ -151,7 +154,7 @@ export default class Course extends BaseModel {
             castCourse.handleProperties();
             return castCourse;
         } catch (error) {
-            throw new DatabaseError(`Failed to populate course with _id #${course._id}' \n${ error.stack }`);
+            throw new DatabaseError(`Failed to populate course with _id '${course._id}' \n${ error.stack }`);
         }
     }
 

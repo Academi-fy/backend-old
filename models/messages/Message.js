@@ -11,6 +11,9 @@ import User from "../users/User.js";
 import School from "../general/setup/School.js";
 import Course from "../general/Course.js";
 import Club from "../clubs/Club.js";
+import MessageReaction from "./MessageReaction.js";
+import MessageContent from "./MessageContent.js";
+import { castToMessageContent } from "./messageContentCaster.js";
 
 /**
  * @description Class representing a Message.
@@ -39,14 +42,16 @@ export default class Message extends BaseModel {
         return [
             { path: 'targets', function: User.castToUser },
             { path: 'courses', function: Course.castToCourse },
-            { path: 'clubs', function: Club.castToClub }
+            { path: 'clubs', function: Club.castToClub },
+            { path: 'content', function: castToMessageContent },
         ];
     }
 
     static getCastPaths() {
         return [
-            { path: 'chat', function: School.castToUser },
-            { path: 'answer', function: Message.castToUser }
+            { path: 'author', function: User.castToUser },
+            { path: 'chat', function: Chat.castToChat },
+            { path: 'answer', function: Message.castToMessage }
         ];
     }
 
@@ -87,6 +92,51 @@ export default class Message extends BaseModel {
         this._answer = answer;
         this._editHistory = editHistory;
         this._date = date;
+    }
+
+    /**
+     * Adds a reaction to the message. If the reaction already exists, it increments the count.
+     * If it doesn't exist, it creates a new reaction with the given emoji.
+     * @param {string} emoji - The emoji representing the reaction.
+     */
+    addReaction(emoji) {
+
+        const reactions = this.reactions;
+
+        if(reactions.find(reaction => reaction.emoji === emoji)) {
+            reactions.find(reaction => reaction.emoji === emoji).increment();
+        } else {
+            reactions.push(new MessageReaction(emoji));
+        }
+
+    }
+
+    /**
+     * Retrieves a reaction from the message based on the given emoji.
+     * @param {string} emoji - The emoji representing the reaction.
+     * @returns {MessageReaction} The reaction associated with the given emoji.
+     */
+    getReaction(emoji) {
+        const reaction = this.reactions.find(reaction => reaction.emoji === emoji);
+        return MessageReaction.castToReaction(reaction);
+    }
+
+    /**
+     * Removes a reaction from the message. If the count of the reaction is more than 1, it decrements the count.
+     * If the count is 1, it removes the reaction entirely.
+     * @param {string} emoji - The emoji representing the reaction.
+     */
+    removeReaction(emoji) {
+        const reactions = this.reactions;
+        const reaction = reactions.find(reaction => reaction.emoji === emoji);
+
+        if(reaction) {
+            reaction.decrement();
+
+            if(reaction.count === 0) {
+                reactions.splice(reactions.indexOf(reaction), 1);
+            }
+        }
     }
 
     /**

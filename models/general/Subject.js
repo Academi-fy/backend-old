@@ -25,10 +25,15 @@ export default class Subject extends BaseModel {
         { path: 'courses' }
     ];
 
+
     static getMapPaths() {
         return [
             { path: 'courses', function: Course.castToCourse }
         ];
+    }
+
+    static getCastPaths(){
+        return [];
     }
 
     /**

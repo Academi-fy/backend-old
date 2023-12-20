@@ -8,7 +8,6 @@ import EventTicketSchema from "../../mongoDb/schemas/events/EventTicketSchema.js
 import DatabaseError from "../../httpServer/errors/DatabaseError.js";
 import Event from "./Event.js";
 import User from "../users/User.js";
-import { castProperties } from "../modelPropertyHelper.js";
 /**
  * @description The class for an event ticket.
  * @param {String} _id - The _id of the event ticket.

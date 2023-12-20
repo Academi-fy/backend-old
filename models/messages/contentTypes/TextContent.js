@@ -4,8 +4,6 @@
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
 import MessageContent from "../MessageContent.js";
-import { validateNotEmpty } from "../../../../models/propertyValidation.js";
-
 /**
  * @description Class representing a text content.
  * @param {String} type - The type of the content. For text: 'TEXT'
@@ -22,17 +20,15 @@ export default class TextContent extends MessageContent {
     ) {
         const type = "TEXT";
         super(type, value);
-
-        validateNotEmpty("TextContent value", value);
     }
 
-    get _value() {
-        return this.value;
+    get value() {
+        return this._value;
     }
 
-    set _value(value) {
+    set value(value) {
         validateNotEmpty("TextContent value", value);
-        this.value = value;
+        this._value = value;
     }
 
 }

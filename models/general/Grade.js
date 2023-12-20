@@ -29,6 +29,10 @@ export default class Grade extends BaseModel {
         ];
     }
 
+    static getCastPaths(){
+        return [];
+    }
+
     /**
      * @constructor Create a Grade.
      * @param {Number} level - The level of the grade.

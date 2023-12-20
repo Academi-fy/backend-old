@@ -3,8 +3,6 @@
  * @author Daniel Dopatka
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
-import { validateArray, validateNotEmpty } from "../../../models/propertyValidation.js";
-
 /**
  * @description Class representing the details of a club.
  * @param {String} coverImage - The cover image of the club.
@@ -37,66 +35,91 @@ export default class ClubDetails {
         requirements,
         tags,
     ) {
-        this.description = description;
-        this.location = location;
-        this.meetingTime = meetingTime;
-        this.meetingDay = meetingDay;
-        this.requirements = requirements;
-        this.tags = tags;
+        this._description = description;
+        this._location = location;
+        this._meetingTime = meetingTime;
+        this._meetingDay = meetingDay;
+        this._requirements = requirements;
+        this._tags = tags;
     }
 
-    get _description() {
-        return this.description;
+    /**
+     * Convert the ClubDetails instance into a JSON-friendly format.
+     * @returns {Object} An object that contains all the properties of the ClubDetails instance.
+     */
+    toJSON() {
+        const { description, location, meetingTime, meetingDay, requirements, tags } = this;
+        return {
+            description,
+            location,
+            meetingTime,
+            meetingDay,
+            requirements,
+            tags
+        };
     }
 
-    set _description(value) {
-        validateNotEmpty('Club description', value);
-        this.description = value;
+    /**
+     * Cast an object into a ClubDetails instance.
+     * @param {Object} clubDetailsObject - The object to be cast into a ClubDetails instance.
+     * @returns {ClubDetails} A new ClubDetails instance.
+     * @throws {TypeError} If the provided object is not valid or does not contain all the necessary properties.
+     */
+    static castToClubDetails(clubDetailsObject) {
+        if (typeof clubDetailsObject !== 'object' || clubDetailsObject === null) {
+            throw new TypeError('Invalid object. Cannot cast to ClubDetails.');
+        }
+
+        const { coverImage, description, location, meetingTime, meetingDay, requirements, tags } = clubDetailsObject;
+        return new ClubDetails(coverImage, description, location, meetingTime, meetingDay, requirements, tags);
     }
 
-    get _location() {
-        return this.location;
+    get description() {
+        return this._description;
     }
 
-    set _location(value) {
-        validateNotEmpty('Club location', value);
-        this.location = value;
+    set description(value) {
+        this._description = value;
     }
 
-    get _meetingTime() {
-        return this.meetingTime;
+    get location() {
+        return this._location;
     }
 
-    set _meetingTime(value) {
-        validateNotEmpty('Club meeting time', value);
-        this.meetingTime = value;
+    set location(value) {
+        this._location = value;
     }
 
-    get _meetingDay() {
-        return this.meetingDay;
+    get meetingTime() {
+        return this._meetingTime;
     }
 
-    set _meetingDay(value) {
-        validateNotEmpty('Club meeting day', value);
-        this.meetingDay = value;
+    set meetingTime(value) {
+        this._meetingTime = value;
     }
 
-    get _requirements() {
-        return this.requirements;
+    get meetingDay() {
+        return this._meetingDay;
     }
 
-    set _requirements(value) {
-        validateArray('Club requirements', value);
-        this.requirements = value;
+    set meetingDay(value) {
+        this._meetingDay = value;
     }
 
-    get _tags() {
-        return this.tags;
+    get requirements() {
+        return this._requirements;
     }
 
-    set _tags(value) {
-        validateArray('Club tags', value);
-        this.tags = value;
+    set requirements(value) {
+        this._requirements = value;
+    }
+
+    get tags() {
+        return this._tags;
+    }
+
+    set tags(value) {
+        this._tags = value;
     }
 
 }

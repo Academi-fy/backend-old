@@ -3,7 +3,7 @@
  * @author Daniel Dopatka
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
-import { validateArray, validateBoolean, validateNotEmpty } from "../propertyValidation.js";
+import PollAnswer from "./PollAnswer.js";
 
 /**
  * @description Represents a poll.
@@ -27,46 +27,74 @@ export default class Poll {
         answers,
         maxVotesPerUser
     ) {
-        this.question = question;
-        this.anonymous = anonymous;
-        this.answers = answers;
-        this.maxVotesPerUser = maxVotesPerUser;
+        this._question = question;
+        this._anonymous = anonymous;
+        this._answers = answers;
+        this._maxVotesPerUser = maxVotesPerUser;
     }
 
-    get _question() {
-        return this.question;
+    /**
+     * Converts the Poll instance into a JSON-friendly format.
+     * This method is automatically called when JSON.stringify() is used on a Poll instance.
+     * @returns {Object} An object representation of the Poll instance.
+     */
+    toJSON(){
+        const { question, anonymous, answers, maxVotesPerUser } = this;
+        return {
+            question,
+            anonymous,
+            answers,
+            maxVotesPerUser
+        };
     }
 
-    set _question(value) {
-        validateNotEmpty('Poll question', value)
-        this.question = value;
+    /**
+     * Casts an object into a Poll instance.
+     * @param {Object} poll - The object to be cast into a Poll instance.
+     * @returns {Poll} A new Poll instance.
+     * @throws {TypeError} If the object cannot be cast into a Poll instance.
+     */
+    static castToPoll(poll) {
+        if (typeof poll !== 'object' || poll === null) {
+            throw new TypeError('Invalid object. Cannot cast to Poll.');
+        }
+
+        const { question, anonymous, answers, maxVotesPerUser } = poll;
+        let newPoll = new Poll(question, anonymous, answers, maxVotesPerUser);
+        newPoll.answers = newPoll.answers.map(answer => PollAnswer.castToPollAnswer(answer));
+        return newPoll;
     }
 
-    get _anonymous() {
-        return this.anonymous;
+    get question() {
+        return this._question;
     }
 
-    set _anonymous(value) {
-        validateBoolean('Poll anonymous', value)
-        this.anonymous = value;
+    set question(value) {
+        this._question = value;
     }
 
-    get _answers() {
-        return this.answers;
+    get anonymous() {
+        return this._anonymous;
     }
 
-    set _answers(value) {
-        validateArray('Poll answers', value);
-        this.answers = value;
+    set anonymous(value) {
+        this._anonymous = value;
     }
 
-    get _maxVotesPerUser() {
-        return this.maxVotesPerUser;
+    get answers() {
+        return this._answers;
     }
 
-    set _maxVotesPerUser(value) {
-        validateNotEmpty('Poll maxVotesPerUser', value);
-        this.maxVotesPerUser = value;
+    set answers(value) {
+        this._answers = value;
+    }
+
+    get maxVotesPerUser() {
+        return this._maxVotesPerUser;
+    }
+
+    set maxVotesPerUser(value) {
+        this._maxVotesPerUser = value;
     }
 
 }

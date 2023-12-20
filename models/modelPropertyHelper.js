@@ -1,3 +1,5 @@
+import RetrievalError from "../httpServer/errors/RetrievalError.js";
+
 /**
  * Casts the given object using the provided function, or returns null if the object is nullish.
  * @param {Object} object - The object to cast.
@@ -5,6 +7,9 @@
  * @returns {Object|null} The cast object, or null if the input object was nullish.
  */
 function castOrNull (object, castFunction) {
+    if(typeof object !== 'object') {
+        throw new RetrievalError('Not object: ' + object);
+    }
     return object ? castFunction(object) : null;
 }
 
@@ -15,6 +20,9 @@ function castOrNull (object, castFunction) {
  * @returns {Array|null} A new array with each element being the result of the map function, or null if the input array was nullish.
  */
 function mapOrNull(array, mapFunction) {
+    if(!Array.isArray(array)) {
+       throw new RetrievalError('Not array: ' + array);
+    }
     return array ? array.map(object => object ? mapFunction(object) : null) : null;
 }
 
@@ -26,7 +34,7 @@ function mapOrNull(array, mapFunction) {
  */
 export function castPropertyOrNull(object, property, castFunction) {
     if (object[property]) {
-        object[property] = castOrNull(object[property], castFunction());
+        object[property] = castOrNull(object[property], castFunction);
     }
 }
 
@@ -38,7 +46,7 @@ export function castPropertyOrNull(object, property, castFunction) {
  */
 function mapPropertyOrNull(object, property, mapFunction) {
     if (object[property]) {
-        object[property] = mapOrNull(object[property], mapFunction());
+        object[property] = mapOrNull(object[property], mapFunction);
     }
 }
 
@@ -48,7 +56,7 @@ function mapPropertyOrNull(object, property, mapFunction) {
  * @param {Array<Object>} casts - The objects containing the properties to cast.
  */
 export function castProperties(object, casts) {
-    casts.forEach((cast) => castPropertyOrNull(object, cast.path, cast.function()));
+    casts.forEach((cast) => castPropertyOrNull(object, cast.path, cast.function));
 }
 
 /**
@@ -57,5 +65,5 @@ export function castProperties(object, casts) {
  * @param {Array<Object>} maps - The objects containing the properties to map.
  */
 export function mapProperties(object, maps) {
-    maps.forEach((map) => mapPropertyOrNull(object, map.path, map.function()));
+    maps.forEach((map) => mapPropertyOrNull(object, map.path, map.function));
 }
