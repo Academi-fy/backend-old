@@ -65,7 +65,7 @@ router.get('/filter', async (req, res) => {
         const events = await Event.getAllByRule(filter);
         res.json(events)
     } catch (error) {
-        logger.server.error(error);
+        logger.server.error(error.stack);
         res.status(400).send(
             {
                 errorCode: errors.server.document.query.failed,
@@ -102,7 +102,7 @@ router.get('/:id', async (req, res) => {
         const event = await Event.getById(id);
         res.json(event);
     } catch (error) {
-        logger.server.error(error);
+        logger.server.error(error.stack);
         res.status(400).send(
             {
                 errorCode: errors.server.document.query.failed,
@@ -163,7 +163,7 @@ router.post('/', async (req, res) => {
         const event = await newEvent.create();
         res.json(event);
     } catch (error) {
-        logger.server.error(error);
+        logger.server.error(error.stack);
         res.status(400).send(
             {
                 errorCode: errors.server.document.creation.failed,
@@ -247,7 +247,7 @@ router.put('/:id', async (req, res) => {
         const event = await oldEvent.update(updatedEvent);
         res.json(event);
     } catch (error) {
-        logger.server.error(error);
+        logger.server.error(error.stack);
         res.status(400).send(
             {
                 errorCode: errors.server.document.update.failed,
@@ -299,7 +299,7 @@ router.delete('/:id', async (req, res) => {
         res.json(deletionState);
 
     } catch (error) {
-        logger.server.error(error);
+        logger.server.error(error.stack);
         res.status(400).send(
             {
                 errorCode: errors.server.document.deletion.failed,

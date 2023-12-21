@@ -64,7 +64,7 @@ router.get('/filter', async (req, res) => {
         const schools = await School.getAllByRule(filter);
         res.json(schools)
     } catch (error) {
-        logger.server.error(error);
+        logger.server.error(error.stack);
         res.status(400).send(
             {
                 errorCode: errors.server.document.query.failed,
@@ -101,7 +101,7 @@ router.get('/:id', async (req, res) => {
         const school = await School.getById(id);
         res.json(school);
     } catch (error) {
-        logger.server.error(error);
+        logger.server.error(error.stack);
         res.status(400).send(
             {
                 errorCode: errors.server.document.query.failed,
@@ -162,7 +162,7 @@ router.post('/', async (req, res) => {
         const school = await newSchool.create();
         res.json(school);
     } catch (error) {
-        logger.server.error(error);
+        logger.server.error(error.stack);
         res.status(400).send(
             {
                 errorCode: errors.server.document.creation.failed,
@@ -246,7 +246,7 @@ router.put('/:id', async (req, res) => {
         const school = await oldSchool.update(updatedSchool);
         res.json(school);
     } catch (error) {
-        logger.server.error(error);
+        logger.server.error(error.stack);
         res.status(400).send(
             {
                 errorCode: errors.server.document.update.failed,
@@ -298,7 +298,7 @@ router.delete('/:id', async (req, res) => {
         res.json(deletionState);
 
     } catch (error) {
-        logger.server.error(error);
+        logger.server.error(error.stack);
         res.status(400).send(
             {
                 errorCode: errors.server.document.deletion.failed,
