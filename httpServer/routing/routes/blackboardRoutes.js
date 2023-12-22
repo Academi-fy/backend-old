@@ -61,7 +61,7 @@ router.get('/filter', async (req, res) => {
         const blackboards = await Blackboard.getAllByRule(filter);
         res.json(blackboards)
     } catch (error) {
-        logger.server.error(error);
+        logger.server.error(error.stack);
         res.status(400).send(
             {
                 errorCode: errors.server.document.query.failed,
@@ -98,7 +98,7 @@ router.get('/:id', async (req, res) => {
         const blackboard = await Blackboard.getById(id);
         res.json(blackboard)
     } catch (error) {
-        logger.server.error(error);
+        logger.server.error(error.stack);
         res.status(400).send(
             {
                 errorCode: errors.server.document.query.failed,
@@ -160,7 +160,7 @@ router.post('/', async (req, res) => {
         res.json(blackboard);
 
     } catch (error) {
-        logger.server.error(error);
+        logger.server.error(error.stack);
         res.status(400).send(
             {
                 errorCode: errors.server.document.creation.failed,
@@ -247,7 +247,7 @@ router.put('/:id', async (req, res) => {
         res.json(blackboard);
 
     } catch (error) {
-        logger.server.error(error);
+        logger.server.error(error.stack);
         res.status(400).send(
             {
                 errorCode: errors.server.document.update.failed,
@@ -298,7 +298,7 @@ router.delete('/:id', async (req, res) => {
         res.json(deletionState);
 
     } catch (error) {
-        logger.server.error(error);
+        logger.server.error(error.stack);
         res.status(400).send(
             {
                 errorCode: errors.server.document.deletion.failed,

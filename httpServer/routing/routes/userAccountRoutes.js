@@ -66,7 +66,7 @@ router.get('/filter', async (req, res) => {
         const userAccounts = await UserAccount.getAllUserAccountsByRule(filter);
         res.json(userAccounts)
     } catch (error) {
-        logger.server.error(error);
+        logger.server.error(error.stack);
         res.status(400).send(
             {
                 errorCode: errors.server.document.query.failed,
@@ -103,7 +103,7 @@ router.get('/:id', async (req, res) => {
         const userAccount = await UserAccount.getUserAccountById(id);
         res.json(userAccount);
     } catch (error) {
-        logger.server.error(error);
+        logger.server.error(error.stack);
         res.status(400).send(
             {
                 errorCode: errors.server.document.query.failed,
@@ -164,7 +164,7 @@ router.post('/', async (req, res) => {
         const userAccount = await UserAccount.createUserAccount(newUserAccount);
         res.json(userAccount);
     } catch (error) {
-        logger.server.error(error);
+        logger.server.error(error.stack);
         res.status(400).send(
             {
                 errorCode: errors.server.document.creation.failed,
@@ -247,7 +247,7 @@ router.put('/:id', async (req, res) => {
         const userAccount = await UserAccount.updateUserAccount(req.params.id, updatedUserAccount);
         res.json(userAccount);
     } catch (error) {
-        logger.server.error(error);
+        logger.server.error(error.stack);
         res.status(400).send(
             {
                 errorCode: errors.server.document.update.failed,
@@ -299,7 +299,7 @@ router.delete('/:id', async (req, res) => {
         res.json(deletionState);
 
     } catch (error) {
-        logger.server.error(error);
+        logger.server.error(error.stack);
         res.status(400).send(
             {
                 errorCode: errors.server.document.deletion.failed,

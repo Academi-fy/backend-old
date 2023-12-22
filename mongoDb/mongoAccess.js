@@ -57,7 +57,7 @@ export async function deleteDocument(model, id) {
  * */
 export async function getDocument(model, id) {
     model = getModel(model);
-    return await model.model.findOne({ id: id });
+    return await model.model.findOne({ _id: id });
 }
 
 /**
@@ -77,5 +77,5 @@ export async function getAllDocuments(model) {
  * */
 export async function getDocumentsByRule(model, criteria) {
     model = getModel(model);
-    return await model.findOne(criteria);
+    return await model.model.find(criteria);
 }

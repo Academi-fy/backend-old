@@ -61,7 +61,7 @@ router.get('/filter', async (req, res) => {
         const clubs = await Club.getAllByRule(filter);
         res.json(clubs)
     } catch (error) {
-        logger.server.error(error);
+        logger.server.error(error.stack);
         res.status(400).send(
             {
                 errorCode: errors.server.document.query.failed,
@@ -98,7 +98,7 @@ router.get('/:id', async (req, res) => {
         const club = await Club.getById(id);
         res.json(club);
     } catch (error) {
-        logger.server.error(error);
+        logger.server.error(error.stack);
         res.status(400).send(
             {
                 errorCode: errors.server.document.query.failed,
@@ -159,7 +159,7 @@ router.post('/', async (req, res) => {
         const club = await newClub.create();
         res.json(club);
     } catch (error) {
-        logger.server.error(error);
+        logger.server.error(error.stack);
         res.status(400).send(
             {
                 errorCode: errors.server.document.creation.failed,
@@ -243,7 +243,7 @@ router.put('/:id', async (req, res) => {
         const club = await oldClub.update(updatedClub);
         res.json(club);
     } catch (error) {
-        logger.server.error(error);
+        logger.server.error(error.stack);
         res.status(400).send(
             {
                 errorCode: errors.server.document.update.failed,
@@ -295,7 +295,7 @@ router.delete('/:id', async (req, res) => {
         res.json(deletionState);
 
     } catch (error) {
-        logger.server.error(error);
+        logger.server.error(error.stack);
         res.status(400).send(
             {
                 errorCode: errors.server.document.deletion.failed,

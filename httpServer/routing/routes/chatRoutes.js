@@ -296,7 +296,7 @@ router.delete('/:id', async (req, res) => {
         res.json(deletionState);
 
     } catch (error) {
-        logger.server.error(error);
+        logger.server.error(error.stack);
         res.status(400).send(
             {
                 errorCode: errors.server.document.deletion.failed,
