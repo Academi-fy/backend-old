@@ -93,9 +93,6 @@ export default class BaseModel {
             item = await this.populate(result);
 
             Promise.resolve(item).then(async () => {
-                if (this.cacheUpdating) {
-                    await this.cacheUpdatePromise;
-                }
                 const release = await this.cacheMutex.acquire();
                 try {
                     const items = await this.getAll(null);
@@ -133,9 +130,6 @@ export default class BaseModel {
             items = populatedItems;
 
             Promise.resolve(items).then(async () => {
-                if (this.cacheUpdating) {
-                    await this.cacheUpdatePromise;
-                }
                 const release = await this.cacheMutex.acquire();
                 try {
                     const allItems = await this.getAll(null);
@@ -161,21 +155,18 @@ export default class BaseModel {
         const _id = this._id;
 
         let insertedItem = await mongoAccess.createDocument(this.constructor.schema, this.data);
-        if(!insertedItem) throw new DatabaseError(`Failed to create ${ this.constructor.modelName } with _id '${ this._id }'`);
+        if(!insertedItem) throw new DatabaseError(`Failed to create ${ this.constructor.modelName } with _id '${ _id }'`);
 
         insertedItem = this.constructor.populate(insertedItem);
 
         const release = await this.constructor.cacheMutex.acquire();
         try {
-            if (this.constructor.cacheUpdating) {
-                await this.constructor.cacheUpdating;
-            }
             BaseModel.getAll(null).then(items => {
                 items.push(insertedItem);
                 cache.put(this.constructor.cacheKey, items, this.constructor.expirationTime  * 60 * 1000);
 
                 if(!this.constructor.verifyInCache(_id))
-                    throw new CacheError(`Failed to put ${this.constructor.modelName} with id '${ insertedItem }' in cache`);
+                    throw new CacheError(`Failed to put ${this.constructor.modelName} with id '${ _id }' in cache`);
             });
         } finally {
             release();
@@ -202,18 +193,15 @@ export default class BaseModel {
 
         const release = await this.constructor.cacheMutex.acquire();
         try {
-            if (this.constructor.cacheUpdating) {
-                await this.constructor.cacheUpdating;
-            }
             BaseModel.getAll(null).then(items => {
                 const index = items.findIndex(item => item._id === _id);
                 if (index !== -1) {
-                    items[index] = updatedItem;
+                    items[index] =  updatedItem;
                 }
                 cache.put(this.constructor.cacheKey, items, this.constructor.expirationTime  * 60 * 1000);
 
                 if(!this.constructor.verifyInCache(_id))
-                    throw new CacheError(`Failed to update ${this.constructor.modelName} with id '${ updatedItem }' in cache`);
+                    throw new CacheError(`Failed to update ${this.constructor.modelName} with id '${ _id }' in cache`);
             });
         } finally {
             release();
