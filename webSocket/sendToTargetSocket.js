@@ -10,7 +10,7 @@
  * @param {String} message - The message to be sent
  * @returns {Boolean} - If the message could be sent.
  */
-export default function (server, target, message){
+export default function (server, target, message) {
 
     const targetSocket = Array.from(server.clients).find(client => client.userId === target._id.toString());
 

@@ -22,12 +22,6 @@ export function parseMessage(message) {
 
     if (!Object.keys(socketEvents).includes(object.event)) throw new UnknownEventError(`Invalid message: event '${ object.event }' does not exist`);
 
-    /**
-     * @description The actual data of the event.
-     * @type {Object}
-     * @property {String} sender - The sender of the event.
-     * @property {Object} data - The data of the event.
-     */
     if (!("payload" in object)) throw new SocketMessageParsingError("Invalid messages: payload is required");
     if (object.payload === null || typeof object.payload !== 'object') {
         throw new SocketMessageParsingError("Invalid messages: payload must be an object");

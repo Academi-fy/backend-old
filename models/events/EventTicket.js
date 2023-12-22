@@ -8,6 +8,7 @@ import EventTicketSchema from "../../mongoDb/schemas/events/EventTicketSchema.js
 import DatabaseError from "../../httpServer/errors/DatabaseError.js";
 import Event from "./Event.js";
 import User from "../users/User.js";
+
 /**
  * @description The class for an event ticket.
  * @param {String} _id - The _id of the event ticket.
@@ -26,13 +27,6 @@ export default class EventTicket extends BaseModel {
         { path: 'event' },
         { path: 'buyer' }
     ];
-
-    static getCastPaths() {
-        return [
-            { path: 'event', function: User.castToUser },
-            { path: 'buyer', function: EventTicket.castToEventTicket }
-        ];
-    }
 
     /**
      * @description The constructor for an event ticket.
@@ -58,79 +52,6 @@ export default class EventTicket extends BaseModel {
         this._buyer = buyer;
         this._price = price;
         this._saleDate = saleDate;
-    }
-
-    /**
-     * Casts a plain object to an instance of the EventTicket class.
-     * @param {Object} eventTicket - The plain object to cast.
-     * @returns {EventTicket} The cast instance of the EventTicket class.
-     */
-    static castToEventTicket(eventTicket) {
-        const { _id, event, buyer, price, saleDate } = eventTicket;
-        const castEventTicket = new EventTicket(
-            event,
-            buyer,
-            price,
-            saleDate
-        );
-        eventTicket._id = _id.toString();
-        return castEventTicket;
-    }
-
-    /**
-     * Converts the EventTicket instance into a JSON-friendly format by removing the underscores from the property names.
-     * This method is automatically called when JSON.stringify() is used on an EventTicket instance.
-     * @returns {Object} An object representation of the EventTicket instance without underscores in the property names.
-     */
-    toJSON(){
-        const { _id, event, buyer, price, saleDate } = this;
-        return {
-            _id,
-            event,
-            buyer,
-            price,
-            saleDate
-        };
-    }
-
-    /**
-     * Populates the given EventTicket with related data from other collections.
-     * @param {Object} eventTicket - The EventTicket to populate.
-     * @returns {Promise<EventTicket>} The populated EventTicket.
-     * @throws {DatabaseError} If the EventTicket could not be populated.
-     */
-    static async populateEventTicket(eventTicket) {
-        try {
-            eventTicket = await eventTicket
-                .populate([
-                    {
-                        path: 'event',
-                        populate: Event.getPopulationPaths()
-                    },
-                    {
-                        path: 'buyer',
-                        populate: User.getPopulationPaths()
-                    }
-                ]);
-            eventTicket._id = eventTicket._id.toString();
-
-            let castEventTicket = this.castToEventTicket(eventTicket);
-            castEventTicket.handleProperties();
-
-            return castEventTicket;
-        } catch (error) {
-            throw new DatabaseError(`Failed to populate event ticket with _id #${eventTicket._id}' \n${ error.stack }`);
-        }
-    }
-
-    /**
-     * Calls the static populateEvent method.
-     * @param {Object} object - The instance to populate.
-     * @returns {Promise<EventTicket>} The populated instance.
-     * @throws {DatabaseError} If the instance could not be populated.
-     */
-    static async populate(object) {
-        return await this.populateEventTicket(object);
     }
 
     get event() {
@@ -171,6 +92,86 @@ export default class EventTicket extends BaseModel {
 
     set _id(value) {
         this.id = value;
+    }
+
+    static getCastPaths() {
+        return [
+            { path: 'event', function: User.castToUser },
+            { path: 'buyer', function: EventTicket.castToEventTicket }
+        ];
+    }
+
+    /**
+     * Casts a plain object to an instance of the EventTicket class.
+     * @param {Object} eventTicket - The plain object to cast.
+     * @returns {EventTicket} The cast instance of the EventTicket class.
+     */
+    static castToEventTicket(eventTicket) {
+        const { _id, event, buyer, price, saleDate } = eventTicket;
+        const castEventTicket = new EventTicket(
+            event,
+            buyer,
+            price,
+            saleDate
+        );
+        eventTicket._id = _id.toString();
+        return castEventTicket;
+    }
+
+    /**
+     * Populates the given EventTicket with related data from other collections.
+     * @param {Object} eventTicket - The EventTicket to populate.
+     * @returns {Promise<EventTicket>} The populated EventTicket.
+     * @throws {DatabaseError} If the EventTicket could not be populated.
+     */
+    static async populateEventTicket(eventTicket) {
+        try {
+            eventTicket = await eventTicket
+                .populate([
+                    {
+                        path: 'event',
+                        populate: Event.getPopulationPaths()
+                    },
+                    {
+                        path: 'buyer',
+                        populate: User.getPopulationPaths()
+                    }
+                ]);
+            eventTicket._id = eventTicket._id.toString();
+
+            let castEventTicket = this.castToEventTicket(eventTicket);
+            castEventTicket.handleProperties();
+
+            return castEventTicket;
+        } catch (error) {
+            throw new DatabaseError(`Failed to populate event ticket with _id #${ eventTicket._id }' \n${ error.stack }`);
+        }
+    }
+
+    /**
+     * Calls the static populateEvent method.
+     * @param {Object} object - The instance to populate.
+     * @returns {Promise<EventTicket>} The populated instance.
+     * @throws {DatabaseError} If the instance could not be populated.
+     */
+    static async populate(object) {
+        return await this.populateEventTicket(object);
+    }
+
+    /**
+     * Converts the EventTicket instance into a JSON-friendly format by removing the underscores from the property names.
+     * This method is automatically called when JSON.stringify() is used on an EventTicket instance.
+     * @returns {Object} An object representation of the EventTicket instance without underscores in the property names.
+     */
+    toJSON() {
+        const { _id, event, buyer, price, saleDate } = this;
+        return {
+            _id,
+            event,
+            buyer,
+            price,
+            saleDate
+        };
     }
 
 }

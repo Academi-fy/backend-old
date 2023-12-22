@@ -70,92 +70,6 @@ export default class Club extends BaseModel {
         this._editHistory = editHistory;
     }
 
-    /**
-     * Casts a plain object to an instance of the Club class.
-     * @param {Object} club - The plain object to cast.
-     * @returns {Club} The cast instance of the Club class.
-     */
-    static castToClub(club) {
-        const { _id, name, details, leaders, members, chat, events, state, editHistory } = club;
-        const castClub = new Club(
-            name,
-            details,
-            leaders,
-            members,
-            chat,
-            events,
-            state,
-            editHistory
-        );
-        castClub._id = _id.toString();
-        return castClub;
-    }
-
-    /**
-     * Converts the Club instance into a JSON-friendly format by removing the underscores from the property names.
-     * This method is automatically called when JSON.stringify() is used on a Club instance.
-     * @returns {Object} An object representation of the Club instance without underscores in the property names.
-     */
-    toJSON(){
-        const { _id, name, details, leaders, members, chat, events, state, editHistory } = this;
-        return {
-            _id,
-            name,
-            details,
-            leaders,
-            members,
-            chat,
-            events,
-            state,
-            editHistory
-        };
-    }
-
-    /**
-     * Populates the given Club with related data from other collections.
-     * @param {Object} club - The Club to populate.
-     * @returns {Promise<Club>} The populated Club.
-     * @throws {DatabaseError} If the Club could not be populated.
-     */
-    static async populateClub(club) {
-        try {
-            club = await club
-                .populate([
-                    {
-                        path: 'targets',
-                        populate: User.getPopulationPaths()
-                    },
-                    {
-                        path: 'courses',
-                        populate: Course.getPopulationPaths()
-                    },
-                    {
-                        path: 'clubs',
-                        populate: Club.getPopulationPaths()
-                    },
-                    {
-                        path: 'messages',
-                        populate: Message.getPopulationPaths()
-                    },
-                ]);
-            club._id = club._id.toString();
-
-            return this.castToClub(club);
-        } catch (error) {
-            throw new DatabaseError(`Failed to populate club with _id #${club._id}' \n${ error.stack }`);
-        }
-    }
-
-    /**
-     * Calls the static populateEvent method.
-     * @param {Object} object - The instance to populate.
-     * @returns {Promise<Club>} The populated instance.
-     * @throws {DatabaseError} If the instance could not be populated.
-     */
-    static async populate(object) {
-        return await this.populateClub(object);
-    }
-
     get name() {
         return this._name;
     }
@@ -226,6 +140,92 @@ export default class Club extends BaseModel {
 
     set _id(value) {
         this.id = value;
+    }
+
+    /**
+     * Casts a plain object to an instance of the Club class.
+     * @param {Object} club - The plain object to cast.
+     * @returns {Club} The cast instance of the Club class.
+     */
+    static castToClub(club) {
+        const { _id, name, details, leaders, members, chat, events, state, editHistory } = club;
+        const castClub = new Club(
+            name,
+            details,
+            leaders,
+            members,
+            chat,
+            events,
+            state,
+            editHistory
+        );
+        castClub._id = _id.toString();
+        return castClub;
+    }
+
+    /**
+     * Populates the given Club with related data from other collections.
+     * @param {Object} club - The Club to populate.
+     * @returns {Promise<Club>} The populated Club.
+     * @throws {DatabaseError} If the Club could not be populated.
+     */
+    static async populateClub(club) {
+        try {
+            club = await club
+                .populate([
+                    {
+                        path: 'targets',
+                        populate: User.getPopulationPaths()
+                    },
+                    {
+                        path: 'courses',
+                        populate: Course.getPopulationPaths()
+                    },
+                    {
+                        path: 'clubs',
+                        populate: Club.getPopulationPaths()
+                    },
+                    {
+                        path: 'messages',
+                        populate: Message.getPopulationPaths()
+                    },
+                ]);
+            club._id = club._id.toString();
+
+            return this.castToClub(club);
+        } catch (error) {
+            throw new DatabaseError(`Failed to populate club with _id #${ club._id }' \n${ error.stack }`);
+        }
+    }
+
+    /**
+     * Calls the static populateEvent method.
+     * @param {Object} object - The instance to populate.
+     * @returns {Promise<Club>} The populated instance.
+     * @throws {DatabaseError} If the instance could not be populated.
+     */
+    static async populate(object) {
+        return await this.populateClub(object);
+    }
+
+    /**
+     * Converts the Club instance into a JSON-friendly format by removing the underscores from the property names.
+     * This method is automatically called when JSON.stringify() is used on a Club instance.
+     * @returns {Object} An object representation of the Club instance without underscores in the property names.
+     */
+    toJSON() {
+        const { _id, name, details, leaders, members, chat, events, state, editHistory } = this;
+        return {
+            _id,
+            name,
+            details,
+            leaders,
+            members,
+            chat,
+            events,
+            state,
+            editHistory
+        };
     }
 
 }

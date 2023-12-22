@@ -29,18 +29,20 @@ export default class EventInformation {
         this._items = items;
     }
 
+    get title() {
+        return this._title;
+    }
 
-    /**
-     * Converts the EventInformation instance into a JSON-friendly format.
-     * This method is automatically called when JSON.stringify() is used on an EventInformation instance.
-     * @returns {Object} An object representation of the EventInformation instance.
-     */
-    toJSON(){
-        const { title, items } = this;
-        return {
-            title,
-            items
-        };
+    set title(value) {
+        this._title = value;
+    }
+
+    get items() {
+        return this._items;
+    }
+
+    set items(value) {
+        this._items = value;
     }
 
     /**
@@ -57,20 +59,17 @@ export default class EventInformation {
         return new EventInformation(title, items);
     }
 
-    get title() {
-        return this._title;
-    }
-
-    set title(value) {
-        this._title = value;
-    }
-
-    get items() {
-        return this._items;
-    }
-
-    set items(value) {
-        this._items = value;
+    /**
+     * Converts the EventInformation instance into a JSON-friendly format.
+     * This method is automatically called when JSON.stringify() is used on an EventInformation instance.
+     * @returns {Object} An object representation of the EventInformation instance.
+     */
+    toJSON() {
+        const { title, items } = this;
+        return {
+            title,
+            items
+        };
     }
 
     validateItems(items) {

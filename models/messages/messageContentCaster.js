@@ -22,7 +22,7 @@ export function castToMessageContent(messageContent) {
     const { type, value } = messageContent;
     let content;
 
-    switch (type){
+    switch (type) {
         case 'FILE':
             content = new FileContent(value);
             break;

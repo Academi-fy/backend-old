@@ -31,12 +31,6 @@ export default class Blackboard extends BaseModel {
         { path: 'author' }
     ];
 
-    static getCastPaths() {
-        return [
-            { path: 'author', function: User.castToUser }
-        ];
-    }
-
     /**
      * @description Create a blackboard.
      * @param {String} title - The title of the blackboard.
@@ -73,81 +67,6 @@ export default class Blackboard extends BaseModel {
         this._tags = tags;
         this._date = date;
         this._state = state;
-    }
-
-    /**
-     * Casts a plain object to an instance of the Blackboard class.
-     * @param {Object} blackboard - The plain object to cast.
-     * @returns {Blackboard} The cast instance of the Blackboard class.
-     */
-    static castToBlackboard(blackboard) {
-        const { _id, title, author, coverImage, text, tags, date, state } = blackboard;
-        const castBlackboard = new Blackboard(
-            title,
-            author,
-            coverImage,
-            text,
-            tags,
-            date,
-            state
-        );
-        castBlackboard._id = _id.toString();
-        return castBlackboard;
-    }
-
-    /**
-     * Converts the Blackboard instance into a JSON-friendly format by removing the underscores from the property names.
-     * This method is automatically called when JSON.stringify() is used on a Blackboard instance.
-     * @returns {Object} An object representation of the Blackboard instance without underscores in the property names.
-     */
-    toJSON(){
-        const { _id, title, author, coverImage, text, tags, date, state } = this;
-        return {
-            _id,
-            title,
-            author,
-            coverImage,
-            text,
-            tags,
-            date,
-            state
-        };
-
-    }
-
-    /**
-     * Populates the given Blackboard with related data from other collections.
-     * @param {Object} blackboard - The Blackboard to populate.
-     * @returns {Promise<Blackboard>} The populated Blackboard.
-     * @throws {DatabaseError} If the Blackboard could not be populated.
-     */
-    static async populateBlackboard(blackboard) {
-        try {
-            blackboard = await blackboard
-                .populate([
-                    {
-                        path: 'author',
-                        populate: User.getPopulationPaths()
-                    },
-                ]);
-            blackboard._id = blackboard._id.toString();
-
-            let castBlackboard = this.castToBlackboard(blackboard);
-            castBlackboard.handleProperties();
-            return castBlackboard;
-        } catch (error) {
-            throw new DatabaseError(`Failed to populate blackboard with _id #${blackboard._id}' \n${ error.stack }`);
-        }
-    }
-
-    /**
-     * Calls the static populateBlackboard method.
-     * @param {Object} object - The instance to populate.
-     * @returns {Promise<Blackboard>} The populated instance.
-     * @throws {DatabaseError} If the instance could not be populated.
-     */
-    static async populate(object) {
-        return await this.populateBlackboard(object);
     }
 
     get title() {
@@ -212,6 +131,87 @@ export default class Blackboard extends BaseModel {
 
     set _id(value) {
         this.id = value;
+    }
+
+    static getCastPaths() {
+        return [
+            { path: 'author', function: User.castToUser }
+        ];
+    }
+
+    /**
+     * Casts a plain object to an instance of the Blackboard class.
+     * @param {Object} blackboard - The plain object to cast.
+     * @returns {Blackboard} The cast instance of the Blackboard class.
+     */
+    static castToBlackboard(blackboard) {
+        const { _id, title, author, coverImage, text, tags, date, state } = blackboard;
+        const castBlackboard = new Blackboard(
+            title,
+            author,
+            coverImage,
+            text,
+            tags,
+            date,
+            state
+        );
+        castBlackboard._id = _id.toString();
+        return castBlackboard;
+    }
+
+    /**
+     * Populates the given Blackboard with related data from other collections.
+     * @param {Object} blackboard - The Blackboard to populate.
+     * @returns {Promise<Blackboard>} The populated Blackboard.
+     * @throws {DatabaseError} If the Blackboard could not be populated.
+     */
+    static async populateBlackboard(blackboard) {
+        try {
+            blackboard = await blackboard
+                .populate([
+                    {
+                        path: 'author',
+                        populate: User.getPopulationPaths()
+                    },
+                ]);
+            blackboard._id = blackboard._id.toString();
+
+            let castBlackboard = this.castToBlackboard(blackboard);
+            castBlackboard.handleProperties();
+            return castBlackboard;
+        } catch (error) {
+            throw new DatabaseError(`Failed to populate blackboard with _id #${ blackboard._id }' \n${ error.stack }`);
+        }
+    }
+
+    /**
+     * Calls the static populateBlackboard method.
+     * @param {Object} object - The instance to populate.
+     * @returns {Promise<Blackboard>} The populated instance.
+     * @throws {DatabaseError} If the instance could not be populated.
+     */
+    static async populate(object) {
+        return await this.populateBlackboard(object);
+    }
+
+    /**
+     * Converts the Blackboard instance into a JSON-friendly format by removing the underscores from the property names.
+     * This method is automatically called when JSON.stringify() is used on a Blackboard instance.
+     * @returns {Object} An object representation of the Blackboard instance without underscores in the property names.
+     */
+    toJSON() {
+        const { _id, title, author, coverImage, text, tags, date, state } = this;
+        return {
+            _id,
+            title,
+            author,
+            coverImage,
+            text,
+            tags,
+            date,
+            state
+        };
+
     }
 
 }

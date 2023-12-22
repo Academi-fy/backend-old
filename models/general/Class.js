@@ -9,6 +9,7 @@ import DatabaseError from "../../httpServer/errors/DatabaseError.js";
 import Grade from "./Grade.js";
 import Course from "./Course.js";
 import User from "../users/User.js";
+
 /**
  * @description Class representing a school class.
  * @param {String} _id - The _id of the class.
@@ -28,19 +29,6 @@ export default class Class extends BaseModel {
         { path: 'courses' },
         { path: 'members' }
     ];
-
-    static getMapPaths() {
-        return [
-            { path: 'courses', function: Course.castToCourse },
-            { path: 'members', function: User.castToUser }
-        ];
-    }
-
-    static getCastPaths() {
-        return [
-            { path: 'grade', function: Grade.castToGrade }
-        ];
-    }
 
     /**
      * @description Create a class.
@@ -66,86 +54,6 @@ export default class Class extends BaseModel {
         this._courses = courses;
         this._members = members;
         this._specifiedGrade = specifiedGrade;
-    }
-
-    /**
-     * Casts a plain object to an instance of the Class class.
-     * @param {Object} class_ - The plain object to cast.
-     * @returns {Class} The cast instance of the Class class.
-     */
-    static castToClass(class_) {
-        if(!class_) return null;
-        const { _id, grade, courses, members, specifiedGrade } = class_;
-        const castClass = new Class(
-            grade,
-            courses,
-            members,
-            specifiedGrade
-        );
-        castClass._id = _id.toString();
-        return castClass;
-    }
-
-    /**
-     * Converts the Class instance into a JSON-friendly format by removing the underscores from the property names.
-     * This method is automatically called when JSON.stringify() is used on a Class instance.
-     * @returns {Object} An object representation of the Class instance without underscores in the property names.
-     */
-    toJSON(){
-        const { _id, grade, courses, members, specifiedGrade } = this;
-        return {
-            _id,
-            grade,
-            courses,
-            members,
-            specifiedGrade
-        };
-    }
-
-    /**
-     * Populates the given Class with related data from other collections.
-     * @param {Object} class_ - The Class to populate.
-     * @returns {Promise<Class>} The populated Class.
-     * @throws {DatabaseError} If the Class could not be populated.
-     */
-    static async populateClass(class_) {
-        try {
-            class_ = await class_
-                .populate([
-                    {
-                        path: 'grade',
-                        populate: Grade.getPopulationPaths()
-                    },
-                    {
-                        path: 'courses',
-                        populate: Course.getPopulationPaths()
-                    },
-                    {
-                        path: 'members',
-                        populate: User.getPopulationPaths()
-                    },
-                ]);
-
-            if(!class_) return null;
-
-            class_._id = class_._id.toString();
-
-            let castClass = this.castToClass(class_);
-            castClass.handleProperties();
-            return castClass;
-        } catch (error) {
-            throw new DatabaseError(`Failed to populate class with _id #${class_._id}' \n${ error.stack }`);
-        }
-    }
-
-    /**
-     * Calls the static populateClass method.
-     * @param {Object} object - The instance to populate.
-     * @returns {Promise<Class>} The populated instance.
-     * @throws {DatabaseError} If the instance could not be populated.
-     */
-    static async populate(object) {
-        return await this.populateClass(object);
     }
 
     get grade() {
@@ -186,6 +94,99 @@ export default class Class extends BaseModel {
 
     set _id(value) {
         this.id = value;
+    }
+
+    static getMapPaths() {
+        return [
+            { path: 'courses', function: Course.castToCourse },
+            { path: 'members', function: User.castToUser }
+        ];
+    }
+
+    static getCastPaths() {
+        return [
+            { path: 'grade', function: Grade.castToGrade }
+        ];
+    }
+
+    /**
+     * Casts a plain object to an instance of the Class class.
+     * @param {Object} class_ - The plain object to cast.
+     * @returns {Class} The cast instance of the Class class.
+     */
+    static castToClass(class_) {
+        if (!class_) return null;
+        const { _id, grade, courses, members, specifiedGrade } = class_;
+        const castClass = new Class(
+            grade,
+            courses,
+            members,
+            specifiedGrade
+        );
+        castClass._id = _id.toString();
+        return castClass;
+    }
+
+    /**
+     * Populates the given Class with related data from other collections.
+     * @param {Object} class_ - The Class to populate.
+     * @returns {Promise<Class>} The populated Class.
+     * @throws {DatabaseError} If the Class could not be populated.
+     */
+    static async populateClass(class_) {
+        try {
+            class_ = await class_
+                .populate([
+                    {
+                        path: 'grade',
+                        populate: Grade.getPopulationPaths()
+                    },
+                    {
+                        path: 'courses',
+                        populate: Course.getPopulationPaths()
+                    },
+                    {
+                        path: 'members',
+                        populate: User.getPopulationPaths()
+                    },
+                ]);
+
+            if (!class_) return null;
+
+            class_._id = class_._id.toString();
+
+            let castClass = this.castToClass(class_);
+            castClass.handleProperties();
+            return castClass;
+        } catch (error) {
+            throw new DatabaseError(`Failed to populate class with _id #${ class_._id }' \n${ error.stack }`);
+        }
+    }
+
+    /**
+     * Calls the static populateClass method.
+     * @param {Object} object - The instance to populate.
+     * @returns {Promise<Class>} The populated instance.
+     * @throws {DatabaseError} If the instance could not be populated.
+     */
+    static async populate(object) {
+        return await this.populateClass(object);
+    }
+
+    /**
+     * Converts the Class instance into a JSON-friendly format by removing the underscores from the property names.
+     * This method is automatically called when JSON.stringify() is used on a Class instance.
+     * @returns {Object} An object representation of the Class instance without underscores in the property names.
+     */
+    toJSON() {
+        const { _id, grade, courses, members, specifiedGrade } = this;
+        return {
+            _id,
+            grade,
+            courses,
+            members,
+            specifiedGrade
+        };
     }
 
 }

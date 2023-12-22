@@ -183,7 +183,7 @@ router.put('/:id', async (req, res) => {
 
     try {
 
-        const oldBlackboard= await Blackboard.getById(req.params.id);
+        const oldBlackboard = await Blackboard.getById(req.params.id);
 
         if (isMissingProperty(req.body.blackboard, requiredProperties)) {
             logger.server.error(`Request #${ req.requestId }: Blackboard update from '${ req.ip }' does not contain all required properties.`)

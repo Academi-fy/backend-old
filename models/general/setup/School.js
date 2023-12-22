@@ -16,6 +16,7 @@ import User from "../../users/User.js";
 import Class from "../Class.js";
 import Subject from "../Subject.js";
 import Blackboard from "../Blackboard.js";
+
 /**
  * @description Class representing a school.
  * @param {String} _id - The _id of the school.
@@ -48,20 +49,6 @@ export default class School extends BaseModel {
         { path: 'blackboards' }
     ];
 
-    static getMapPaths() {
-        return [
-            { path: 'grades', function: Grade.castToUser },
-            { path: 'courses', function: Course.castToCourse },
-            { path: 'members', function: User.castToUser },
-            { path: 'classes', function: Class.castToClass },
-            { path: 'messages', function: Message.castToMessage },
-            { path: 'subjects', function: Subject.castToSubject },
-            { path: 'clubs', function: Club.castToClub },
-            { path: 'events', function: Event.castToEvent },
-            { path: 'blackboards', function: Blackboard.castToBlackboard }
-        ];
-    }
-
     /**
      * @description Create a school.
      * @param {String} name - The name of the school.
@@ -86,7 +73,7 @@ export default class School extends BaseModel {
         clubs,
         events,
         blackboards
-    ){
+    ) {
         super({
             name,
             grades,
@@ -110,119 +97,6 @@ export default class School extends BaseModel {
         this._clubs = clubs;
         this._events = events;
         this._blackboards = blackboards;
-    }
-
-    /**
-     * Casts a plain object to an instance of the school class.
-     * @param {Object} school - The plain object to cast.
-     * @returns {School} The cast instance of the School class.
-     */
-    static castToSchool(school) {
-        const { _id, name, grades, courses, members, classes, messages, subjects, clubs, events, blackboards } = school;
-        const castSchool = new School(
-            name,
-            grades,
-            courses,
-            members,
-            classes,
-            messages,
-            subjects,
-            clubs,
-            events,
-            blackboards
-        );
-        castSchool._id = _id.toString();
-        return castSchool;
-    }
-
-    /**
-     * Converts the School instance into a JSON-friendly format by removing the underscores from the property names.
-     * This method is automatically called when JSON.stringify() is used on a School instance.
-     * @returns {Object} An object representation of the School instance without underscores in the property names.
-     */
-    toJSON(){
-        const { _id, name, grades, courses, members, classes, messages, subjects, clubs, events, blackboards } = this;
-        return {
-            _id,
-            name,
-            grades,
-            courses,
-            members,
-            classes,
-            messages,
-            subjects,
-            clubs,
-            events,
-            blackboards
-        };
-    }
-
-    /**
-     * Populates the given School with related data from other collections.
-     * @param {Object} school - The School to populate.
-     * @returns {Promise<School>} The populated School.
-     * @throws {DatabaseError} If the School could not be populated.
-     */
-    static async populateSchool(school) {
-        try {
-            school = await school
-                .populate([
-                    {
-                        path: 'grades',
-                        populate: Grade.getPopulationPaths()
-                    },
-                    {
-                        path: 'courses',
-                        populate: Course.getPopulationPaths()
-                    },
-                    {
-                        path: 'members',
-                        populate: User.getPopulationPaths()
-                    },
-                    {
-                        path: 'classes',
-                        populate: Class.getPopulationPaths()
-                    },
-                    {
-                        path: 'messages',
-                        populate: Message.getPopulationPaths()
-                    },
-                    {
-                        path: 'subjects',
-                        populate: Subject.getPopulationPaths()
-                    },
-                    {
-                        path: 'clubs',
-                        populate: Club.getPopulationPaths()
-                    },
-                    {
-                        path: 'events',
-                        populate: Event.getPopulationPaths()
-                    },
-                    {
-                        path: 'blackboards',
-                        populate: Blackboard.getPopulationPaths()
-                    },
-                ]);
-            school._id = school._id.toString();
-
-            let castSchool = this.castToSchool(school);
-            castSchool.handleProperties();
-
-            return castSchool;
-        } catch (error) {
-            throw new DatabaseError(`Failed to populate school with _id #${school._id}' \n${ error.stack }`);
-        }
-    }
-
-    /**
-     * Calls the static populateSchool method.
-     * @param {Object} object - The instance to populate.
-     * @returns {Promise<School>} The populated instance.
-     * @throws {DatabaseError} If the instance could not be populated.
-     */
-    static async populate(object) {
-        return await this.populateSchool(object);
     }
 
     get name() {
@@ -311,6 +185,133 @@ export default class School extends BaseModel {
 
     set _id(value) {
         this.id = value;
+    }
+
+    static getMapPaths() {
+        return [
+            { path: 'grades', function: Grade.castToUser },
+            { path: 'courses', function: Course.castToCourse },
+            { path: 'members', function: User.castToUser },
+            { path: 'classes', function: Class.castToClass },
+            { path: 'messages', function: Message.castToMessage },
+            { path: 'subjects', function: Subject.castToSubject },
+            { path: 'clubs', function: Club.castToClub },
+            { path: 'events', function: Event.castToEvent },
+            { path: 'blackboards', function: Blackboard.castToBlackboard }
+        ];
+    }
+
+    /**
+     * Casts a plain object to an instance of the school class.
+     * @param {Object} school - The plain object to cast.
+     * @returns {School} The cast instance of the School class.
+     */
+    static castToSchool(school) {
+        const { _id, name, grades, courses, members, classes, messages, subjects, clubs, events, blackboards } = school;
+        const castSchool = new School(
+            name,
+            grades,
+            courses,
+            members,
+            classes,
+            messages,
+            subjects,
+            clubs,
+            events,
+            blackboards
+        );
+        castSchool._id = _id.toString();
+        return castSchool;
+    }
+
+    /**
+     * Populates the given School with related data from other collections.
+     * @param {Object} school - The School to populate.
+     * @returns {Promise<School>} The populated School.
+     * @throws {DatabaseError} If the School could not be populated.
+     */
+    static async populateSchool(school) {
+        try {
+            school = await school
+                .populate([
+                    {
+                        path: 'grades',
+                        populate: Grade.getPopulationPaths()
+                    },
+                    {
+                        path: 'courses',
+                        populate: Course.getPopulationPaths()
+                    },
+                    {
+                        path: 'members',
+                        populate: User.getPopulationPaths()
+                    },
+                    {
+                        path: 'classes',
+                        populate: Class.getPopulationPaths()
+                    },
+                    {
+                        path: 'messages',
+                        populate: Message.getPopulationPaths()
+                    },
+                    {
+                        path: 'subjects',
+                        populate: Subject.getPopulationPaths()
+                    },
+                    {
+                        path: 'clubs',
+                        populate: Club.getPopulationPaths()
+                    },
+                    {
+                        path: 'events',
+                        populate: Event.getPopulationPaths()
+                    },
+                    {
+                        path: 'blackboards',
+                        populate: Blackboard.getPopulationPaths()
+                    },
+                ]);
+            school._id = school._id.toString();
+
+            let castSchool = this.castToSchool(school);
+            castSchool.handleProperties();
+
+            return castSchool;
+        } catch (error) {
+            throw new DatabaseError(`Failed to populate school with _id #${ school._id }' \n${ error.stack }`);
+        }
+    }
+
+    /**
+     * Calls the static populateSchool method.
+     * @param {Object} object - The instance to populate.
+     * @returns {Promise<School>} The populated instance.
+     * @throws {DatabaseError} If the instance could not be populated.
+     */
+    static async populate(object) {
+        return await this.populateSchool(object);
+    }
+
+    /**
+     * Converts the School instance into a JSON-friendly format by removing the underscores from the property names.
+     * This method is automatically called when JSON.stringify() is used on a School instance.
+     * @returns {Object} An object representation of the School instance without underscores in the property names.
+     */
+    toJSON() {
+        const { _id, name, grades, courses, members, classes, messages, subjects, clubs, events, blackboards } = this;
+        return {
+            _id,
+            name,
+            grades,
+            courses,
+            members,
+            classes,
+            messages,
+            subjects,
+            clubs,
+            events,
+            blackboards
+        };
     }
 
 }

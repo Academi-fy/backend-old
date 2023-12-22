@@ -27,14 +27,14 @@ await db.connect().then(() => {
 })
 
 wss.on('connection', (ws, req) => {
-    const url = new URL(req.url, `http://${req.headers.host}`);
+    const url = new URL(req.url, `http://${ req.headers.host }`);
     const userId = url.searchParams.get('userId');
 
     const connectionId = `conn-${ nanoid(16) }`
     ws.id = connectionId;
     ws.userId = userId;
 
-    logger.socket.debug(`New connection #${ connectionId } to: ${ req.socket.remoteAddress } with user id '${userId}'`);
+    logger.socket.debug(`New connection #${ connectionId } to: ${ req.socket.remoteAddress } with user id '${ userId }'`);
     logger.socket.debug(`Connection #${ connectionId }: established at: ${ new Date().toISOString() }`);
     logger.socket.debug(`Connection #${ connectionId }: user-agent: ${ req.headers['user-agent'] }`);
 

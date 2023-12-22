@@ -4,6 +4,7 @@
  * @copyright 2023 Daniel Dopatka, Linus Bung
  */
 import MessageContent from "../MessageContent.js";
+
 /**
  * @description Class representing a video content.
  * @param {String} type - The type of the content. For video: 'VIDEO'

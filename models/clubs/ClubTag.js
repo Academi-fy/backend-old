@@ -18,16 +18,20 @@ export default class ClubTag {
         this._description = description;
     }
 
-    /**
-     * Convert the ClubTag instance into a JSON-friendly format.
-     * @returns {Object} An object that contains all the properties of the ClubTag instance.
-     */
-    toJSON() {
-        const { emoji, description } = this;
-        return {
-            emoji,
-            description
-        };
+    get emoji() {
+        return this._emoji;
+    }
+
+    set emoji(value) {
+        this._emoji = value;
+    }
+
+    get description() {
+        return this._description;
+    }
+
+    set description(value) {
+        this._description = value;
     }
 
     /**
@@ -45,20 +49,16 @@ export default class ClubTag {
         return new ClubTag(emoji, description);
     }
 
-    get emoji() {
-        return this._emoji;
-    }
-
-    set emoji(value) {
-        this._emoji = value;
-    }
-
-    get description() {
-        return this._description;
-    }
-
-    set description(value) {
-        this._description = value;
+    /**
+     * Convert the ClubTag instance into a JSON-friendly format.
+     * @returns {Object} An object that contains all the properties of the ClubTag instance.
+     */
+    toJSON() {
+        const { emoji, description } = this;
+        return {
+            emoji,
+            description
+        };
     }
 
 }

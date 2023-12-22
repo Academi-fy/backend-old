@@ -35,21 +35,6 @@ export default class Course extends BaseModel {
         { path: 'subject' }
     ];
 
-    static getMapPaths() {
-        return [
-            { path: 'members', function: User.castToUser },
-            { path: 'classes', function: Class.castToClass },
-        ];
-    }
-
-    static getCastPaths() {
-        return [
-            { path: 'teacher', function: User.castToUser },
-            { path: 'chat', function: Chat.castToChat },
-            { path: 'subject', function: Subject.castToSubject }
-        ];
-    }
-
     /**
      * @description Create a course.
      * @param {Array} members - The members of the course.
@@ -78,94 +63,6 @@ export default class Course extends BaseModel {
         this._teacher = teacher;
         this._chat = chat;
         this._subject = subject;
-    }
-
-    /**
-     * Casts a plain object to an instance of the Course class.
-     * @param {Object} course - The plain object to cast.
-     * @returns {Course} The cast instance of the Course class.
-     */
-    static castToCourse(course) {
-        if(!course) return null;
-        const { _id, members, classes, teacher, chat, subject } = course;
-        const castCourse = new Course(
-            members,
-            classes,
-            teacher,
-            chat,
-            subject
-        );
-        castCourse._id = _id.toString();
-        return castCourse;
-    }
-
-    /**
-     * Converts the Course instance into a JSON-friendly format by removing the underscores from the property names.
-     * This method is automatically called when JSON.stringify() is used on a Course instance.
-     * @returns {Object} An object representation of the Course instance without underscores in the property names.
-     */
-    toJSON(){
-        const { _id, members, classes, teacher, chat, subject } = this;
-        return {
-            _id,
-            members,
-            classes,
-            teacher,
-            chat,
-            subject
-        };
-    }
-
-    /**
-     * Populates the given Course with related data from other collections.
-     * @param {Object} course - The Course to populate.
-     * @returns {Promise<Course>} The populated Course.
-     * @throws {DatabaseError} If the Course could not be populated.
-     */
-    static async populateCourse(course) {
-        try {
-            course = await course
-                .populate([
-                    {
-                        path: 'members',
-                        populate: User.getPopulationPaths()
-                    },
-                    {
-                        path: 'classes',
-                        populate: Class.getPopulationPaths()
-                    },
-                    {
-                        path: 'teacher',
-                        populate: User.getPopulationPaths()
-                    },
-                    {
-                        path: 'subject',
-                        populate: Subject.getPopulationPaths()
-                    },
-                    {
-                        path: 'chat',
-                        populate: Chat.getPopulationPaths()
-                    },
-                ]);
-
-            course._id = course._id.toString();
-
-            let castCourse = this.castToCourse(course);
-            castCourse.handleProperties();
-            return castCourse;
-        } catch (error) {
-            throw new DatabaseError(`Failed to populate course with _id '${course._id}' \n${ error.stack }`);
-        }
-    }
-
-    /**
-     * Calls the static populateCourse method.
-     * @param {Object} object - The instance to populate.
-     * @returns {Promise<Course>} The populated instance.
-     * @throws {DatabaseError} If the instance could not be populated.
-     */
-    static async populate(object) {
-        return await this.populateCourse(object);
     }
 
     get members() {
@@ -214,6 +111,109 @@ export default class Course extends BaseModel {
 
     set _id(value) {
         this.id = value;
+    }
+
+    static getMapPaths() {
+        return [
+            { path: 'members', function: User.castToUser },
+            { path: 'classes', function: Class.castToClass },
+        ];
+    }
+
+    static getCastPaths() {
+        return [
+            { path: 'teacher', function: User.castToUser },
+            { path: 'chat', function: Chat.castToChat },
+            { path: 'subject', function: Subject.castToSubject }
+        ];
+    }
+
+    /**
+     * Casts a plain object to an instance of the Course class.
+     * @param {Object} course - The plain object to cast.
+     * @returns {Course} The cast instance of the Course class.
+     */
+    static castToCourse(course) {
+        if (!course) return null;
+        const { _id, members, classes, teacher, chat, subject } = course;
+        const castCourse = new Course(
+            members,
+            classes,
+            teacher,
+            chat,
+            subject
+        );
+        castCourse._id = _id.toString();
+        return castCourse;
+    }
+
+    /**
+     * Populates the given Course with related data from other collections.
+     * @param {Object} course - The Course to populate.
+     * @returns {Promise<Course>} The populated Course.
+     * @throws {DatabaseError} If the Course could not be populated.
+     */
+    static async populateCourse(course) {
+        try {
+            course = await course
+                .populate([
+                    {
+                        path: 'members',
+                        populate: User.getPopulationPaths()
+                    },
+                    {
+                        path: 'classes',
+                        populate: Class.getPopulationPaths()
+                    },
+                    {
+                        path: 'teacher',
+                        populate: User.getPopulationPaths()
+                    },
+                    {
+                        path: 'subject',
+                        populate: Subject.getPopulationPaths()
+                    },
+                    {
+                        path: 'chat',
+                        populate: Chat.getPopulationPaths()
+                    },
+                ]);
+
+            course._id = course._id.toString();
+
+            let castCourse = this.castToCourse(course);
+            castCourse.handleProperties();
+            return castCourse;
+        } catch (error) {
+            throw new DatabaseError(`Failed to populate course with _id '${ course._id }' \n${ error.stack }`);
+        }
+    }
+
+    /**
+     * Calls the static populateCourse method.
+     * @param {Object} object - The instance to populate.
+     * @returns {Promise<Course>} The populated instance.
+     * @throws {DatabaseError} If the instance could not be populated.
+     */
+    static async populate(object) {
+        return await this.populateCourse(object);
+    }
+
+    /**
+     * Converts the Course instance into a JSON-friendly format by removing the underscores from the property names.
+     * This method is automatically called when JSON.stringify() is used on a Course instance.
+     * @returns {Object} An object representation of the Course instance without underscores in the property names.
+     */
+    toJSON() {
+        const { _id, members, classes, teacher, chat, subject } = this;
+        return {
+            _id,
+            members,
+            classes,
+            teacher,
+            chat,
+            subject
+        };
     }
 
 

@@ -31,40 +31,6 @@ export default class PollAnswer {
         this._voters = voters;
     }
 
-    /**
-     * Converts the PollAnswer instance into a JSON-friendly format.
-     * This method is automatically called when JSON.stringify() is used on a PollAnswer instance.
-     * @returns {Object} An object representation of the PollAnswer instance.
-     */
-    toJSON(){
-        const { id, emoji, optionName, voters } = this;
-        return {
-            id,
-            emoji,
-            optionName,
-            voters
-        };
-    }
-
-    /**
-     * Casts an object into a PollAnswer instance.
-     * @param {Object} pollAnswer - The object to be cast into a PollAnswer instance.
-     * @returns {PollAnswer} A new PollAnswer instance.
-     * @throws {TypeError} If the object cannot be cast into a PollAnswer instance.
-     */
-    static castToPollAnswer(pollAnswer) {
-        if (typeof pollAnswer !== 'object' || pollAnswer === null) {
-            throw new TypeError('Invalid object. Cannot cast to PollAnswer.');
-        }
-
-        const { id, emoji, optionName, voters } = pollAnswer;
-        if (typeof id !== 'number' || typeof emoji !== 'string' || typeof optionName !== 'string' || !Array.isArray(voters)) {
-            throw new TypeError('Invalid object properties. Cannot cast to PollAnswer.');
-        }
-
-        return new PollAnswer(id, emoji, optionName, voters);
-    }
-
     get id() {
         return this._id;
     }
@@ -95,6 +61,40 @@ export default class PollAnswer {
 
     set voters(value) {
         this._voters = value;
+    }
+
+    /**
+     * Casts an object into a PollAnswer instance.
+     * @param {Object} pollAnswer - The object to be cast into a PollAnswer instance.
+     * @returns {PollAnswer} A new PollAnswer instance.
+     * @throws {TypeError} If the object cannot be cast into a PollAnswer instance.
+     */
+    static castToPollAnswer(pollAnswer) {
+        if (typeof pollAnswer !== 'object' || pollAnswer === null) {
+            throw new TypeError('Invalid object. Cannot cast to PollAnswer.');
+        }
+
+        const { id, emoji, optionName, voters } = pollAnswer;
+        if (typeof id !== 'number' || typeof emoji !== 'string' || typeof optionName !== 'string' || !Array.isArray(voters)) {
+            throw new TypeError('Invalid object properties. Cannot cast to PollAnswer.');
+        }
+
+        return new PollAnswer(id, emoji, optionName, voters);
+    }
+
+    /**
+     * Converts the PollAnswer instance into a JSON-friendly format.
+     * This method is automatically called when JSON.stringify() is used on a PollAnswer instance.
+     * @returns {Object} An object representation of the PollAnswer instance.
+     */
+    toJSON() {
+        const { id, emoji, optionName, voters } = this;
+        return {
+            id,
+            emoji,
+            optionName,
+            voters
+        };
     }
 
     vote(user) {

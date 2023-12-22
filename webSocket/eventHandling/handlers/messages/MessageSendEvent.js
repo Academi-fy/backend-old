@@ -7,6 +7,7 @@ import logger from "../../../../tools/logging/logger.js";
 import Message from "../../../../models/messages/Message.js";
 import EventHandlerError from "../../../errors/EventHandlerError.js";
 import sendToTargetSocket from "../../../sendToTargetSocket.js";
+import SocketMessageSendError from "../../../errors/SocketMessageSendError.js";
 
 /**
  * @description Function handling the MessageSendEvent.
@@ -32,7 +33,7 @@ export default async function (ws, data, messageId, messageDate) {
 
         chat.getAllTargets().forEach(target => {
 
-            if(!sendToTargetSocket(server, target, 
+            if (!sendToTargetSocket(server, target,
                 JSON.stringify({
                     event: "MESSAGE_SEND_RECEIVED",
                     payload: {
@@ -40,8 +41,8 @@ export default async function (ws, data, messageId, messageDate) {
                         data: message
                     }
                 })
-            )){
-                logger.socket.error(`Message #${ messageId }: target '${ target.id }' could not be notified.`)
+            )) {
+                throw new SocketMessageSendError(`target '${ target.id }' could not be notified.`);
             }
 
         });

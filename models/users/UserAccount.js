@@ -133,23 +133,6 @@ export default class UserAccount {
     }
 
     /**
-     * Converts the User instance into a JSON-friendly format by removing the underscores from the property names.
-     * This method is automatically called when JSON.stringify() is used on a User instance.
-     * @returns {Object} An object representation of the User instance without underscores in the property names.
-     */
-    toJSON(){
-        const { _id, user, username, password, settings, permissions } = this;
-        return {
-            _id,
-            user,
-            username,
-            password,
-            settings,
-            permissions
-        };
-    }
-
-    /**
      * @description Get a users account by its _id.
      * @param {String} _id - The _id of the users account.
      * @return {Promise<Object>} The users account.
@@ -169,7 +152,6 @@ export default class UserAccount {
 
         return await this.populateUserAccount(document);
     }
-
 
     /**
      * @description Create a users account.
@@ -240,7 +222,7 @@ export default class UserAccount {
                 userAccount.permissions
             );
             populatedUserAccount._id = userAccount._id.toString();
-            userAccount.user = userAccount.user ?  User.castToUser(userAccount.user) : null;
+            userAccount.user = userAccount.user ? User.castToUser(userAccount.user) : null;
 
             return populatedUserAccount;
 
@@ -248,6 +230,23 @@ export default class UserAccount {
             throw new DatabaseError(`Failed to populate user account with _id '${ userAccount._id }:'\n${ error }`);
         }
 
+    }
+
+    /**
+     * Converts the User instance into a JSON-friendly format by removing the underscores from the property names.
+     * This method is automatically called when JSON.stringify() is used on a User instance.
+     * @returns {Object} An object representation of the User instance without underscores in the property names.
+     */
+    toJSON() {
+        const { _id, user, username, password, settings, permissions } = this;
+        return {
+            _id,
+            user,
+            username,
+            password,
+            settings,
+            permissions
+        };
     }
 
     hasPermission(permission) {

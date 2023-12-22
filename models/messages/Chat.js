@@ -9,6 +9,7 @@ import ChatSchema from "../../mongoDb/schemas/general/ChatSchema.js";
 import Course from "../general/Course.js";
 import Club from "../clubs/Club.js";
 import User from "../users/User.js";
+
 /**
  * @description Class representing a Chat.
  * @param {String} _id - The _id of the chat.
@@ -31,18 +32,6 @@ export default class Chat extends BaseModel {
         { path: 'courses' },
         { path: 'clubs' }
     ];
-
-    static getMapPaths() {
-        return [
-            { path: 'targets', function: User.castToUser },
-            { path: 'courses', function: Course.castToCourse },
-            { path: 'clubs', function: Club.castToClub }
-        ];
-    }
-
-    static getCastPaths(){
-        return [];
-    }
 
     /**
      * Create a chat.
@@ -81,101 +70,6 @@ export default class Chat extends BaseModel {
         this._avatar = avatar;
         this._messages = messages;
 
-    }
-
-    /**
-     * @description Get all the targets from targets, courses and clubs.
-     * @return {Array<User>} The targets of the chats.
-     */
-    getAllTargets(){
-        return [
-            ...this.targets,
-            ...this.courses.flatMap(course => course.members),
-            ...this.clubs.flatMap(club => club.members)
-        ];
-    }
-
-    /**
-     * Casts a plain object to an instance of the Chat class.
-     * @param {Object} chat - The plain object to cast.
-     * @returns {Chat} The cast instance of the Chat class.
-     */
-    static castToChat(chat) {
-        const { _id, type, targets, courses, clubs, name, avatar, messages } = chat;
-        const castChat = new Chat(
-            type,
-            targets,
-            courses,
-            clubs,
-            name,
-            avatar,
-            messages
-        );
-        castChat._id = _id.toString();
-        return castChat;
-    }
-
-    /**
-     * Converts the Chat instance into a JSON-friendly format by removing the underscores from the property names.
-     * This method is automatically called when JSON.stringify() is used on a Chat instance.
-     * @returns {Object} An object representation of the Chat instance without underscores in the property names.
-     */
-    toJSON(){
-        const { _id, type, targets, courses, clubs, name, avatar, messages } = this;
-        return {
-            _id,
-            type,
-            targets,
-            courses,
-            clubs,
-            name,
-            avatar,
-            messages
-        };
-    }
-
-    /**
-     * Populates the given Chat with related data from other collections.
-     * @param {Object} chat - The Chat to populate.
-     * @returns {Promise<Chat>} The populated Chat.
-     * @throws {DatabaseError} If the Chat could not be populated.
-     */
-    static async populateChat(chat) {
-        try {
-            chat = await chat
-                .populate([
-                    {
-                        path: 'targets',
-                        populate: User.getPopulationPaths()
-                    },
-                    {
-                        path: 'courses',
-                        populate: Course.getPopulationPaths()
-                    },
-                    {
-                        path: 'clubs',
-                        populate: Club.getPopulationPaths()
-                    }
-                ]);
-
-            chat._id = chat._id.toString();
-
-            let castChat = this.castToChat(chat);
-            castChat.handleProperties();
-            return castChat;
-        } catch (error) {
-            throw new DatabaseError(`Failed to populate chat with _id #${chat._id}' \n${ error.stack }`);
-        }
-    }
-
-    /**
-     * Calls the static populateChat method.
-     * @param {Object} object - The instance to populate.
-     * @returns {Promise<Chat>} The populated instance.
-     * @throws {DatabaseError} If the instance could not be populated.
-     */
-    static async populate(object) {
-        return await this.populateChat(object);
     }
 
     get type() {
@@ -240,6 +134,113 @@ export default class Chat extends BaseModel {
 
     set _id(value) {
         this.id = value;
+    }
+
+    static getMapPaths() {
+        return [
+            { path: 'targets', function: User.castToUser },
+            { path: 'courses', function: Course.castToCourse },
+            { path: 'clubs', function: Club.castToClub }
+        ];
+    }
+
+    static getCastPaths() {
+        return [];
+    }
+
+    /**
+     * Casts a plain object to an instance of the Chat class.
+     * @param {Object} chat - The plain object to cast.
+     * @returns {Chat} The cast instance of the Chat class.
+     */
+    static castToChat(chat) {
+        const { _id, type, targets, courses, clubs, name, avatar, messages } = chat;
+        const castChat = new Chat(
+            type,
+            targets,
+            courses,
+            clubs,
+            name,
+            avatar,
+            messages
+        );
+        castChat._id = _id.toString();
+        return castChat;
+    }
+
+    /**
+     * Populates the given Chat with related data from other collections.
+     * @param {Object} chat - The Chat to populate.
+     * @returns {Promise<Chat>} The populated Chat.
+     * @throws {DatabaseError} If the Chat could not be populated.
+     */
+    static async populateChat(chat) {
+        try {
+            chat = await chat
+                .populate([
+                    {
+                        path: 'targets',
+                        populate: User.getPopulationPaths()
+                    },
+                    {
+                        path: 'courses',
+                        populate: Course.getPopulationPaths()
+                    },
+                    {
+                        path: 'clubs',
+                        populate: Club.getPopulationPaths()
+                    }
+                ]);
+
+            chat._id = chat._id.toString();
+
+            let castChat = this.castToChat(chat);
+            castChat.handleProperties();
+            return castChat;
+        } catch (error) {
+            throw new DatabaseError(`Failed to populate chat with _id #${ chat._id }' \n${ error.stack }`);
+        }
+    }
+
+    /**
+     * Calls the static populateChat method.
+     * @param {Object} object - The instance to populate.
+     * @returns {Promise<Chat>} The populated instance.
+     * @throws {DatabaseError} If the instance could not be populated.
+     */
+    static async populate(object) {
+        return await this.populateChat(object);
+    }
+
+    /**
+     * @description Get all the targets from targets, courses and clubs.
+     * @return {Array<User>} The targets of the chats.
+     */
+    getAllTargets() {
+        return [
+            ...this.targets,
+            ...this.courses.flatMap(course => course.members),
+            ...this.clubs.flatMap(club => club.members)
+        ];
+    }
+
+    /**
+     * Converts the Chat instance into a JSON-friendly format by removing the underscores from the property names.
+     * This method is automatically called when JSON.stringify() is used on a Chat instance.
+     * @returns {Object} An object representation of the Chat instance without underscores in the property names.
+     */
+    toJSON() {
+        const { _id, type, targets, courses, clubs, name, avatar, messages } = this;
+        return {
+            _id,
+            type,
+            targets,
+            courses,
+            clubs,
+            name,
+            avatar,
+            messages
+        };
     }
 
 }

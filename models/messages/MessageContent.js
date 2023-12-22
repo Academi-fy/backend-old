@@ -27,19 +27,6 @@ export default class MessageContent {
         this._value = value;
     }
 
-    /**
-     * Converts the MessageContent instance into a JSON-friendly format.
-     * This method is automatically called when JSON.stringify() is used on a MessageContent instance.
-     * @returns {Object} An object representation of the MessageContent instance.
-     */
-    toJSON(){
-        const { type, value } = this;
-        return {
-            type,
-            value
-        };
-    }
-
     get value() {
         return this._value;
     }
@@ -54,6 +41,19 @@ export default class MessageContent {
 
     set type(value) {
         this._type = value;
+    }
+
+    /**
+     * Converts the MessageContent instance into a JSON-friendly format.
+     * This method is automatically called when JSON.stringify() is used on a MessageContent instance.
+     * @returns {Object} An object representation of the MessageContent instance.
+     */
+    toJSON() {
+        const { type, value } = this;
+        return {
+            type,
+            value
+        };
     }
 
 }

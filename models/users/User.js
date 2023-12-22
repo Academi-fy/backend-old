@@ -12,6 +12,7 @@ import Course from "../general/Course.js";
 import Class from "../general/Class.js";
 import Chat from "../messages/Chat.js";
 import Club from "../clubs/Club.js";
+
 /**
  * @description Class representing a User.
  * @param {String} _id - The _id of the user.
@@ -39,20 +40,6 @@ export default class User extends BaseModel {
         { path: 'chats' }
     ];
 
-    static getMapPaths() {
-        return [
-            { path: 'classes', function: Class.castToClass },
-            { path: 'extraCourses', function: Course.castToCourse },
-            { path: 'blackboards', function: Blackboard.castToBlackboard },
-            { path: 'clubs', function: Club.castToClub },
-            { path: 'chats', function: Chat.castToChat }
-        ];
-    }
-
-    static getCastPaths() {
-        return [];
-    }
-
     /**
      * User constructor
      * @param {String} firstName - The first name of the user.
@@ -75,7 +62,7 @@ export default class User extends BaseModel {
         blackboards,
         clubs,
         chats
-    ){
+    ) {
         super({
             firstName,
             lastName,
@@ -98,107 +85,10 @@ export default class User extends BaseModel {
         this._clubs = clubs;
         this._chats = chats;
 
-        if(!Object.keys(UserAccountTypes).includes(type)){
+        if (!Object.keys(UserAccountTypes).includes(type)) {
             throw new Error(`User type does not exist: ${ type }`);
         }
 
-    }
-
-    /**
-     * Casts a plain object to an instance of the User class.
-     * @param {Object} user - The plain object to cast.
-     * @returns {User} The cast instance of the User class.
-     */
-    static castToUser(user) {
-        if(!user) return null;
-        const { _id, firstName, lastName, avatar, type, classes, extraCourses, blackboards, clubs, chats } = user;
-        const castUser = new User(
-            firstName,
-            lastName,
-            avatar,
-            type,
-            classes,
-            extraCourses,
-            blackboards,
-            clubs,
-            chats
-        );
-        castUser._id = _id.toString();
-        return castUser;
-    }
-
-    /**
-     * Converts the User instance into a JSON-friendly format by removing the underscores from the property names.
-     * This method is automatically called when JSON.stringify() is used on a User instance.
-     * @returns {Object} An object representation of the User instance without underscores in the property names.
-     */
-    toJSON(){
-        const { _id, firstName, lastName, avatar, type, classes, extraCourses, blackboards, clubs, chats } = this;
-        return {
-            _id,
-            firstName,
-            lastName,
-            avatar,
-            type,
-            classes,
-            extraCourses,
-            blackboards,
-            clubs,
-            chats
-        };
-    }
-
-    /**
-     * Populates the given User with related data from other collections.
-     * @param {Object} user - The User to populate.
-     * @returns {Promise<User>} The populated User.
-     * @throws {DatabaseError} If the User could not be populated.
-     */
-    static async populateUser(user) {
-
-        try {
-            user = await user
-                .populate([
-                    {
-                        path: 'classes',
-                        populate: Class.getPopulationPaths()
-                    },
-                    {
-                        path: 'extraCourses',
-                        populate: Course.getPopulationPaths()
-                    },
-                    {
-                        path: 'blackboards',
-                        populate: Blackboard.getPopulationPaths()
-                    },
-                    {
-                        path: 'clubs',
-                        populate: Club.getPopulationPaths()
-                    },
-                    {
-                        path: 'chats',
-                        populate: Chat.getPopulationPaths()
-                    }
-                ]);
-
-            user._id = user._id.toString();
-
-            let castUser = this.castToUser(user);
-            castUser.handleProperties();
-            return castUser;
-        } catch (error) {
-            throw new DatabaseError(`Failed to populate user with _id #${user._id}' \n${ error.stack }`);
-        }
-    }
-
-    /**
-     * Calls the static populateUser method.
-     * @param {Object} object - The instance to populate.
-     * @returns {Promise<User>} The populated instance.
-     * @throws {DatabaseError} If the instance could not be populated.
-     */
-    static async populate(object) {
-        return await this.populateUser(object);
     }
 
     get firstName() {
@@ -230,7 +120,7 @@ export default class User extends BaseModel {
     }
 
     set type(value) {
-        if(!Object.keys(UserAccountTypes).includes(value)){
+        if (!Object.keys(UserAccountTypes).includes(value)) {
             throw new Error(`User type does not exist: ${ value }`);
         }
         this._type = value;
@@ -282,6 +172,117 @@ export default class User extends BaseModel {
 
     set chats(value) {
         this._chats = value;
+    }
+
+    static getMapPaths() {
+        return [
+            { path: 'classes', function: Class.castToClass },
+            { path: 'extraCourses', function: Course.castToCourse },
+            { path: 'blackboards', function: Blackboard.castToBlackboard },
+            { path: 'clubs', function: Club.castToClub },
+            { path: 'chats', function: Chat.castToChat }
+        ];
+    }
+
+    static getCastPaths() {
+        return [];
+    }
+
+    /**
+     * Casts a plain object to an instance of the User class.
+     * @param {Object} user - The plain object to cast.
+     * @returns {User} The cast instance of the User class.
+     */
+    static castToUser(user) {
+        if (!user) return null;
+        const { _id, firstName, lastName, avatar, type, classes, extraCourses, blackboards, clubs, chats } = user;
+        const castUser = new User(
+            firstName,
+            lastName,
+            avatar,
+            type,
+            classes,
+            extraCourses,
+            blackboards,
+            clubs,
+            chats
+        );
+        castUser._id = _id.toString();
+        return castUser;
+    }
+
+    /**
+     * Populates the given User with related data from other collections.
+     * @param {Object} user - The User to populate.
+     * @returns {Promise<User>} The populated User.
+     * @throws {DatabaseError} If the User could not be populated.
+     */
+    static async populateUser(user) {
+
+        try {
+            user = await user
+                .populate([
+                    {
+                        path: 'classes',
+                        populate: Class.getPopulationPaths()
+                    },
+                    {
+                        path: 'extraCourses',
+                        populate: Course.getPopulationPaths()
+                    },
+                    {
+                        path: 'blackboards',
+                        populate: Blackboard.getPopulationPaths()
+                    },
+                    {
+                        path: 'clubs',
+                        populate: Club.getPopulationPaths()
+                    },
+                    {
+                        path: 'chats',
+                        populate: Chat.getPopulationPaths()
+                    }
+                ]);
+
+            user._id = user._id.toString();
+
+            let castUser = this.castToUser(user);
+            castUser.handleProperties();
+            return castUser;
+        } catch (error) {
+            throw new DatabaseError(`Failed to populate user with _id #${ user._id }' \n${ error.stack }`);
+        }
+    }
+
+    /**
+     * Calls the static populateUser method.
+     * @param {Object} object - The instance to populate.
+     * @returns {Promise<User>} The populated instance.
+     * @throws {DatabaseError} If the instance could not be populated.
+     */
+    static async populate(object) {
+        return await this.populateUser(object);
+    }
+
+    /**
+     * Converts the User instance into a JSON-friendly format by removing the underscores from the property names.
+     * This method is automatically called when JSON.stringify() is used on a User instance.
+     * @returns {Object} An object representation of the User instance without underscores in the property names.
+     */
+    toJSON() {
+        const { _id, firstName, lastName, avatar, type, classes, extraCourses, blackboards, clubs, chats } = this;
+        return {
+            _id,
+            firstName,
+            lastName,
+            avatar,
+            type,
+            classes,
+            extraCourses,
+            blackboards,
+            clubs,
+            chats
+        };
     }
 
 }

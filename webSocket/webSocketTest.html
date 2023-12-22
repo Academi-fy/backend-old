@@ -16,64 +16,64 @@
     import TextContent from "../models/messages/contentTypes/TextContent.js";
 
     (async () => {
-    let users = await httpCall("api/users/");
-    let chats = await httpCall("api/chats/");
+        let users = await httpCall("api/users/");
+        let chats = await httpCall("api/chats/");
 
-    const ws = new WebSocket(`ws://localhost:8080/?userId=${users[0]._id}`);
+        const ws = new WebSocket(`ws://localhost:8080/?userId=${ users[0]._id }`);
 
-    ws.addEventListener("open", () => {
-        console.log("Verbindung hergestellt");
-    });
-
-    ws.addEventListener("message", ({ data }) => {
-        console.log(data);
-    });
-
-    async function sendMessage() {
-
-        let send = JSON.stringify({
-            event: "MESSAGE_SEND",
-            payload: {
-                sender: users[1]._id,
-                data: {
-                    chat: chats[0]._id,
-                    author: users[1]._id,
-                    content: [
-                        new TextContent(generateRandomString(10))
-                    ],
-                    reactions: [],
-                    answer: null,
-                    editHistory: [],
-                    date: Date.now()
-                }
-            }
-
+        ws.addEventListener("open", () => {
+            console.log("Verbindung hergestellt");
         });
 
-        ws.send(
-            send
-        );
-    }
+        ws.addEventListener("message", ({ data }) => {
+            console.log(data);
+        });
 
-    function httpCall(path){
-        return fetch(`http://localhost:3000/${path}`)
-            .then(response => response.json())
-            .then(data => {
-                return data;
+        async function sendMessage() {
+
+            let send = JSON.stringify({
+                event: "MESSAGE_SEND",
+                payload: {
+                    sender: users[1]._id,
+                    data: {
+                        chat: chats[0]._id,
+                        author: users[1]._id,
+                        content: [
+                            new TextContent(generateRandomString(10))
+                        ],
+                        reactions: [],
+                        answer: null,
+                        editHistory: [],
+                        date: Date.now()
+                    }
+                }
+
             });
-    }
 
-    function generateRandomString(length) {
-        let result = '';
-        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        for (let i = 0; i < length; i++) {
-            result += characters.charAt(Math.floor(Math.random() * characters.length));
+            ws.send(
+                send
+            );
         }
-        return result;
-    }
 
-    document.getElementById('sendMessageButton').addEventListener('click', sendMessage);
-})();
+        function httpCall(path) {
+            return fetch(`http://localhost:3000/${ path }`)
+                .then(response => response.json())
+                .then(data => {
+                    return data;
+                });
+        }
+
+        function generateRandomString(length) {
+            let result = '';
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            for (let i = 0; i < length; i++) {
+                result += characters.charAt(Math.floor(Math.random() * characters.length));
+            }
+            return result;
+        }
+
+        document.getElementById('sendMessageButton').addEventListener('click', sendMessage);
+    })();
 
 </script>
 

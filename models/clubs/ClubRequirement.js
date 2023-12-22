@@ -23,16 +23,20 @@ export default class ClubRequirement {
         this._description = description;
     }
 
-    /**
-     * Convert the ClubRequirement instance into a JSON-friendly format.
-     * @returns {Object} An object that contains all the properties of the ClubRequirement instance.
-     */
-    toJSON() {
-        const { emoji, description } = this;
-        return {
-            emoji,
-            description
-        };
+    get emoji() {
+        return this._emoji;
+    }
+
+    set emoji(value) {
+        this._emoji = value;
+    }
+
+    get description() {
+        return this._description;
+    }
+
+    set description(value) {
+        this._description = value;
     }
 
     /**
@@ -50,20 +54,16 @@ export default class ClubRequirement {
         return new ClubRequirement(emoji, description);
     }
 
-    get emoji() {
-        return this._emoji;
-    }
-
-    set emoji(value) {
-        this._emoji = value;
-    }
-
-    get description() {
-        return this._description;
-    }
-
-    set description(value) {
-        this._description = value;
+    /**
+     * Convert the ClubRequirement instance into a JSON-friendly format.
+     * @returns {Object} An object that contains all the properties of the ClubRequirement instance.
+     */
+    toJSON() {
+        const { emoji, description } = this;
+        return {
+            emoji,
+            description
+        };
     }
 
 }

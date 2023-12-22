@@ -38,6 +38,16 @@ export default class MessageReaction {
     }
 
     /**
+     * Cast an object to a message reaction.
+     * @param {MessageReaction} reaction - The reaction object to cast. Contains emoji and count.
+     */
+    static castToReaction(reaction) {
+        const returnVal = new MessageReaction(reaction.emoji);
+        returnVal._count = reaction.count;
+        return returnVal;
+    }
+
+    /**
      * Increments the count of the reaction by 1.
      */
     increment() {
@@ -49,16 +59,6 @@ export default class MessageReaction {
      */
     decrement() {
         this.count--;
-    }
-
-    /**
-     * Cast an object to a message reaction.
-     * @param {MessageReaction} reaction - The reaction object to cast. Contains emoji and count.
-     */
-    static castToReaction(reaction){
-        const returnVal =  new MessageReaction(reaction.emoji);
-        returnVal._count = reaction.count;
-        return returnVal;
     }
 
 }

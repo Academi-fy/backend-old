@@ -6,8 +6,8 @@ import RetrievalError from "../httpServer/errors/RetrievalError.js";
  * @param {Function} castFunction - The function to use for casting the object.
  * @returns {Object|null} The cast object, or null if the input object was nullish.
  */
-function castOrNull (object, castFunction) {
-    if(typeof object !== 'object') {
+function castOrNull(object, castFunction) {
+    if (typeof object !== 'object') {
         throw new RetrievalError('Not object: ' + object);
     }
     return object ? castFunction(object) : null;
@@ -20,8 +20,8 @@ function castOrNull (object, castFunction) {
  * @returns {Array|null} A new array with each element being the result of the map function, or null if the input array was nullish.
  */
 function mapOrNull(array, mapFunction) {
-    if(!Array.isArray(array)) {
-       throw new RetrievalError('Not array: ' + array);
+    if (!Array.isArray(array)) {
+        throw new RetrievalError('Not array: ' + array);
     }
     return array ? array.map(object => object ? mapFunction(object) : null) : null;
 }

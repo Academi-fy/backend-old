@@ -46,6 +46,30 @@ export default class SetupAccount extends BaseModel {
         this._school = school;
     }
 
+    get schoolName() {
+        return this._schoolName;
+    }
+
+    set schoolName(value) {
+        this._schoolName = value;
+    }
+
+    get school() {
+        return this._school;
+    }
+
+    set school(value) {
+        this._school = value;
+    }
+
+    get _id() {
+        return this.id;
+    }
+
+    set _id(value) {
+        this.id = value;
+    }
+
     /**
      * Casts a plain object to an instance of the setup account class.
      * @param {Object} setupAccount - The plain object to cast.
@@ -59,20 +83,6 @@ export default class SetupAccount extends BaseModel {
         );
         castSetupAccount._id = _id.toString();
         return castSetupAccount;
-    }
-
-    /**
-     * Converts the SetupAccount instance into a JSON-friendly format by removing the underscores from the property names.
-     * This method is automatically called when JSON.stringify() is used on a SetupAccount instance.
-     * @returns {Object} An object representation of the SetupAccount instance without underscores in the property names.
-     */
-    toJSON(){
-        const { _id, schoolName, school } = this;
-        return {
-            _id,
-            schoolName,
-            school
-        };
     }
 
     /**
@@ -96,7 +106,7 @@ export default class SetupAccount extends BaseModel {
             castSetupAccount.handleProperties();
             return castSetupAccount;
         } catch (error) {
-            throw new DatabaseError(`Failed to populate setup account with _id #${setupAccount._id}' \n${ error.stack }`);
+            throw new DatabaseError(`Failed to populate setup account with _id #${ setupAccount._id }' \n${ error.stack }`);
         }
     }
 
@@ -110,28 +120,18 @@ export default class SetupAccount extends BaseModel {
         return await this.populateSetupAccount(object);
     }
 
-    get schoolName() {
-        return this._schoolName;
-    }
-
-    set schoolName(value) {
-        this._schoolName = value;
-    }
-
-    get school() {
-        return this._school;
-    }
-
-    set school(value) {
-        this._school = value;
-    }
-
-    get _id() {
-        return this.id;
-    }
-
-    set _id(value) {
-        this.id = value;
+    /**
+     * Converts the SetupAccount instance into a JSON-friendly format by removing the underscores from the property names.
+     * This method is automatically called when JSON.stringify() is used on a SetupAccount instance.
+     * @returns {Object} An object representation of the SetupAccount instance without underscores in the property names.
+     */
+    toJSON() {
+        const { _id, schoolName, school } = this;
+        return {
+            _id,
+            schoolName,
+            school
+        };
     }
 
 }

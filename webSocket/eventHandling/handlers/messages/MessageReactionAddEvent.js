@@ -7,6 +7,7 @@ import Message from "../../../../models/messages/Message.js";
 import logger from "../../../../tools/logging/logger.js";
 import EventHandlerError from "../../../errors/EventHandlerError.js";
 import sendToTargetSocket from "../../../sendToTargetSocket.js";
+import SocketMessageSendError from "../../../errors/SocketMessageSendError.js";
 
 /**
  * @description Function handling the MessageReactionAddEvent.
@@ -34,8 +35,8 @@ export default async function (ws, data, messageId, messageDate) {
         chat.update(chat);
 
         chat.getAllTargets().forEach(target => {
-            
-            if(!sendToTargetSocket(
+
+            if (!sendToTargetSocket(
                 server,
                 target,
                 JSON.stringify({
@@ -48,15 +49,14 @@ export default async function (ws, data, messageId, messageDate) {
                         }
                     }
                 })
-            )){
-                logger.socket.error(`Message #${ messageId }: target '${ target.id }' could not be notified.`)
+            )) {
+                throw new SocketMessageSendError(`target '${ target.id }' could not be notified.`);
             }
 
         });
 
         logger.socket.debug(`Message #${ messageId } processed in ${ Date.now() - messageDate } ms`)
-    }
-    catch(error){
+    } catch (error) {
         throw new EventHandlerError(error.stack);
     }
 

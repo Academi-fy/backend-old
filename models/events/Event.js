@@ -44,15 +44,6 @@ export default class Event extends BaseModel {
         { path: 'subscribers' }
     ];
 
-    static getMapPaths() {
-        return [
-            { path: 'clubs', function: Club.castToUser },
-            { path: 'tickets', function: EventTicket.castToEventTicket },
-            { path: 'subscribers', function: User.castToUser },
-            { path: 'information', function: EventInformation.castToEventInformation }
-        ];
-    }
-
     /**
      * @description Create an event.
      * @param {String} title - The title of the event.
@@ -84,7 +75,7 @@ export default class Event extends BaseModel {
         state,
         editHistory,
         subscribers
-    ){
+    ) {
         super({
             title,
             description,
@@ -112,98 +103,6 @@ export default class Event extends BaseModel {
         this._state = state;
         this._editHistory = editHistory;
         this._subscribers = subscribers;
-    }
-
-    /**
-     * Casts a plain object to an instance of the Event class.
-     * @param {Object} event - The plain object to cast.
-     * @returns {Event} The cast instance of the Event class.
-     */
-    static castToEvent(event) {
-        const { _id, title, description, location, host, clubs, startDate, endDate, information, tickets, state, editHistory, subscribers } = event;
-        const castEvent = new Event(
-            title,
-            description,
-            location,
-            host,
-            clubs,
-            startDate,
-            endDate,
-            information,
-            tickets,
-            state,
-            editHistory,
-            subscribers
-        );
-        event._id = _id.toString();
-        return castEvent;
-    }
-
-    /**
-     * Converts the Event instance into a JSON-friendly format by removing the underscores from the property names.
-     * This method is automatically called when JSON.stringify() is used on an Event instance.
-     * @returns {Object} An object representation of the Event instance without underscores in the property names.
-     */
-    toJSON(){
-        const { _id, title, description, location, host, clubs, startDate, endDate, information, tickets, state, editHistory, subscribers } = this;
-        return {
-            _id,
-            title,
-            description,
-            location,
-            host,
-            clubs,
-            startDate,
-            endDate,
-            information,
-            tickets,
-            state,
-            editHistory,
-            subscribers
-        };
-    }
-
-    /**
-     * Populates the given Event with related data from other collections.
-     * @param {Object} event - The Event to populate.
-     * @returns {Promise<Event>} The populated Event.
-     * @throws {DatabaseError} If the Event could not be populated.
-     */
-    static async populateEvent(event) {
-        try {
-            event = await event
-                .populate([
-                    {
-                        path: 'clubs',
-                        populate: Club.getPopulationPaths()
-                    },
-                    {
-                        path: 'tickets',
-                        populate: EventTicket.getPopulationPaths()
-                    },
-                    {
-                        path: 'subscribers',
-                        populate: User.getPopulationPaths()
-                    },
-                ]);
-            event._id = event._id.toString();
-
-            let castEvent = this.castToEvent(event);
-            castEvent.handleProperties();
-            return castEvent;
-        } catch (error) {
-            throw new DatabaseError(`Failed to populate event with _id #${event._id}' \n${ error.stack }`);
-        }
-    }
-
-    /**
-     * Calls the static populateEvent method.
-     * @param {Object} object - The instance to populate.
-     * @returns {Promise<Event>} The populated instance.
-     * @throws {DatabaseError} If the instance could not be populated.
-     */
-    static async populate(object) {
-        return await this.populateEvent(object);
     }
 
     get title() {
@@ -308,6 +207,135 @@ export default class Event extends BaseModel {
 
     set _id(value) {
         this.id = value;
+    }
+
+    static getMapPaths() {
+        return [
+            { path: 'clubs', function: Club.castToUser },
+            { path: 'tickets', function: EventTicket.castToEventTicket },
+            { path: 'subscribers', function: User.castToUser },
+            { path: 'information', function: EventInformation.castToEventInformation }
+        ];
+    }
+
+    /**
+     * Casts a plain object to an instance of the Event class.
+     * @param {Object} event - The plain object to cast.
+     * @returns {Event} The cast instance of the Event class.
+     */
+    static castToEvent(event) {
+        const {
+            _id,
+            title,
+            description,
+            location,
+            host,
+            clubs,
+            startDate,
+            endDate,
+            information,
+            tickets,
+            state,
+            editHistory,
+            subscribers
+        } = event;
+        const castEvent = new Event(
+            title,
+            description,
+            location,
+            host,
+            clubs,
+            startDate,
+            endDate,
+            information,
+            tickets,
+            state,
+            editHistory,
+            subscribers
+        );
+        event._id = _id.toString();
+        return castEvent;
+    }
+
+    /**
+     * Populates the given Event with related data from other collections.
+     * @param {Object} event - The Event to populate.
+     * @returns {Promise<Event>} The populated Event.
+     * @throws {DatabaseError} If the Event could not be populated.
+     */
+    static async populateEvent(event) {
+        try {
+            event = await event
+                .populate([
+                    {
+                        path: 'clubs',
+                        populate: Club.getPopulationPaths()
+                    },
+                    {
+                        path: 'tickets',
+                        populate: EventTicket.getPopulationPaths()
+                    },
+                    {
+                        path: 'subscribers',
+                        populate: User.getPopulationPaths()
+                    },
+                ]);
+            event._id = event._id.toString();
+
+            let castEvent = this.castToEvent(event);
+            castEvent.handleProperties();
+            return castEvent;
+        } catch (error) {
+            throw new DatabaseError(`Failed to populate event with _id #${ event._id }' \n${ error.stack }`);
+        }
+    }
+
+    /**
+     * Calls the static populateEvent method.
+     * @param {Object} object - The instance to populate.
+     * @returns {Promise<Event>} The populated instance.
+     * @throws {DatabaseError} If the instance could not be populated.
+     */
+    static async populate(object) {
+        return await this.populateEvent(object);
+    }
+
+    /**
+     * Converts the Event instance into a JSON-friendly format by removing the underscores from the property names.
+     * This method is automatically called when JSON.stringify() is used on an Event instance.
+     * @returns {Object} An object representation of the Event instance without underscores in the property names.
+     */
+    toJSON() {
+        const {
+            _id,
+            title,
+            description,
+            location,
+            host,
+            clubs,
+            startDate,
+            endDate,
+            information,
+            tickets,
+            state,
+            editHistory,
+            subscribers
+        } = this;
+        return {
+            _id,
+            title,
+            description,
+            location,
+            host,
+            clubs,
+            startDate,
+            endDate,
+            information,
+            tickets,
+            state,
+            editHistory,
+            subscribers
+        };
     }
 
 }

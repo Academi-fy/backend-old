@@ -7,6 +7,24 @@ import * as db from '../mongoDb/db.js';
 import config from "../config.js";
 import logger from "../tools/logging/logger.js";
 import express from 'express';
+import requestDebugger from "./middleware/requestDebugger.js";
+import cors from 'cors';
+import memoryLogger from "../tools/logging/memoryLogger.js";
+import blackboardRoutes from "./routing/routes/blackboardRoutes.js";
+import classRoutes from "./routing/routes/classRoutes.js";
+import chatRoutes from "./routing/routes/chatRoutes.js";
+import clubRoutes from "./routing/routes/clubRoutes.js";
+import courseRoutes from './routing/routes/courseRoutes.js'
+import eventRoutes from "./routing/routes/eventRoutes.js";
+import eventTicketRoutes from "./routing/routes/eventTicketRoutes.js";
+import gradeRoutes from "./routing/routes/gradeRoutes.js";
+import messageRoutes from "./routing/routes/messageRoutes.js";
+import schoolRoutes from "./routing/routes/schoolRoutes.js";
+import setupAccountRoutes from "./routing/routes/setupAccountRoutes.js";
+import subjectRoutes from "./routing/routes/subjectRoutes.js";
+import userAccountRoutes from "./routing/routes/userAccountRoutes.js";
+import userRoutes from "./routing/routes/userRoutes.js";
+
 /**
  * @description MongoDB connection:
  * */
@@ -25,9 +43,6 @@ app.listen(port, () => {
     logger.server.info(`HTTP Server is running at http://${ host }:${ port }`);
 });
 
-import requestDebugger from "./middleware/requestDebugger.js";
-import cors from 'cors';
-import memoryLogger from "../tools/logging/memoryLogger.js";
 try {
     app.use(requestDebugger);
     app.use(express.static('public'));
@@ -37,20 +52,6 @@ try {
     logger.server.fatal(error.stack);
 }
 
-import blackboardRoutes from "./routing/routes/blackboardRoutes.js";
-import classRoutes from "./routing/routes/classRoutes.js";
-import chatRoutes from "./routing/routes/chatRoutes.js";
-import clubRoutes from "./routing/routes/clubRoutes.js";
-import courseRoutes from './routing/routes/courseRoutes.js'
-import eventRoutes from "./routing/routes/eventRoutes.js";
-import eventTicketRoutes from "./routing/routes/eventTicketRoutes.js";
-import gradeRoutes from "./routing/routes/gradeRoutes.js";
-import messageRoutes from "./routing/routes/messageRoutes.js";
-import schoolRoutes from "./routing/routes/schoolRoutes.js";
-import setupAccountRoutes from "./routing/routes/setupAccountRoutes.js";
-import subjectRoutes from "./routing/routes/subjectRoutes.js";
-import userAccountRoutes from "./routing/routes/userAccountRoutes.js";
-import userRoutes from "./routing/routes/userRoutes.js";
 try {
     app.use('/api/blackboards', blackboardRoutes);
     app.use('/api/chats', chatRoutes);

@@ -15,7 +15,7 @@ export async function createDocument(model, document) {
     model = getModel(model);
     await model.model.create(document);
     const created = await model.model.findOne(document);
-    logger.database.warning(`${ model.name } created: ${created._id}`);
+    logger.database.warning(`${ model.name } created: ${ created._id }`);
     return created;
 }
 

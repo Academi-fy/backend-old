@@ -33,38 +33,6 @@ export default class Poll {
         this._maxVotesPerUser = maxVotesPerUser;
     }
 
-    /**
-     * Converts the Poll instance into a JSON-friendly format.
-     * This method is automatically called when JSON.stringify() is used on a Poll instance.
-     * @returns {Object} An object representation of the Poll instance.
-     */
-    toJSON(){
-        const { question, anonymous, answers, maxVotesPerUser } = this;
-        return {
-            question,
-            anonymous,
-            answers,
-            maxVotesPerUser
-        };
-    }
-
-    /**
-     * Casts an object into a Poll instance.
-     * @param {Object} poll - The object to be cast into a Poll instance.
-     * @returns {Poll} A new Poll instance.
-     * @throws {TypeError} If the object cannot be cast into a Poll instance.
-     */
-    static castToPoll(poll) {
-        if (typeof poll !== 'object' || poll === null) {
-            throw new TypeError('Invalid object. Cannot cast to Poll.');
-        }
-
-        const { question, anonymous, answers, maxVotesPerUser } = poll;
-        let newPoll = new Poll(question, anonymous, answers, maxVotesPerUser);
-        newPoll.answers = newPoll.answers.map(answer => PollAnswer.castToPollAnswer(answer));
-        return newPoll;
-    }
-
     get question() {
         return this._question;
     }
@@ -95,6 +63,38 @@ export default class Poll {
 
     set maxVotesPerUser(value) {
         this._maxVotesPerUser = value;
+    }
+
+    /**
+     * Casts an object into a Poll instance.
+     * @param {Object} poll - The object to be cast into a Poll instance.
+     * @returns {Poll} A new Poll instance.
+     * @throws {TypeError} If the object cannot be cast into a Poll instance.
+     */
+    static castToPoll(poll) {
+        if (typeof poll !== 'object' || poll === null) {
+            throw new TypeError('Invalid object. Cannot cast to Poll.');
+        }
+
+        const { question, anonymous, answers, maxVotesPerUser } = poll;
+        let newPoll = new Poll(question, anonymous, answers, maxVotesPerUser);
+        newPoll.answers = newPoll.answers.map(answer => PollAnswer.castToPollAnswer(answer));
+        return newPoll;
+    }
+
+    /**
+     * Converts the Poll instance into a JSON-friendly format.
+     * This method is automatically called when JSON.stringify() is used on a Poll instance.
+     * @returns {Object} An object representation of the Poll instance.
+     */
+    toJSON() {
+        const { question, anonymous, answers, maxVotesPerUser } = this;
+        return {
+            question,
+            anonymous,
+            answers,
+            maxVotesPerUser
+        };
     }
 
 }

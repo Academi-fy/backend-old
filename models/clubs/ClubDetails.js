@@ -43,37 +43,6 @@ export default class ClubDetails {
         this._tags = tags;
     }
 
-    /**
-     * Convert the ClubDetails instance into a JSON-friendly format.
-     * @returns {Object} An object that contains all the properties of the ClubDetails instance.
-     */
-    toJSON() {
-        const { description, location, meetingTime, meetingDay, requirements, tags } = this;
-        return {
-            description,
-            location,
-            meetingTime,
-            meetingDay,
-            requirements,
-            tags
-        };
-    }
-
-    /**
-     * Cast an object into a ClubDetails instance.
-     * @param {Object} clubDetailsObject - The object to be cast into a ClubDetails instance.
-     * @returns {ClubDetails} A new ClubDetails instance.
-     * @throws {TypeError} If the provided object is not valid or does not contain all the necessary properties.
-     */
-    static castToClubDetails(clubDetailsObject) {
-        if (typeof clubDetailsObject !== 'object' || clubDetailsObject === null) {
-            throw new TypeError('Invalid object. Cannot cast to ClubDetails.');
-        }
-
-        const { coverImage, description, location, meetingTime, meetingDay, requirements, tags } = clubDetailsObject;
-        return new ClubDetails(coverImage, description, location, meetingTime, meetingDay, requirements, tags);
-    }
-
     get description() {
         return this._description;
     }
@@ -120,6 +89,37 @@ export default class ClubDetails {
 
     set tags(value) {
         this._tags = value;
+    }
+
+    /**
+     * Cast an object into a ClubDetails instance.
+     * @param {Object} clubDetailsObject - The object to be cast into a ClubDetails instance.
+     * @returns {ClubDetails} A new ClubDetails instance.
+     * @throws {TypeError} If the provided object is not valid or does not contain all the necessary properties.
+     */
+    static castToClubDetails(clubDetailsObject) {
+        if (typeof clubDetailsObject !== 'object' || clubDetailsObject === null) {
+            throw new TypeError('Invalid object. Cannot cast to ClubDetails.');
+        }
+
+        const { coverImage, description, location, meetingTime, meetingDay, requirements, tags } = clubDetailsObject;
+        return new ClubDetails(coverImage, description, location, meetingTime, meetingDay, requirements, tags);
+    }
+
+    /**
+     * Convert the ClubDetails instance into a JSON-friendly format.
+     * @returns {Object} An object that contains all the properties of the ClubDetails instance.
+     */
+    toJSON() {
+        const { description, location, meetingTime, meetingDay, requirements, tags } = this;
+        return {
+            description,
+            location,
+            meetingTime,
+            meetingDay,
+            requirements,
+            tags
+        };
     }
 
 }

@@ -34,7 +34,7 @@ export default async function (ws, data, messageId, messageDate) {
 
         chat.getAllTargets().forEach(target => {
 
-            if(!sendToTargetSocket(server, target, 
+            if (!sendToTargetSocket(server, target,
                 JSON.stringify({
                     event: "MESSAGE_DELETE_RECEIVED",
                     payload: {
@@ -44,16 +44,15 @@ export default async function (ws, data, messageId, messageDate) {
                         }
                     }
                 })
-            )){
-                throw new SocketMessageSendError(`'target '${ target.id }' could not be notified.'`);
+            )) {
+                throw new SocketMessageSendError(`target '${ target.id }' could not be notified.`);
             }
 
         });
 
         logger.socket.debug(`Message #${ messageId } processed in ${ Date.now() - messageDate } ms`)
-    }
-    catch(error){
+    } catch (error) {
         throw new EventHandlerError(error.stack);
     }
-    
+
 }
