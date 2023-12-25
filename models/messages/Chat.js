@@ -9,6 +9,7 @@ import ChatSchema from "../../mongoDb/schemas/general/ChatSchema.js";
 import Course from "../general/Course.js";
 import Club from "../clubs/Club.js";
 import User from "../users/User.js";
+import Message from "./Message.js";
 
 /**
  * @description Class representing a Chat.
@@ -189,6 +190,11 @@ export default class Chat extends BaseModel {
                     {
                         path: 'clubs',
                         populate: Club.getPopulationPaths()
+                    }
+                    ,
+                    {
+                        path: 'messages',
+                        populate: Message.getPopulationPaths()
                     }
                 ]);
 
