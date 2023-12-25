@@ -11,7 +11,6 @@ import {
     updateDocument
 } from "../../mongoDb/mongoAccess.js";
 import UserAccountSchema from "../../mongoDb/schemas/user/UserAccountSchema.js";
-import { validateArray, validateNotEmpty } from "../propertyValidation.js";
 import DatabaseError from "../../httpServer/errors/DatabaseError.js";
 import UserAccountPermissions from "./UserAccountPermissions.js";
 import User from "./User.js";
@@ -64,7 +63,6 @@ export default class UserAccount {
     }
 
     set _user(value) {
-        validateNotEmpty('User account user', value);
         this.user = value;
     }
 
@@ -73,7 +71,6 @@ export default class UserAccount {
     }
 
     set _username(value) {
-        validateNotEmpty('User account username', value);
         this.username = value;
     }
 
@@ -82,7 +79,6 @@ export default class UserAccount {
     }
 
     set _password(value) {
-        validateNotEmpty('User account password', value);
         this.password = value;
     }
 
@@ -91,7 +87,6 @@ export default class UserAccount {
     }
 
     set _settings(value) {
-        validateArray('User account settings', value)
         this.settings = value;
     }
 
@@ -100,7 +95,6 @@ export default class UserAccount {
     }
 
     set _permissions(permissions) {
-        validateArray('User account permissions', permissions);
 
         for (let perm of permissions) {
 
@@ -139,7 +133,7 @@ export default class UserAccount {
      * */
     static async getUserAccountById(_id) {
         const document = await getDocument(UserAccountSchema, _id);
-        return await this.populateUserAccount(document);
+        return await UserAccount.populateUserAccount(document);
     }
 
     /**
@@ -148,9 +142,15 @@ export default class UserAccount {
      * @return {Promise<UserAccount>} The users account.
      */
     static async getAllUserAccountsByRule(rule) {
-        const document = await getDocumentsByRule(UserAccountSchema, rule);
+        const documents = await getDocumentsByRule(UserAccountSchema, rule);
 
-        return await this.populateUserAccount(document);
+        let userAccounts = [];
+        for(let doc of documents) {
+            userAccounts.push(
+                await UserAccount.populateUserAccount(doc)
+            );
+        }
+        return userAccounts;
     }
 
     /**

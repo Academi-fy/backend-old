@@ -39,7 +39,7 @@ export default class MessageReaction {
 
     /**
      * Cast an object to a message reaction.
-     * @param {MessageReaction} reaction - The reaction object to cast. Contains emoji and count.
+     * @param {Object} reaction - The reaction object to cast. Contains emoji and count.
      */
     static castToReaction(reaction) {
         const returnVal = new MessageReaction(reaction.emoji);
