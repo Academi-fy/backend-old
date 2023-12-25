@@ -31,7 +31,7 @@ function bodyToGrade(body) {
  * */
 router.get('/', async (req, res) => {
 
-    const grades = await Grade.getAll();
+    const grades = await Grade.getAll(null);
     res.json(grades);
 
 });

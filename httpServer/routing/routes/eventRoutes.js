@@ -34,7 +34,7 @@ function bodyToEvent(body) {
  * */
 router.get('/', async (req, res) => {
 
-    const events = await Event.getAll();
+    const events = await Event.getAll(null);
     res.json(events);
 
 });

@@ -31,7 +31,7 @@ function bodyToUser(body) {
  * */
 router.get('/', async (req, res) => {
 
-    const users = await User.getAll();
+    const users = await User.getAll(null);
     res.json(users);
 
 });

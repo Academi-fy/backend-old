@@ -31,7 +31,7 @@ function bodyToEventTicket(body) {
  * */
 router.get('/', async (req, res) => {
 
-    const eventTickets = await EventTicket.getAll();
+    const eventTickets = await EventTicket.getAll(null);
     res.json(eventTickets);
 
 });

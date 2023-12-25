@@ -8,6 +8,8 @@ import errors from "../../../errors.js";
 import logger from "../../../tools/logging/logger.js";
 import isMissingProperty from "../isMissingProperty.js";
 import Blackboard from "../../../models/general/Blackboard.js";
+import { getAllDocuments } from "../../../mongoDb/mongoAccess.js";
+import BlackboardSchema from "../../../mongoDb/schemas/general/BlackboardSchema.js";
 
 const router = express.Router();
 
@@ -30,7 +32,7 @@ function bodyToBlackboard(body) {
  * */
 router.get('/', async (req, res) => {
 
-    const blackboards = await Blackboard.getAll();
+    const blackboards = await Blackboard.getAll(null);
     res.json(blackboards);
 
 });

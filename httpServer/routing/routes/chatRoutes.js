@@ -31,7 +31,7 @@ function bodyToChat(body) {
  * */
 router.get('/', async (req, res) => {
 
-    const chats = await Chat.getAll();
+    const chats = await Chat.getAll(null);
     res.json(chats);
 
 });

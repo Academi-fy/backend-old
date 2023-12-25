@@ -30,7 +30,7 @@ function bodyToClub(body) {
  * */
 router.get('/', async (req, res) => {
 
-    const clubs = await Club.getAll();
+    const clubs = await Club.getAll(null);
     res.json(clubs);
 
 });

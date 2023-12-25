@@ -31,7 +31,7 @@ function bodyToSubject(body) {
  * */
 router.get('/', async (req, res) => {
 
-    const subjects = await Subject.getAll();
+    const subjects = await Subject.getAll(null);
     res.json(subjects);
 
 });

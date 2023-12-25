@@ -33,7 +33,7 @@ function bodyToSchool(body) {
  * */
 router.get('/', async (req, res) => {
 
-    const schools = await School.getAll();
+    const schools = await School.getAll(null);
     res.json(schools);
 
 });

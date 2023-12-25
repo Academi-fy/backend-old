@@ -31,7 +31,7 @@ function bodyToClass(body) {
  * */
 router.get('/', async (req, res) => {
 
-    const class_ = await Class.getAll();
+    const class_ = await Class.getAll(null);
     res.json(class_);
 
 });

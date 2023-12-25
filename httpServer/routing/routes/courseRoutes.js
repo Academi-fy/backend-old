@@ -31,7 +31,7 @@ function bodyToCourse(body) {
  * */
 router.get('/', async (req, res) => {
 
-    const courses = await Course.getAll();
+    const courses = await Course.getAll(null);
     res.json(courses);
 
 });

@@ -31,7 +31,7 @@ function bodyToMessage(body) {
  * */
 router.get('/', async (req, res) => {
 
-    const messages = await Message.getAll();
+    const messages = await Message.getAll(null);
     res.json(messages);
 
 });

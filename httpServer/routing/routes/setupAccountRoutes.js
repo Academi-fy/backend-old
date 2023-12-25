@@ -31,7 +31,7 @@ function bodyToSetupAccount(body) {
  * */
 router.get('/', async (req, res) => {
 
-    const setupAccounts = await SetupAccount.getAll();
+    const setupAccounts = await SetupAccount.getAll(null);
     res.json(setupAccounts);
 
 });
