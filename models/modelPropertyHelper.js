@@ -65,5 +65,13 @@ export function castProperties(object, casts) {
  * @param {Array<Object>} maps - The objects containing the properties to map.
  */
 export function mapProperties(object, maps) {
-    maps.forEach((map) => mapPropertyOrNull(object, map.path, map.function));
+    maps.forEach((map) => {
+        if(Array.isArray(map.path)) {
+            map.path.forEach((path) => {
+                mapPropertyOrNull(object, path, map.function);
+            });
+        } else {
+            mapPropertyOrNull(object, map.path, map.function);
+        }
+    });
 }

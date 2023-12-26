@@ -12,6 +12,7 @@ import Course from "../general/Course.js";
 import Class from "../general/Class.js";
 import Chat from "../messages/Chat.js";
 import Club from "../clubs/Club.js";
+import UserChat from "./UserChat.js";
 
 /**
  * @description Class representing a User.
@@ -24,7 +25,7 @@ import Club from "../clubs/Club.js";
  * @param {Array<Course>} extraCourses - The extra courses of the user.
  * @param {Array<Blackboard>} blackboards - The blackboards of the user.
  * @param {Array<Club>} clubs - The clubs of the user.
- * @param {Array<Chat>} chats - The ids of the chats of the user.
+ * @param {Array<UserChat>} chats - The ids of the chats of the user.
  */
 export default class User extends BaseModel {
 
@@ -50,7 +51,7 @@ export default class User extends BaseModel {
      * @param {Array<String>} extraCourses - The ids of the extra courses of the user.
      * @param {Array<String>} blackboards - The ids of the blackboards of the user.
      * @param {Array<String>} clubs - The ids of the clubs of the user.
-     * @param {Array<String>} chats - The ids of the chats of the user.
+     * @param {Array<UserChat>} chats - The ids of the chats of the user.
      */
     constructor(
         firstName,
@@ -180,7 +181,7 @@ export default class User extends BaseModel {
             { path: 'extraCourses', function: Course.castToCourse },
             { path: 'blackboards', function: Blackboard.castToBlackboard },
             { path: 'clubs', function: Club.castToClub },
-            { path: 'chats', function: Chat.castToChat }
+            { path: 'chats', function: UserChat.castToUserChat }
         ];
     }
 
@@ -240,7 +241,12 @@ export default class User extends BaseModel {
                     },
                     {
                         path: 'chats',
-                        populate: Chat.getPopulationPaths()
+                        populate: [
+                            {
+                                path: 'chat',
+                                populate: Chat.getPopulationPaths()
+                            }
+                        ]
                     }
                 ]);
 

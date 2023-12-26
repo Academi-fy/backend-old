@@ -44,6 +44,7 @@ User {
     extraCourses: [ { ... } ],
     blackboards: [ { ... } ],
     clubs: [ { ... } ],
+    chats: [ { ... } ],
 }
 ```
 
@@ -58,10 +59,11 @@ User {
 | `extraCourses` | Array<[Course](https://github.com/Academi-fy/backend/wiki/Course)>         | Die Kurse, die dem User zusätzlich zugeordnet sind.               |
 | `blackboards`  | Array<[Blackboard](https://github.com/Academi-fy/backend/wiki/Blackboard)> | Die Blackboards, die dem User zugeordnet sind.                    |
 | `clubs`        | Array<[Club](https://github.com/Academi-fy/backend/wiki/Club)>             | Die Clubs, die dem User zugeordnet sind.                          |
+| `chats`        | Array<[Chat](https://github.com/Academi-fy/backend/wiki/Chat)>             | Die Chats, die dem User zugeordnet sind.                          |
 
 #### Besonderheiten
 
-- `classes`, `extraCourses`, `blackboards` und `clubs` sind MongoDB Referenzen zu den jeweiligen Objekten
+- `classes`, `extraCourses`, `blackboards`, `clubs` und `chats` sind MongoDB Referenzen zu den jeweiligen Objekten
     - sie werden erst beim Abrufen auf dem HTTP-Server aufgelöst
 
 - `type` ist ein Enum, der in der Datenbank als String gespeichert wird
@@ -106,7 +108,6 @@ DELETE /api/users/:id
 ```
 
 ## User Schema in MongoDB
-
 ```javascript
 {
     firstName: {
@@ -146,8 +147,19 @@ DELETE /api/users/:id
     ],
     clubs: [
         {
-          type: ObjectId,
-          ref: 'Club'
+            type: ObjectId,
+            ref: 'Club'
+        }
+    ],
+    chats: [
+        {
+            pinned: Boolean,
+            hidden: Boolean,
+            read: Boolean,
+            chat: {
+                type: ObjectId,
+                ref: 'Chat'
+            }
         }
     ]
 

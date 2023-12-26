@@ -31,6 +31,12 @@ export default {
     "CHAT_COURSE_REMOVE": createHandler('ChatCourseRemoveEvent'),
     "CHAT_CLUB_ADD": createHandler('ChatClubAddEvent'),
     "CHAT_CLUB_REMOVE": createHandler('ChatClubRemoveEvent'),
+    "CHAT_USER_HIDE_EVENT": createHandler('ChatUserHideEvent'),
+    "CHAT_USER_PIN_EVENT": createHandler('ChatUserPinEvent'),
+    "CHAT_USER_READ_EVENT": createHandler('ChatUserReadEvent'),
+    "CHAT_USER_UNHIDE_EVENT": createHandler('ChatUserUnhideEvent'),
+    "CHAT_USER_UNPIN_EVENT": createHandler('ChatUserUnpinEvent'),
+    "CHAT_USER_UNREAD_EVENT": createHandler('ChatUserUnreadEvent'),
 
     // CLASSES
 

@@ -13,6 +13,12 @@ export { default as ChatCourseAddEvent } from "./handlers/chats/ChatCourseAddEve
 export { default as ChatCourseRemoveEvent } from "./handlers/chats/ChatCourseRemoveEvent.js";
 export { default as ChatClubAddEvent } from "./handlers/chats/ChatClubAddEvent.js";
 export { default as ChatClubRemoveEvent } from "./handlers/chats/ChatClubRemoveEvent.js";
+export { default as ChatUserHideEvent } from "./handlers/chats/ChatUserHideEvent.js"
+export { default as ChatUserPinEvent } from "./handlers/chats/ChatUserPinEvent.js"
+export { default as ChatUserReadEvent } from "./handlers/chats/ChatUserReadEvent.js"
+export { default as ChatUserUnhideEvent } from "./handlers/chats/ChatUserUnhideEvent.js"
+export { default as ChatUserUnpinEvent } from "./handlers/chats/ChatUserUnpinEvent.js"
+export { default as ChatUserUnreadEvent } from "./handlers/chats/ChatUserUnreadEvent.js"
 export { default as ClassUserAddEvent } from "./handlers/classes/ClassUserAddEvent.js";
 export { default as ClassUserRemoveEvent } from "./handlers/classes/ClassUserRemoveEvent.js";
 export { default as ClubUserAddEvent } from "./handlers/clubs/ClubUserAddEvent.js";

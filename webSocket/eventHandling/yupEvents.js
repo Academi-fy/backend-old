@@ -26,17 +26,6 @@ const standardFormat = (data) => {
     })
 }
 
-/**
- * @typedef {Object} WebSocketEvents
- * @property {Object} MESSAGE_SEND - The 'MESSAGE_SEND' event. It requires a 'sender' (string) and 'data' (YupMessageSchema).
- * @property {Object} MESSAGE_EDIT - The 'MESSAGE_EDIT' event. It requires a 'sender' (string) and 'data' (object with 'oldMessageId' and 'newMessage' properties).
- * @property {Object} MESSAGE_DELETE - The 'MESSAGE_DELETE' event. It requires a 'sender' (string) and 'data' (object with 'messageId' property).
- * @property {Object} MESSAGE_REACTION_ADD - The 'MESSAGE_REACTION_ADD' event. It requires a 'sender' (string) and 'data' (object with 'messageId' and 'emoji' properties).
- * @property {Object} MESSAGE_REACTION_REMOVE - The 'MESSAGE_REACTION_REMOVE' event. It requires a 'sender' (string) and 'data' (object with 'messageId' and 'emoji' properties).
- * @property {Object} TYPING - The 'TYPING' event. It requires a 'sender' (string) and 'data' (object with 'isTyping' property).
- * @property {Object} POLL_VOTE - The 'POLL_VOTE' event. It requires a 'sender' (string) and 'data' (object with 'messageId' and 'answerId' properties).
- * @property {Object} ERROR - The 'ERROR' event. It requires a 'sender' (string) and 'error' (object with 'errorCode' and 'errorMessage' properties).
- */
 export default {
 
     /**
@@ -117,6 +106,48 @@ export default {
     "CHAT_CLUB_REMOVE": standardFormat({
         chatId: yup.string().required(),
         clubId: yup.string().required()
+    }),
+
+    /**
+     * @description The event that is fired when a user hides a chat.
+     */
+    "CHAT_USER_HIDE_EVENT": standardFormat({
+        chatId: yup.string().required()
+    }),
+
+    /**
+     * @description The event that is fired when a user pins a chat.
+     */
+    "CHAT_USER_PIN_EVENT": standardFormat({
+        chatId: yup.string().required()
+    }),
+
+    /**
+     * @description The event that is fired when a user reads a chat.
+     */
+    "CHAT_USER_READ_EVENT": standardFormat({
+        chatId: yup.string().required()
+    }),
+
+    /**
+     * @description The event that is fired when a user unhides a chat.
+     */
+    "CHAT_USER_UNHIDE_EVENT": standardFormat({
+        chatId: yup.string().required()
+    }),
+
+    /**
+     * @description The event that is fired when a user unpins a chat.
+     */
+    "CHAT_USER_UNPIN_EVENT": standardFormat({
+        chatId: yup.string().required()
+    }),
+
+    /**
+     * @description The event that is fired when a user unreads a chat.
+     */
+    "CHAT_USER_UNREAD_EVENT": standardFormat({
+        chatId: yup.string().required()
     }),
 
     // CLASSES

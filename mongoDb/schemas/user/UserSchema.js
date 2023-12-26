@@ -64,8 +64,13 @@ export default new Schema(
         ],
         chats: [
             {
-                type: ObjectId,
-                ref: 'Chat'
+                pinned: Boolean,
+                hidden: Boolean,
+                read: Boolean,
+                chat: {
+                    type: ObjectId,
+                    ref: 'Chat'
+                }
             }
         ]
 
